@@ -1,0 +1,57 @@
+{
+    "key": "group_acf_opinion_box_block",
+    "title": "Opinion Box Block",
+    "fields": [
+        {
+            "key": "field_ob_avatar",
+            "label": "Avatar",
+            "name": "ob_avatar",
+            "type": "image",
+            "instructions": "Select an avatar image for the author.",
+            "required": 0,
+            "return_format": "array",
+            "preview_size": "thumbnail",
+            "library": "all"
+        },
+        {
+            "key": "field_ob_name",
+            "label": "Author Name",
+            "name": "ob_name",
+            "type": "text",
+            "instructions": "Enter the author's name.",
+            "required": 0
+        },
+        {
+            "key": "field_ob_designation",
+            "label": "Designation",
+            "name": "ob_designation",
+            "type": "text",
+            "instructions": "Enter the author's title or designation.",
+            "required": 0
+        },
+        {
+            "key": "field_ob_citation",
+            "label": "Citation",
+            "name": "ob_citation",
+            "type": "text",
+            "instructions": "Enter source citation or additional context.",
+            "required": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/opinion-box"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "active": true,
+    "description": "Field group for the Opinion Box block."
+}

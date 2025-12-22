@@ -1,0 +1,64 @@
+{
+    "key": "group_acf_coupon_code_block",
+    "title": "Coupon Code Block",
+    "fields": [
+        {
+            "key": "field_cb_offer_details",
+            "label": "Offer Details",
+            "name": "cb_offer_details",
+            "type": "text",
+            "instructions": "Enter the offer details or headline.",
+            "required": 0
+        },
+        {
+            "key": "field_cb_code",
+            "label": "Coupon Code",
+            "name": "cb_code",
+            "type": "text",
+            "instructions": "Enter the coupon code.",
+            "required": 0
+        },
+        {
+            "key": "field_cb_copy_text",
+            "label": "Copy Button Text",
+            "name": "cb_copy_text",
+            "type": "text",
+            "instructions": "Text for the copy button.",
+            "required": 0,
+            "default_value": "Copy Coupon"
+        },
+        {
+            "key": "field_cb_activate_text",
+            "label": "Activate Button Text",
+            "name": "cb_activate_text",
+            "type": "text",
+            "instructions": "Text for the activate discount button.",
+            "required": 0,
+            "default_value": "Activate Discount"
+        },
+        {
+            "key": "field_cb_activate_url",
+            "label": "Activate URL",
+            "name": "cb_activate_url",
+            "type": "url",
+            "instructions": "URL for the activate discount button (optional).",
+            "required": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/cb-coupon-code"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "active": true,
+    "description": "Field group for the Coupon Code block."
+}
