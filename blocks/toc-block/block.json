@@ -1,0 +1,31 @@
+{
+  "apiVersion": 3,
+  "name": "acf/toc",
+  "title": "Table of Contents",
+  "description": "Display an SEO-optimized table of contents with schema markup, multiple list styles, and optional sticky behavior.",
+  "category": "formatting",
+  "icon": "list-view",
+  "keywords": ["toc", "table of contents", "navigation", "headings", "index"],
+  "acf": {
+    "renderTemplate": "toc-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "mode": true,
+    "anchor": true,
+    "jsx": false
+  },
+  "style": "file:./toc-block.css",
+  "editorStyle": "file:./toc-block.css",
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "toc_title": "Table of Contents",
+        "toc_list_type": "ul",
+        "toc_heading_levels": ["h2", "h3"]
+      }
+    }
+  }
+}
