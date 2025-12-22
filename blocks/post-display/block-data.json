@@ -20,8 +20,7 @@
                 "post_type": [],
                 "filters": [
                     "search",
-                    "post_type",
-                    "taxonomy"
+                    "post_type"
                 ],
                 "elements": [
                     "featured_image"
