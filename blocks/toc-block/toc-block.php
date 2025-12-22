@@ -327,13 +327,16 @@ if ( $sticky && ! defined( 'ACF_TOC_STICKY_CSS_LOADED' ) ) :
     define( 'ACF_TOC_STICKY_CSS_LOADED', true );
 ?>
 <style>
+:root {
+    --acf-toc-sticky-offset: calc(var(--header-height, 0px) + var(--wp-admin--admin-bar--height, 0px) + 20px);
+}
 @media (min-width: 1400px) {
     .acf-toc--sticky {
         position: fixed;
-        top: var(--acf-toc-sticky-offset, 20px);
-        left: 20px;
+        top: var(--acf-toc-sticky-offset);
+        left: 0;
         max-width: 260px;
-        max-height: calc(100vh - var(--acf-toc-sticky-offset, 20px) - 40px);
+        max-height: calc(100vh - var(--acf-toc-sticky-offset) - 40px);
         overflow-y: auto;
         scrollbar-width: thin;
         font-size: 0.875em;
@@ -352,8 +355,10 @@ if ( $sticky && ! defined( 'ACF_TOC_STICKY_CSS_LOADED' ) ) :
 }
 </style>
 <?php
-    // Set CSS custom property for sticky offset
-    echo '<style>#' . esc_attr( $block_id ) . ' { --acf-toc-sticky-offset: ' . intval( $sticky_offset ) . 'px; }</style>';
+    // Set custom offset if provided (adds to the default calculation)
+    if ( $sticky_offset && $sticky_offset != 20 ) {
+        echo '<style>#' . esc_attr( $block_id ) . ' { --acf-toc-sticky-offset: calc(var(--header-height, 0px) + var(--wp-admin--admin-bar--height, 0px) + ' . intval( $sticky_offset ) . 'px); }</style>';
+    }
 endif;
 
 // Inline CSS for smooth scroll (only when enabled)
