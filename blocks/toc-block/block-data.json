@@ -1,0 +1,223 @@
+{
+  "key": "group_acf_toc_block",
+  "title": "Table of Contents Block",
+  "fields": [
+    {
+      "key": "field_toc_tab_content",
+      "label": "Content",
+      "name": "",
+      "type": "tab",
+      "placement": "top"
+    },
+    {
+      "key": "field_toc_title",
+      "label": "Title",
+      "name": "toc_title",
+      "type": "text",
+      "default_value": "Table of Contents",
+      "placeholder": "Table of Contents"
+    },
+    {
+      "key": "field_toc_title_tag",
+      "label": "Title Tag",
+      "name": "toc_title_tag",
+      "type": "select",
+      "choices": {
+        "p": "Paragraph",
+        "h2": "H2",
+        "h3": "H3",
+        "h4": "H4",
+        "h5": "H5",
+        "h6": "H6",
+        "div": "Div",
+        "span": "Span"
+      },
+      "default_value": "p",
+      "instructions": "HTML tag for the TOC title. Use paragraph or div to avoid including the title in the TOC itself."
+    },
+    {
+      "key": "field_toc_heading_levels",
+      "label": "Heading Levels to Include",
+      "name": "toc_heading_levels",
+      "type": "checkbox",
+      "choices": {
+        "h1": "H1",
+        "h2": "H2",
+        "h3": "H3",
+        "h4": "H4",
+        "h5": "H5",
+        "h6": "H6"
+      },
+      "default_value": ["h2"],
+      "layout": "horizontal",
+      "instructions": "Select which heading levels to include in the table of contents."
+    },
+    {
+      "key": "field_toc_list_type",
+      "label": "List Type",
+      "name": "toc_list_type",
+      "type": "select",
+      "choices": {
+        "ol": "Ordered List (with hierarchy)",
+        "ul": "Unordered List (with hierarchy)",
+        "plain": "Plain List (no hierarchy)"
+      },
+      "default_value": "ul",
+      "instructions": "Ordered/unordered lists preserve heading hierarchy. Plain list shows all headings at the same level."
+    },
+    {
+      "key": "field_toc_collapsible",
+      "label": "Collapsible",
+      "name": "toc_collapsible",
+      "type": "true_false",
+      "default_value": 0,
+      "ui": 1,
+      "instructions": "Allow users to collapse/expand the table of contents."
+    },
+    {
+      "key": "field_toc_collapsed_default",
+      "label": "Collapsed by Default",
+      "name": "toc_collapsed_default",
+      "type": "true_false",
+      "default_value": 0,
+      "ui": 1,
+      "conditional_logic": [
+        [
+          {
+            "field": "field_toc_collapsible",
+            "operator": "==",
+            "value": "1"
+          }
+        ]
+      ],
+      "instructions": "Start with the TOC collapsed."
+    },
+    {
+      "key": "field_toc_tab_display",
+      "label": "Display",
+      "name": "",
+      "type": "tab",
+      "placement": "top"
+    },
+    {
+      "key": "field_toc_sticky",
+      "label": "Sticky on Large Screens",
+      "name": "toc_sticky",
+      "type": "true_false",
+      "default_value": 0,
+      "ui": 1,
+      "instructions": "Make the TOC sticky (fixed position) on screens 1400px and wider. Uses CSS position: sticky."
+    },
+    {
+      "key": "field_toc_sticky_offset",
+      "label": "Sticky Top Offset",
+      "name": "toc_sticky_offset",
+      "type": "number",
+      "default_value": 20,
+      "prepend": "",
+      "append": "px",
+      "conditional_logic": [
+        [
+          {
+            "field": "field_toc_sticky",
+            "operator": "==",
+            "value": "1"
+          }
+        ]
+      ],
+      "instructions": "Distance from the top of the viewport when sticky."
+    },
+    {
+      "key": "field_toc_smooth_scroll",
+      "label": "Smooth Scroll",
+      "name": "toc_smooth_scroll",
+      "type": "true_false",
+      "default_value": 1,
+      "ui": 1,
+      "instructions": "Enable smooth scrolling when clicking TOC links. Uses native CSS scroll-behavior."
+    },
+    {
+      "key": "field_toc_highlight_active",
+      "label": "Highlight Active Section",
+      "name": "toc_highlight_active",
+      "type": "true_false",
+      "default_value": 0,
+      "ui": 1,
+      "instructions": "Highlight the currently visible section in the TOC using Intersection Observer."
+    },
+    {
+      "key": "field_toc_tab_styling",
+      "label": "Styling",
+      "name": "",
+      "type": "tab",
+      "placement": "top"
+    },
+    {
+      "key": "field_toc_custom_class",
+      "label": "Custom CSS Classes",
+      "name": "toc_custom_class",
+      "type": "text",
+      "instructions": "Add custom CSS classes to the TOC container. Separate multiple classes with spaces."
+    },
+    {
+      "key": "field_toc_title_class",
+      "label": "Title CSS Classes",
+      "name": "toc_title_class",
+      "type": "text",
+      "instructions": "Add custom CSS classes to the TOC title element."
+    },
+    {
+      "key": "field_toc_list_class",
+      "label": "List CSS Classes",
+      "name": "toc_list_class",
+      "type": "text",
+      "instructions": "Add custom CSS classes to the TOC list element."
+    },
+    {
+      "key": "field_toc_link_class",
+      "label": "Link CSS Classes",
+      "name": "toc_link_class",
+      "type": "text",
+      "instructions": "Add custom CSS classes to TOC link elements."
+    },
+    {
+      "key": "field_toc_tab_seo",
+      "label": "SEO",
+      "name": "",
+      "type": "tab",
+      "placement": "top"
+    },
+    {
+      "key": "field_toc_schema",
+      "label": "Include Schema Markup",
+      "name": "toc_schema",
+      "type": "true_false",
+      "default_value": 1,
+      "ui": 1,
+      "instructions": "Add JSON-LD schema markup for better SEO. Includes SiteNavigationElement schema."
+    },
+    {
+      "key": "field_toc_aria_label",
+      "label": "ARIA Label",
+      "name": "toc_aria_label",
+      "type": "text",
+      "default_value": "Table of Contents",
+      "instructions": "Accessible label for the navigation landmark. Important for screen readers."
+    }
+  ],
+  "location": [
+    [
+      {
+        "param": "block",
+        "operator": "==",
+        "value": "acf/toc"
+      }
+    ]
+  ],
+  "menu_order": 0,
+  "position": "normal",
+  "style": "default",
+  "label_placement": "top",
+  "instruction_placement": "label",
+  "active": true
+}

@@ -316,6 +316,7 @@ function acf_blocks_get_style_map() {
         'acf/thread-builder' => 'thread-builder/thread-builder.css',
         'acf/video'          => 'video-block/video.css',
         'acf/star-rating'    => 'star-rating-block/star-rating-block.css',
+        'acf/toc'            => 'toc-block/toc-block.css',
     );
 }
 
