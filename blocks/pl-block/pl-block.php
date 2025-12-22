@@ -31,33 +31,33 @@ $image_width =  get_field('pl_block_image_width');
 $width_style = $image_width ? $image_width : '64px';
 ?>
 
-<div class="pl-block">
+<div class="acf-pl-block">
   <div class="has-border-bottom" style="display: flex; align-items: center; margin-bottom: 20px; justify-content: flex-start;">
-    <div class="block-single pl-block-rank">
+    <div class="block-single acf-pl-block-rank">
       <?php if ( $rank ): ?>
-        <div class="pl-block-rank-text"><?php echo esc_html($rank); ?></div>
+        <div class="acf-pl-block-rank-text"><?php echo esc_html($rank); ?></div>
       <?php endif; ?>
     </div>
-    <div class="block-single pl-block-icon">
+    <div class="block-single acf-pl-block-icon">
       <?php if ( $icon ): ?>
         <img src="<?php echo esc_url($icon['url']); ?>" alt="<?php echo esc_attr($icon['alt']); ?>" style="width:<?php echo esc_attr($width_style); ?>; height:auto;"/>
       <?php endif; ?>
     </div>
-    <div class="block-single pl-block-name">
+    <div class="block-single acf-pl-block-name">
       <?php if ( $product_name ): ?>
         <p class="small-title mb-none"><?php echo esc_html($product_name); ?></p>
       <?php endif; ?>
     </div>
   </div>
 
-  <div class="pl-block-description">
+  <div class="acf-pl-block-description">
     <?php if ( $description ): ?>
       <?php echo $description; ?>
     <?php endif; ?>
   </div>
 
-  <div class="pl-block-info">
-    <div class="pl-block-pricing">
+  <div class="acf-pl-block-info">
+    <div class="acf-pl-block-pricing">
       <?php if ( $pricing ): ?>
         <h3>Pricing</h3>
         <ul class="is-style-list">
@@ -70,15 +70,15 @@ $width_style = $image_width ? $image_width : '64px';
         </ul>
       <?php endif; ?>
     </div>
-    <div class="pl-block-coupons">
+    <div class="acf-pl-block-coupons">
       <?php if ( $coupons ): ?>
         <h3>Coupons</h3>
         <ul class="is-style-list">
           <?php foreach ( $coupons as $coupon_item ): ?>
             <li>
-              <span class="pl-coupon-code"> <i class="md-icon-badge-percent" aria-hidden="true"></i> <?php echo esc_html($coupon_item['pl_block_coupon_code']); ?></span>
+              <span class="acf-pl-coupon-code"> <i class="md-icon-badge-percent" aria-hidden="true"></i> <?php echo esc_html($coupon_item['pl_block_coupon_code']); ?></span>
               <?php if ( !empty($coupon_item['pl_block_coupon_offer']) ): ?>
-                <span class="pl-coupon-offer"> - <?php echo esc_html($coupon_item['pl_block_coupon_offer']); ?></span>
+                <span class="acf-pl-coupon-offer"> - <?php echo esc_html($coupon_item['pl_block_coupon_offer']); ?></span>
               <?php endif; ?>
             </li>
           <?php endforeach; ?>
@@ -87,7 +87,7 @@ $width_style = $image_width ? $image_width : '64px';
     </div>
   </div>
 
-  <div class="pl-block-buttons">
+  <div class="acf-pl-block-buttons">
     <?php if ( $buttons ): ?>
       <?php foreach ( $buttons as $button ): ?>
         <?php

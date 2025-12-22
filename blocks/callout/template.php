@@ -48,7 +48,7 @@ $has_buttonTextColor = !empty($buttonTextColor) && empty($buttonTextColorClass) 
 $style = $has_textColor || $bgColor || $borderColor || $bgImage ? ' style="' . $bg_color . $bg_image . $border_color . ($has_textColor ? ' color: ' . esc_attr($textColor) . ';' : '') . '"' : '';
 
 $classes = $button_classes = array();
-$classes[] = 'callout';
+$classes[] = 'acf-callout';
 $classes[] = !empty($align) ? "align{$align}" : '';
 $classes[] = !empty($bgColorClass) ? $bgColorClass : '';
 $classes[] = !empty($textColorClass) ? $textColorClass : '';
@@ -81,21 +81,21 @@ $button_classes = join(' ', $button_classes);
 
 <div class="<?php echo esc_attr($classes); ?>"<?php echo $style; ?>>
     <?php if (!empty($icon)) : ?>
-        <div class="callout-icon icon mb-single <?php echo !empty($iconCustomClass) ? esc_attr($iconCustomClass) : ''; ?>"<?php echo !empty($iconColor) ? ' style="background-color: ' . esc_attr($iconColor) . ';"' : ''; ?>>
+        <div class="acf-callout-icon icon mb-single <?php echo !empty($iconCustomClass) ? esc_attr($iconCustomClass) : ''; ?>"<?php echo !empty($iconColor) ? ' style="background-color: ' . esc_attr($iconColor) . ';"' : ''; ?>>
             <i class="<?php echo esc_attr($icon); ?>"></i>
         </div>
     <?php elseif (!empty($iconImage)) : ?>
-        <div class="callout-icon image mb-single <?php echo !empty($iconCustomClass) ? esc_attr($iconCustomClass) : ''; ?>">
+        <div class="acf-callout-icon image mb-single <?php echo !empty($iconCustomClass) ? esc_attr($iconCustomClass) : ''; ?>">
             <img src="<?php echo esc_url($iconImage); ?>" height="100" width="100" alt="<?php echo esc_attr($title); ?>" />
         </div>
     <?php endif; ?>
     
     <?php if ($title) : ?>
-        <p class="callout-title med-title mb-single <?php echo !empty($titleCustomClass) ? esc_attr($titleCustomClass) : ''; ?>"><?php echo esc_html($title); ?></p>
+        <p class="acf-callout-title med-title mb-single <?php echo !empty($titleCustomClass) ? esc_attr($titleCustomClass) : ''; ?>"><?php echo esc_html($title); ?></p>
     <?php endif; ?>
     
     <?php if ($text) : ?>
-        <div class="callout-text mb-single <?php echo !empty($textCustomClass) ? esc_attr($textCustomClass) : ''; ?>">
+        <div class="acf-callout-text mb-single <?php echo !empty($textCustomClass) ? esc_attr($textCustomClass) : ''; ?>">
             <?php echo wpautop($text); ?>
         </div>
     <?php endif; ?>
@@ -105,8 +105,8 @@ $button_classes = join(' ', $button_classes);
         $button_color = $has_buttonTextColor ? ' color: ' . esc_attr($buttonTextColor) . ';' : '';
         $button_style = $has_buttonColor || $has_buttonTextColor ? ' style="' . $button_bg . $button_color . '"' : '';
     ?>
-        <p class="callout-action">
-            <a href="<?php echo esc_url($href); ?>" class="callout-button button button-arrow <?php echo esc_attr($button_classes); ?>"<?php echo $button_style; ?>><?php echo esc_html($buttonText); ?></a>
+        <p class="acf-callout-action">
+            <a href="<?php echo esc_url($href); ?>" class="acf-callout-button button button-arrow <?php echo esc_attr($button_classes); ?>"<?php echo $button_style; ?>><?php echo esc_html($buttonText); ?></a>
         </p>
     <?php endif; ?>
 </div>

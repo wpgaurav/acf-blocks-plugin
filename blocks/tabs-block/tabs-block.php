@@ -19,20 +19,20 @@ $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
 $inline_style      = get_field( 'acf_tabs_inline' );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
 
-$style_class = $tab_style ? ' tabs-' . esc_attr( $tab_style ) : ' tabs-default';
-$unique_id   = 'tabs-' . ( $block['id'] ?? uniqid() );
+$style_class = $tab_style ? ' acf-tabs-' . esc_attr( $tab_style ) : ' acf-tabs-default';
+$unique_id   = 'acf-tabs-' . ( $block['id'] ?? uniqid() );
 ?>
 
-<div id="<?php echo esc_attr( $unique_id ); ?>" class="tabs-block<?php echo $style_class . $custom_class; ?>"<?php echo $inline_style_attr; ?>>
+<div id="<?php echo esc_attr( $unique_id ); ?>" class="acf-tabs-block<?php echo $style_class . $custom_class; ?>"<?php echo $inline_style_attr; ?>>
     <?php if ( $tabs_items && is_array( $tabs_items ) && count( $tabs_items ) > 0 ) : ?>
-        <div class="tabs-nav" role="tablist">
+        <div class="acf-tabs-nav" role="tablist">
             <?php foreach ( $tabs_items as $index => $tab ) :
                 $is_active    = ( 0 === $index );
                 $tab_id       = esc_attr( $unique_id . '-tab-' . $index );
                 $panel_id     = esc_attr( $unique_id . '-panel-' . $index );
                 $active_class = $is_active ? ' active' : '';
                 ?>
-                <button class="tab-button<?php echo $active_class; ?>"
+                <button class="acf-tab-button<?php echo $active_class; ?>"
                         id="<?php echo $tab_id; ?>"
                         type="button"
                         role="tab"
@@ -41,7 +41,7 @@ $unique_id   = 'tabs-' . ( $block['id'] ?? uniqid() );
                         data-tab-index="<?php echo esc_attr( $index ); ?>"
                         onclick="acfBlocksSwitchTab(this, '<?php echo esc_js( $unique_id ); ?>')">
                     <?php if ( ! empty( $tab['acf_tab_icon'] ) ) : ?>
-                        <span class="tab-icon">
+                        <span class="acf-tab-icon">
                             <?php
                             $icon_markup = function_exists( 'acf_blocks_get_icon_markup' )
                                 ? acf_blocks_get_icon_markup( $tab['acf_tab_icon'] )
@@ -52,19 +52,19 @@ $unique_id   = 'tabs-' . ( $block['id'] ?? uniqid() );
                             ?>
                         </span>
                     <?php endif; ?>
-                    <span class="tab-title"><?php echo esc_html( $tab['acf_tab_title'] ); ?></span>
+                    <span class="acf-tab-title"><?php echo esc_html( $tab['acf_tab_title'] ); ?></span>
                 </button>
             <?php endforeach; ?>
         </div>
 
-        <div class="tabs-content">
+        <div class="acf-tabs-content">
             <?php foreach ( $tabs_items as $index => $tab ) :
                 $is_active    = ( 0 === $index );
                 $tab_id       = esc_attr( $unique_id . '-tab-' . $index );
                 $panel_id     = esc_attr( $unique_id . '-panel-' . $index );
                 $active_class = $is_active ? ' active' : '';
                 ?>
-                <div class="tab-panel<?php echo $active_class; ?>"
+                <div class="acf-tab-panel<?php echo $active_class; ?>"
                      id="<?php echo $panel_id; ?>"
                      role="tabpanel"
                      aria-labelledby="<?php echo $tab_id; ?>"
@@ -93,7 +93,7 @@ if ( ! defined( 'ACF_BLOCKS_TABS_SCRIPT_LOADED' ) ) :
         var tabIndex = btn.getAttribute('data-tab-index');
 
         // Update buttons
-        var buttons = container.querySelectorAll('.tab-button');
+        var buttons = container.querySelectorAll('.acf-tab-button');
         buttons.forEach(function(b) {
             b.classList.remove('active');
             b.setAttribute('aria-selected', 'false');
@@ -102,7 +102,7 @@ if ( ! defined( 'ACF_BLOCKS_TABS_SCRIPT_LOADED' ) ) :
         btn.setAttribute('aria-selected', 'true');
 
         // Update panels
-        var panels = container.querySelectorAll('.tab-panel');
+        var panels = container.querySelectorAll('.acf-tab-panel');
         panels.forEach(function(p, i) {
             if (i == tabIndex) {
                 p.classList.add('active');

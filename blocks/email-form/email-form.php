@@ -33,18 +33,18 @@ $success_message      = get_field( 'success_message' );
 $form_attrs           = get_field( 'form_attributes' );
 
 // Set default classes.
-$default_form_class   = 'md-email-form md-email-full';
-$default_name_class   = 'md-input md-input-name';
-$default_email_class  = 'md-input md-input-email';
-$default_button_class = 'md-submit mb-half';
+$default_form_class   = 'acf-email-form acf-email-form-full';
+$default_name_class   = 'acf-input acf-input-name';
+$default_email_class  = 'acf-input acf-input-email';
+$default_button_class = 'acf-submit acf-mb-half';
 
 // Prepare form attributes.
 $form_id    = isset( $form_attrs['id'] ) ? $form_attrs['id'] : '';
 $form_class = isset( $form_attrs['class'] ) ? $default_form_class . ' ' . $form_attrs['class'] : $default_form_class;
 $form_css   = isset( $form_attrs['inline_css'] ) ? $form_attrs['inline_css'] : '';
 ?>
-<div class="md-email md-clear">
-	<div class="md-email-content md-clear">
+<div class="acf-email-form-wrapper acf-clear">
+	<div class="acf-email-form-content acf-clear">
 		<form 
 			<?php echo $form_id ? 'id="' . esc_attr( $form_id ) . '"' : ''; ?>
 			class="<?php echo esc_attr( $form_class ); ?>"
@@ -56,12 +56,12 @@ $form_css   = isset( $form_attrs['inline_css'] ) ? $form_attrs['inline_css'] : '
 			onsubmit="return handleEmailFormSubmit(event, '<?php echo esc_js( $form_type ); ?>', '<?php echo esc_js( $webhook_url ); ?>', '<?php echo esc_js( $webhook_auth_headers ); ?>');"
 		>
 			<?php if ( $display_name ) : ?>
-				<div class="form-group">
-					<label for="email-form-name"><?php esc_html_e( 'Name', 'gauravtiwari' ); ?></label>
+				<div class="acf-form-group">
+					<label for="acf-email-form-name"><?php esc_html_e( 'Name', 'gauravtiwari' ); ?></label>
 					<input 
 						type="text" 
 						name="email_form_name" 
-						id="email-form-name"
+						id="acf-email-form-name"
 						class="<?php echo $default_name_class . ( ! empty( $name_field_attrs['class'] ) ? ' ' . esc_attr( $name_field_attrs['class'] ) : '' ); ?>"
 						<?php echo ( $name_required ? 'required' : '' ); ?>
 						placeholder="<?php esc_attr_e( 'Your Name', 'gauravtiwari' ); ?>"
@@ -75,12 +75,12 @@ $form_css   = isset( $form_attrs['inline_css'] ) ? $form_attrs['inline_css'] : '
 				</div>
 			<?php endif; ?>
 			
-			<div class="form-group">
-				<label for="email-form-email"><?php esc_html_e( 'Email', 'gauravtiwari' ); ?></label>
+			<div class="acf-form-group">
+				<label for="acf-email-form-email"><?php esc_html_e( 'Email', 'gauravtiwari' ); ?></label>
 				<input 
 					type="email" 
 					name="email_form_email" 
-					id="email-form-email"
+					id="acf-email-form-email"
 					class="<?php echo $default_email_class . ( ! empty( $email_field_attrs['class'] ) ? ' ' . esc_attr( $email_field_attrs['class'] ) : '' ); ?>"
 					required
 					placeholder="<?php esc_attr_e( 'Your Email', 'gauravtiwari' ); ?>"
@@ -110,7 +110,7 @@ $form_css   = isset( $form_attrs['inline_css'] ) ? $form_attrs['inline_css'] : '
 				<?php endforeach; ?>
 			<?php endif; ?>
 			
-			<div class="form-group">
+			<div class="acf-form-group">
 				<button 
 					type="submit"
 					class="<?php echo $default_button_class . ( ! empty( $button_attrs['class'] ) ? ' ' . esc_attr( $button_attrs['class'] ) : '' ); ?>"
@@ -125,7 +125,7 @@ $form_css   = isset( $form_attrs['inline_css'] ) ? $form_attrs['inline_css'] : '
 				</button>
 			</div>
 			
-			<div class="email-form-success" style="display:none; color: green; margin-top: 10px;">
+			<div class="acf-email-form-success" style="display:none; color: green; margin-top: 10px;">
 				<?php echo wp_kses_post( $success_message ); ?>
 			</div>
 		</form>
@@ -159,7 +159,7 @@ function handleEmailFormSubmit(event, formType, webhookUrl, webhookAuthHeaders) 
 		})
 		.then(function(response) {
 			if (response.ok) {
-				form.querySelector('.email-form-success').style.display = 'block';
+				form.querySelector('.acf-email-form-success').style.display = 'block';
 				form.reset();
 			} else {
 				console.error('Proxy response error:', response.statusText);

@@ -22,24 +22,24 @@ $inline_style = get_field( 'acf_hero_inline' );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
 ?>
 
-<div class="hero-block<?php echo $custom_class; ?>"<?php echo $inline_style_attr; ?>>
+<div class="acf-hero-block<?php echo $custom_class; ?>"<?php echo $inline_style_attr; ?>>
     <?php if ( $image ) : ?>
-        <div class="hero-image">
+        <div class="acf-hero-image">
             <img src="<?php echo esc_url( $image['url'] ); ?>" alt="<?php echo esc_attr( $image['alt'] ); ?>" />
         </div>
     <?php endif; ?>
 
-    <div class="hero-content">
+    <div class="acf-hero-content">
         <?php if ( $headline ) : ?>
-            <h1 class="hero-headline"><?php echo esc_html( $headline ); ?></h1>
+            <h1 class="acf-hero-headline"><?php echo esc_html( $headline ); ?></h1>
         <?php endif; ?>
 
         <?php if ( $subheadline ) : ?>
-            <p class="hero-subheadline"><?php echo esc_html( $subheadline ); ?></p>
+            <p class="acf-hero-subheadline"><?php echo esc_html( $subheadline ); ?></p>
         <?php endif; ?>
 
         <?php if ( $cta_text && $cta_url ) : ?>
-            <a href="<?php echo esc_url( $cta_url ); ?>" class="hero-cta <?php echo esc_attr( $cta_style ); ?>">
+            <a href="<?php echo esc_url( $cta_url ); ?>" class="acf-hero-cta <?php echo esc_attr( $cta_style ); ?>">
                 <?php echo esc_html( $cta_text ); ?>
             </a>
         <?php endif; ?>

@@ -1,4 +1,4 @@
-.product-card {
+.acf-product-cards {
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -6,24 +6,24 @@
     background: #fff;
 }
 
-.product-header {
+.acf-product-cards__header {
     padding: 15px;
     font-size: 1.5rem;
     font-weight: bold;
 }
 
-.product-image img {
+.acf-product-cards__image img {
     width: 100%;
     height: auto;
 }
 
-.product-content {
+.acf-product-cards__content {
     padding: 15px;
     font-size: 1rem;
     color: #333;
 }
 
-.product-button {
+.acf-product-cards__button {
     display: inline-block;
     background: black;
     color: white;
@@ -34,7 +34,7 @@
     margin-top: 10px;
 }
 
-.product-link a {
+.acf-product-cards__link a {
     display: block;
     margin-top: 10px;
     font-size: 0.9rem;

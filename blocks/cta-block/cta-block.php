@@ -37,20 +37,20 @@ if ( $inline_style ) {
 $inline_style_attr = ! empty( $style_parts ) ? ' style="' . implode( '; ', $style_parts ) . '"' : '';
 ?>
 
-<div class="cta-block<?php echo $custom_class; ?>"<?php echo $inline_style_attr; ?>>
-    <div class="cta-content">
+<div class="acf-cta-block<?php echo $custom_class; ?>"<?php echo $inline_style_attr; ?>>
+    <div class="acf-cta-content">
         <?php if ( $heading ) : ?>
-            <h2 class="cta-heading"><?php echo esc_html( $heading ); ?></h2>
+            <h2 class="acf-cta-heading"><?php echo esc_html( $heading ); ?></h2>
         <?php endif; ?>
 
         <?php if ( $description ) : ?>
-            <div class="cta-description">
+            <div class="acf-cta-description">
                 <?php echo wpautop( esc_html( $description ) ); ?>
             </div>
         <?php endif; ?>
 
         <?php if ( $button_text && $button_url ) : ?>
-            <a href="<?php echo esc_url( $button_url ); ?>" class="cta-button <?php echo esc_attr( $button_style ); ?>">
+            <a href="<?php echo esc_url( $button_url ); ?>" class="acf-cta-button <?php echo esc_attr( $button_style ); ?>">
                 <?php echo esc_html( $button_text ); ?>
             </a>
         <?php endif; ?>

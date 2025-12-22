@@ -299,7 +299,6 @@ function acf_blocks_get_style_map() {
         'acf/cb-coupon-code' => 'coupon-code/coupon-code.css',
         'acf/cta'            => 'cta-block/cta.css',
         'acf/email-form'     => 'email-form/email-form.css',
-        'acf/faq'            => 'faq-block/faq.css',
         'acf/feature-grid'   => 'feature-grid-block/feature-grid.css',
         'acf/gallery'        => 'gallery-block/gallery.css',
         'acf/hero'           => 'hero-block/hero.css',

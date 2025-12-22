@@ -30,12 +30,12 @@ if (!$selected_posts) {
 
 // CSS classes based on layout
 $container_classes = [
-    'post-display',
-    'layout-' . $layout,
+    'acf-post-display',
+    'acf-post-display-layout-' . $layout,
 ];
 
 if ($layout === 'grid') {
-    $container_classes[] = 'grid-columns-' . $columns;
+    $container_classes[] = 'acf-post-display-grid-columns-' . $columns;
 }
 
 if ($custom_class) {
@@ -47,22 +47,22 @@ $container_class = implode(' ', $container_classes);
 
 <div id="<?php echo esc_attr($block_id); ?>" class="<?php echo esc_attr($container_class); ?>">
     <?php if ($layout === 'text_links'): ?>
-        
-        <ul class="post-display-list">
+
+        <ul class="acf-post-display-list">
             <?php foreach ($selected_posts as $post): ?>
-                <li class="post-item">
-                    <a href="<?php echo esc_url(get_permalink($post->ID)); ?>" class="post-link">
+                <li class="acf-post-display-item">
+                    <a href="<?php echo esc_url(get_permalink($post->ID)); ?>" class="acf-post-display-link">
                         <?php echo esc_html(get_the_title($post->ID)); ?>
                     </a>
-                    
+
                     <?php if ($show_date): ?>
-                        <span class="post-date">
+                        <span class="acf-post-display-date">
                             <?php echo get_the_date('', $post->ID); ?>
                         </span>
                     <?php endif; ?>
 
                     <?php if ($show_read_more): ?>
-                        <a href="<?php echo esc_url(get_permalink($post->ID)); ?>" class="post-read-more-button text-link-read-more">
+                        <a href="<?php echo esc_url(get_permalink($post->ID)); ?>" class="acf-post-display-read-more-button acf-post-display-text-link-read-more">
                             <?php echo esc_html($read_more_text); ?>
                         </a>
                     <?php endif; ?>
@@ -71,49 +71,49 @@ $container_class = implode(' ', $container_classes);
         </ul>
         
     <?php elseif ($layout === 'thumbnail'): ?>
-    
-        <div class="post-display-thumbnail-layout">
+
+        <div class="acf-post-display-thumbnail-layout">
             <?php foreach ($selected_posts as $post): ?>
-                <div class="post-item">
+                <div class="acf-post-display-item">
                     <?php if (has_post_thumbnail($post->ID)): ?>
-                    <div class="post-thumbnail">
+                    <div class="acf-post-display-thumbnail">
                         <a href="<?php echo esc_url(get_permalink($post->ID)); ?>">
-                            <?php echo get_the_post_thumbnail($post->ID, 'thumbnail', ['class' => 'post-thumb']); ?>
+                            <?php echo get_the_post_thumbnail($post->ID, 'thumbnail', ['class' => 'acf-post-display-thumb']); ?>
                         </a>
                     </div>
                     <?php endif; ?>
-                    
-                    <div class="post-content">
-                        <<?php echo esc_attr($title_tag); ?> class="post-title">
+
+                    <div class="acf-post-display-content">
+                        <<?php echo esc_attr($title_tag); ?> class="acf-post-display-title">
                             <a href="<?php echo esc_url(get_permalink($post->ID)); ?>">
                                 <?php echo esc_html(get_the_title($post->ID)); ?>
                             </a>
                         </<?php echo esc_attr($title_tag); ?>>
-                        
+
                         <?php if ($show_date || $show_author): ?>
-                            <div class="post-meta">
+                            <div class="acf-post-display-meta">
                                 <?php if ($show_date): ?>
-                                    <span class="post-date">
+                                    <span class="acf-post-display-date">
                                         <?php echo get_the_date('', $post->ID); ?>
                                     </span>
                                 <?php endif; ?>
-                                
+
                                 <?php if ($show_author): ?>
-                                    <span class="post-author">
+                                    <span class="acf-post-display-author">
                                         by <?php echo esc_html(get_the_author_meta('display_name', $post->post_author)); ?>
                                     </span>
                                 <?php endif; ?>
                             </div>
                         <?php endif; ?>
-                        
+
                         <?php if ($show_excerpt): ?>
-                            <div class="post-excerpt">
+                            <div class="acf-post-display-excerpt">
                                 <?php echo wp_kses_post(get_the_excerpt($post->ID)); ?>
                             </div>
                         <?php endif; ?>
 
                         <?php if ($show_read_more): ?>
-                            <a href="<?php echo esc_url(get_permalink($post->ID)); ?>" class="post-read-more-button">
+                            <a href="<?php echo esc_url(get_permalink($post->ID)); ?>" class="acf-post-display-read-more-button">
                                 <?php echo esc_html($read_more_text); ?>
                             </a>
                         <?php endif; ?>
@@ -123,43 +123,43 @@ $container_class = implode(' ', $container_classes);
         </div>
         
     <?php elseif ($layout === 'grid'): ?>
-    
-        <div class="post-display-grid-layout">
+
+        <div class="acf-post-display-grid-layout">
             <?php foreach ($selected_posts as $post): ?>
-                <article class="grid-item post-item">
+                <article class="acf-post-display-grid-item acf-post-display-item">
                     <?php if (has_post_thumbnail($post->ID)): ?>
-                        <div class="post-thumbnail">
+                        <div class="acf-post-display-thumbnail">
                             <a href="<?php echo esc_url(get_permalink($post->ID)); ?>">
-                                <?php echo get_the_post_thumbnail($post->ID, 'medium', ['class' => 'post-thumb']); ?>
+                                <?php echo get_the_post_thumbnail($post->ID, 'medium', ['class' => 'acf-post-display-thumb']); ?>
                             </a>
                         </div>
                     <?php endif; ?>
-                    
-                    <div class="post-content">
-                        <<?php echo esc_attr($title_tag); ?> class="post-title">
+
+                    <div class="acf-post-display-content">
+                        <<?php echo esc_attr($title_tag); ?> class="acf-post-display-title">
                             <a href="<?php echo esc_url(get_permalink($post->ID)); ?>">
                                 <?php echo esc_html(get_the_title($post->ID)); ?>
                             </a>
                         </<?php echo esc_attr($title_tag); ?>>
-                        
+
                         <?php if ($show_date || $show_author): ?>
-                            <div class="post-meta">
+                            <div class="acf-post-display-meta">
                                 <?php if ($show_date): ?>
-                                    <span class="post-date">
+                                    <span class="acf-post-display-date">
                                         <?php echo get_the_date('', $post->ID); ?>
                                     </span>
                                 <?php endif; ?>
-                                
+
                                 <?php if ($show_author): ?>
-                                    <span class="post-author">
+                                    <span class="acf-post-display-author">
                                         by <?php echo esc_html(get_the_author_meta('display_name', $post->post_author)); ?>
                                     </span>
                                 <?php endif; ?>
                             </div>
                         <?php endif; ?>
-                        
+
                         <?php if ($show_excerpt): ?>
-                            <div class="post-excerpt">
+                            <div class="acf-post-display-excerpt">
                                 <?php echo wp_kses_post(get_the_excerpt($post->ID)); ?>
                             </div>
                         <?php endif; ?>
