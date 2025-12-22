@@ -14,5 +14,7 @@
     "align": true,
     "mode": true,
     "jsx": true
-  }
+  },
+  "style": "file:./video.css",
+  "editorStyle": "file:./video.css"
 }

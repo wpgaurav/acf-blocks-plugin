@@ -14,5 +14,7 @@
     "align": true,
     "anchor": true,
     "jsx": true
-  }
+  },
+  "style": "file:./star-rating-block.css",
+  "editorStyle": "file:./star-rating-block.css"
 }

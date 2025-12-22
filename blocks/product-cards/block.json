@@ -12,5 +12,7 @@
   },
   "supports": {
     "align": true
-  }
+  },
+  "style": "file:./product-cards.css",
+  "editorStyle": "file:./product-cards.css"
 }

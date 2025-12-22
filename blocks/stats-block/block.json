@@ -14,5 +14,7 @@
     "align": true,
     "mode": true,
     "jsx": true
-  }
+  },
+  "style": "file:./stats.css",
+  "editorStyle": "file:./stats.css"
 }

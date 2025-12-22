@@ -14,5 +14,7 @@
     "align": true,
     "mode": true,
     "jsx": true
-  }
+  },
+  "style": "file:./cta.css",
+  "editorStyle": "file:./cta.css"
 }

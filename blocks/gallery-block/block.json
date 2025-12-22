@@ -14,5 +14,7 @@
     "align": true,
     "mode": true,
     "jsx": true
-  }
+  },
+  "style": "file:./gallery.css",
+  "editorStyle": "file:./gallery.css"
 }

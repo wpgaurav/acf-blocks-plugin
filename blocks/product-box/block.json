@@ -14,5 +14,7 @@
     "align": true,
     "mode": true,
     "anchor": true
-  }
+  },
+  "style": "file:./product-box.css",
+  "editorStyle": "file:./product-box.css"
 }

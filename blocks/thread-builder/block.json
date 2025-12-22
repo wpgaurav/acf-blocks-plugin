@@ -14,5 +14,7 @@
     "align": true,
     "mode": true,
     "anchor": true
-  }
+  },
+  "style": "file:./thread-builder.css",
+  "editorStyle": "file:./thread-builder.css"
 }

@@ -14,5 +14,7 @@
     "align": true,
     "mode": true,
     "anchor": true
-  }
+  },
+  "style": "file:./product-review.css",
+  "editorStyle": "file:./product-review.css"
 }

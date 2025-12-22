@@ -14,5 +14,7 @@
     "align": true,
     "mode": true,
     "jsx": true
-  }
+  },
+  "style": "file:./tabs.css",
+  "editorStyle": "file:./tabs.css"
 }

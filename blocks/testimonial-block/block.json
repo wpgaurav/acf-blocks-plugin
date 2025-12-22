@@ -14,5 +14,7 @@
     "align": true,
     "mode": true,
     "jsx": true
-  }
+  },
+  "style": "file:./testimonial.css",
+  "editorStyle": "file:./testimonial.css"
 }
