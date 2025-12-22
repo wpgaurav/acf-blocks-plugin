@@ -329,11 +329,18 @@ if ( $sticky && ! defined( 'ACF_TOC_STICKY_CSS_LOADED' ) ) :
 <style>
 @media (min-width: 1400px) {
     .acf-toc--sticky {
-        position: sticky;
+        position: fixed;
         top: var(--acf-toc-sticky-offset, 20px);
+        left: 20px;
+        max-width: 260px;
         max-height: calc(100vh - var(--acf-toc-sticky-offset, 20px) - 40px);
         overflow-y: auto;
         scrollbar-width: thin;
+        font-size: 0.875em;
+        z-index: 100;
+    }
+    .acf-toc--sticky .acf-toc__title {
+        font-size: 0.9375em;
     }
     .acf-toc--sticky::-webkit-scrollbar {
         width: 4px;
