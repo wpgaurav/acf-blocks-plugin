@@ -14,5 +14,7 @@
     "align": true,
     "mode": true,
     "jsx": true
-  }
+  },
+  "style": "file:./accordion.css",
+  "editorStyle": "file:./accordion.css"
 }

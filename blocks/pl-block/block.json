@@ -16,5 +16,7 @@
     "anchor": true,
     "multiple": true,
     "jsx": true
-  }
+  },
+  "style": "file:./pl-block.css",
+  "editorStyle": "file:./pl-block.css"
 }

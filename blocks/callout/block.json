@@ -13,6 +13,8 @@
   "supports": {
     "align": ["wide", "full"]
   },
+  "style": "file:./callout.css",
+  "editorStyle": "file:./callout.css",
   "example": {
     "attributes": {
       "mode": "preview",

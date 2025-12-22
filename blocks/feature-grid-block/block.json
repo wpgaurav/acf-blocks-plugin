@@ -14,5 +14,7 @@
     "align": true,
     "mode": true,
     "jsx": true
-  }
+  },
+  "style": "file:./feature-grid.css",
+  "editorStyle": "file:./feature-grid.css"
 }

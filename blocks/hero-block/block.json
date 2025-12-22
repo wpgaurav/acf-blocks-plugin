@@ -14,5 +14,7 @@
     "align": true,
     "mode": true,
     "jsx": true
-  }
+  },
+  "style": "file:./hero.css",
+  "editorStyle": "file:./hero.css"
 }

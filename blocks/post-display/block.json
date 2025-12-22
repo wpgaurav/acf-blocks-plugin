@@ -14,5 +14,7 @@
     "align": true,
     "mode": true,
     "anchor": true
-  }
+  },
+  "style": "file:./post-display.css",
+  "editorStyle": "file:./post-display.css"
 }

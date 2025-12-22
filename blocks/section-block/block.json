@@ -15,5 +15,7 @@
     "jsx": true,
     "mode": true,
     "multiple": true
-  }
+  },
+  "style": "file:./section-block.css",
+  "editorStyle": "file:./section-block.css"
 }

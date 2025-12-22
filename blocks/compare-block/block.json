@@ -12,5 +12,7 @@
   },
   "supports": {
     "align": true
-  }
+  },
+  "style": "file:./compare-block.css",
+  "editorStyle": "file:./compare-block.css"
 }

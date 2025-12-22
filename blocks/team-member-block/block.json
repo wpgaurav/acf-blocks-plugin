@@ -14,5 +14,7 @@
     "align": true,
     "mode": true,
     "jsx": true
-  }
+  },
+  "style": "file:./team-member.css",
+  "editorStyle": "file:./team-member.css"
 }

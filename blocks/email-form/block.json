@@ -1,3 +1,20 @@
 {
-	
+  "apiVersion": 3,
+  "name": "acf/email-form",
+  "title": "Email Form",
+  "description": "A customizable email capture form block.",
+  "category": "common",
+  "icon": "email",
+  "keywords": ["email", "form", "subscribe", "newsletter"],
+  "acf": {
+    "renderTemplate": "email-form.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": true,
+    "mode": true,
+    "jsx": true
+  },
+  "style": "file:./email-form.css",
+  "editorStyle": "file:./email-form.css"
 }
