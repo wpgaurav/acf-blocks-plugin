@@ -1,0 +1,110 @@
+{
+    "key": "group_acf_product_box_block",
+    "title": "Product Box Block",
+    "fields": [
+        {
+            "key": "field_pb_image",
+            "label": "Product Image",
+            "name": "pb_image",
+            "type": "image",
+            "instructions": "Select the product image.",
+            "required": 0,
+            "return_format": "array",
+            "preview_size": "medium",
+            "library": "all"
+        },
+        {
+            "key": "field_pb_title",
+            "label": "Product Title",
+            "name": "pb_title",
+            "type": "text",
+            "instructions": "Enter the product title.",
+            "required": 0
+        },
+        {
+            "key": "field_pb_rating",
+            "label": "Rating",
+            "name": "pb_rating",
+            "type": "number",
+            "instructions": "Enter a rating from 0 to 5 (supports half stars like 4.5).",
+            "required": 0,
+            "min": 0,
+            "max": 5,
+            "step": 0.5,
+            "default_value": 5
+        },
+        {
+            "key": "field_pb_description",
+            "label": "Description",
+            "name": "pb_description",
+            "type": "wysiwyg",
+            "instructions": "Enter the product description.",
+            "required": 0,
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 1
+        },
+        {
+            "key": "field_pb_buttons",
+            "label": "Call to Action Buttons",
+            "name": "pb_buttons",
+            "type": "repeater",
+            "instructions": "Add call-to-action buttons.",
+            "required": 0,
+            "min": 0,
+            "max": 4,
+            "layout": "table",
+            "button_label": "Add Button",
+            "sub_fields": [
+                {
+                    "key": "field_pb_cta_text",
+                    "label": "Button Text",
+                    "name": "pb_cta_text",
+                    "type": "text",
+                    "instructions": "",
+                    "required": 1
+                },
+                {
+                    "key": "field_pb_cta_url",
+                    "label": "Button URL",
+                    "name": "pb_cta_url",
+                    "type": "url",
+                    "instructions": "",
+                    "required": 1
+                },
+                {
+                    "key": "field_pb_cta_class",
+                    "label": "CSS Class",
+                    "name": "pb_cta_class",
+                    "type": "text",
+                    "instructions": "Optional CSS class for the button.",
+                    "required": 0
+                },
+                {
+                    "key": "field_pb_cta_rel",
+                    "label": "Rel Attribute",
+                    "name": "pb_cta_rel",
+                    "type": "text",
+                    "instructions": "Optional rel attribute (e.g., nofollow, sponsored).",
+                    "required": 0
+                }
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/product-box"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "active": true,
+    "description": "Field group for the Product Box block."
+}
