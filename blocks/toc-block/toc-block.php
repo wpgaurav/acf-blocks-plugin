@@ -335,21 +335,34 @@ if ( $sticky && ! defined( 'ACF_TOC_STICKY_CSS_LOADED' ) ) :
         position: fixed;
         top: var(--acf-toc-sticky-offset);
         left: 0;
-        max-width: 260px;
-        max-height: calc(100vh - var(--acf-toc-sticky-offset) - 40px);
+        max-width: 220px;
+        max-height: calc(100vh - var(--acf-toc-sticky-offset) - 20px);
         overflow-y: auto;
         scrollbar-width: thin;
-        font-size: 0.875em;
+        font-size: 0.8125em;
+        line-height: 1.4;
         z-index: 100;
     }
     .acf-toc--sticky .acf-toc__title {
-        font-size: 0.9375em;
+        font-size: 0.875em;
+        margin-bottom: 0.5em;
+    }
+    .acf-toc--sticky .acf-toc__content {
+        padding-left: 0.75em;
+        border-left-width: 2px;
+    }
+    .acf-toc--sticky .acf-toc__item {
+        padding: 0.125em 0;
+    }
+    .acf-toc--sticky .acf-toc__sublist {
+        padding-left: 0.75em;
+        margin-top: 0.125em;
     }
     .acf-toc--sticky::-webkit-scrollbar {
-        width: 4px;
+        width: 3px;
     }
     .acf-toc--sticky::-webkit-scrollbar-thumb {
-        background-color: rgba(0, 0, 0, 0.2);
+        background-color: rgba(0, 0, 0, 0.15);
         border-radius: 2px;
     }
 }
