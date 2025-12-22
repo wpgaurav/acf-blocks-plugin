@@ -38,11 +38,11 @@ $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
 $inline_style = get_field( 'acf_stats_inline' );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
 
-$layout_class = $layout ? ' stats-' . esc_attr( $layout ) : ' stats-horizontal';
-$animation_class = $enable_animation ? ' has-animation' : '';
+$layout_class = $layout ? ' acf-stats-' . esc_attr( $layout ) : ' acf-stats-horizontal';
+$animation_class = $enable_animation ? ' acf-has-animation' : '';
 ?>
 
-<div id="<?php echo esc_attr( $unique_id ); ?>" class="stats-block<?php echo $layout_class . $animation_class . $custom_class; ?>"<?php echo $inline_style_attr; ?>>
+<div id="<?php echo esc_attr( $unique_id ); ?>" class="acf-stats-block<?php echo $layout_class . $animation_class . $custom_class; ?>"<?php echo $inline_style_attr; ?>>
     <?php
     if ( $stats_items && is_array( $stats_items ) && count( $stats_items ) > 0 ) :
         foreach ( $stats_items as $index => $stat ) :
@@ -52,9 +52,9 @@ $animation_class = $enable_animation ? ' has-animation' : '';
             $suffix = $stat['acf_stat_suffix'];
             $icon   = $stat['acf_stat_icon'];
             ?>
-            <div class="stat-item">
+            <div class="acf-stat-item">
                 <?php if ( $icon ) : ?>
-                    <div class="stat-icon">
+                    <div class="acf-stat-icon">
                         <?php
                         $icon_markup = function_exists( 'md_get_icon_markup' )
                             ? md_get_icon_markup( $icon )
@@ -64,19 +64,19 @@ $animation_class = $enable_animation ? ' has-animation' : '';
                     </div>
                 <?php endif; ?>
 
-                <div class="stat-content">
-                    <div class="stat-number" data-target="<?php echo esc_attr( $number ); ?>">
+                <div class="acf-stat-content">
+                    <div class="acf-stat-number" data-target="<?php echo esc_attr( $number ); ?>">
                         <?php if ( $prefix ) : ?>
-                            <span class="stat-prefix"><?php echo esc_html( $prefix ); ?></span>
+                            <span class="acf-stat-prefix"><?php echo esc_html( $prefix ); ?></span>
                         <?php endif; ?>
-                        <span class="stat-value"><?php echo esc_html( $number ); ?></span>
+                        <span class="acf-stat-value"><?php echo esc_html( $number ); ?></span>
                         <?php if ( $suffix ) : ?>
-                            <span class="stat-suffix"><?php echo esc_html( $suffix ); ?></span>
+                            <span class="acf-stat-suffix"><?php echo esc_html( $suffix ); ?></span>
                         <?php endif; ?>
                     </div>
 
                     <?php if ( $label ) : ?>
-                        <div class="stat-label"><?php echo esc_html( $label ); ?></div>
+                        <div class="acf-stat-label"><?php echo esc_html( $label ); ?></div>
                     <?php endif; ?>
                 </div>
             </div>

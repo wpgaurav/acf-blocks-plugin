@@ -17,18 +17,18 @@ $activate_discount_url  = get_field( 'cb_activate_url' );
 $block_id = 'coupon-' . ( $block['id'] ?? uniqid() );
 ?>
 
-<div class="coupon-code-block" id="<?php echo esc_attr( $block_id ); ?>">
-    <div class="coupon-code-inner">
+<div class="acf-coupon-code-block" id="<?php echo esc_attr( $block_id ); ?>">
+    <div class="acf-coupon-code-inner">
         <?php if ( $offer_details ) : ?>
-            <div class="coupon-offer-details">
+            <div class="acf-coupon-offer-details">
                 <?php echo esc_html( $offer_details ); ?>
             </div>
         <?php endif; ?>
 
         <?php if ( $coupon_code ) : ?>
-            <div class="coupon-code-container">
-                <span class="coupon-code-text"><?php echo esc_html( $coupon_code ); ?></span>
-                <button type="button" class="coupon-copy-btn" onclick="acfBlocksCopyCoupon(this, '<?php echo esc_js( $coupon_code ); ?>')">
+            <div class="acf-coupon-code-container">
+                <span class="acf-coupon-code-text"><?php echo esc_html( $coupon_code ); ?></span>
+                <button type="button" class="acf-coupon-copy-btn" onclick="acfBlocksCopyCoupon(this, '<?php echo esc_js( $coupon_code ); ?>')">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                         <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
                     </svg>
@@ -37,13 +37,13 @@ $block_id = 'coupon-' . ( $block['id'] ?? uniqid() );
             </div>
         <?php endif; ?>
 
-        <div class="coupon-activate">
+        <div class="acf-coupon-activate">
             <?php if ( $activate_discount_url ) : ?>
-                <a href="<?php echo esc_url( $activate_discount_url ); ?>" class="activate-discount-btn" target="_blank" rel="noopener">
+                <a href="<?php echo esc_url( $activate_discount_url ); ?>" class="acf-activate-discount-btn" target="_blank" rel="noopener">
                     <?php echo esc_html( $activate_discount_text ); ?>
                 </a>
             <?php else : ?>
-                <span class="activate-discount-btn"><?php echo esc_html( $activate_discount_text ); ?></span>
+                <span class="acf-activate-discount-btn"><?php echo esc_html( $activate_discount_text ); ?></span>
             <?php endif; ?>
         </div>
     </div>

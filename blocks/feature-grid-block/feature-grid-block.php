@@ -24,32 +24,32 @@ $columns_class = $columns ? ' columns-' . esc_attr( $columns ) : ' columns-3';
 $layout_class = $layout_style ? ' layout-' . esc_attr( $layout_style ) : ' layout-default';
 ?>
 
-<div class="feature-grid-block<?php echo $columns_class . $layout_class . $custom_class; ?>"<?php echo $inline_style_attr; ?>>
+<div class="acf-feature-grid-block<?php echo $columns_class . $layout_class . $custom_class; ?>"<?php echo $inline_style_attr; ?>>
     <?php if ( $heading || $subheading ) : ?>
-        <div class="feature-grid-header">
+        <div class="acf-feature-grid-header">
             <?php if ( $heading ) : ?>
-                <h2 class="feature-grid-heading"><?php echo esc_html( $heading ); ?></h2>
+                <h2 class="acf-feature-grid-heading"><?php echo esc_html( $heading ); ?></h2>
             <?php endif; ?>
 
             <?php if ( $subheading ) : ?>
-                <p class="feature-grid-subheading"><?php echo esc_html( $subheading ); ?></p>
+                <p class="acf-feature-grid-subheading"><?php echo esc_html( $subheading ); ?></p>
             <?php endif; ?>
         </div>
     <?php endif; ?>
 
     <?php if ( $features && is_array( $features ) && count( $features ) > 0 ) : ?>
-        <div class="feature-grid-items">
+        <div class="acf-feature-grid-items">
             <?php foreach ( $features as $feature ) : ?>
-                <div class="feature-item">
+                <div class="acf-feature-item">
                     <?php if ( $feature['acf_feature_icon'] || $feature['acf_feature_image'] ) : ?>
-                        <div class="feature-icon-wrapper">
+                        <div class="acf-feature-icon-wrapper">
                             <?php if ( $feature['acf_feature_image'] ) : ?>
-                                <div class="feature-image">
+                                <div class="acf-feature-image">
                                     <img src="<?php echo esc_url( $feature['acf_feature_image']['url'] ); ?>"
                                          alt="<?php echo esc_attr( $feature['acf_feature_image']['alt'] ); ?>" />
                                 </div>
                             <?php elseif ( $feature['acf_feature_icon'] ) : ?>
-                                <div class="feature-icon">
+                                <div class="acf-feature-icon">
                                     <?php
                                     $icon_markup = function_exists( 'md_get_icon_markup' )
                                         ? md_get_icon_markup( $feature['acf_feature_icon'] )
@@ -61,23 +61,23 @@ $layout_class = $layout_style ? ' layout-' . esc_attr( $layout_style ) : ' layou
                         </div>
                     <?php endif; ?>
 
-                    <div class="feature-content">
+                    <div class="acf-feature-content">
                         <?php if ( $feature['acf_feature_title'] ) : ?>
-                            <h3 class="feature-title"><?php echo esc_html( $feature['acf_feature_title'] ); ?></h3>
+                            <h3 class="acf-feature-title"><?php echo esc_html( $feature['acf_feature_title'] ); ?></h3>
                         <?php endif; ?>
 
                         <?php if ( $feature['acf_feature_description'] ) : ?>
-                            <div class="feature-description">
+                            <div class="acf-feature-description">
                                 <?php echo wpautop( esc_html( $feature['acf_feature_description'] ) ); ?>
                             </div>
                         <?php endif; ?>
 
                         <?php if ( $feature['acf_feature_link'] ) : ?>
                             <a href="<?php echo esc_url( $feature['acf_feature_link']['url'] ); ?>"
-                               class="feature-link"
+                               class="acf-feature-link"
                                <?php echo $feature['acf_feature_link']['target'] ? 'target="' . esc_attr( $feature['acf_feature_link']['target'] ) . '"' : ''; ?>>
                                 <?php echo esc_html( $feature['acf_feature_link']['title'] ? $feature['acf_feature_link']['title'] : 'Learn More' ); ?>
-                                <span class="link-arrow">→</span>
+                                <span class="acf-link-arrow">→</span>
                             </a>
                         <?php endif; ?>
                     </div>

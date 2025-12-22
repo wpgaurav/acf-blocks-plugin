@@ -1,4 +1,4 @@
-.testimonial-block {
+.acf-testimonial-block {
     padding: 40px;
     background-color: #fff;
     border-left: 4px solid #007bff;
@@ -7,7 +7,7 @@
     margin: 20px 0;
 }
 
-.testimonial-quote {
+.acf-testimonial-quote {
     position: relative;
     font-size: 1.25rem;
     font-style: italic;
@@ -16,7 +16,7 @@
     color: #333;
 }
 
-.quote-icon {
+.acf-testimonial-quote-icon {
     font-size: 3rem;
     color: #007bff;
     opacity: 0.3;
@@ -25,64 +25,64 @@
     margin-bottom: 10px;
 }
 
-.testimonial-author {
+.acf-testimonial-author {
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-.author-image {
+.acf-testimonial-author-image {
     flex-shrink: 0;
 }
 
-.author-image img {
+.acf-testimonial-author-image img {
     width: 60px;
     height: 60px;
     border-radius: 50%;
     object-fit: cover;
 }
 
-.author-details {
+.acf-testimonial-author-details {
     flex-grow: 1;
 }
 
-.author-name {
+.acf-testimonial-author-name {
     font-weight: bold;
     font-size: 1.125rem;
     margin-bottom: 5px;
     color: #333;
 }
 
-.author-title {
+.acf-testimonial-author-title {
     color: #666;
     font-size: 0.95rem;
     margin-bottom: 8px;
 }
 
-.testimonial-rating {
+.acf-testimonial-rating {
     display: flex;
     gap: 2px;
 }
 
-.testimonial-rating .star {
+.acf-testimonial-rating .acf-testimonial-star {
     font-size: 1.2rem;
     color: #ddd;
 }
 
-.testimonial-rating .star.filled {
+.acf-testimonial-rating .acf-testimonial-star-filled {
     color: #ffc107;
 }
 
 @media (max-width: 768px) {
-    .testimonial-block {
+    .acf-testimonial-block {
         padding: 30px 20px;
     }
 
-    .testimonial-quote {
+    .acf-testimonial-quote {
         font-size: 1.1rem;
     }
 
-    .testimonial-author {
+    .acf-testimonial-author {
         flex-direction: column;
         align-items: flex-start;
         gap: 15px;

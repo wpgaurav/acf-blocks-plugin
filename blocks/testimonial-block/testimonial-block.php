@@ -21,35 +21,35 @@ $inline_style = get_field( 'acf_testimonial_inline' );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
 ?>
 
-<div class="testimonial-block<?php echo $custom_class; ?>"<?php echo $inline_style_attr; ?>>
+<div class="acf-testimonial-block<?php echo $custom_class; ?>"<?php echo $inline_style_attr; ?>>
     <?php if ( $quote ) : ?>
-        <blockquote class="testimonial-quote">
-            <span class="quote-icon">&ldquo;</span>
+        <blockquote class="acf-testimonial-quote">
+            <span class="acf-testimonial-quote-icon">&ldquo;</span>
             <?php echo wpautop( esc_html( $quote ) ); ?>
         </blockquote>
     <?php endif; ?>
 
-    <div class="testimonial-author">
+    <div class="acf-testimonial-author">
         <?php if ( $author_image ) : ?>
-            <div class="author-image">
+            <div class="acf-testimonial-author-image">
                 <img src="<?php echo esc_url( $author_image['url'] ); ?>" alt="<?php echo esc_attr( $author_image['alt'] ); ?>" />
             </div>
         <?php endif; ?>
 
-        <div class="author-details">
+        <div class="acf-testimonial-author-details">
             <?php if ( $author_name ) : ?>
-                <div class="author-name"><?php echo esc_html( $author_name ); ?></div>
+                <div class="acf-testimonial-author-name"><?php echo esc_html( $author_name ); ?></div>
             <?php endif; ?>
 
             <?php if ( $author_title ) : ?>
-                <div class="author-title"><?php echo esc_html( $author_title ); ?></div>
+                <div class="acf-testimonial-author-title"><?php echo esc_html( $author_title ); ?></div>
             <?php endif; ?>
 
             <?php if ( $rating && $rating > 0 ) : ?>
-                <div class="testimonial-rating">
+                <div class="acf-testimonial-rating">
                     <?php
                     for ( $i = 1; $i <= 5; $i++ ) {
-                        echo $i <= $rating ? '<span class="star filled">★</span>' : '<span class="star">☆</span>';
+                        echo $i <= $rating ? '<span class="acf-testimonial-star acf-testimonial-star-filled">★</span>' : '<span class="acf-testimonial-star">☆</span>';
                     }
                     ?>
                 </div>

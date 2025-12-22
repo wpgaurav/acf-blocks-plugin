@@ -23,40 +23,40 @@ $inline_style = get_field( 'acf_team_member_inline' );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
 ?>
 
-<div class="team-member-block<?php echo $custom_class; ?>"<?php echo $inline_style_attr; ?>>
+<div class="acf-team-member-block<?php echo $custom_class; ?>"<?php echo $inline_style_attr; ?>>
     <?php if ( $photo ) : ?>
-        <div class="team-member-photo">
+        <div class="acf-team-member-photo">
             <img src="<?php echo esc_url( $photo['url'] ); ?>" alt="<?php echo esc_attr( $photo['alt'] ? $photo['alt'] : $name ); ?>" />
         </div>
     <?php endif; ?>
 
-    <div class="team-member-content">
+    <div class="acf-team-member-content">
         <?php if ( $name ) : ?>
-            <h3 class="team-member-name"><?php echo esc_html( $name ); ?></h3>
+            <h3 class="acf-team-member-name"><?php echo esc_html( $name ); ?></h3>
         <?php endif; ?>
 
         <?php if ( $title ) : ?>
-            <div class="team-member-title"><?php echo esc_html( $title ); ?></div>
+            <div class="acf-team-member-title"><?php echo esc_html( $title ); ?></div>
         <?php endif; ?>
 
         <?php if ( $bio ) : ?>
-            <div class="team-member-bio">
+            <div class="acf-team-member-bio">
                 <?php echo wpautop( esc_html( $bio ) ); ?>
             </div>
         <?php endif; ?>
 
         <?php if ( $email || $phone ) : ?>
-            <div class="team-member-contact">
+            <div class="acf-team-member-contact">
                 <?php if ( $email ) : ?>
-                    <div class="contact-item">
-                        <span class="contact-icon">✉</span>
+                    <div class="acf-contact-item">
+                        <span class="acf-contact-icon">✉</span>
                         <a href="mailto:<?php echo esc_attr( $email ); ?>"><?php echo esc_html( $email ); ?></a>
                     </div>
                 <?php endif; ?>
 
                 <?php if ( $phone ) : ?>
-                    <div class="contact-item">
-                        <span class="contact-icon">📞</span>
+                    <div class="acf-contact-item">
+                        <span class="acf-contact-icon">📞</span>
                         <a href="tel:<?php echo esc_attr( $phone ); ?>"><?php echo esc_html( $phone ); ?></a>
                     </div>
                 <?php endif; ?>
@@ -64,13 +64,13 @@ $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"
         <?php endif; ?>
 
         <?php if ( $social_links && is_array( $social_links ) && count( $social_links ) > 0 ) : ?>
-            <div class="team-member-social">
+            <div class="acf-team-member-social">
                 <?php foreach ( $social_links as $link ) : ?>
                     <?php if ( $link['acf_social_platform'] && $link['acf_social_url'] ) : ?>
                         <a href="<?php echo esc_url( $link['acf_social_url'] ); ?>"
                            target="_blank"
                            rel="noopener noreferrer"
-                           class="social-link <?php echo esc_attr( strtolower( $link['acf_social_platform'] ) ); ?>"
+                           class="acf-social-link <?php echo esc_attr( strtolower( $link['acf_social_platform'] ) ); ?>"
                            aria-label="<?php echo esc_attr( $link['acf_social_platform'] ); ?>">
                             <?php echo esc_html( $link['acf_social_platform'] ); ?>
                         </a>

@@ -7,7 +7,7 @@ A comprehensive WordPress plugin that provides a collection of reusable, customi
 - **Plugin Architecture**: Standalone WordPress plugin - no theme modifications required
 - **Automatic Field Groups**: Field groups are registered automatically from JSON - no manual imports needed
 - **Modern Block Registration**: Uses ACF Block v3 with block.json metadata
-- **Zero-JavaScript Accordions**: Uses native HTML `<details>`/`<summary>` elements for FAQ and accordion blocks
+- **Zero-JavaScript Accordions**: Uses native HTML `<details>`/`<summary>` elements for accordion blocks
 - **Conditional Asset Loading**: CSS and JS only load when blocks are actually used on the page
 - **Modular Architecture**: Each block is self-contained with its own template, styles, and configuration
 - **ACF Pro Compatible**: Requires ACF Pro 6.0+ for full functionality
@@ -30,8 +30,7 @@ No additional configuration required - field groups are automatically registered
 ## Available Blocks
 
 ### Content Blocks
-- **Accordion Block** (`acf/accordion`) - Collapsible content with FAQ schema support
-- **FAQ Block** (`acf/faq`) - Q&A format with schema markup
+- **Accordion Block** (`acf/accordion`) - Collapsible content with FAQ schema support (searchable by "FAQ")
 - **Testimonial Block** (`acf/testimonial`) - Customer testimonials with ratings
 - **Hero Block** (`acf/hero`) - Hero section with headline, image, and CTA
 - **CTA Block** (`acf/cta`) - Call-to-action with heading and button
@@ -85,7 +84,7 @@ Field groups are defined in JSON files (`block-data.json` or similar) within eac
 
 ### Native HTML Accordions
 
-The Accordion and FAQ blocks use native HTML `<details>` and `<summary>` elements instead of JavaScript-based solutions. This provides:
+The Accordion block uses native HTML `<details>` and `<summary>` elements instead of JavaScript-based solutions. This provides:
 - Zero JavaScript required
 - Native keyboard accessibility
 - Built-in browser support
@@ -132,44 +131,14 @@ CSS files are only enqueued when their respective blocks are used on a page, red
 
 The block will be automatically registered on the next page load.
 
-## Migrating from Other FAQ Plugins
+## CSS Class Naming Convention
 
-### Converting Rank Math / SEOPress FAQs to ACF FAQ Block
+All blocks use the `acf-` prefix for CSS classes to avoid conflicts with other plugins and themes. For example:
+- `.acf-accordion` - Accordion block container
+- `.acf-testimonial-block` - Testimonial block container
+- `.acf-hero-block` - Hero block container
 
-You can use AI (Claude, ChatGPT, etc.) to quickly convert existing FAQ blocks. Use this prompt:
-
-```
-Convert my FAQ content to ACF FAQ block format.
-
-Input format (Rank Math example):
-<!-- wp:rank-math/faq-block {"questions":[{"id":"faq-question-xxx","title":"Question 1","content":"Answer 1","visible":true}]} -->
-<div class="wp-block-rank-math-faq-block">...</div>
-<!-- /wp:rank-math/faq-block -->
-
-Output format needed:
-<!-- wp:acf/faq {"name":"acf/faq","data":{"acf_faq_enable_schema":"1","acf_faq_items":[{"acf_faq_question":"Q1","acf_faq_answer":"A1"},{"acf_faq_question":"Q2","acf_faq_answer":"A2"}]},"mode":"preview"} /-->
-
-Here is my FAQ content to convert:
-[PASTE YOUR FAQ BLOCK HERE]
-```
-
-**Example conversion:**
-
-From Rank Math:
-```html
-<!-- wp:rank-math/faq-block {"questions":[{"id":"faq-question-1738298528152","title":"What is ACF?","content":"Advanced Custom Fields is a WordPress plugin.","visible":true},{"id":"faq-question-1738298538826","title":"Is it free?","content":"ACF has both free and Pro versions.","visible":true}]} -->
-<div class="wp-block-rank-math-faq-block"><div class="rank-math-faq-item"><h3 class="rank-math-question">What is ACF?</h3><div class="rank-math-answer">Advanced Custom Fields is a WordPress plugin.</div></div><div class="rank-math-faq-item"><h3 class="rank-math-question">Is it free?</h3><div class="rank-math-answer">ACF has both free and Pro versions.</div></div></div>
-<!-- /wp:rank-math/faq-block -->
-```
-
-To ACF FAQ Block:
-```html
-<!-- wp:acf/faq {"name":"acf/faq","data":{"acf_faq_enable_schema":"1","acf_faq_items":[{"acf_faq_question":"What is ACF?","acf_faq_answer":"Advanced Custom Fields is a WordPress plugin."},{"acf_faq_question":"Is it free?","acf_faq_answer":"ACF has both free and Pro versions."}]},"mode":"preview"} /-->
-```
-
-### Bulk Migration via Database
-
-For bulk migration, you can use a SQL query or WP-CLI script to find and replace FAQ blocks across your content. Always backup your database before running bulk operations.
+This ensures styles are properly scoped and won't interfere with your theme's styling.
 
 ## Development
 

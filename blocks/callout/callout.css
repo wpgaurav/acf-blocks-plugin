@@ -2,7 +2,7 @@
  * Callout Block Styles
  */
 
-.callout {
+.acf-callout {
     position: relative;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
@@ -10,18 +10,18 @@
     background: #fff;
 }
 
-.callout.has-icon {
+.acf-callout.has-icon {
     padding-top: 2.5rem;
 }
 
-.callout-icon {
+.acf-callout-icon {
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 1rem;
 }
 
-.callout-icon.icon {
+.acf-callout-icon.icon {
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -29,31 +29,31 @@
     color: #fff;
 }
 
-.callout-icon.icon i {
+.acf-callout-icon.icon i {
     font-size: 24px;
 }
 
-.callout-icon.image img {
+.acf-callout-icon.image img {
     max-width: 100px;
     height: auto;
 }
 
-.callout-title {
+.acf-callout-title {
     font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 1rem;
 }
 
-.callout-text {
+.acf-callout-text {
     margin-bottom: 1rem;
     line-height: 1.6;
 }
 
-.callout-action {
+.acf-callout-action {
     margin-top: 1.5rem;
 }
 
-.callout-button {
+.acf-callout-button {
     display: inline-block;
     padding: 0.75rem 1.5rem;
     background-color: #0073aa;
@@ -63,25 +63,25 @@
     transition: background-color 0.3s ease;
 }
 
-.callout-button:hover {
+.acf-callout-button:hover {
     background-color: #005a87;
 }
 
-.callout.image-overlay {
+.acf-callout.image-overlay {
     background-size: cover;
     background-position: center;
     color: #fff;
 }
 
-.callout.shadow-small {
+.acf-callout.shadow-small {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.callout.text-center {
+.acf-callout.text-center {
     text-align: center;
 }
 
-.callout.text-center .callout-icon {
+.acf-callout.text-center .acf-callout-icon {
     margin-left: auto;
     margin-right: auto;
 }

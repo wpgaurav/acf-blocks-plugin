@@ -15,19 +15,19 @@ $rating      = get_field('pb_rating');
 $description = get_field('pb_description');
 ?>
 
-<div class="product-box grid-2" style="align-items:center">
+<div class="acf-product-box grid-2" style="align-items:center">
     <?php if( $image ): ?>
-    <div class="product-box__image">
-        <?php echo wp_get_attachment_image( $image['ID'], 'md-block', false, array( 'class' => 'product-box__image-img' ) ); ?>
+    <div class="acf-product-box__image">
+        <?php echo wp_get_attachment_image( $image['ID'], 'md-block', false, array( 'class' => 'acf-product-box__image-img' ) ); ?>
     </div>
 <?php endif; ?>
 
 	<div>
     <?php if( $title ): ?>
-        <p class="product-box__title fw-900 med-title"><?php echo esc_html($title); ?></p>
+        <p class="acf-product-box__title fw-900 med-title"><?php echo esc_html($title); ?></p>
     <?php endif; ?>
 
-    <div class="product-box__rating">
+    <div class="acf-product-box__rating">
         <?php 
         // Loop to output star icons based on rating.
         for ( $i = 1; $i <= 5; $i++ ) {
@@ -43,13 +43,13 @@ $description = get_field('pb_description');
     </div>
 
     <?php if( $description ): ?>
-        <div class="product-box__description">
+        <div class="acf-product-box__description">
             <?php echo $description; // WYSIWYG content ?>
         </div>
     <?php endif; ?>
 
     <?php if( have_rows('pb_buttons') ): ?>
-        <div class="product-box__buttons" style="display: flex ; flex-direction: row; align-content: center; justify-content: center; align-items: center; flex-wrap: wrap;">
+        <div class="acf-product-box__buttons" style="display: flex ; flex-direction: row; align-content: center; justify-content: center; align-items: center; flex-wrap: wrap;">
             <?php while( have_rows('pb_buttons') ): the_row(); 
                 $cta_text  = get_sub_field('pb_cta_text');
                 $cta_url   = get_sub_field('pb_cta_url');

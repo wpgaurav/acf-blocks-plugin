@@ -1,16 +1,16 @@
-.tabs-block {
+.acf-tabs-block {
     margin: 20px 0;
 }
 
 /* Tab Navigation */
-.tabs-nav {
+.acf-tabs-nav {
     display: flex;
     gap: 5px;
     border-bottom: 2px solid #e0e0e0;
     margin-bottom: 20px;
 }
 
-.tab-button {
+.acf-tab-button {
     padding: 15px 25px;
     background-color: transparent;
     border: none;
@@ -25,31 +25,31 @@
     gap: 8px;
 }
 
-.tab-button:hover {
+.acf-tab-button:hover {
     color: #007bff;
     background-color: #f8f9fa;
 }
 
-.tab-button.active {
+.acf-tab-button.active {
     color: #007bff;
     border-bottom-color: #007bff;
 }
 
-.tab-icon {
+.acf-tab-icon {
     font-size: 1.2rem;
 }
 
 /* Tab Content */
-.tabs-content {
+.acf-tabs-content {
     padding: 20px 0;
 }
 
-.tab-panel {
+.acf-tab-panel {
     display: none;
     animation: fadeIn 0.3s ease;
 }
 
-.tab-panel.active {
+.acf-tab-panel.active {
     display: block;
 }
 
@@ -65,61 +65,61 @@
 }
 
 /* Pills Style */
-.tabs-block.tabs-pills .tabs-nav {
+.acf-tabs-block.acf-tabs-pills .acf-tabs-nav {
     border-bottom: none;
     gap: 10px;
 }
 
-.tabs-block.tabs-pills .tab-button {
+.acf-tabs-block.acf-tabs-pills .acf-tab-button {
     border-radius: 25px;
     border-bottom: none;
     background-color: #f8f9fa;
 }
 
-.tabs-block.tabs-pills .tab-button.active {
+.acf-tabs-block.acf-tabs-pills .acf-tab-button.active {
     background-color: #007bff;
     color: #fff;
 }
 
-.tabs-block.tabs-pills .tab-button:hover {
+.acf-tabs-block.acf-tabs-pills .acf-tab-button:hover {
     background-color: #e9ecef;
 }
 
-.tabs-block.tabs-pills .tab-button.active:hover {
+.acf-tabs-block.acf-tabs-pills .acf-tab-button.active:hover {
     background-color: #0056b3;
 }
 
 /* Underline Style */
-.tabs-block.tabs-underline .tabs-nav {
+.acf-tabs-block.acf-tabs-underline .acf-tabs-nav {
     border-bottom: 1px solid #e0e0e0;
 }
 
-.tabs-block.tabs-underline .tab-button {
+.acf-tabs-block.acf-tabs-underline .acf-tab-button {
     border-bottom-width: 2px;
     padding-bottom: 12px;
 }
 
 /* Boxed Style */
-.tabs-block.tabs-boxed .tabs-nav {
+.acf-tabs-block.acf-tabs-boxed .acf-tabs-nav {
     border-bottom: none;
     gap: 0;
 }
 
-.tabs-block.tabs-boxed .tab-button {
+.acf-tabs-block.acf-tabs-boxed .acf-tab-button {
     border: 1px solid #e0e0e0;
     border-bottom: none;
     border-radius: 8px 8px 0 0;
     margin-right: -1px;
 }
 
-.tabs-block.tabs-boxed .tab-button.active {
+.acf-tabs-block.acf-tabs-boxed .acf-tab-button.active {
     background-color: #fff;
     border-bottom: 3px solid #fff;
     margin-bottom: -2px;
     z-index: 1;
 }
 
-.tabs-block.tabs-boxed .tabs-content {
+.acf-tabs-block.acf-tabs-boxed .acf-tabs-content {
     border: 1px solid #e0e0e0;
     padding: 20px;
     border-radius: 0 8px 8px 8px;
@@ -127,51 +127,51 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-    .tabs-nav {
+    .acf-tabs-nav {
         flex-wrap: wrap;
     }
 
-    .tab-button {
+    .acf-tab-button {
         padding: 12px 15px;
         font-size: 0.9rem;
     }
 
-    .tab-icon {
+    .acf-tab-icon {
         font-size: 1rem;
     }
 }
 
 @media (max-width: 480px) {
-    .tabs-nav {
+    .acf-tabs-nav {
         flex-direction: column;
         gap: 5px;
         border-bottom: none;
     }
 
-    .tab-button {
+    .acf-tab-button {
         width: 100%;
         text-align: left;
         border-bottom: none;
         border-left: 3px solid transparent;
     }
 
-    .tab-button.active {
+    .acf-tab-button.active {
         border-bottom: none;
         border-left-color: #007bff;
         background-color: #f8f9fa;
     }
 
-    .tabs-block.tabs-boxed .tab-button {
+    .acf-tabs-block.acf-tabs-boxed .acf-tab-button {
         border-radius: 8px;
         border: 1px solid #e0e0e0;
         margin-right: 0;
     }
 
-    .tabs-block.tabs-boxed .tab-button.active {
+    .acf-tabs-block.acf-tabs-boxed .acf-tab-button.active {
         margin-bottom: 0;
     }
 
-    .tabs-block.tabs-boxed .tabs-content {
+    .acf-tabs-block.acf-tabs-boxed .acf-tabs-content {
         border-radius: 8px;
         margin-top: 10px;
     }

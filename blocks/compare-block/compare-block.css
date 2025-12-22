@@ -1,5 +1,5 @@
 /* Main container styling */
-.compare-container {
+.acf-compare-container {
     margin: 40px auto;
     padding: 20px;
     max-width: 1200px;
@@ -9,21 +9,21 @@
 }
 
 /* Responsive grid layout for dynamic columns */
-.compare-container[class*="grid-"] {
+.acf-compare-container[class*="acf-grid-"] {
     display: grid;
     gap: 20px;
 }
 
-.compare-container.grid-2 {
+.acf-compare-container.acf-grid-2 {
     grid-template-columns: repeat(2, 1fr);
 }
 
-.compare-container.grid-3 {
+.acf-compare-container.acf-grid-3 {
     grid-template-columns: repeat(3, 1fr);
 }
 
 /* Compare column styling */
-.compare-column {
+.acf-compare-column {
     background: #f9f9f9;
     padding: 20px;
     border: 1px solid #eaeaea;
@@ -31,13 +31,13 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.compare-column:hover {
+.acf-compare-column:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Title styling */
-.med-title {
+.acf-med-title {
     font-size: 1.5rem;
     margin: 0 0 15px;
     padding: 10px;
@@ -46,7 +46,7 @@
 }
 
 /* Compare text styling */
-.compare-text {
+.acf-compare-text {
     font-size: 1rem;
     color: #555;
     margin-bottom: 15px;
@@ -54,13 +54,13 @@
 }
 
 /* List styling */
-.compare-column ul {
+.acf-compare-column ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.compare-column ul li {
+.acf-compare-column ul li {
     position: relative;
     padding-left: 25px;
     margin-bottom: 8px;
@@ -68,7 +68,7 @@
     color: #333;
 }
 
-.compare-column ul li:before {
+.acf-compare-column ul li:before {
     content: "\2713"; /* Unicode checkmark */
     position: absolute;
     left: 0;
@@ -78,13 +78,13 @@
 }
 
 /* CTA Button styling */
-.compare-cta {
+.acf-compare-cta {
     text-align: center;
     grid-column: 1 / -1;
     margin-top: 20px;
 }
 
-.compare-cta .button {
+.acf-compare-cta .button {
     display: inline-block;
     padding: 12px 24px;
     font-size: 1rem;
@@ -95,7 +95,7 @@
     transition: background-color 0.3s ease;
 }
 
-.compare-cta .button:hover,
-.compare-cta .button:focus {
+.acf-compare-cta .button:hover,
+.acf-compare-cta .button:focus {
     background-color: #005177;
 }

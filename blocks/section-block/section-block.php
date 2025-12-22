@@ -94,18 +94,18 @@ $needs_wrapper = $has_overlay || $has_video;
 <?php if ($needs_wrapper): ?>
 <<?php echo esc_attr($tag); ?><?php echo $id_attr . $class_attr . $style_attr; ?>>
     <?php if ($has_video): ?>
-    <div class="section-bg-video">
+    <div class="acf-section-bg-video">
         <video autoplay muted loop playsinline>
             <source src="<?php echo esc_url($bg_video); ?>" type="video/mp4">
         </video>
     </div>
     <?php endif; ?>
-    
+
     <?php if ($has_overlay): ?>
-    <div class="section-bg-overlay" style="background-color: <?php echo esc_attr($bg_overlay); ?>"></div>
+    <div class="acf-section-bg-overlay" style="background-color: <?php echo esc_attr($bg_overlay); ?>"></div>
     <?php endif; ?>
-    
-    <div class="section-content">
+
+    <div class="acf-section-content">
         <InnerBlocks templateLock="false" />
     </div>
 </<?php echo esc_attr($tag); ?>>

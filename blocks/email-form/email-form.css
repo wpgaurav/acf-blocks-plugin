@@ -1,0 +1,91 @@
+/* Email Form Block Styles */
+
+.acf-email-form-wrapper {
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.acf-clear::after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+.acf-email-form-content {
+	width: 100%;
+}
+
+.acf-email-form {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.acf-email-form-full {
+	width: 100%;
+	max-width: 100%;
+}
+
+.acf-form-group {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.acf-form-group label {
+	font-weight: 600;
+	margin-bottom: 0.25rem;
+}
+
+.acf-input {
+	padding: 0.75rem;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	font-size: 1rem;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.acf-input:focus {
+	outline: none;
+	border-color: #007bff;
+	box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.acf-input-name,
+.acf-input-email {
+	/* Specific styles for name and email inputs if needed */
+}
+
+.acf-submit {
+	padding: 0.75rem 1.5rem;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.acf-submit:hover {
+	background-color: #0056b3;
+}
+
+.acf-submit:active {
+	background-color: #004085;
+}
+
+.acf-mb-half {
+	margin-bottom: 0.5rem;
+}
+
+.acf-email-form-success {
+	padding: 1rem;
+	background-color: #d4edda;
+	border: 1px solid #c3e6cb;
+	border-radius: 4px;
+	color: #155724;
+	margin-top: 1rem;
+}

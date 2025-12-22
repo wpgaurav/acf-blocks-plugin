@@ -26,7 +26,7 @@ $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
 $inline_style = get_field( 'acf_video_inline' );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
 
-$aspect_ratio_class = $aspect_ratio ? ' aspect-' . esc_attr( $aspect_ratio ) : ' aspect-16-9';
+$aspect_ratio_class = $aspect_ratio ? ' acf-aspect-' . esc_attr( $aspect_ratio ) : ' acf-aspect-16-9';
 
 // Function to extract video ID from YouTube URL
 function get_youtube_id( $url ) {
@@ -41,14 +41,14 @@ function get_vimeo_id( $url ) {
 }
 ?>
 
-<div class="video-block<?php echo $aspect_ratio_class . $custom_class; ?>"<?php echo $inline_style_attr; ?>>
+<div class="acf-video-block<?php echo $aspect_ratio_class . $custom_class; ?>"<?php echo $inline_style_attr; ?>>
     <?php if ( $video_title ) : ?>
-        <div class="video-title">
+        <div class="acf-video-title">
             <h3><?php echo esc_html( $video_title ); ?></h3>
         </div>
     <?php endif; ?>
 
-    <div class="video-wrapper">
+    <div class="acf-video-wrapper">
         <?php if ( $video_type === 'youtube' && $video_url ) : ?>
             <?php
             $youtube_id = get_youtube_id( $video_url );
@@ -106,7 +106,7 @@ function get_vimeo_id( $url ) {
     </div>
 
     <?php if ( $video_caption ) : ?>
-        <div class="video-caption">
+        <div class="acf-video-caption">
             <?php echo esc_html( $video_caption ); ?>
         </div>
     <?php endif; ?>

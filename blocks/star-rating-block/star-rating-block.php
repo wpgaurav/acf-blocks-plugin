@@ -50,7 +50,7 @@ if ( '' === $anchor ) {
     $anchor = 'star-rating-' . str_replace( 'block_', '', $block['id'] );
 }
 
-$class_name = array( 'md-star-rating' );
+$class_name = array( 'acf-star-rating' );
 
 if ( ! empty( $block['className'] ) ) {
     $class_name[] = $block['className'];
@@ -103,33 +103,33 @@ if ( ! $md_star_rating_localized ) {
 ?>
 <div id="<?php echo esc_attr( $anchor ); ?>" class="<?php echo esc_attr( implode( ' ', $class_name ) ); ?>">
     <?php if ( $heading ) : ?>
-        <h3 class="md-star-rating__heading"><?php echo esc_html( $heading ); ?></h3>
+        <h3 class="acf-star-rating__heading"><?php echo esc_html( $heading ); ?></h3>
     <?php endif; ?>
 
     <?php if ( $description ) : ?>
-        <p class="md-star-rating__description"><?php echo esc_html( $description ); ?></p>
+        <p class="acf-star-rating__description"><?php echo esc_html( $description ); ?></p>
     <?php endif; ?>
 
-    <div class="md-star-rating__aggregate">
-        <div class="md-star-rating__stars">
+    <div class="acf-star-rating__aggregate">
+        <div class="acf-star-rating__stars">
             <?php echo md_star_rating_render_average_stars( $average ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
         </div>
-        <div class="md-star-rating__average" aria-live="polite"><?php echo esc_html( $average_display ); ?></div>
-        <div class="md-star-rating__count"><?php echo esc_html( $count_display ); ?></div>
+        <div class="acf-star-rating__average" aria-live="polite"><?php echo esc_html( $average_display ); ?></div>
+        <div class="acf-star-rating__count"><?php echo esc_html( $count_display ); ?></div>
     </div>
 
-    <form class="md-star-rating__form" data-block-id="<?php echo esc_attr( $block_id ); ?>" data-post-id="<?php echo esc_attr( $post_id ); ?>" data-thank-you="<?php echo esc_attr( $thank_you ); ?>" data-error="<?php echo esc_attr__( 'Select a star rating before submitting.', 'acf-blocks' ); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'md_star_rating_submit' ) ); ?>">
-        <div class="md-star-rating__options">
+    <form class="acf-star-rating__form" data-block-id="<?php echo esc_attr( $block_id ); ?>" data-post-id="<?php echo esc_attr( $post_id ); ?>" data-thank-you="<?php echo esc_attr( $thank_you ); ?>" data-error="<?php echo esc_attr__( 'Select a star rating before submitting.', 'acf-blocks' ); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'md_star_rating_submit' ) ); ?>">
+        <div class="acf-star-rating__options">
             <?php for ( $i = 1; $i <= 5; $i++ ) : ?>
-                <label class="md-star-rating__option">
+                <label class="acf-star-rating__option">
                     <input type="radio" name="md_star_rating" value="<?php echo esc_attr( $i ); ?>" aria-label="<?php echo esc_attr( sprintf( _n( '%d star', '%d stars', $i, 'acf-blocks' ), $i ) ); ?>" />
                     <span class="star-icon">&#9733;</span>
                     <span class="screen-reader-text"><?php echo esc_html( sprintf( _n( '%d star', '%d stars', $i, 'acf-blocks' ), $i ) ); ?></span>
                 </label>
             <?php endfor; ?>
         </div>
-        <button type="submit" class="md-star-rating__submit"><?php echo esc_html( $button_label ); ?></button>
-        <p class="md-star-rating__thank-you" hidden aria-live="polite"></p>
-        <p class="md-star-rating__error" hidden role="alert"></p>
+        <button type="submit" class="acf-star-rating__submit"><?php echo esc_html( $button_label ); ?></button>
+        <p class="acf-star-rating__thank-you" hidden aria-live="polite"></p>
+        <p class="acf-star-rating__error" hidden role="alert"></p>
     </form>
 </div>
