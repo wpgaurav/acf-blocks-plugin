@@ -1,0 +1,18 @@
+{
+  "apiVersion": 3,
+  "name": "acf/hero",
+  "title": "Hero",
+  "description": "A customizable hero block with headline, subheadline, image, and CTA.",
+  "category": "common",
+  "icon": "cover-image",
+  "keywords": ["hero", "banner", "header", "featured"],
+  "acf": {
+    "renderTemplate": "hero-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": true,
+    "mode": true,
+    "jsx": true
+  }
+}

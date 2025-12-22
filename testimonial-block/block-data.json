@@ -1,0 +1,88 @@
+{
+    "key": "group_acf_testimonial_block",
+    "title": "Testimonial Block",
+    "fields": [
+        {
+            "key": "acf_testimonial_quote",
+            "label": "Testimonial Quote",
+            "name": "acf_testimonial_quote",
+            "type": "textarea",
+            "instructions": "Enter the testimonial quote.",
+            "required": 0,
+            "rows": 5
+        },
+        {
+            "key": "acf_testimonial_author_name",
+            "label": "Author Name",
+            "name": "acf_testimonial_author_name",
+            "type": "text",
+            "instructions": "Enter the name of the person giving the testimonial.",
+            "required": 0
+        },
+        {
+            "key": "acf_testimonial_author_title",
+            "label": "Author Title/Company",
+            "name": "acf_testimonial_author_title",
+            "type": "text",
+            "instructions": "Enter the author's title or company name.",
+            "required": 0
+        },
+        {
+            "key": "acf_testimonial_author_image",
+            "label": "Author Image",
+            "name": "acf_testimonial_author_image",
+            "type": "image",
+            "instructions": "Upload an image of the author.",
+            "required": 0,
+            "return_format": "array",
+            "preview_size": "thumbnail"
+        },
+        {
+            "key": "acf_testimonial_rating",
+            "label": "Rating (1-5 stars)",
+            "name": "acf_testimonial_rating",
+            "type": "number",
+            "instructions": "Enter a rating from 1 to 5 stars.",
+            "required": 0,
+            "min": 1,
+            "max": 5,
+            "step": 1
+        },
+        {
+            "key": "acf_testimonial_class",
+            "label": "Custom CSS Class",
+            "name": "acf_testimonial_class",
+            "type": "text",
+            "instructions": "Add custom CSS class(es) for styling.",
+            "required": 0
+        },
+        {
+            "key": "acf_testimonial_inline",
+            "label": "Inline Styles",
+            "name": "acf_testimonial_inline",
+            "type": "text",
+            "instructions": "Add inline CSS styles if needed.",
+            "required": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/testimonial"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "acf": {
+        "blockVersion": 3
+    }
+}

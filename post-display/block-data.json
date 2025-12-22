@@ -1,0 +1,311 @@
+[
+    {
+        "key": "group_post_display",
+        "title": "Post Display Block",
+        "fields": [
+            {
+                "key": "field_pd_selected_posts",
+                "label": "Select Posts",
+                "name": "pd_selected_posts",
+                "aria-label": "",
+                "type": "relationship",
+                "instructions": "Select the posts you want to display. Supports all post types.",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "post_type": [],
+                "filters": [
+                    "search",
+                    "post_type",
+                    "taxonomy"
+                ],
+                "elements": [
+                    "featured_image"
+                ],
+                "min": 1,
+                "max": "",
+                "return_format": "object",
+                "taxonomy": [],
+                "bidirectional_target": [],
+                "acfe_add_post": 0,
+                "acfe_edit_post": 0
+            },
+            {
+                "key": "field_pd_layout",
+                "label": "Layout",
+                "name": "pd_layout",
+                "aria-label": "",
+                "type": "select",
+                "instructions": "Choose how to display the posts",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "text_links": "Text Links Only",
+                    "thumbnail": "Thumbnail with Text",
+                    "grid": "Grid Layout"
+                },
+                "default_value": "text_links",
+                "allow_null": 0,
+                "multiple": 0,
+                "ui": 1,
+                "return_format": "value",
+                "ajax": 0,
+                "placeholder": "",
+                "allow_custom": 0,
+                "search_placeholder": "",
+                "prepend": "",
+                "append": "",
+                "min": "",
+                "max": ""
+            },
+            {
+                "key": "field_pd_columns",
+                "label": "Number of Columns",
+                "name": "pd_columns",
+                "aria-label": "",
+                "type": "select",
+                "instructions": "Choose the number of columns for grid layout",
+                "required": 0,
+                "conditional_logic": [
+                    [
+                        {
+                            "field": "field_pd_layout",
+                            "operator": "==",
+                            "value": "grid"
+                        }
+                    ]
+                ],
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "2": "2 Columns",
+                    "3": "3 Columns"
+                },
+                "default_value": 2,
+                "allow_null": 0,
+                "multiple": 0,
+                "ui": 1,
+                "return_format": "value",
+                "ajax": 0,
+                "placeholder": "",
+                "allow_custom": 0,
+                "search_placeholder": "",
+                "prepend": "",
+                "append": "",
+                "min": "",
+                "max": ""
+            },
+            {
+                "key": "field_pd_show_excerpt",
+                "label": "Show Excerpt",
+                "name": "pd_show_excerpt",
+                "aria-label": "",
+                "type": "true_false",
+                "instructions": "Show post excerpt",
+                "required": 0,
+                "conditional_logic": [
+                    [
+                        {
+                            "field": "field_pd_layout",
+                            "operator": "!=",
+                            "value": "text_links"
+                        }
+                    ]
+                ],
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "ui": 1,
+                "default_value": 0,
+                "message": "",
+                "ui_on_text": "",
+                "ui_off_text": "",
+                "style": ""
+            },
+            {
+                "key": "field_pd_show_date",
+                "label": "Show Date",
+                "name": "pd_show_date",
+                "aria-label": "",
+                "type": "true_false",
+                "instructions": "Show post date",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "ui": 1,
+                "default_value": 0,
+                "message": "",
+                "ui_on_text": "",
+                "ui_off_text": "",
+                "style": ""
+            },
+            {
+                "key": "field_pd_show_author",
+                "label": "Show Author",
+                "name": "pd_show_author",
+                "aria-label": "",
+                "type": "true_false",
+                "instructions": "Show post author",
+                "required": 0,
+                "conditional_logic": [
+                    [
+                        {
+                            "field": "field_pd_layout",
+                            "operator": "!=",
+                            "value": "text_links"
+                        }
+                    ]
+                ],
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "ui": 1,
+                "default_value": 0,
+                "message": "",
+                "ui_on_text": "",
+                "ui_off_text": "",
+                "style": ""
+            },
+            {
+                "key": "field_pd_title_tag",
+                "label": "Title HTML Tag",
+                "name": "pd_title_tag",
+                "aria-label": "",
+                "type": "select",
+                "instructions": "Choose the HTML tag for post titles",
+                "required": 0,
+                "conditional_logic": [
+                    [
+                        {
+                            "field": "field_pd_layout",
+                            "operator": "!=",
+                            "value": "text_links"
+                        }
+                    ]
+                ],
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "h2": "H2",
+                    "h3": "H3",
+                    "h4": "H4",
+                    "h5": "H5",
+                    "h6": "H6",
+                    "p": "Paragraph (p)",
+                    "span": "Span"
+                },
+                "default_value": "h3",
+                "allow_null": 0,
+                "multiple": 0,
+                "ui": 1,
+                "return_format": "value",
+                "ajax": 0,
+                "placeholder": "",
+                "allow_custom": 0,
+                "search_placeholder": "",
+                "prepend": "",
+                "append": "",
+                "min": "",
+                "max": ""
+            },
+            {
+                "key": "field_pd_custom_class",
+                "label": "Custom CSS Class",
+                "name": "pd_custom_class",
+                "aria-label": "",
+                "type": "text",
+                "instructions": "Add a custom CSS class to the block",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "maxlength": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": ""
+            },
+            {
+                "key": "field_pd_show_read_more",
+                "label": "Show Read More Button",
+                "name": "pd_show_read_more",
+                "type": "true_false",
+                "instructions": "Display a 'Read More' button for each post.",
+                "required": 0,
+                "conditional_logic": 0,
+                "ui": 1,
+                "default_value": 0,
+                "ui_on_text": "Yes",
+                "ui_off_text": "No"
+            },
+            {
+                "key": "field_pd_read_more_text",
+                "label": "Read More Button Text",
+                "name": "pd_read_more_text",
+                "type": "text",
+                "instructions": "Customize the text for the 'Read More' button.",
+                "required": 0,
+                "conditional_logic": [
+                    [
+                        {
+                            "field": "field_pd_show_read_more",
+                            "operator": "==",
+                            "value": "1"
+                        }
+                    ]
+                ],
+                "default_value": "Read More",
+                "placeholder": "Read More"
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "block",
+                    "operator": "==",
+                    "value": "acf\/post-display"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": true,
+        "description": "Configuration for Post Display Block",
+        "show_in_rest": 0,
+        "acfe_autosync": "",
+        "acfe_form": 0,
+        "acfe_display_title": "",
+        "acfe_meta": "",
+        "acfe_note": ""
+    }
+]

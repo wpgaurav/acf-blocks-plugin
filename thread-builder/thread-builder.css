@@ -1,0 +1,244 @@
+/* Thread Builder Styles */
+/* Width variations */
+.thread-narrow {
+    max-width: 400px;
+}
+
+.thread-medium {
+    max-width: 500px;
+}
+
+.thread-wide {
+    max-width: 600px;
+}
+
+.thread-full {
+    width: 100%;
+}
+
+/* Theme colors */
+.theme-light {
+    background-color: #fff;
+    color: #0f1419;
+    border: 1px solid #e6ecf0;
+}
+
+.theme-dark {
+    background-color: #15202b;
+    color: #fff;
+    border: 1px solid #38444d;
+}
+
+.theme-dark .post-time,
+.theme-dark .author-handle,
+.theme-dark .engagement-item {
+    color: #8899a6;
+}
+
+.theme-dark .post-header {
+    color: #fff;
+}
+
+.theme-dark .post-text a {
+    color: #1da1f2;
+}
+
+/* Thread container */
+.thread-container {
+    position: relative;
+    padding: 1rem;
+}
+
+/* Thread post */
+.thread-post {
+    display: flex;
+    position: relative;
+    padding: 1rem 0;
+}
+
+/* Thread connector line */
+.thread-connector {
+    position: absolute;
+    width: 2px;
+    background-color: #1da1f2;
+    top: 4rem;
+    left: 1.5rem;
+    bottom: 0;
+    z-index: 1;
+}
+
+/* Avatar */
+.post-avatar {
+    flex: 0 0 3rem;
+    margin-right: 0.75rem;
+    position: relative;
+    z-index: 2;
+}
+
+.post-avatar img {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.default-avatar {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: #1da1f2;
+}
+
+/* Post content */
+.post-content {
+    flex: 1;
+}
+
+.post-header {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.author-name {
+    margin-right: 0.25rem;
+}
+
+.verified-badge {
+    color: #1da1f2;
+    display: inline-flex;
+    margin: 0 0.25rem;
+}
+
+.verified-badge svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+.author-handle {
+    color: #657786;
+    font-weight: normal;
+    margin-left: 0.25rem;
+}
+
+.post-text {
+    margin-bottom: 0.5rem;
+    word-wrap: break-word;
+}
+
+.post-text p {
+    margin: 0 0 0.75rem;
+}
+
+.post-text p:last-child {
+    margin-bottom: 0;
+}
+
+.post-text a {
+    color: #1da1f2;
+    text-decoration: none;
+}
+
+.post-text a:hover {
+    text-decoration: underline;
+}
+
+.post-media {
+    margin: 0.5rem 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.post-media img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.post-time {
+    color: #657786;
+    font-size: 0.875rem;
+    margin: 0.5rem 0;
+}
+
+/* Engagement stats */
+.post-engagement {
+    display: flex;
+    margin-top: 0.75rem;
+}
+
+.engagement-item {
+    display: flex;
+    align-items: center;
+    color: #657786;
+    margin-right: 1.5rem;
+}
+
+.engagement-item svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: 0.25rem;
+    fill: currentColor;
+}
+
+.engagement-item:hover {
+    color: #1da1f2;
+}
+
+.engagement-item.reposts:hover {
+    color: #17bf63;
+}
+
+.engagement-item.likes:hover {
+    color: #e0245e;
+}
+
+/* Empty state */
+.thread-placeholder {
+    padding: 2rem;
+    text-align: center;
+    color: #657786;
+}
+
+/* Mention and hashtag links */
+.mention, .hashtag {
+    color: #1da1f2;
+    text-decoration: none;
+}
+
+.mention:hover, .hashtag:hover {
+    text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 500px) {
+    .thread-builder {
+        border-radius: 0;
+        margin: 1rem auto;
+    }
+    
+    .thread-container {
+        padding: 0.5rem;
+    }
+    
+    .thread-post {
+        padding: 0.75rem 0;
+    }
+    
+    .post-avatar {
+        flex: 0 0 2.5rem;
+        margin-right: 0.5rem;
+    }
+    
+    .post-avatar img,
+    .default-avatar {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+    
+    .thread-connector {
+        left: 1.25rem;
+    }
+}

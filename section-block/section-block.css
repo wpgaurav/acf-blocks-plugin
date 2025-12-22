@@ -1,0 +1,23 @@
+/**
+ * Section Block Styles
+ */
+
+.section-block {
+    position: relative;
+    width: 100%;
+}
+
+.section-block-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* Alignment support */
+.section-block.alignwide {
+    max-width: 1280px;
+}
+
+.section-block.alignfull {
+    max-width: 100%;
+}

@@ -1,0 +1,118 @@
+{
+    "key": "group_acf_stats_block",
+    "title": "Stats/Counter Block",
+    "fields": [
+        {
+            "key": "acf_stats_items",
+            "label": "Stats Items",
+            "name": "acf_stats_items",
+            "type": "repeater",
+            "instructions": "Add stats/counter items.",
+            "required": 0,
+            "min": 0,
+            "layout": "block",
+            "button_label": "Add Stat",
+            "sub_fields": [
+                {
+                    "key": "acf_stat_number",
+                    "label": "Number",
+                    "name": "acf_stat_number",
+                    "type": "number",
+                    "instructions": "Enter the number to display.",
+                    "required": 1
+                },
+                {
+                    "key": "acf_stat_label",
+                    "label": "Label",
+                    "name": "acf_stat_label",
+                    "type": "text",
+                    "instructions": "Enter the label for this stat.",
+                    "required": 0
+                },
+                {
+                    "key": "acf_stat_prefix",
+                    "label": "Prefix",
+                    "name": "acf_stat_prefix",
+                    "type": "text",
+                    "instructions": "Enter a prefix (e.g., $, #).",
+                    "required": 0
+                },
+                {
+                    "key": "acf_stat_suffix",
+                    "label": "Suffix",
+                    "name": "acf_stat_suffix",
+                    "type": "text",
+                    "instructions": "Enter a suffix (e.g., +, %, K, M).",
+                    "required": 0
+                },
+                {
+                    "key": "acf_stat_icon",
+                    "label": "Icon",
+                    "name": "acf_stat_icon",
+                    "type": "text",
+                    "instructions": "Enter an icon (emoji, text, or CSS class like 'fa-star').",
+                    "required": 0
+                }
+            ]
+        },
+        {
+            "key": "acf_stats_layout",
+            "label": "Layout",
+            "name": "acf_stats_layout",
+            "type": "select",
+            "instructions": "Select the layout for the stats.",
+            "required": 0,
+            "choices": {
+                "horizontal": "Horizontal",
+                "vertical": "Vertical",
+                "grid": "Grid"
+            },
+            "default_value": "horizontal"
+        },
+        {
+            "key": "acf_stats_enable_animation",
+            "label": "Enable Counter Animation",
+            "name": "acf_stats_enable_animation",
+            "type": "true_false",
+            "instructions": "Enable animated counting effect.",
+            "required": 0,
+            "default_value": 1
+        },
+        {
+            "key": "acf_stats_class",
+            "label": "Custom CSS Class",
+            "name": "acf_stats_class",
+            "type": "text",
+            "instructions": "Add custom CSS class(es) for styling.",
+            "required": 0
+        },
+        {
+            "key": "acf_stats_inline",
+            "label": "Inline Styles",
+            "name": "acf_stats_inline",
+            "type": "text",
+            "instructions": "Add inline CSS styles if needed.",
+            "required": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/stats"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "acf": {
+        "blockVersion": 3
+    }
+}

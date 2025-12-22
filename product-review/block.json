@@ -1,0 +1,18 @@
+{
+  "apiVersion": 3,
+  "name": "acf/product-review",
+  "title": "Product Review",
+  "description": "A custom product review block with structured data.",
+  "category": "common",
+  "icon": "admin-comments",
+  "keywords": ["review", "product", "rating"],
+  "acf": {
+    "renderTemplate": "product-review.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": true,
+    "mode": true,
+    "anchor": true
+  }
+}

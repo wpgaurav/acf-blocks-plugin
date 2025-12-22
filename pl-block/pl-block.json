@@ -1,0 +1,192 @@
+[
+    {
+        "key": "group_pl_block",
+        "title": "Product Block",
+        "fields": [
+            {
+                "key": "field_pl_block_rank",
+                "label": "Rank",
+                "name": "pl_block_rank",
+                "type": "text",
+                "instructions": "Enter the product rank (can be text).",
+                "required": 0,
+                "default_value": "",
+                "placeholder": "Rank"
+            },
+            {
+                "key": "field_pl_block_icon",
+                "label": "Icon",
+                "name": "pl_block_icon",
+                "type": "image",
+                "instructions": "Select an icon image.",
+                "required": 0,
+                "return_format": "array",
+                "preview_size": "medium",
+                "library": "all"
+            },
+            {
+                "key": "field_pl_block_product_name",
+                "label": "Product Name",
+                "name": "pl_block_product_name",
+                "type": "text",
+                "instructions": "Enter the product name.",
+                "required": 1,
+                "default_value": "",
+                "placeholder": "Product Name"
+            },
+            {
+                "key": "field_pl_block_description",
+                "label": "Description",
+                "name": "pl_block_description",
+                "type": "wysiwyg",
+                "instructions": "Enter the product description.",
+                "required": 0,
+                "tabs": "all",
+                "toolbar": "full",
+                "media_upload": 1
+            },
+            {
+                "key": "field_pl_block_pricing",
+                "label": "Pricing",
+                "name": "pl_block_pricing",
+                "type": "repeater",
+                "instructions": "Add pricing levels.",
+                "required": 0,
+                "collapsed": "",
+                "min": 0,
+                "max": 0,
+                "layout": "row",
+                "button_label": "Add Pricing",
+                "sub_fields": [
+                    {
+                        "key": "field_pl_block_pricing_title",
+                        "label": "Pricing Title",
+                        "name": "pl_block_pricing_title",
+                        "type": "text",
+                        "instructions": "Enter a label for this pricing level.",
+                        "required": 1,
+                        "default_value": "",
+                        "placeholder": "e.g. Basic"
+                    },
+                    {
+                        "key": "field_pl_block_pricing_amount",
+                        "label": "Pricing Amount",
+                        "name": "pl_block_pricing_amount",
+                        "type": "text",
+                        "instructions": "Enter the price for this level.",
+                        "required": 1,
+                        "default_value": "",
+                        "placeholder": "$0.00"
+                    }
+                ]
+            },
+            {
+                "key": "field_pl_block_coupons",
+                "label": "Coupons",
+                "name": "pl_block_coupons",
+                "type": "repeater",
+                "instructions": "Add coupon codes with discount offers.",
+                "required": 0,
+                "collapsed": "",
+                "min": 0,
+                "max": 0,
+                "layout": "row",
+                "button_label": "Add Coupon",
+                "sub_fields": [
+                    {
+                        "key": "field_pl_block_coupon_code",
+                        "label": "Coupon Code",
+                        "name": "pl_block_coupon_code",
+                        "type": "text",
+                        "instructions": "Enter the coupon code.",
+                        "required": 1,
+                        "default_value": "",
+                        "placeholder": "COUPON2025"
+                    },
+                    {
+                        "key": "field_pl_block_coupon_offer",
+                        "label": "Discount Offer",
+                        "name": "pl_block_coupon_offer",
+                        "type": "text",
+                        "instructions": "Enter the discount offer details.",
+                        "required": 0,
+                        "default_value": "",
+                        "placeholder": "10% off"
+                    }
+                ]
+            },
+            {
+                "key": "field_pl_block_buttons",
+                "label": "Get Offer Buttons",
+                "name": "pl_block_buttons",
+                "type": "repeater",
+                "instructions": "Add buttons for getting offers.",
+                "required": 0,
+                "collapsed": "",
+                "min": 0,
+                "max": 0,
+                "layout": "row",
+                "button_label": "Add Button",
+                "sub_fields": [
+                    {
+                        "key": "field_pl_block_button_text",
+                        "label": "Button Text",
+                        "name": "pl_block_button_text",
+                        "type": "text",
+                        "instructions": "Enter the button text.",
+                        "required": 1,
+                        "default_value": "",
+                        "placeholder": "Get Offer"
+                    },
+                    {
+                        "key": "field_pl_block_button_url",
+                        "label": "Button URL",
+                        "name": "pl_block_button_url",
+                        "type": "url",
+                        "instructions": "Enter the URL for the button.",
+                        "required": 1,
+                        "default_value": "",
+                        "placeholder": ""
+                    },
+                    {
+                        "key": "field_pl_block_button_rel",
+                        "label": "Link Rel",
+                        "name": "pl_block_button_rel",
+                        "type": "text",
+                        "instructions": "Enter the rel attribute (optional).",
+                        "required": 0,
+                        "default_value": "",
+                        "placeholder": "noopener noreferrer"
+                    },
+                    {
+                        "key": "field_pl_block_button_class",
+                        "label": "Button Class",
+                        "name": "pl_block_button_class",
+                        "type": "text",
+                        "instructions": "Enter a CSS class for the button (optional).",
+                        "required": 0,
+                        "default_value": "",
+                        "placeholder": "btn-primary"
+                    }
+                ]
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "block",
+                    "operator": "==",
+                    "value": "acf/pl_block"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": true,
+        "description": ""
+    }
+]

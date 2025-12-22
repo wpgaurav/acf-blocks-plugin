@@ -1,0 +1,105 @@
+{
+    "key": "group_acf_cta_block",
+    "title": "Call to Action Block",
+    "fields": [
+        {
+            "key": "acf_cta_heading",
+            "label": "Heading",
+            "name": "acf_cta_heading",
+            "type": "text",
+            "instructions": "Enter the heading for the CTA block.",
+            "required": 0
+        },
+        {
+            "key": "acf_cta_description",
+            "label": "Description",
+            "name": "acf_cta_description",
+            "type": "textarea",
+            "instructions": "Enter the description text.",
+            "required": 0,
+            "rows": 4
+        },
+        {
+            "key": "acf_cta_button_text",
+            "label": "Button Text",
+            "name": "acf_cta_button_text",
+            "type": "text",
+            "instructions": "Enter the button text.",
+            "required": 0
+        },
+        {
+            "key": "acf_cta_button_url",
+            "label": "Button URL",
+            "name": "acf_cta_button_url",
+            "type": "url",
+            "instructions": "Enter the button URL.",
+            "required": 0
+        },
+        {
+            "key": "acf_cta_button_style",
+            "label": "Button Style",
+            "name": "acf_cta_button_style",
+            "type": "select",
+            "instructions": "Select the button style.",
+            "required": 0,
+            "choices": {
+                "primary": "Primary",
+                "secondary": "Secondary",
+                "outline": "Outline"
+            },
+            "default_value": "primary"
+        },
+        {
+            "key": "acf_cta_background_color",
+            "label": "Background Color",
+            "name": "acf_cta_background_color",
+            "type": "color_picker",
+            "instructions": "Select a background color for the CTA block.",
+            "required": 0
+        },
+        {
+            "key": "acf_cta_text_color",
+            "label": "Text Color",
+            "name": "acf_cta_text_color",
+            "type": "color_picker",
+            "instructions": "Select a text color for the CTA block.",
+            "required": 0
+        },
+        {
+            "key": "acf_cta_class",
+            "label": "Custom CSS Class",
+            "name": "acf_cta_class",
+            "type": "text",
+            "instructions": "Add custom CSS class(es) for styling.",
+            "required": 0
+        },
+        {
+            "key": "acf_cta_inline",
+            "label": "Inline Styles",
+            "name": "acf_cta_inline",
+            "type": "text",
+            "instructions": "Add inline CSS styles if needed.",
+            "required": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/cta"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "acf": {
+        "blockVersion": 3
+    }
+}

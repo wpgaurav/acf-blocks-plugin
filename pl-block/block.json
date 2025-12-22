@@ -1,0 +1,20 @@
+{
+  "apiVersion": 3,
+  "name": "acf/pl-block",
+  "title": "Product List Block",
+  "description": "A product block with rank, icon, name, description, pricing, coupons, and offer buttons.",
+  "category": "common",
+  "icon": "products",
+  "keywords": ["product", "offer", "pricing", "coupon"],
+  "acf": {
+    "renderTemplate": "pl-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": true,
+    "mode": true,
+    "anchor": true,
+    "multiple": true,
+    "jsx": true
+  }
+}

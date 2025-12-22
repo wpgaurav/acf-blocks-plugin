@@ -1,0 +1,18 @@
+{
+  "apiVersion": 3,
+  "name": "acf/accordion",
+  "title": "Accordion",
+  "description": "A customizable accordion block with FAQ schema support.",
+  "category": "common",
+  "icon": "list-view",
+  "keywords": ["accordion", "faq", "toggle"],
+  "acf": {
+    "renderTemplate": "accordion-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": true,
+    "mode": true,
+    "jsx": true
+  }
+}

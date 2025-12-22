@@ -1,0 +1,18 @@
+{
+  "apiVersion": 3,
+  "name": "acf/feature-grid",
+  "title": "Feature Grid",
+  "description": "A grid layout to showcase features with icons, titles, and descriptions.",
+  "category": "common",
+  "icon": "grid-view",
+  "keywords": ["features", "grid", "services", "benefits"],
+  "acf": {
+    "renderTemplate": "feature-grid-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": true,
+    "mode": true,
+    "jsx": true
+  }
+}

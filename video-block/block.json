@@ -1,0 +1,18 @@
+{
+  "apiVersion": 3,
+  "name": "acf/video",
+  "title": "Video",
+  "description": "A responsive video block supporting YouTube, Vimeo, and self-hosted videos.",
+  "category": "media",
+  "icon": "video-alt3",
+  "keywords": ["video", "youtube", "vimeo", "media", "embed"],
+  "acf": {
+    "renderTemplate": "video-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": true,
+    "mode": true,
+    "jsx": true
+  }
+}

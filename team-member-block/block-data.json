@@ -1,0 +1,130 @@
+{
+    "key": "group_acf_team_member_block",
+    "title": "Team Member Block",
+    "fields": [
+        {
+            "key": "acf_team_member_photo",
+            "label": "Photo",
+            "name": "acf_team_member_photo",
+            "type": "image",
+            "instructions": "Upload a photo of the team member.",
+            "required": 0,
+            "return_format": "array",
+            "preview_size": "medium"
+        },
+        {
+            "key": "acf_team_member_name",
+            "label": "Name",
+            "name": "acf_team_member_name",
+            "type": "text",
+            "instructions": "Enter the team member's name.",
+            "required": 0
+        },
+        {
+            "key": "acf_team_member_title",
+            "label": "Title/Position",
+            "name": "acf_team_member_title",
+            "type": "text",
+            "instructions": "Enter the team member's title or position.",
+            "required": 0
+        },
+        {
+            "key": "acf_team_member_bio",
+            "label": "Bio",
+            "name": "acf_team_member_bio",
+            "type": "textarea",
+            "instructions": "Enter a short bio for the team member.",
+            "required": 0,
+            "rows": 5
+        },
+        {
+            "key": "acf_team_member_email",
+            "label": "Email",
+            "name": "acf_team_member_email",
+            "type": "email",
+            "instructions": "Enter the team member's email address.",
+            "required": 0
+        },
+        {
+            "key": "acf_team_member_phone",
+            "label": "Phone",
+            "name": "acf_team_member_phone",
+            "type": "text",
+            "instructions": "Enter the team member's phone number.",
+            "required": 0
+        },
+        {
+            "key": "acf_team_member_social_links",
+            "label": "Social Links",
+            "name": "acf_team_member_social_links",
+            "type": "repeater",
+            "instructions": "Add social media links for the team member.",
+            "required": 0,
+            "min": 0,
+            "layout": "table",
+            "button_label": "Add Social Link",
+            "sub_fields": [
+                {
+                    "key": "acf_social_platform",
+                    "label": "Platform",
+                    "name": "acf_social_platform",
+                    "type": "select",
+                    "instructions": "Select the social media platform.",
+                    "required": 0,
+                    "choices": {
+                        "LinkedIn": "LinkedIn",
+                        "Twitter": "Twitter",
+                        "Facebook": "Facebook",
+                        "Instagram": "Instagram",
+                        "GitHub": "GitHub",
+                        "Website": "Website"
+                    }
+                },
+                {
+                    "key": "acf_social_url",
+                    "label": "URL",
+                    "name": "acf_social_url",
+                    "type": "url",
+                    "instructions": "Enter the URL for this social platform.",
+                    "required": 0
+                }
+            ]
+        },
+        {
+            "key": "acf_team_member_class",
+            "label": "Custom CSS Class",
+            "name": "acf_team_member_class",
+            "type": "text",
+            "instructions": "Add custom CSS class(es) for styling.",
+            "required": 0
+        },
+        {
+            "key": "acf_team_member_inline",
+            "label": "Inline Styles",
+            "name": "acf_team_member_inline",
+            "type": "text",
+            "instructions": "Add inline CSS styles if needed.",
+            "required": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/team-member"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "acf": {
+        "blockVersion": 3
+    }
+}

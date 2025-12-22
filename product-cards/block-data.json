@@ -1,0 +1,108 @@
+[
+  {
+    "key": "group_product_cards",
+    "title": "Product Cards",
+    "fields": [
+      {
+        "key": "field_pc_block_title",
+        "label": "Product Title",
+        "name": "pc_block_title",
+        "type": "text",
+        "default_value": "Product Name"
+      },
+      {
+        "key": "field_pc_block_title_color",
+        "label": "Title Text Color",
+        "name": "pc_block_title_color",
+        "type": "color_picker",
+        "default_value": "#FFFFFF"
+      },
+      {
+        "key": "field_pc_block_title_bg_color",
+        "label": "Title Background Color",
+        "name": "pc_block_title_bg_color",
+        "type": "color_picker",
+        "default_value": "#007bff"
+      },
+      {
+        "key": "field_pc_block_product_image",
+        "label": "Product Image",
+        "name": "pc_block_product_image",
+        "type": "image",
+        "return_format": "url",
+        "preview_size": "medium"
+      },
+      {
+        "key": "field_pc_block_description",
+        "label": "Product Description",
+        "name": "pc_block_description",
+        "type": "textarea",
+        "default_value": "This product is cool and everything. 1rem font-size, visual text."
+      },
+      {
+        "key": "field_pc_block_root_class",
+        "label": "Custom CSS Class",
+        "name": "pc_block_root_class",
+        "type": "text",
+        "instructions": "Optional. Add a custom class to the root div."
+      },
+      {
+        "key": "field_pc_block_button_text",
+        "label": "Button Text",
+        "name": "pc_block_button_text",
+        "type": "text",
+        "default_value": "Learn more"
+      },
+      {
+        "key": "field_pc_block_button_url",
+        "label": "Button URL",
+        "name": "pc_block_button_url",
+        "type": "url"
+      },
+      {
+        "key": "field_pc_block_button_rel",
+        "label": "Button Rel Attribute",
+        "name": "pc_block_button_rel",
+        "type": "text",
+        "instructions": "Optional. Add a rel attribute (e.g., nofollow, noopener)."
+      },
+      {
+        "key": "field_pc_block_text_link",
+        "label": "Additional Text Link",
+        "name": "pc_block_text_link",
+        "type": "text",
+        "instructions": "Text for the additional link below the button."
+      },
+      {
+        "key": "field_pc_block_text_link_url",
+        "label": "Additional Link URL",
+        "name": "pc_block_text_link_url",
+        "type": "url"
+      },
+      {
+        "key": "field_pc_block_text_link_rel",
+        "label": "Additional Link Rel Attribute",
+        "name": "pc_block_text_link_rel",
+        "type": "text",
+        "instructions": "Optional. Add a rel attribute (e.g., nofollow, noopener)."
+      }
+    ],
+    "location": [
+      [
+        {
+          "param": "block",
+          "operator": "==",
+          "value": "acf/product_cards"
+        }
+      ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "A customizable product card with an image, title, description, button, and additional link."
+  }
+]

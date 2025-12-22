@@ -1,0 +1,18 @@
+{
+  "apiVersion": 3,
+  "name": "acf/post-display",
+  "title": "Post Display",
+  "description": "Display selected posts in various layouts.",
+  "category": "common",
+  "icon": "admin-post",
+  "keywords": ["post", "article", "display", "grid"],
+  "acf": {
+    "renderTemplate": "post-display.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": true,
+    "mode": true,
+    "anchor": true
+  }
+}

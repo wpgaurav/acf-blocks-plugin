@@ -1,0 +1,181 @@
+[
+  {
+      "key": "group_section_block",
+      "title": "Section Block",
+      "fields": [
+          {
+              "key": "field_section_structure_tab",
+              "label": "Structure",
+              "name": "",
+              "type": "tab",
+              "placement": "top",
+              "endpoint": 0
+          },
+          {
+              "key": "field_acf_section_html_tag",
+              "label": "HTML Tag",
+              "name": "acf_section_html_tag",
+              "type": "select",
+              "instructions": "Choose the HTML tag for this section",
+              "choices": {
+                  "div": "div",
+                  "section": "section",
+                  "article": "article",
+                  "aside": "aside",
+                  "header": "header",
+                  "footer": "footer",
+                  "main": "main",
+                  "custom": "Custom tag"
+              },
+              "default_value": "section",
+              "wrapper": {"width": "50"}
+          },
+          {
+              "key": "field_acf_section_custom_tag",
+              "label": "Custom HTML Tag",
+              "name": "acf_section_custom_tag",
+              "type": "text",
+              "instructions": "Enter a custom HTML tag (only if 'Custom tag' is selected above)",
+              "conditional_logic": [
+                  [{"field": "field_acf_section_html_tag", "operator": "==", "value": "custom"}]
+              ],
+              "wrapper": {"width": "50"}
+          },
+          {
+              "key": "field_acf_section_id",
+              "label": "Section ID",
+              "name": "acf_section_id",
+              "type": "text",
+              "instructions": "Optional ID attribute for the section",
+              "prepend": "#",
+              "wrapper": {"width": "50"}
+          },
+          {
+              "key": "field_acf_section_custom_class",
+              "label": "Custom Classes",
+              "name": "acf_section_custom_class",
+              "type": "text",
+              "instructions": "Add custom CSS classes (space separated)",
+              "wrapper": {"width": "50"}
+          },
+          {
+              "key": "field_section_utility_tab",
+              "label": "Utility Classes",
+              "name": "",
+              "type": "tab",
+              "placement": "top",
+              "endpoint": 0
+          },
+          {
+              "key": "field_acf_layout_class",
+              "label": "Layout Classes",
+              "name": "acf_layout_class",
+              "type": "text",
+              "instructions": "Add layout utility classes (container, flex, grid, etc.)",
+              "placeholder": "e.g. container d-flex justify-content-between"
+          },
+          {
+              "key": "field_acf_spacing_class",
+              "label": "Spacing Classes",
+              "name": "acf_spacing_class",
+              "type": "text",
+              "instructions": "Add spacing utility classes",
+              "placeholder": "e.g. py-5 mt-4 mb-lg-5"
+          },
+          {
+              "key": "field_acf_bg_class",
+              "label": "Background Classes",
+              "name": "acf_bg_class",
+              "type": "text",
+              "instructions": "Add background utility classes",
+              "placeholder": "e.g. bg-dark bg-opacity-75"
+          },
+          {
+              "key": "field_acf_text_class",
+              "label": "Text Classes",
+              "name": "acf_text_class",
+              "type": "text",
+              "instructions": "Add text utility classes",
+              "placeholder": "e.g. text-center text-md-start"
+          },
+          {
+              "key": "field_acf_responsive_class",
+              "label": "Responsive Classes",
+              "name": "acf_responsive_class",
+              "type": "text",
+              "instructions": "Add responsive utility classes",
+              "placeholder": "e.g. d-none d-md-block"
+          },
+          {
+              "key": "field_section_background_tab",
+              "label": "Background",
+              "name": "",
+              "type": "tab",
+              "placement": "top",
+              "endpoint": 0
+          },
+          {
+              "key": "field_acf_bg_color",
+              "label": "Background Color",
+              "name": "acf_bg_color",
+              "type": "color_picker",
+              "enable_opacity": 1,
+              "wrapper": {"width": "50"}
+          },
+          {
+              "key": "field_acf_bg_image",
+              "label": "Background Image",
+              "name": "acf_bg_image",
+              "type": "image",
+              "return_format": "url",
+              "preview_size": "medium",
+              "wrapper": {"width": "50"}
+          },
+          {
+              "key": "field_acf_bg_overlay",
+              "label": "Background Overlay",
+              "name": "acf_bg_overlay",
+              "type": "color_picker",
+              "instructions": "Overlay color (with transparency)",
+              "enable_opacity": 1,
+              "wrapper": {"width": "50"}
+          },
+          {
+              "key": "field_acf_bg_video",
+              "label": "Background Video",
+              "name": "acf_bg_video",
+              "type": "file",
+              "instructions": "Upload MP4 video",
+              "return_format": "url",
+              "mime_types": "mp4",
+              "wrapper": {"width": "50"}
+          },
+          {
+              "key": "field_section_custom_css_tab",
+              "label": "Custom CSS",
+              "name": "",
+              "type": "tab",
+              "placement": "top",
+              "endpoint": 0
+          },
+          {
+              "key": "field_acf_custom_css",
+              "label": "Inline CSS",
+              "name": "acf_custom_css",
+              "type": "textarea",
+              "instructions": "Add custom CSS for this block. Will be printed in the footer.",
+              "placeholder": ".section-content h2 { color: red; }\n.section-content p { margin-bottom: 2em; }",
+              "rows": 10
+          }
+      ],
+      "location": [
+          [
+              {
+                  "param": "block",
+                  "operator": "==",
+                  "value": "acf/section-block"
+              }
+          ]
+      ]
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "apiVersion": 3,
+  "name": "acf/tabs",
+  "title": "Tabs",
+  "description": "A tabbed content block for organizing information into switchable sections.",
+  "category": "common",
+  "icon": "index-card",
+  "keywords": ["tabs", "tabbed", "content", "sections"],
+  "acf": {
+    "renderTemplate": "tabs-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": true,
+    "mode": true,
+    "jsx": true
+  }
+}

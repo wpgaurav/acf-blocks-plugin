@@ -1,0 +1,18 @@
+{
+  "apiVersion": 3,
+  "name": "acf/stats",
+  "title": "Stats/Counter",
+  "description": "A stats block with animated counters to showcase numbers and achievements.",
+  "category": "common",
+  "icon": "chart-bar",
+  "keywords": ["stats", "counter", "numbers", "metrics", "achievements"],
+  "acf": {
+    "renderTemplate": "stats-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": true,
+    "mode": true,
+    "jsx": true
+  }
+}

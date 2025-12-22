@@ -1,0 +1,18 @@
+{
+  "apiVersion": 3,
+  "name": "acf/star-rating",
+  "title": "Star Rating",
+  "description": "Collects visitor star ratings and displays the aggregate score.",
+  "category": "widgets",
+  "icon": "star-filled",
+  "keywords": ["rating", "feedback", "stars"],
+  "acf": {
+    "renderTemplate": "star-rating-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": true,
+    "anchor": true,
+    "jsx": true
+  }
+}

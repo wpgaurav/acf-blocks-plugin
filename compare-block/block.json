@@ -1,0 +1,16 @@
+{
+  "apiVersion": 3,
+  "name": "acf/compare",
+  "title": "Compare Block",
+  "description": "A customizable compare card block.",
+  "category": "formatting",
+  "icon": "grid-view",
+  "keywords": ["compare", "vs", "custom"],
+  "acf": {
+    "renderTemplate": "compare-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": true
+  }
+}

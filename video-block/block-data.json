@@ -1,0 +1,185 @@
+{
+    "key": "group_acf_video_block",
+    "title": "Video Block",
+    "fields": [
+        {
+            "key": "acf_video_type",
+            "label": "Video Type",
+            "name": "acf_video_type",
+            "type": "select",
+            "instructions": "Select the type of video.",
+            "required": 1,
+            "choices": {
+                "youtube": "YouTube",
+                "vimeo": "Vimeo",
+                "self-hosted": "Self-Hosted"
+            },
+            "default_value": "youtube"
+        },
+        {
+            "key": "acf_video_url",
+            "label": "Video URL",
+            "name": "acf_video_url",
+            "type": "url",
+            "instructions": "Enter the YouTube or Vimeo video URL.",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "acf_video_type",
+                        "operator": "==",
+                        "value": "youtube"
+                    }
+                ],
+                [
+                    {
+                        "field": "acf_video_type",
+                        "operator": "==",
+                        "value": "vimeo"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "acf_video_file",
+            "label": "Video File",
+            "name": "acf_video_file",
+            "type": "file",
+            "instructions": "Upload a video file (MP4, WebM, etc.).",
+            "required": 0,
+            "return_format": "array",
+            "mime_types": "mp4,webm,ogg",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "acf_video_type",
+                        "operator": "==",
+                        "value": "self-hosted"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "acf_video_poster",
+            "label": "Poster Image",
+            "name": "acf_video_poster",
+            "type": "image",
+            "instructions": "Upload a poster/thumbnail image for the video.",
+            "required": 0,
+            "return_format": "array",
+            "preview_size": "medium",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "acf_video_type",
+                        "operator": "==",
+                        "value": "self-hosted"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "acf_video_title",
+            "label": "Video Title",
+            "name": "acf_video_title",
+            "type": "text",
+            "instructions": "Enter a title for the video (optional).",
+            "required": 0
+        },
+        {
+            "key": "acf_video_caption",
+            "label": "Video Caption",
+            "name": "acf_video_caption",
+            "type": "text",
+            "instructions": "Enter a caption for the video (optional).",
+            "required": 0
+        },
+        {
+            "key": "acf_video_aspect_ratio",
+            "label": "Aspect Ratio",
+            "name": "acf_video_aspect_ratio",
+            "type": "select",
+            "instructions": "Select the aspect ratio for the video.",
+            "required": 0,
+            "choices": {
+                "16-9": "16:9 (Widescreen)",
+                "4-3": "4:3 (Standard)",
+                "21-9": "21:9 (Ultrawide)",
+                "1-1": "1:1 (Square)"
+            },
+            "default_value": "16-9"
+        },
+        {
+            "key": "acf_video_autoplay",
+            "label": "Autoplay",
+            "name": "acf_video_autoplay",
+            "type": "true_false",
+            "instructions": "Enable autoplay for the video.",
+            "required": 0,
+            "default_value": 0
+        },
+        {
+            "key": "acf_video_loop",
+            "label": "Loop",
+            "name": "acf_video_loop",
+            "type": "true_false",
+            "instructions": "Enable looping for the video.",
+            "required": 0,
+            "default_value": 0
+        },
+        {
+            "key": "acf_video_muted",
+            "label": "Muted",
+            "name": "acf_video_muted",
+            "type": "true_false",
+            "instructions": "Mute the video by default.",
+            "required": 0,
+            "default_value": 0
+        },
+        {
+            "key": "acf_video_controls",
+            "label": "Show Controls",
+            "name": "acf_video_controls",
+            "type": "true_false",
+            "instructions": "Show video player controls.",
+            "required": 0,
+            "default_value": 1
+        },
+        {
+            "key": "acf_video_class",
+            "label": "Custom CSS Class",
+            "name": "acf_video_class",
+            "type": "text",
+            "instructions": "Add custom CSS class(es) for styling.",
+            "required": 0
+        },
+        {
+            "key": "acf_video_inline",
+            "label": "Inline Styles",
+            "name": "acf_video_inline",
+            "type": "text",
+            "instructions": "Add inline CSS styles if needed.",
+            "required": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/video"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "acf": {
+        "blockVersion": 3
+    }
+}

@@ -1,0 +1,18 @@
+{
+  "apiVersion": 3,
+  "name": "acf/faq",
+  "title": "FAQ",
+  "description": "A FAQ block with questions and answers, including schema support.",
+  "category": "common",
+  "icon": "editor-help",
+  "keywords": ["faq", "question", "answer", "help"],
+  "acf": {
+    "renderTemplate": "faq-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": true,
+    "mode": true,
+    "jsx": true
+  }
+}

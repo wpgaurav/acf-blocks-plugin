@@ -1,0 +1,98 @@
+/* Container styling */
+.product-review {
+  background-color: #ffffff;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  padding: 0.5rem;
+  margin: 20px auto;
+  color: #333;
+}
+
+/* Product Title */
+.product-review .product-title {display:none}
+
+/* Product Image */
+.product-review .product-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto 20px;
+  border-radius: 4px;
+}
+
+/* Overall Rating Section */
+.product-review .overall-rating {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.product-review .rating-stars {
+  font-size: 24px;
+  color: #ffb400; /* Star color */
+  margin-bottom: 5px;
+}
+
+.product-review .rating-number {
+  font-size: 16px;
+  color: #555;
+}
+
+/* Feature Ratings */
+.product-review .feature-ratings {
+  margin-bottom: 20px;
+}
+
+
+.product-review .feature-ratings ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.product-review .feature-ratings li {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #f4f4f4;
+}
+
+.product-review .feature-name {
+  font-weight: bold;
+}
+
+.product-review .feature-rating {
+  color: #ffb400;
+}
+
+/* Pros and Cons Section */
+.product-review .pros-cons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.product-review .pros,
+.product-review .cons {
+  width: 48%;
+}
+
+.product-review h4 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #eaeaea;
+  padding-bottom: 5px;
+}
+
+
+/* Summary Section */
+.product-review .summary {
+  margin-bottom: 20px;
+}
+
+
+/* Star Icon Adjustments */
+.md-icon-star-full,
+.md-icon-star-half,
+.md-icon-star-empty {
+  margin-right: 2px;
+}

@@ -1,0 +1,19 @@
+{
+  "apiVersion": 3,
+  "name": "acf/section-block",
+  "title": "Section Block",
+  "description": "A customizable container block that wraps inner blocks.",
+  "category": "layout",
+  "icon": "editor-insertmore",
+  "keywords": ["section", "container", "wrapper"],
+  "acf": {
+    "renderTemplate": "section-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": true,
+    "jsx": true,
+    "mode": true,
+    "multiple": true
+  }
+}

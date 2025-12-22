@@ -1,0 +1,103 @@
+{
+    "key": "group_acf_gallery_block",
+    "title": "Gallery Block",
+    "fields": [
+        {
+            "key": "acf_gallery_images",
+            "label": "Gallery Images",
+            "name": "acf_gallery_images",
+            "type": "gallery",
+            "instructions": "Select images for the gallery.",
+            "required": 0,
+            "return_format": "array"
+        },
+        {
+            "key": "acf_gallery_layout",
+            "label": "Gallery Layout",
+            "name": "acf_gallery_layout",
+            "type": "select",
+            "instructions": "Select the gallery layout style.",
+            "required": 0,
+            "choices": {
+                "grid": "Grid",
+                "masonry": "Masonry",
+                "carousel": "Carousel"
+            },
+            "default_value": "grid"
+        },
+        {
+            "key": "acf_gallery_columns",
+            "label": "Number of Columns",
+            "name": "acf_gallery_columns",
+            "type": "select",
+            "instructions": "Select the number of columns for the gallery.",
+            "required": 0,
+            "choices": {
+                "2": "2 Columns",
+                "3": "3 Columns",
+                "4": "4 Columns",
+                "5": "5 Columns"
+            },
+            "default_value": "3"
+        },
+        {
+            "key": "acf_gallery_gap",
+            "label": "Gap Size",
+            "name": "acf_gallery_gap",
+            "type": "select",
+            "instructions": "Select the gap size between images.",
+            "required": 0,
+            "choices": {
+                "small": "Small",
+                "medium": "Medium",
+                "large": "Large"
+            },
+            "default_value": "medium"
+        },
+        {
+            "key": "acf_gallery_enable_lightbox",
+            "label": "Enable Lightbox",
+            "name": "acf_gallery_enable_lightbox",
+            "type": "true_false",
+            "instructions": "Enable lightbox for viewing images in full size.",
+            "required": 0,
+            "default_value": 1
+        },
+        {
+            "key": "acf_gallery_class",
+            "label": "Custom CSS Class",
+            "name": "acf_gallery_class",
+            "type": "text",
+            "instructions": "Add custom CSS class(es) for styling.",
+            "required": 0
+        },
+        {
+            "key": "acf_gallery_inline",
+            "label": "Inline Styles",
+            "name": "acf_gallery_inline",
+            "type": "text",
+            "instructions": "Add inline CSS styles if needed.",
+            "required": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/gallery"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "acf": {
+        "blockVersion": 3
+    }
+}

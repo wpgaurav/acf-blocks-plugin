@@ -1,0 +1,28 @@
+.pl-block {
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin: 20px 0;
+  background: #fff;
+}
+
+.pl-block-rank-text {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+/* Full width description */
+.pl-block-description {
+  margin-bottom: 20px;
+}
+
+/* Pricing and Coupons in two columns */
+.pl-block-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.pl-block-pricing,
+.pl-block-coupons {
+  flex: 1;
+  padding: 0 10px;
+}

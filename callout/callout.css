@@ -1,0 +1,87 @@
+/**
+ * Callout Block Styles
+ */
+
+.callout {
+    position: relative;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 2rem;
+    background: #fff;
+}
+
+.callout.has-icon {
+    padding-top: 2.5rem;
+}
+
+.callout-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.callout-icon.icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #0073aa;
+    color: #fff;
+}
+
+.callout-icon.icon i {
+    font-size: 24px;
+}
+
+.callout-icon.image img {
+    max-width: 100px;
+    height: auto;
+}
+
+.callout-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.callout-text {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.callout-action {
+    margin-top: 1.5rem;
+}
+
+.callout-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: #0073aa;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.callout-button:hover {
+    background-color: #005a87;
+}
+
+.callout.image-overlay {
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+}
+
+.callout.shadow-small {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.callout.text-center {
+    text-align: center;
+}
+
+.callout.text-center .callout-icon {
+    margin-left: auto;
+    margin-right: auto;
+}

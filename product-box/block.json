@@ -1,0 +1,18 @@
+{
+  "apiVersion": 3,
+  "name": "acf/product-box",
+  "title": "Product Box",
+  "description": "A product box with image, title, rating, and description.",
+  "category": "common",
+  "icon": "cart",
+  "keywords": ["product", "box", "rating"],
+  "acf": {
+    "renderTemplate": "product-box.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": true,
+    "mode": true,
+    "anchor": true
+  }
+}

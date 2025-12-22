@@ -1,0 +1,18 @@
+{
+  "apiVersion": 3,
+  "name": "acf/cta",
+  "title": "Call to Action",
+  "description": "A customizable call-to-action block with heading, description, and button.",
+  "category": "common",
+  "icon": "megaphone",
+  "keywords": ["cta", "call to action", "button", "conversion"],
+  "acf": {
+    "renderTemplate": "cta-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": true,
+    "mode": true,
+    "jsx": true
+  }
+}

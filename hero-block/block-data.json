@@ -1,0 +1,99 @@
+{
+    "key": "group_acf_hero_block",
+    "title": "Hero Block",
+    "fields": [
+        {
+            "key": "acf_hero_headline",
+            "label": "Headline",
+            "name": "acf_hero_headline",
+            "type": "text",
+            "instructions": "Enter the main headline for the hero block.",
+            "required": 0
+        },
+        {
+            "key": "acf_hero_subheadline",
+            "label": "Subheadline",
+            "name": "acf_hero_subheadline",
+            "type": "textarea",
+            "instructions": "Enter the subheadline or description.",
+            "required": 0,
+            "rows": 3
+        },
+        {
+            "key": "acf_hero_image",
+            "label": "Background/Featured Image",
+            "name": "acf_hero_image",
+            "type": "image",
+            "instructions": "Upload an image for the hero block.",
+            "required": 0,
+            "return_format": "array",
+            "preview_size": "medium"
+        },
+        {
+            "key": "acf_hero_cta_text",
+            "label": "CTA Button Text",
+            "name": "acf_hero_cta_text",
+            "type": "text",
+            "instructions": "Enter the call-to-action button text.",
+            "required": 0
+        },
+        {
+            "key": "acf_hero_cta_url",
+            "label": "CTA Button URL",
+            "name": "acf_hero_cta_url",
+            "type": "url",
+            "instructions": "Enter the URL for the call-to-action button.",
+            "required": 0
+        },
+        {
+            "key": "acf_hero_cta_style",
+            "label": "CTA Button Style",
+            "name": "acf_hero_cta_style",
+            "type": "select",
+            "instructions": "Select the button style.",
+            "required": 0,
+            "choices": {
+                "primary": "Primary",
+                "secondary": "Secondary",
+                "outline": "Outline"
+            },
+            "default_value": "primary"
+        },
+        {
+            "key": "acf_hero_class",
+            "label": "Custom CSS Class",
+            "name": "acf_hero_class",
+            "type": "text",
+            "instructions": "Add custom CSS class(es) for styling.",
+            "required": 0
+        },
+        {
+            "key": "acf_hero_inline",
+            "label": "Inline Styles",
+            "name": "acf_hero_inline",
+            "type": "text",
+            "instructions": "Add inline CSS styles if needed.",
+            "required": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/hero"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "acf": {
+        "blockVersion": 3
+    }
+}

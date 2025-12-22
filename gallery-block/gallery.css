@@ -1,0 +1,180 @@
+.gallery-block {
+    display: grid;
+    width: 100%;
+}
+
+/* Grid Layout */
+.gallery-block.gallery-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.gallery-block.columns-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.gallery-block.columns-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.gallery-block.columns-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.gallery-block.columns-5 {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+/* Gap Sizes */
+.gallery-block.gap-small {
+    gap: 10px;
+}
+
+.gallery-block.gap-medium {
+    gap: 20px;
+}
+
+.gallery-block.gap-large {
+    gap: 30px;
+}
+
+/* Gallery Item */
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+    aspect-ratio: 1 / 1;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.05);
+}
+
+/* Gallery Link and Overlay */
+.gallery-link {
+    position: relative;
+    display: block;
+}
+
+.gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.gallery-link:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.gallery-icon {
+    font-size: 2rem;
+    color: #fff;
+}
+
+/* Caption */
+.gallery-caption {
+    padding: 10px;
+    background-color: #f8f9fa;
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+}
+
+/* Masonry Layout */
+.gallery-block.gallery-masonry {
+    display: block;
+    column-count: 3;
+    column-gap: 20px;
+}
+
+.gallery-block.gallery-masonry.columns-2 {
+    column-count: 2;
+}
+
+.gallery-block.gallery-masonry.columns-3 {
+    column-count: 3;
+}
+
+.gallery-block.gallery-masonry.columns-4 {
+    column-count: 4;
+}
+
+.gallery-block.gallery-masonry .gallery-item {
+    break-inside: avoid;
+    margin-bottom: 20px;
+}
+
+.gallery-block.gallery-masonry .gallery-item img {
+    aspect-ratio: auto;
+    height: auto;
+}
+
+/* Carousel Layout - Basic */
+.gallery-block.gallery-carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 20px;
+    padding: 10px;
+}
+
+.gallery-block.gallery-carousel .gallery-item {
+    flex: 0 0 300px;
+    scroll-snap-align: start;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .gallery-block.columns-5 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .gallery-block.gallery-masonry.columns-4,
+    .gallery-block.gallery-masonry.columns-5 {
+        column-count: 3;
+    }
+}
+
+@media (max-width: 768px) {
+    .gallery-block.columns-3,
+    .gallery-block.columns-4,
+    .gallery-block.columns-5 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .gallery-block.gallery-masonry {
+        column-count: 2;
+    }
+
+    .gallery-block.gallery-carousel .gallery-item {
+        flex: 0 0 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .gallery-block.columns-2,
+    .gallery-block.columns-3,
+    .gallery-block.columns-4,
+    .gallery-block.columns-5 {
+        grid-template-columns: 1fr;
+    }
+
+    .gallery-block.gallery-masonry {
+        column-count: 1;
+    }
+}

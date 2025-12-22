@@ -1,0 +1,18 @@
+{
+  "apiVersion": 3,
+  "name": "acf/testimonial",
+  "title": "Testimonial",
+  "description": "A customizable testimonial block with quote, author, and rating.",
+  "category": "common",
+  "icon": "format-quote",
+  "keywords": ["testimonial", "review", "quote", "customer"],
+  "acf": {
+    "renderTemplate": "testimonial-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": true,
+    "mode": true,
+    "jsx": true
+  }
+}

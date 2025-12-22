@@ -1,0 +1,67 @@
+{
+    "key": "group_acf_accord_block",
+    "title": "Accordion Block",
+    "fields": [
+        {
+            "key": "acf_accord_enable_faq_schema",
+            "label": "Enable FAQ Schema",
+            "name": "acf_accord_enable_faq_schema",
+            "type": "true_false",
+            "instructions": "Enable FAQ Schema for this accordion block.",
+            "required": 0,
+            "default_value": 0
+        },
+        {
+            "key": "acf_accord_groups",
+            "label": "Accordion Groups",
+            "name": "acf_accord_groups",
+            "type": "repeater",
+            "instructions": "Add accordion groups.",
+            "required": 0,
+            "min": 0,
+            "layout": "block",
+            "button_label": "Add Group",
+            "sub_fields": [
+                {
+                    "key": "acf_accord_group_title",
+                    "label": "Group Title",
+                    "name": "acf_accord_group_title",
+                    "type": "text",
+                    "instructions": "Enter the title for this accordion group.",
+                    "required": 0
+                },
+                {
+                    "key": "acf_accord_group_content",
+                    "label": "Group Content",
+                    "name": "acf_accord_group_content",
+                    "type": "wysiwyg",
+                    "instructions": "Enter the content for this accordion group.",
+                    "required": 0,
+                    "tabs": "all",
+                    "toolbar": "full",
+                    "media_upload": 1
+                }
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/accordion"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+	"acf": {
+        "blockVersion": 3
+    }
+}

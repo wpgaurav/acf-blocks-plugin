@@ -1,0 +1,143 @@
+{
+    "key": "group_acf_feature_grid_block",
+    "title": "Feature Grid Block",
+    "fields": [
+        {
+            "key": "acf_feature_grid_heading",
+            "label": "Heading",
+            "name": "acf_feature_grid_heading",
+            "type": "text",
+            "instructions": "Enter a heading for the feature grid.",
+            "required": 0
+        },
+        {
+            "key": "acf_feature_grid_subheading",
+            "label": "Subheading",
+            "name": "acf_feature_grid_subheading",
+            "type": "textarea",
+            "instructions": "Enter a subheading or description.",
+            "required": 0,
+            "rows": 3
+        },
+        {
+            "key": "acf_feature_grid_items",
+            "label": "Feature Items",
+            "name": "acf_feature_grid_items",
+            "type": "repeater",
+            "instructions": "Add feature items to the grid.",
+            "required": 0,
+            "min": 0,
+            "layout": "block",
+            "button_label": "Add Feature",
+            "sub_fields": [
+                {
+                    "key": "acf_feature_icon",
+                    "label": "Icon",
+                    "name": "acf_feature_icon",
+                    "type": "text",
+                    "instructions": "Enter an icon (emoji, text, or CSS class like 'fa-star').",
+                    "required": 0
+                },
+                {
+                    "key": "acf_feature_image",
+                    "label": "Image (alternative to icon)",
+                    "name": "acf_feature_image",
+                    "type": "image",
+                    "instructions": "Upload an image instead of using an icon.",
+                    "required": 0,
+                    "return_format": "array",
+                    "preview_size": "thumbnail"
+                },
+                {
+                    "key": "acf_feature_title",
+                    "label": "Title",
+                    "name": "acf_feature_title",
+                    "type": "text",
+                    "instructions": "Enter the feature title.",
+                    "required": 1
+                },
+                {
+                    "key": "acf_feature_description",
+                    "label": "Description",
+                    "name": "acf_feature_description",
+                    "type": "textarea",
+                    "instructions": "Enter the feature description.",
+                    "required": 0,
+                    "rows": 4
+                },
+                {
+                    "key": "acf_feature_link",
+                    "label": "Link",
+                    "name": "acf_feature_link",
+                    "type": "link",
+                    "instructions": "Add an optional link for this feature.",
+                    "required": 0
+                }
+            ]
+        },
+        {
+            "key": "acf_feature_grid_columns",
+            "label": "Number of Columns",
+            "name": "acf_feature_grid_columns",
+            "type": "select",
+            "instructions": "Select the number of columns for the grid.",
+            "required": 0,
+            "choices": {
+                "2": "2 Columns",
+                "3": "3 Columns",
+                "4": "4 Columns"
+            },
+            "default_value": "3"
+        },
+        {
+            "key": "acf_feature_grid_layout",
+            "label": "Layout Style",
+            "name": "acf_feature_grid_layout",
+            "type": "select",
+            "instructions": "Select the layout style for the features.",
+            "required": 0,
+            "choices": {
+                "default": "Default",
+                "centered": "Centered",
+                "card": "Card Style"
+            },
+            "default_value": "default"
+        },
+        {
+            "key": "acf_feature_grid_class",
+            "label": "Custom CSS Class",
+            "name": "acf_feature_grid_class",
+            "type": "text",
+            "instructions": "Add custom CSS class(es) for styling.",
+            "required": 0
+        },
+        {
+            "key": "acf_feature_grid_inline",
+            "label": "Inline Styles",
+            "name": "acf_feature_grid_inline",
+            "type": "text",
+            "instructions": "Add inline CSS styles if needed.",
+            "required": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/feature-grid"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "acf": {
+        "blockVersion": 3
+    }
+}

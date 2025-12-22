@@ -1,0 +1,132 @@
+.team-member-block {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.team-member-block:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+}
+
+.team-member-photo {
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+}
+
+.team-member-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.team-member-content {
+    padding: 30px;
+}
+
+.team-member-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.team-member-title {
+    font-size: 1rem;
+    color: #007bff;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.team-member-bio {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.team-member-contact {
+    margin-bottom: 20px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.contact-icon {
+    font-size: 1.2rem;
+}
+
+.contact-item a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+.contact-item a:hover {
+    text-decoration: underline;
+}
+
+.team-member-social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.social-link {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #f8f9fa;
+    color: #333;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.social-link:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.social-link.linkedin:hover {
+    background-color: #0077b5;
+}
+
+.social-link.twitter:hover {
+    background-color: #1da1f2;
+}
+
+.social-link.facebook:hover {
+    background-color: #1877f2;
+}
+
+.social-link.instagram:hover {
+    background-color: #e4405f;
+}
+
+.social-link.github:hover {
+    background-color: #333;
+}
+
+@media (max-width: 768px) {
+    .team-member-photo {
+        height: 250px;
+    }
+
+    .team-member-content {
+        padding: 20px;
+    }
+
+    .team-member-name {
+        font-size: 1.25rem;
+    }
+}

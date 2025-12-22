@@ -1,0 +1,277 @@
+{
+    "key": "group_email_form_block",
+    "title": "Email Form Block",
+    "fields": [
+        {
+            "key": "field_form_type",
+            "label": "Form Type",
+            "name": "form_type",
+            "type": "select",
+            "choices": {
+                "form_action": "Form Action",
+                "webhook": "Webhook"
+            },
+            "default_value": "form_action",
+            "ui": 1
+        },
+        {
+            "key": "field_form_action_url",
+            "label": "Form Action URL",
+            "name": "form_action_url",
+            "type": "url",
+            "instructions": "URL to submit the form if using form action.",
+            "conditional_logic": [
+                {
+                    "field": "field_form_type",
+                    "operator": "==",
+                    "value": "form_action"
+                }
+            ]
+        },
+        {
+            "key": "field_webhook_url",
+            "label": "Webhook URL",
+            "name": "webhook_url",
+            "type": "url",
+            "instructions": "Webhook URL to submit the form data.",
+            "conditional_logic": [
+                {
+                    "field": "field_form_type",
+                    "operator": "==",
+                    "value": "webhook"
+                }
+            ]
+        },
+        {
+            "key": "field_webhook_auth_headers",
+            "label": "Webhook Authentication Headers",
+            "name": "webhook_auth_headers",
+            "type": "textarea",
+            "instructions": "Add authentication headers (e.g., Bearer token) for the webhook.",
+            "conditional_logic": [
+                {
+                    "field": "field_form_type",
+                    "operator": "==",
+                    "value": "webhook"
+                }
+            ]
+        },
+        {
+            "key": "field_display_name_field",
+            "label": "Display Name Field",
+            "name": "display_name_field",
+            "type": "true_false",
+            "ui": 1,
+            "default_value": 1
+        },
+        {
+            "key": "field_name_field_required",
+            "label": "Name Field Required",
+            "name": "name_field_required",
+            "type": "true_false",
+            "ui": 1,
+            "instructions": "If unchecked, the name field will be optional.",
+            "conditional_logic": [
+                {
+                    "field": "field_display_name_field",
+                    "operator": "==",
+                    "value": "1"
+                }
+            ]
+        },
+        {
+            "key": "field_name_field_attributes",
+            "label": "Name Field Attributes",
+            "name": "name_field_attributes",
+            "type": "group",
+            "instructions": "Set custom ID, classes, and inline CSS for the name field.",
+            "conditional_logic": [
+                {
+                    "field": "field_display_name_field",
+                    "operator": "==",
+                    "value": "1"
+                }
+            ],
+            "sub_fields": [
+                {
+                    "key": "field_name_attr_id",
+                    "label": "ID",
+                    "name": "id",
+                    "type": "text"
+                },
+                {
+                    "key": "field_name_attr_class",
+                    "label": "Class",
+                    "name": "class",
+                    "type": "text"
+                },
+                {
+                    "key": "field_name_attr_inline_css",
+                    "label": "Inline CSS",
+                    "name": "inline_css",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "key": "field_email_field_attributes",
+            "label": "Email Field Attributes",
+            "name": "email_field_attributes",
+            "type": "group",
+            "instructions": "Set custom ID, classes, and inline CSS for the email field.",
+            "sub_fields": [
+                {
+                    "key": "field_email_attr_id",
+                    "label": "ID",
+                    "name": "id",
+                    "type": "text"
+                },
+                {
+                    "key": "field_email_attr_class",
+                    "label": "Class",
+                    "name": "class",
+                    "type": "text"
+                },
+                {
+                    "key": "field_email_attr_inline_css",
+                    "label": "Inline CSS",
+                    "name": "inline_css",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "key": "field_hidden_fields",
+            "label": "Hidden Fields",
+            "name": "hidden_fields",
+            "type": "repeater",
+            "instructions": "Add hidden input fields (e.g., honeypot, custom fields).",
+            "button_label": "Add Hidden Field",
+            "sub_fields": [
+                {
+                    "key": "field_hidden_field_name",
+                    "label": "Field Name",
+                    "name": "field_name",
+                    "type": "text"
+                },
+                {
+                    "key": "field_hidden_field_value",
+                    "label": "Field Value",
+                    "name": "field_value",
+                    "type": "text"
+                },
+                {
+                    "key": "field_hidden_field_attributes",
+                    "label": "Attributes",
+                    "name": "attributes",
+                    "type": "group",
+                    "sub_fields": [
+                        {
+                            "key": "field_hidden_attr_id",
+                            "label": "ID",
+                            "name": "id",
+                            "type": "text"
+                        },
+                        {
+                            "key": "field_hidden_attr_class",
+                            "label": "Class",
+                            "name": "class",
+                            "type": "text"
+                        },
+                        {
+                            "key": "field_hidden_attr_inline_css",
+                            "label": "Inline CSS",
+                            "name": "inline_css",
+                            "type": "text"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "field_button_text",
+            "label": "Button Text",
+            "name": "button_text",
+            "type": "text",
+            "default_value": "Submit"
+        },
+        {
+            "key": "field_button_attributes",
+            "label": "Button Attributes",
+            "name": "button_attributes",
+            "type": "group",
+            "instructions": "Set custom ID, classes, and inline CSS for the button.",
+            "sub_fields": [
+                {
+                    "key": "field_button_attr_id",
+                    "label": "ID",
+                    "name": "id",
+                    "type": "text"
+                },
+                {
+                    "key": "field_button_attr_class",
+                    "label": "Class",
+                    "name": "class",
+                    "type": "text"
+                },
+                {
+                    "key": "field_button_attr_inline_css",
+                    "label": "Inline CSS",
+                    "name": "inline_css",
+                    "type": "text"
+                }
+            ]
+        },
+        {
+            "key": "field_success_message",
+            "label": "Success Message",
+            "name": "success_message",
+            "type": "textarea",
+            "instructions": "Message displayed upon successful form submission."
+        },
+        {
+            "key": "field_form_attributes",
+            "label": "Form Attributes",
+            "name": "form_attributes",
+            "type": "group",
+            "instructions": "Set custom ID, classes, and inline CSS for the form element.",
+            "sub_fields": [
+                {
+                    "key": "field_form_attr_id",
+                    "label": "ID",
+                    "name": "id",
+                    "type": "text"
+                },
+                {
+                    "key": "field_form_attr_class",
+                    "label": "Class",
+                    "name": "class",
+                    "type": "text"
+                },
+                {
+                    "key": "field_form_attr_inline_css",
+                    "label": "Inline CSS",
+                    "name": "inline_css",
+                    "type": "text"
+                }
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/email-form"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "Field group for the Email Form block."
+}

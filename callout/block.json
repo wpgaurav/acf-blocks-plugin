@@ -1,0 +1,26 @@
+{
+  "apiVersion": 3,
+  "name": "acf/callout",
+  "title": "Callout",
+  "description": "Display a styled callout box with title, text, and button.",
+  "category": "formatting",
+  "icon": "megaphone",
+  "keywords": ["callout", "cta", "button"],
+  "acf": {
+    "renderTemplate": "template.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": ["wide", "full"]
+  },
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "callout_title": "Callout",
+        "callout_text": "This is an example callout block",
+        "is_preview": true
+      }
+    }
+  }
+}

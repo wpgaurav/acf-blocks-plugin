@@ -1,0 +1,61 @@
+{
+    "key": "group_md_star_rating_block",
+    "title": "Star Rating Block",
+    "fields": [
+        {
+            "key": "field_md_sr_heading",
+            "label": "Heading",
+            "name": "md_sr_heading",
+            "type": "text",
+            "instructions": "Optional heading displayed above the rating widget.",
+            "required": 0
+        },
+        {
+            "key": "field_md_sr_description",
+            "label": "Description",
+            "name": "md_sr_description",
+            "type": "textarea",
+            "instructions": "Add context or a call-to-action for the rating block.",
+            "required": 0,
+            "rows": 3
+        },
+        {
+            "key": "field_md_sr_button_label",
+            "label": "Submit Button Label",
+            "name": "md_sr_button_label",
+            "type": "text",
+            "instructions": "Text displayed on the submit button.",
+            "default_value": "Submit Rating",
+            "required": 0
+        },
+        {
+            "key": "field_md_sr_thank_you",
+            "label": "Thank You Message",
+            "name": "md_sr_thank_you",
+            "type": "text",
+            "instructions": "Message displayed after a visitor submits a rating.",
+            "default_value": "Thanks for rating!",
+            "required": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/star-rating"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "acf": {
+        "blockVersion": 3
+    }
+}

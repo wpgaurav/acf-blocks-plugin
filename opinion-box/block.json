@@ -1,0 +1,19 @@
+{
+  "apiVersion": 3,
+  "name": "acf/opinion-box",
+  "title": "Opinion Box",
+  "description": "A custom opinion box block for sharing thoughts.",
+  "category": "common",
+  "icon": "admin-comments",
+  "keywords": ["opinion", "box", "feedback"],
+  "acf": {
+    "renderTemplate": "opinion-box.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": true,
+    "mode": true,
+    "anchor": true,
+    "jsx": true
+  }
+}

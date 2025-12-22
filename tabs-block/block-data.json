@@ -1,0 +1,97 @@
+{
+    "key": "group_acf_tabs_block",
+    "title": "Tabs Block",
+    "fields": [
+        {
+            "key": "acf_tabs_items",
+            "label": "Tab Items",
+            "name": "acf_tabs_items",
+            "type": "repeater",
+            "instructions": "Add tab items.",
+            "required": 0,
+            "min": 1,
+            "layout": "block",
+            "button_label": "Add Tab",
+            "sub_fields": [
+                {
+                    "key": "acf_tab_title",
+                    "label": "Tab Title",
+                    "name": "acf_tab_title",
+                    "type": "text",
+                    "instructions": "Enter the title for this tab.",
+                    "required": 1
+                },
+                {
+                    "key": "acf_tab_icon",
+                    "label": "Tab Icon",
+                    "name": "acf_tab_icon",
+                    "type": "text",
+                    "instructions": "Enter an icon (emoji, text, or CSS class like 'fa-star') for this tab.",
+                    "required": 0
+                },
+                {
+                    "key": "acf_tab_content",
+                    "label": "Tab Content",
+                    "name": "acf_tab_content",
+                    "type": "wysiwyg",
+                    "instructions": "Enter the content for this tab.",
+                    "required": 0,
+                    "tabs": "all",
+                    "toolbar": "full",
+                    "media_upload": 1
+                }
+            ]
+        },
+        {
+            "key": "acf_tabs_style",
+            "label": "Tab Style",
+            "name": "acf_tabs_style",
+            "type": "select",
+            "instructions": "Select the style for the tabs.",
+            "required": 0,
+            "choices": {
+                "default": "Default",
+                "pills": "Pills",
+                "underline": "Underline",
+                "boxed": "Boxed"
+            },
+            "default_value": "default"
+        },
+        {
+            "key": "acf_tabs_class",
+            "label": "Custom CSS Class",
+            "name": "acf_tabs_class",
+            "type": "text",
+            "instructions": "Add custom CSS class(es) for styling.",
+            "required": 0
+        },
+        {
+            "key": "acf_tabs_inline",
+            "label": "Inline Styles",
+            "name": "acf_tabs_inline",
+            "type": "text",
+            "instructions": "Add inline CSS styles if needed.",
+            "required": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/tabs"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "acf": {
+        "blockVersion": 3
+    }
+}

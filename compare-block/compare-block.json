@@ -1,0 +1,110 @@
+{
+    "key": "group_compare_block",
+    "title": "Compare Block",
+    "fields": [
+        {
+            "key": "field_comp_columns",
+            "label": "Number of Columns",
+            "name": "comp_columns",
+            "type": "number",
+            "default_value": 2,
+            "instructions": "Specify the number of columns (e.g., 2, 3, 4)."
+        },
+        {
+            "key": "field_comp_columns_data",
+            "label": "Columns Data",
+            "name": "comp_columns_data",
+            "type": "repeater",
+            "sub_fields": [
+                {
+                    "key": "field_comp_title",
+                    "label": "Column Title",
+                    "name": "comp_title",
+                    "type": "text"
+                },
+                {
+                    "key": "field_comp_title_bg",
+                    "label": "Title Background Color",
+                    "name": "comp_title_bg",
+                    "type": "color_picker"
+                },
+                {
+                    "key": "field_comp_title_color",
+                    "label": "Title Text Color",
+                    "name": "comp_title_color",
+                    "type": "color_picker"
+                },
+                {
+                    "key": "field_comp_text",
+                    "label": "Column Text",
+                    "name": "comp_text",
+                    "type": "textarea"
+                },
+                {
+                    "key": "field_comp_repeater_list",
+                    "label": "List Items",
+                    "name": "comp_repeater_list",
+                    "type": "repeater",
+                    "sub_fields": [
+                        {
+                            "key": "field_comp_list_item",
+                            "label": "List Item",
+                            "name": "comp_list_item",
+                            "type": "text"
+                        }
+                    ],
+                    "instructions": "Add list items here."
+                },
+                {
+                    "key": "field_comp_list_class",
+                    "label": "List CSS Class",
+                    "name": "comp_list_class",
+                    "type": "text",
+                    "instructions": "Specify a class for the list (optional)."
+                },
+                {
+                    "key": "field_comp_column_style",
+                    "label": "Column Custom Style",
+                    "name": "comp_column_style",
+                    "type": "text",
+                    "instructions": "Enter CSS properties manually, e.g., 'border:1px solid #333; border-radius:10px;'."
+                }
+            ],
+            "instructions": "Add columns and configure their settings."
+        },
+        {
+            "key": "field_comp_cta_text",
+            "label": "CTA Button Text",
+            "name": "comp_cta_text",
+            "type": "text",
+            "instructions": "Enter the CTA button text."
+        },
+        {
+            "key": "field_comp_cta_url",
+            "label": "CTA Button URL",
+            "name": "comp_cta_url",
+            "type": "url",
+            "instructions": "Enter the CTA button URL."
+        },
+        {
+            "key": "field_comp_cta_url_rel_tag",
+            "label": "CTA Button Rel Attribute",
+            "name": "comp_cta_url_rel_tag",
+            "type": "text",
+            "instructions": "Enter the rel attribute (e.g., nofollow, noreferrer)."
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/compare"
+            }
+        ]
+    ],
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": []
+}
