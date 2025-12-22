@@ -3,7 +3,7 @@
     "title": "FAQ Block",
     "fields": [
         {
-            "key": "acf_faq_enable_schema",
+            "key": "field_acf_faq_enable_schema",
             "label": "Enable FAQ Schema",
             "name": "acf_faq_enable_schema",
             "type": "true_false",
@@ -12,7 +12,7 @@
             "default_value": 1
         },
         {
-            "key": "acf_faq_items",
+            "key": "field_acf_faq_items",
             "label": "FAQ Items",
             "name": "acf_faq_items",
             "type": "repeater",
@@ -23,7 +23,7 @@
             "button_label": "Add FAQ Item",
             "sub_fields": [
                 {
-                    "key": "acf_faq_question",
+                    "key": "field_acf_faq_question",
                     "label": "Question",
                     "name": "acf_faq_question",
                     "type": "text",
@@ -31,7 +31,7 @@
                     "required": 1
                 },
                 {
-                    "key": "acf_faq_answer",
+                    "key": "field_acf_faq_answer",
                     "label": "Answer",
                     "name": "acf_faq_answer",
                     "type": "wysiwyg",
@@ -44,7 +44,7 @@
             ]
         },
         {
-            "key": "acf_faq_class",
+            "key": "field_acf_faq_class",
             "label": "Custom CSS Class",
             "name": "acf_faq_class",
             "type": "text",
@@ -52,7 +52,7 @@
             "required": 0
         },
         {
-            "key": "acf_faq_inline",
+            "key": "field_acf_faq_inline",
             "label": "Inline Styles",
             "name": "acf_faq_inline",
             "type": "text",
@@ -74,10 +74,6 @@
     "style": "default",
     "label_placement": "top",
     "instruction_placement": "label",
-    "hide_on_screen": "",
     "active": true,
-    "description": "",
-    "acf": {
-        "blockVersion": 3
-    }
+    "description": "FAQ Block with schema support"
 }

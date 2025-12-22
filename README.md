@@ -132,6 +132,45 @@ CSS files are only enqueued when their respective blocks are used on a page, red
 
 The block will be automatically registered on the next page load.
 
+## Migrating from Other FAQ Plugins
+
+### Converting Rank Math / SEOPress FAQs to ACF FAQ Block
+
+You can use AI (Claude, ChatGPT, etc.) to quickly convert existing FAQ blocks. Use this prompt:
+
+```
+Convert my FAQ content to ACF FAQ block format.
+
+Input format (Rank Math example):
+<!-- wp:rank-math/faq-block {"questions":[{"id":"faq-question-xxx","title":"Question 1","content":"Answer 1","visible":true}]} -->
+<div class="wp-block-rank-math-faq-block">...</div>
+<!-- /wp:rank-math/faq-block -->
+
+Output format needed:
+<!-- wp:acf/faq {"name":"acf/faq","data":{"acf_faq_enable_schema":"1","acf_faq_items":[{"acf_faq_question":"Q1","acf_faq_answer":"A1"},{"acf_faq_question":"Q2","acf_faq_answer":"A2"}]},"mode":"preview"} /-->
+
+Here is my FAQ content to convert:
+[PASTE YOUR FAQ BLOCK HERE]
+```
+
+**Example conversion:**
+
+From Rank Math:
+```html
+<!-- wp:rank-math/faq-block {"questions":[{"id":"faq-question-1738298528152","title":"What is ACF?","content":"Advanced Custom Fields is a WordPress plugin.","visible":true},{"id":"faq-question-1738298538826","title":"Is it free?","content":"ACF has both free and Pro versions.","visible":true}]} -->
+<div class="wp-block-rank-math-faq-block"><div class="rank-math-faq-item"><h3 class="rank-math-question">What is ACF?</h3><div class="rank-math-answer">Advanced Custom Fields is a WordPress plugin.</div></div><div class="rank-math-faq-item"><h3 class="rank-math-question">Is it free?</h3><div class="rank-math-answer">ACF has both free and Pro versions.</div></div></div>
+<!-- /wp:rank-math/faq-block -->
+```
+
+To ACF FAQ Block:
+```html
+<!-- wp:acf/faq {"name":"acf/faq","data":{"acf_faq_enable_schema":"1","acf_faq_items":[{"acf_faq_question":"What is ACF?","acf_faq_answer":"Advanced Custom Fields is a WordPress plugin."},{"acf_faq_question":"Is it free?","acf_faq_answer":"ACF has both free and Pro versions."}]},"mode":"preview"} /-->
+```
+
+### Bulk Migration via Database
+
+For bulk migration, you can use a SQL query or WP-CLI script to find and replace FAQ blocks across your content. Always backup your database before running bulk operations.
+
 ## Development
 
 Enable debug mode for detailed error logging:
