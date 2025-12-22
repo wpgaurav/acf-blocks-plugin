@@ -1,102 +1,81 @@
 .acf-tabs-block {
-    margin: 20px 0;
+    margin: 1.5em 0;
 }
 
 /* Tab Navigation */
 .acf-tabs-nav {
     display: flex;
-    gap: 5px;
-    border-bottom: 2px solid #e0e0e0;
-    margin-bottom: 20px;
+    gap: 0.25em;
+    border-bottom: 1px solid currentColor;
+    opacity: 0.9;
+    margin-bottom: 1em;
 }
 
 .acf-tab-button {
-    padding: 15px 25px;
+    padding: 0.75em 1.25em;
     background-color: transparent;
     border: none;
-    border-bottom: 3px solid transparent;
+    border-bottom: 2px solid transparent;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: inherit;
     font-weight: 500;
-    color: #666;
-    transition: all 0.3s ease;
+    color: inherit;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.5em;
 }
 
 .acf-tab-button:hover {
-    color: #007bff;
-    background-color: #f8f9fa;
+    opacity: 1;
 }
 
 .acf-tab-button.active {
-    color: #007bff;
-    border-bottom-color: #007bff;
+    opacity: 1;
+    border-bottom-color: currentColor;
 }
 
 .acf-tab-icon {
-    font-size: 1.2rem;
+    font-size: 1.1em;
 }
 
 /* Tab Content */
 .acf-tabs-content {
-    padding: 20px 0;
+    padding: 1em 0;
 }
 
 .acf-tab-panel {
     display: none;
-    animation: fadeIn 0.3s ease;
 }
 
 .acf-tab-panel.active {
     display: block;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 /* Pills Style */
 .acf-tabs-block.acf-tabs-pills .acf-tabs-nav {
     border-bottom: none;
-    gap: 10px;
+    gap: 0.5em;
 }
 
 .acf-tabs-block.acf-tabs-pills .acf-tab-button {
-    border-radius: 25px;
+    border-radius: 2em;
     border-bottom: none;
-    background-color: #f8f9fa;
+    background-color: rgba(128, 128, 128, 0.1);
 }
 
 .acf-tabs-block.acf-tabs-pills .acf-tab-button.active {
-    background-color: #007bff;
-    color: #fff;
-}
-
-.acf-tabs-block.acf-tabs-pills .acf-tab-button:hover {
-    background-color: #e9ecef;
-}
-
-.acf-tabs-block.acf-tabs-pills .acf-tab-button.active:hover {
-    background-color: #0056b3;
+    background-color: rgba(128, 128, 128, 0.2);
 }
 
 /* Underline Style */
 .acf-tabs-block.acf-tabs-underline .acf-tabs-nav {
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom-width: 1px;
 }
 
 .acf-tabs-block.acf-tabs-underline .acf-tab-button {
-    border-bottom-width: 2px;
-    padding-bottom: 12px;
+    padding-bottom: 0.75em;
 }
 
 /* Boxed Style */
@@ -106,23 +85,23 @@
 }
 
 .acf-tabs-block.acf-tabs-boxed .acf-tab-button {
-    border: 1px solid #e0e0e0;
+    border: 1px solid rgba(128, 128, 128, 0.2);
     border-bottom: none;
-    border-radius: 8px 8px 0 0;
+    border-radius: 0.5em 0.5em 0 0;
     margin-right: -1px;
 }
 
 .acf-tabs-block.acf-tabs-boxed .acf-tab-button.active {
-    background-color: #fff;
-    border-bottom: 3px solid #fff;
-    margin-bottom: -2px;
+    background-color: inherit;
+    border-bottom: 2px solid inherit;
+    margin-bottom: -1px;
     z-index: 1;
 }
 
 .acf-tabs-block.acf-tabs-boxed .acf-tabs-content {
-    border: 1px solid #e0e0e0;
-    padding: 20px;
-    border-radius: 0 8px 8px 8px;
+    border: 1px solid rgba(128, 128, 128, 0.2);
+    padding: 1em;
+    border-radius: 0 0.5em 0.5em 0.5em;
 }
 
 /* Responsive */
@@ -132,19 +111,14 @@
     }
 
     .acf-tab-button {
-        padding: 12px 15px;
-        font-size: 0.9rem;
-    }
-
-    .acf-tab-icon {
-        font-size: 1rem;
+        padding: 0.625em 1em;
     }
 }
 
 @media (max-width: 480px) {
     .acf-tabs-nav {
         flex-direction: column;
-        gap: 5px;
+        gap: 0.25em;
         border-bottom: none;
     }
 
@@ -152,18 +126,17 @@
         width: 100%;
         text-align: left;
         border-bottom: none;
-        border-left: 3px solid transparent;
+        border-left: 2px solid transparent;
     }
 
     .acf-tab-button.active {
         border-bottom: none;
-        border-left-color: #007bff;
-        background-color: #f8f9fa;
+        border-left-color: currentColor;
     }
 
     .acf-tabs-block.acf-tabs-boxed .acf-tab-button {
-        border-radius: 8px;
-        border: 1px solid #e0e0e0;
+        border-radius: 0.5em;
+        border: 1px solid rgba(128, 128, 128, 0.2);
         margin-right: 0;
     }
 
@@ -172,7 +145,14 @@
     }
 
     .acf-tabs-block.acf-tabs-boxed .acf-tabs-content {
-        border-radius: 8px;
-        margin-top: 10px;
+        border-radius: 0.5em;
+        margin-top: 0.5em;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .acf-tab-button {
+        transition: none;
     }
 }
