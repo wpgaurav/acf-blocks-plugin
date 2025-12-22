@@ -1,0 +1,70 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Create plugin zip
+        run: |
+          # Create a temporary directory for the plugin
+          mkdir -p build/acf-blocks
+
+          # Copy all files except hidden files and build directory
+          rsync -av \
+            --exclude='.*' \
+            --exclude='build' \
+            --exclude='node_modules' \
+            --exclude='*.log' \
+            --exclude='package-lock.json' \
+            --exclude='composer.lock' \
+            ./ build/acf-blocks/
+
+          # Create zip file
+          cd build
+          zip -r acf-blocks-${{ steps.get_version.outputs.VERSION }}.zip acf-blocks
+
+          # Move zip to workspace root
+          mv acf-blocks-${{ steps.get_version.outputs.VERSION }}.zip ../
+
+      - name: Extract changelog
+        id: changelog
+        run: |
+          # Try to get version-specific notes from README or use default
+          if [ -f "CHANGELOG.md" ]; then
+            # Extract changelog for this version if exists
+            NOTES=$(sed -n "/## \[${{ steps.get_version.outputs.VERSION }}\]/,/## \[/p" CHANGELOG.md | sed '$d' || echo "")
+          fi
+
+          if [ -z "$NOTES" ]; then
+            NOTES="Release version ${{ steps.get_version.outputs.VERSION }}"
+          fi
+
+          # Write to file to handle multiline
+          echo "$NOTES" > release_notes.txt
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ACF Blocks v${{ steps.get_version.outputs.VERSION }}
+          body_path: release_notes.txt
+          draft: false
+          prerelease: false
+          files: acf-blocks-${{ steps.get_version.outputs.VERSION }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
