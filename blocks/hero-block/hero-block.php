@@ -25,7 +25,7 @@ $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"
 <div class="acf-hero-block<?php echo $custom_class; ?>"<?php echo $inline_style_attr; ?>>
     <?php if ( $image ) : ?>
         <div class="acf-hero-image">
-            <img src="<?php echo esc_url( $image['url'] ); ?>" alt="<?php echo esc_attr( $image['alt'] ); ?>" />
+            <img src="<?php echo esc_url( $image['url'] ); ?>" alt="<?php echo esc_attr( $image['alt'] ); ?>" fetchpriority="high" decoding="async" />
         </div>
     <?php endif; ?>
 

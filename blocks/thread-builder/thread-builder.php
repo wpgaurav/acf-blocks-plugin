@@ -59,7 +59,7 @@ $block_id = 'acf-thread-builder-' . $block['id'];
                     
                     <div class="acf-post-avatar">
                         <?php if ($author_avatar) : ?>
-                            <img src="<?php echo esc_url($author_avatar); ?>" alt="<?php echo esc_attr($author_name); ?>" />
+                            <img src="<?php echo esc_url($author_avatar); ?>" alt="<?php echo esc_attr($author_name); ?>" loading="lazy" decoding="async" />
                         <?php else : ?>
                             <div class="acf-default-avatar"></div>
                         <?php endif; ?>
@@ -111,7 +111,7 @@ $block_id = 'acf-thread-builder-' . $block['id'];
                         
                         <?php if ($media) : ?>
                             <div class="acf-post-media">
-                                <img src="<?php echo esc_url($media); ?>" alt="" />
+                                <img src="<?php echo esc_url($media); ?>" alt="" loading="lazy" decoding="async" />
                             </div>
                         <?php endif; ?>
                         

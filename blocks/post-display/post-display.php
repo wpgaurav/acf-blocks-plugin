@@ -78,7 +78,7 @@ $container_class = implode(' ', $container_classes);
                     <?php if (has_post_thumbnail($post->ID)): ?>
                     <div class="acf-post-display-thumbnail">
                         <a href="<?php echo esc_url(get_permalink($post->ID)); ?>">
-                            <?php echo get_the_post_thumbnail($post->ID, 'thumbnail', ['class' => 'acf-post-display-thumb']); ?>
+                            <?php echo get_the_post_thumbnail($post->ID, 'thumbnail', ['class' => 'acf-post-display-thumb', 'loading' => 'lazy', 'decoding' => 'async']); ?>
                         </a>
                     </div>
                     <?php endif; ?>
@@ -130,7 +130,7 @@ $container_class = implode(' ', $container_classes);
                     <?php if (has_post_thumbnail($post->ID)): ?>
                         <div class="acf-post-display-thumbnail">
                             <a href="<?php echo esc_url(get_permalink($post->ID)); ?>">
-                                <?php echo get_the_post_thumbnail($post->ID, 'medium', ['class' => 'acf-post-display-thumb']); ?>
+                                <?php echo get_the_post_thumbnail($post->ID, 'medium', ['class' => 'acf-post-display-thumb', 'loading' => 'lazy', 'decoding' => 'async']); ?>
                             </a>
                         </div>
                     <?php endif; ?>

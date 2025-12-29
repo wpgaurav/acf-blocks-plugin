@@ -18,7 +18,7 @@ $description = get_field('pb_description');
 <div class="acf-product-box grid-2" style="align-items:center">
     <?php if( $image ): ?>
     <div class="acf-product-box__image">
-        <?php echo wp_get_attachment_image( $image['ID'], 'md-block', false, array( 'class' => 'acf-product-box__image-img' ) ); ?>
+        <?php echo wp_get_attachment_image( $image['ID'], 'md-block', false, array( 'class' => 'acf-product-box__image-img', 'loading' => 'lazy', 'decoding' => 'async' ) ); ?>
     </div>
 <?php endif; ?>
 
