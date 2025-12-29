@@ -3,7 +3,7 @@
   "name": "acf/accordion",
   "title": "Accordion",
   "description": "A customizable accordion block with FAQ schema support.",
-  "category": "common",
+  "category": "acf-blocks",
   "icon": "list-view",
   "keywords": ["accordion", "faq", "toggle"],
   "acf": {

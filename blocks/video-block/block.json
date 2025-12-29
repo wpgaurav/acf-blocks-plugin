@@ -3,7 +3,7 @@
   "name": "acf/video",
   "title": "Video",
   "description": "A responsive video block supporting YouTube, Vimeo, and self-hosted videos.",
-  "category": "media",
+  "category": "acf-blocks",
   "icon": "video-alt3",
   "keywords": ["video", "youtube", "vimeo", "media", "embed"],
   "acf": {

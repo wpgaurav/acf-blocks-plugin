@@ -3,7 +3,7 @@
   "name": "acf/callout",
   "title": "Callout",
   "description": "Display a styled callout box with title, text, and button.",
-  "category": "formatting",
+  "category": "acf-blocks",
   "icon": "megaphone",
   "keywords": ["callout", "cta", "button"],
   "acf": {

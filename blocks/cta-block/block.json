@@ -3,7 +3,7 @@
   "name": "acf/cta",
   "title": "Call to Action",
   "description": "A customizable call-to-action block with heading, description, and button.",
-  "category": "common",
+  "category": "acf-blocks",
   "icon": "megaphone",
   "keywords": ["cta", "call to action", "button", "conversion"],
   "acf": {

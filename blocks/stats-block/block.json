@@ -3,7 +3,7 @@
   "name": "acf/stats",
   "title": "Stats/Counter",
   "description": "A stats block with animated counters to showcase numbers and achievements.",
-  "category": "common",
+  "category": "acf-blocks",
   "icon": "chart-bar",
   "keywords": ["stats", "counter", "numbers", "metrics", "achievements"],
   "acf": {

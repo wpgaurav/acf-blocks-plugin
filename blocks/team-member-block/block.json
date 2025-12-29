@@ -3,7 +3,7 @@
   "name": "acf/team-member",
   "title": "Team Member",
   "description": "A team member block with photo, name, title, bio, and social links.",
-  "category": "common",
+  "category": "acf-blocks",
   "icon": "groups",
   "keywords": ["team", "member", "staff", "person", "profile"],
   "acf": {

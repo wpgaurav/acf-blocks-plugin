@@ -3,7 +3,7 @@
   "name": "acf/thread-builder",
   "title": "Thread Builder",
   "description": "Create Twitter X-style conversation threads.",
-  "category": "formatting",
+  "category": "acf-blocks",
   "icon": "format-chat",
   "keywords": ["twitter", "thread", "conversation", "social", "tweet"],
   "acf": {

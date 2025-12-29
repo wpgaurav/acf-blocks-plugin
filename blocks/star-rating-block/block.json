@@ -3,7 +3,7 @@
   "name": "acf/star-rating",
   "title": "Star Rating",
   "description": "Collects visitor star ratings and displays the aggregate score.",
-  "category": "widgets",
+  "category": "acf-blocks",
   "icon": "star-filled",
   "keywords": ["rating", "feedback", "stars"],
   "acf": {

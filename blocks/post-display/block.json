@@ -3,7 +3,7 @@
   "name": "acf/post-display",
   "title": "Post Display",
   "description": "Display selected posts in various layouts.",
-  "category": "common",
+  "category": "acf-blocks",
   "icon": "admin-post",
   "keywords": ["post", "article", "display", "grid"],
   "acf": {

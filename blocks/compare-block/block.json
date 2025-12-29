@@ -3,7 +3,7 @@
   "name": "acf/compare",
   "title": "Compare Block",
   "description": "A customizable compare card block.",
-  "category": "formatting",
+  "category": "acf-blocks",
   "icon": "grid-view",
   "keywords": ["compare", "vs", "custom"],
   "acf": {

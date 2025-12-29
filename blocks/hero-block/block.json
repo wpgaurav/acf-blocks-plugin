@@ -3,7 +3,7 @@
   "name": "acf/hero",
   "title": "Hero",
   "description": "A customizable hero block with headline, subheadline, image, and CTA.",
-  "category": "common",
+  "category": "acf-blocks",
   "icon": "cover-image",
   "keywords": ["hero", "banner", "header", "featured"],
   "acf": {

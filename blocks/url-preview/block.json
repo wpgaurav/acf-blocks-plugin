@@ -3,7 +3,7 @@
     "name": "acf/url-preview",
     "title": "URL Preview Card",
     "description": "Fetches Open Graph data from a URL and displays it as a product-like card with optional custom fields.",
-    "category": "common",
+    "category": "acf-blocks",
     "icon": "admin-links",
     "keywords": ["url", "preview", "card", "product", "link", "opengraph", "og"],
     "acf": {

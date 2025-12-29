@@ -12,6 +12,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Register custom block category for ACF Blocks.
+ *
+ * @param array $categories Existing block categories.
+ * @return array Modified block categories.
+ */
+function acf_blocks_register_category( $categories ) {
+    return array_merge(
+        array(
+            array(
+                'slug'  => 'acf-blocks',
+                'title' => __( 'ACF Blocks', 'acf-blocks' ),
+                'icon'  => 'layout',
+            ),
+        ),
+        $categories
+    );
+}
+add_filter( 'block_categories_all', 'acf_blocks_register_category', 10, 1 );
+
+/**
  * Load ACF blocks from block.json files.
  *
  * Scans the blocks directory and registers each block that has a block.json file.

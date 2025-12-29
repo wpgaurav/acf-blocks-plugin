@@ -3,7 +3,7 @@
   "name": "acf/product-box",
   "title": "Product Box",
   "description": "A product box with image, title, rating, and description.",
-  "category": "common",
+  "category": "acf-blocks",
   "icon": "cart",
   "keywords": ["product", "box", "rating"],
   "acf": {

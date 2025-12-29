@@ -3,7 +3,7 @@
   "name": "acf/feature-grid",
   "title": "Feature Grid",
   "description": "A grid layout to showcase features with icons, titles, and descriptions.",
-  "category": "common",
+  "category": "acf-blocks",
   "icon": "grid-view",
   "keywords": ["features", "grid", "services", "benefits"],
   "acf": {

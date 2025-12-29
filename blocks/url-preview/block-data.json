@@ -294,6 +294,52 @@
             ]
         },
         {
+            "key": "field_url_preview_show_secondary_button",
+            "label": "Show Secondary Button",
+            "name": "show_secondary_button",
+            "type": "true_false",
+            "instructions": "Display a secondary button with outline style.",
+            "required": 0,
+            "default_value": 0,
+            "ui": 1
+        },
+        {
+            "key": "field_url_preview_secondary_button_text",
+            "label": "Secondary Button Text",
+            "name": "secondary_button_text",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "placeholder": "Learn More",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_url_preview_show_secondary_button",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_url_preview_secondary_button_url",
+            "label": "Secondary Button URL",
+            "name": "secondary_button_url",
+            "type": "url",
+            "instructions": "",
+            "required": 0,
+            "placeholder": "https://example.com",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_url_preview_show_secondary_button",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ]
+        },
+        {
             "key": "field_url_preview_tab_style",
             "label": "Style",
             "name": "",
@@ -336,15 +382,6 @@
                     }
                 ]
             ]
-        },
-        {
-            "key": "field_url_preview_accent_color",
-            "label": "Accent Color",
-            "name": "accent_color",
-            "type": "color_picker",
-            "instructions": "Color for button and highlights.",
-            "required": 0,
-            "default_value": "#0073aa"
         },
         {
             "key": "field_url_preview_custom_class",
