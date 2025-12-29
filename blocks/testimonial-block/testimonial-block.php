@@ -32,7 +32,7 @@ $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"
     <div class="acf-testimonial-author">
         <?php if ( $author_image ) : ?>
             <div class="acf-testimonial-author-image">
-                <img src="<?php echo esc_url( $author_image['url'] ); ?>" alt="<?php echo esc_attr( $author_image['alt'] ); ?>" />
+                <img src="<?php echo esc_url( $author_image['url'] ); ?>" alt="<?php echo esc_attr( $author_image['alt'] ); ?>" loading="lazy" decoding="async" />
             </div>
         <?php endif; ?>
 

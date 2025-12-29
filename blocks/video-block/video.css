@@ -106,3 +106,52 @@
 .acf-video-wrapper:has(video)::before {
     display: none;
 }
+
+/* Video Facade (Performance optimization) */
+.acf-video-facade {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 3;
+}
+
+.acf-video-facade img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.acf-video-play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.2s ease, filter 0.2s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+.acf-video-facade:hover .acf-video-play-button,
+.acf-video-facade:focus .acf-video-play-button {
+    transform: translate(-50%, -50%) scale(1.1);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+.acf-video-facade:focus {
+    outline: 3px solid #007bff;
+    outline-offset: 2px;
+}
+
+/* Vimeo placeholder */
+.acf-video-vimeo-thumb {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+/* Hide loading spinner when facade is present */
+.acf-video-wrapper:has(.acf-video-facade)::before {
+    display: none;
+}

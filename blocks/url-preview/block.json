@@ -1,0 +1,20 @@
+{
+    "apiVersion": 3,
+    "name": "acf/url-preview",
+    "title": "URL Preview Card",
+    "description": "Fetches Open Graph data from a URL and displays it as a product-like card with optional custom fields.",
+    "category": "common",
+    "icon": "admin-links",
+    "keywords": ["url", "preview", "card", "product", "link", "opengraph", "og"],
+    "acf": {
+        "renderTemplate": "url-preview.php",
+        "blockVersion": 3
+    },
+    "supports": {
+        "align": true,
+        "mode": true,
+        "jsx": true
+    },
+    "style": "file:./url-preview.css",
+    "editorStyle": "file:./url-preview.css"
+}

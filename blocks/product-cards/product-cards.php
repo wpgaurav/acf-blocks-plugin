@@ -19,7 +19,7 @@ $text_link_rel = get_field('pc_block_text_link_rel');
     </div>
     <?php if ($image): ?>
         <div class="acf-product-cards__image">
-            <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($title); ?>">
+            <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($title); ?>" loading="lazy" decoding="async" />
         </div>
     <?php endif; ?>
     <div class="acf-product-cards__content">

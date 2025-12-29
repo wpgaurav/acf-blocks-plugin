@@ -1,0 +1,384 @@
+{
+    "key": "group_url_preview_block",
+    "title": "URL Preview Card",
+    "fields": [
+        {
+            "key": "field_url_preview_tab_content",
+            "label": "Content",
+            "name": "",
+            "type": "tab",
+            "placement": "top"
+        },
+        {
+            "key": "field_url_preview_source_url",
+            "label": "Source URL",
+            "name": "source_url",
+            "type": "url",
+            "instructions": "Enter the URL to fetch Open Graph data from. Click 'Fetch Data' to auto-populate title, description, and image.",
+            "required": 0,
+            "placeholder": "https://example.com/page"
+        },
+        {
+            "key": "field_url_preview_fetch_message",
+            "label": "",
+            "name": "",
+            "type": "message",
+            "message": "<button type=\"button\" class=\"button button-primary acf-url-preview-fetch-btn\" style=\"margin-top: 5px;\">Fetch Data from URL</button><span class=\"acf-url-preview-fetch-status\" style=\"margin-left: 10px;\"></span>",
+            "new_lines": "",
+            "esc_html": 0
+        },
+        {
+            "key": "field_url_preview_title",
+            "label": "Title",
+            "name": "preview_title",
+            "type": "text",
+            "instructions": "The title of the preview card. Auto-populated from Open Graph or page title.",
+            "required": 0,
+            "placeholder": "Page Title"
+        },
+        {
+            "key": "field_url_preview_description",
+            "label": "Description",
+            "name": "preview_description",
+            "type": "textarea",
+            "instructions": "The description for the preview card. Auto-populated from meta description or Open Graph.",
+            "required": 0,
+            "rows": 3,
+            "placeholder": "Page description..."
+        },
+        {
+            "key": "field_url_preview_tab_image",
+            "label": "Image",
+            "name": "",
+            "type": "tab",
+            "placement": "top"
+        },
+        {
+            "key": "field_url_preview_image_source",
+            "label": "Image Source",
+            "name": "image_source",
+            "type": "button_group",
+            "instructions": "Choose whether to use the external image URL or import to media library.",
+            "required": 0,
+            "choices": {
+                "external": "External URL",
+                "local": "Media Library"
+            },
+            "default_value": "external",
+            "layout": "horizontal"
+        },
+        {
+            "key": "field_url_preview_external_image",
+            "label": "External Image URL",
+            "name": "external_image_url",
+            "type": "url",
+            "instructions": "The URL of the image to display. Auto-populated from Open Graph image or first suitable image.",
+            "required": 0,
+            "placeholder": "https://example.com/image.jpg",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_url_preview_image_source",
+                        "operator": "==",
+                        "value": "external"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_url_preview_local_image",
+            "label": "Media Library Image",
+            "name": "local_image",
+            "type": "image",
+            "instructions": "Select an image from the media library or import from external URL.",
+            "required": 0,
+            "return_format": "array",
+            "preview_size": "medium",
+            "library": "all",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_url_preview_image_source",
+                        "operator": "==",
+                        "value": "local"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_url_preview_import_message",
+            "label": "",
+            "name": "",
+            "type": "message",
+            "message": "<button type=\"button\" class=\"button acf-url-preview-import-btn\">Import External Image to Media Library</button><span class=\"acf-url-preview-import-status\" style=\"margin-left: 10px;\"></span>",
+            "new_lines": "",
+            "esc_html": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_url_preview_image_source",
+                        "operator": "==",
+                        "value": "local"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_url_preview_image_alt",
+            "label": "Image Alt Text",
+            "name": "image_alt",
+            "type": "text",
+            "instructions": "Alternative text for the image (for accessibility).",
+            "required": 0,
+            "placeholder": "Descriptive text for the image"
+        },
+        {
+            "key": "field_url_preview_tab_data",
+            "label": "Custom Data",
+            "name": "",
+            "type": "tab",
+            "placement": "top"
+        },
+        {
+            "key": "field_url_preview_custom_fields",
+            "label": "Custom Data Fields",
+            "name": "custom_fields",
+            "type": "repeater",
+            "instructions": "Add custom data fields like Price, Expiry Date, Rating, etc.",
+            "required": 0,
+            "min": 0,
+            "max": 10,
+            "layout": "table",
+            "button_label": "Add Field",
+            "sub_fields": [
+                {
+                    "key": "field_url_preview_field_label",
+                    "label": "Label",
+                    "name": "field_label",
+                    "type": "text",
+                    "instructions": "",
+                    "required": 0,
+                    "placeholder": "e.g., Price",
+                    "wrapper": {
+                        "width": "40"
+                    }
+                },
+                {
+                    "key": "field_url_preview_field_value",
+                    "label": "Value",
+                    "name": "field_value",
+                    "type": "text",
+                    "instructions": "",
+                    "required": 0,
+                    "placeholder": "e.g., $9.99",
+                    "wrapper": {
+                        "width": "40"
+                    }
+                },
+                {
+                    "key": "field_url_preview_field_icon",
+                    "label": "Icon",
+                    "name": "field_icon",
+                    "type": "select",
+                    "instructions": "",
+                    "required": 0,
+                    "choices": {
+                        "none": "None",
+                        "price": "Price Tag",
+                        "calendar": "Calendar",
+                        "star": "Star",
+                        "check": "Checkmark",
+                        "info": "Info",
+                        "clock": "Clock",
+                        "percent": "Percent",
+                        "gift": "Gift",
+                        "truck": "Shipping"
+                    },
+                    "default_value": "none",
+                    "wrapper": {
+                        "width": "20"
+                    }
+                }
+            ]
+        },
+        {
+            "key": "field_url_preview_tab_button",
+            "label": "Button",
+            "name": "",
+            "type": "tab",
+            "placement": "top"
+        },
+        {
+            "key": "field_url_preview_show_button",
+            "label": "Show Button",
+            "name": "show_button",
+            "type": "true_false",
+            "instructions": "Display a call-to-action button on the card.",
+            "required": 0,
+            "default_value": 1,
+            "ui": 1
+        },
+        {
+            "key": "field_url_preview_button_text",
+            "label": "Button Text",
+            "name": "button_text",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "default_value": "View Details",
+            "placeholder": "View Details",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_url_preview_show_button",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_url_preview_button_url",
+            "label": "Button URL",
+            "name": "button_url",
+            "type": "url",
+            "instructions": "Leave empty to use the source URL.",
+            "required": 0,
+            "placeholder": "https://example.com",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_url_preview_show_button",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_url_preview_button_new_tab",
+            "label": "Open in New Tab",
+            "name": "button_new_tab",
+            "type": "true_false",
+            "instructions": "",
+            "required": 0,
+            "default_value": 1,
+            "ui": 1,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_url_preview_show_button",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_url_preview_button_rel",
+            "label": "Add nofollow",
+            "name": "button_nofollow",
+            "type": "true_false",
+            "instructions": "Add rel=\"nofollow\" to the button link.",
+            "required": 0,
+            "default_value": 0,
+            "ui": 1,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_url_preview_show_button",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_url_preview_tab_style",
+            "label": "Style",
+            "name": "",
+            "type": "tab",
+            "placement": "top"
+        },
+        {
+            "key": "field_url_preview_layout",
+            "label": "Card Layout",
+            "name": "card_layout",
+            "type": "button_group",
+            "instructions": "Choose the card layout style.",
+            "required": 0,
+            "choices": {
+                "vertical": "Vertical",
+                "horizontal": "Horizontal"
+            },
+            "default_value": "vertical",
+            "layout": "horizontal"
+        },
+        {
+            "key": "field_url_preview_image_position",
+            "label": "Image Position",
+            "name": "image_position",
+            "type": "button_group",
+            "instructions": "",
+            "required": 0,
+            "choices": {
+                "left": "Left",
+                "right": "Right"
+            },
+            "default_value": "left",
+            "layout": "horizontal",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_url_preview_layout",
+                        "operator": "==",
+                        "value": "horizontal"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_url_preview_accent_color",
+            "label": "Accent Color",
+            "name": "accent_color",
+            "type": "color_picker",
+            "instructions": "Color for button and highlights.",
+            "required": 0,
+            "default_value": "#0073aa"
+        },
+        {
+            "key": "field_url_preview_custom_class",
+            "label": "Custom CSS Class",
+            "name": "custom_class",
+            "type": "text",
+            "instructions": "Add custom CSS classes (space-separated).",
+            "required": 0,
+            "placeholder": "my-custom-class"
+        },
+        {
+            "key": "field_url_preview_custom_inline",
+            "label": "Custom Inline Styles",
+            "name": "custom_inline",
+            "type": "text",
+            "instructions": "Add custom inline CSS styles.",
+            "required": 0,
+            "placeholder": "margin-bottom: 20px;"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/url-preview"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "active": true,
+    "show_in_rest": 0
+}

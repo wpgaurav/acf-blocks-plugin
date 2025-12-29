@@ -33,6 +33,10 @@ $lightbox_class = $lightbox ? ' acf-gallery-has-lightbox' : '';
             $image_url = $image['url'];
             $image_alt = $image['alt'] ? $image['alt'] : 'Gallery image ' . ( $index + 1 );
             $image_caption = $image['caption'];
+            // Use medium_large size for grid display, full for lightbox
+            $display_url = isset( $image['sizes']['medium_large'] ) ? $image['sizes']['medium_large'] : $image_url;
+            // Eager load first 4 images, lazy load the rest
+            $loading_attr = $index < 4 ? 'eager' : 'lazy';
             ?>
             <div class="acf-gallery-item">
                 <?php if ( $lightbox ) : ?>
@@ -40,13 +44,13 @@ $lightbox_class = $lightbox ? ' acf-gallery-has-lightbox' : '';
                        class="acf-gallery-link"
                        data-lightbox="gallery"
                        data-title="<?php echo esc_attr( $image_alt ); ?>">
-                        <img src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>" />
+                        <img src="<?php echo esc_url( $display_url ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>" loading="<?php echo esc_attr( $loading_attr ); ?>" decoding="async" />
                         <div class="acf-gallery-overlay">
                             <span class="acf-gallery-icon">🔍</span>
                         </div>
                     </a>
                 <?php else : ?>
-                    <img src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>" />
+                    <img src="<?php echo esc_url( $display_url ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>" loading="<?php echo esc_attr( $loading_attr ); ?>" decoding="async" />
                 <?php endif; ?>
 
                 <?php if ( $image_caption ) : ?>

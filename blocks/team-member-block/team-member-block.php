@@ -26,7 +26,7 @@ $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"
 <div class="acf-team-member-block<?php echo $custom_class; ?>"<?php echo $inline_style_attr; ?>>
     <?php if ( $photo ) : ?>
         <div class="acf-team-member-photo">
-            <img src="<?php echo esc_url( $photo['url'] ); ?>" alt="<?php echo esc_attr( $photo['alt'] ? $photo['alt'] : $name ); ?>" />
+            <img src="<?php echo esc_url( $photo['url'] ); ?>" alt="<?php echo esc_attr( $photo['alt'] ? $photo['alt'] : $name ); ?>" loading="lazy" decoding="async" />
         </div>
     <?php endif; ?>
 

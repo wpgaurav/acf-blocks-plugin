@@ -52,7 +52,7 @@ $image_url = $image_id ? wp_get_attachment_image_url( $image_id, 'full' ) : '';
     <?php endif; ?>
 
     <?php if ( $image_url ) : ?>
-        <img class="acf-product-review-image" src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $product_name ); ?>">
+        <img class="acf-product-review-image" src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $product_name ); ?>" loading="lazy" decoding="async" />
     <?php endif; ?>
 
     <?php if ( $overall_rating ) : ?>
