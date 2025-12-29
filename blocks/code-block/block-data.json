@@ -1,0 +1,187 @@
+{
+    "key": "group_code_block",
+    "title": "Code Block",
+    "fields": [
+        {
+            "key": "field_code_block_tab_content",
+            "label": "Content",
+            "name": "",
+            "type": "tab",
+            "placement": "top"
+        },
+        {
+            "key": "field_code_block_code",
+            "label": "Code",
+            "name": "code_content",
+            "type": "textarea",
+            "instructions": "Enter the code to display.",
+            "required": 0,
+            "rows": 12,
+            "placeholder": "// Enter your code here..."
+        },
+        {
+            "key": "field_code_block_language",
+            "label": "Language",
+            "name": "code_language",
+            "type": "select",
+            "instructions": "Select the programming language for syntax highlighting.",
+            "required": 0,
+            "choices": {
+                "plaintext": "Plain Text",
+                "html": "HTML",
+                "css": "CSS",
+                "javascript": "JavaScript",
+                "typescript": "TypeScript",
+                "php": "PHP",
+                "python": "Python",
+                "ruby": "Ruby",
+                "java": "Java",
+                "csharp": "C#",
+                "cpp": "C++",
+                "c": "C",
+                "go": "Go",
+                "rust": "Rust",
+                "swift": "Swift",
+                "kotlin": "Kotlin",
+                "sql": "SQL",
+                "bash": "Bash/Shell",
+                "powershell": "PowerShell",
+                "json": "JSON",
+                "xml": "XML",
+                "yaml": "YAML",
+                "markdown": "Markdown",
+                "jsx": "JSX",
+                "tsx": "TSX",
+                "scss": "SCSS",
+                "sass": "Sass",
+                "less": "Less"
+            },
+            "default_value": "plaintext",
+            "allow_null": 0
+        },
+        {
+            "key": "field_code_block_filename",
+            "label": "Filename (Optional)",
+            "name": "code_filename",
+            "type": "text",
+            "instructions": "Display a filename header above the code block.",
+            "required": 0,
+            "placeholder": "example.js"
+        },
+        {
+            "key": "field_code_block_tab_options",
+            "label": "Options",
+            "name": "",
+            "type": "tab",
+            "placement": "top"
+        },
+        {
+            "key": "field_code_block_show_line_numbers",
+            "label": "Show Line Numbers",
+            "name": "show_line_numbers",
+            "type": "true_false",
+            "instructions": "",
+            "required": 0,
+            "default_value": 1,
+            "ui": 1
+        },
+        {
+            "key": "field_code_block_show_copy_button",
+            "label": "Show Copy Button",
+            "name": "show_copy_button",
+            "type": "true_false",
+            "instructions": "",
+            "required": 0,
+            "default_value": 1,
+            "ui": 1
+        },
+        {
+            "key": "field_code_block_highlight_lines",
+            "label": "Highlight Lines",
+            "name": "highlight_lines",
+            "type": "text",
+            "instructions": "Enter line numbers to highlight (e.g., 1,3,5-7).",
+            "required": 0,
+            "placeholder": "1,3,5-7"
+        },
+        {
+            "key": "field_code_block_start_line",
+            "label": "Start Line Number",
+            "name": "start_line",
+            "type": "number",
+            "instructions": "The starting line number (default: 1).",
+            "required": 0,
+            "default_value": 1,
+            "min": 1
+        },
+        {
+            "key": "field_code_block_max_height",
+            "label": "Max Height (px)",
+            "name": "max_height",
+            "type": "number",
+            "instructions": "Maximum height in pixels before scrolling (leave empty for auto).",
+            "required": 0,
+            "placeholder": "400"
+        },
+        {
+            "key": "field_code_block_tab_style",
+            "label": "Style",
+            "name": "",
+            "type": "tab",
+            "placement": "top"
+        },
+        {
+            "key": "field_code_block_theme",
+            "label": "Theme",
+            "name": "code_theme",
+            "type": "button_group",
+            "instructions": "",
+            "required": 0,
+            "choices": {
+                "dark": "Dark",
+                "light": "Light"
+            },
+            "default_value": "dark",
+            "layout": "horizontal"
+        },
+        {
+            "key": "field_code_block_font_size",
+            "label": "Font Size",
+            "name": "font_size",
+            "type": "select",
+            "instructions": "",
+            "required": 0,
+            "choices": {
+                "small": "Small (13px)",
+                "normal": "Normal (14px)",
+                "large": "Large (16px)"
+            },
+            "default_value": "normal"
+        },
+        {
+            "key": "field_code_block_custom_class",
+            "label": "Custom CSS Class",
+            "name": "custom_class",
+            "type": "text",
+            "instructions": "Add custom CSS classes (space-separated).",
+            "required": 0,
+            "placeholder": "my-custom-class"
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/code-block"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "active": true,
+    "show_in_rest": 0
+}
