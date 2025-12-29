@@ -260,41 +260,6 @@
     }
 }
 
-/* Dark mode support (if theme supports) */
-@media (prefers-color-scheme: dark) {
-    .acf-url-preview {
-        --acf-url-preview-bg: #1e1e1e;
-        --acf-url-preview-border: #3c3c3c;
-        --acf-url-preview-text: #e0e0e0;
-        --acf-url-preview-text-secondary: #a0a0a0;
-    }
-
-    .acf-url-preview__field {
-        background: #2c2c2c;
-    }
-
-    .acf-url-preview__button {
-        background: #ffffff;
-        color: #080808;
-    }
-
-    .acf-url-preview__button:hover {
-        background: #e0e0e0;
-        color: #080808;
-    }
-
-    .acf-url-preview__button--secondary {
-        background: transparent;
-        color: #ffffff;
-        border-color: #ffffff;
-    }
-
-    .acf-url-preview__button--secondary:hover {
-        background: #2c2c2c;
-        color: #ffffff;
-    }
-}
-
 /* Alignment support */
 .alignwide .acf-url-preview,
 .alignwide.acf-url-preview {

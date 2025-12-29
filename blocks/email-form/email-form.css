@@ -122,43 +122,6 @@
     white-space: nowrap;
 }
 
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-    .acf-form-group label {
-        color: #e0e0e0;
-    }
-
-    .acf-input {
-        background: #1e1e1e;
-        border-color: #3c3c3c;
-        color: #e0e0e0;
-    }
-
-    .acf-input:focus {
-        border-color: #ffffff;
-        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
-    }
-
-    .acf-input::placeholder {
-        color: #6b7280;
-    }
-
-    .acf-submit {
-        background-color: #ffffff;
-        color: #080808;
-    }
-
-    .acf-submit:hover {
-        background-color: #e0e0e0;
-    }
-
-    .acf-email-form-success {
-        background-color: #052e16;
-        border-color: #166534;
-        color: #86efac;
-    }
-}
-
 /* Responsive */
 @media (max-width: 600px) {
     .acf-email-form--inline {
