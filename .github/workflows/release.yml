@@ -23,7 +23,7 @@ jobs:
       - name: Create plugin zip
         run: |
           # Create a temporary directory for the plugin
-          mkdir -p build/acf-blocks
+          mkdir -p build/acf-blocks-plugin
 
           # Copy all files except hidden files and build directory
           rsync -av \
@@ -33,14 +33,14 @@ jobs:
             --exclude='*.log' \
             --exclude='package-lock.json' \
             --exclude='composer.lock' \
-            ./ build/acf-blocks/
+            ./ build/acf-blocks-plugin/
 
           # Create zip file
           cd build
-          zip -r acf-blocks-${{ steps.get_version.outputs.VERSION }}.zip acf-blocks
+          zip -r acf-blocks-plugin-${{ steps.get_version.outputs.VERSION }}.zip acf-blocks-plugin
 
           # Move zip to workspace root
-          mv acf-blocks-${{ steps.get_version.outputs.VERSION }}.zip ../
+          mv acf-blocks-plugin-${{ steps.get_version.outputs.VERSION }}.zip ../
 
       - name: Extract changelog
         id: changelog
@@ -65,6 +65,6 @@ jobs:
           body_path: release_notes.txt
           draft: false
           prerelease: false
-          files: acf-blocks-${{ steps.get_version.outputs.VERSION }}.zip
+          files: acf-blocks-plugin-${{ steps.get_version.outputs.VERSION }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
