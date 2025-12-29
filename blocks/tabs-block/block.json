@@ -3,7 +3,7 @@
   "name": "acf/tabs",
   "title": "Tabs",
   "description": "A tabbed content block for organizing information into switchable sections.",
-  "category": "common",
+  "category": "acf-blocks",
   "icon": "index-card",
   "keywords": ["tabs", "tabbed", "content", "sections"],
   "acf": {

@@ -3,7 +3,7 @@
   "name": "acf/email-form",
   "title": "Email Form",
   "description": "A customizable email capture form block.",
-  "category": "common",
+  "category": "acf-blocks",
   "icon": "email",
   "keywords": ["email", "form", "subscribe", "newsletter"],
   "acf": {

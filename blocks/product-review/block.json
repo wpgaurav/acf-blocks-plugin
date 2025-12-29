@@ -3,7 +3,7 @@
   "name": "acf/product-review",
   "title": "Product Review",
   "description": "A custom product review block with structured data.",
-  "category": "common",
+  "category": "acf-blocks",
   "icon": "admin-comments",
   "keywords": ["review", "product", "rating"],
   "acf": {

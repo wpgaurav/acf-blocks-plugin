@@ -3,7 +3,7 @@
   "name": "acf/testimonial",
   "title": "Testimonial",
   "description": "A customizable testimonial block with quote, author, and rating.",
-  "category": "common",
+  "category": "acf-blocks",
   "icon": "format-quote",
   "keywords": ["testimonial", "review", "quote", "customer"],
   "acf": {

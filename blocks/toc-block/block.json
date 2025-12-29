@@ -3,7 +3,7 @@
   "name": "acf/toc",
   "title": "Table of Contents",
   "description": "Display an SEO-optimized table of contents with schema markup, multiple list styles, and optional sticky behavior.",
-  "category": "formatting",
+  "category": "acf-blocks",
   "icon": "list-view",
   "keywords": ["toc", "table of contents", "navigation", "headings", "index"],
   "acf": {

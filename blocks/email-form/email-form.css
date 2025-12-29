@@ -1,91 +1,171 @@
 /* Email Form Block Styles */
 
 .acf-email-form-wrapper {
-	width: 100%;
-	box-sizing: border-box;
+    --acf-accent: var(--wp--preset--color--primary, #080808);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .acf-clear::after {
-	content: "";
-	display: table;
-	clear: both;
+    content: "";
+    display: table;
+    clear: both;
 }
 
 .acf-email-form-content {
-	width: 100%;
+    width: 100%;
 }
 
 .acf-email-form {
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: 480px;
 }
 
 .acf-email-form-full {
-	width: 100%;
-	max-width: 100%;
+    width: 100%;
+    max-width: 100%;
 }
 
 .acf-form-group {
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .acf-form-group label {
-	font-weight: 600;
-	margin-bottom: 0.25rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #1d2327;
 }
 
 .acf-input {
-	padding: 0.75rem;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	font-size: 1rem;
-	width: 100%;
-	box-sizing: border-box;
+    padding: 0.875rem 1rem;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    background: #ffffff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .acf-input:focus {
-	outline: none;
-	border-color: #007bff;
-	box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+    outline: none;
+    border-color: var(--acf-accent);
+    box-shadow: 0 0 0 3px rgba(8, 8, 8, 0.1);
 }
 
-.acf-input-name,
-.acf-input-email {
-	/* Specific styles for name and email inputs if needed */
+.acf-input::placeholder {
+    color: #98a2b3;
 }
 
 .acf-submit {
-	padding: 0.75rem 1.5rem;
-	background-color: #007bff;
-	color: white;
-	border: none;
-	border-radius: 4px;
-	font-size: 1rem;
-	font-weight: 600;
-	cursor: pointer;
-	transition: background-color 0.2s ease;
+    padding: 0.875rem 1.5rem;
+    background-color: #080808;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    width: 100%;
 }
 
 .acf-submit:hover {
-	background-color: #0056b3;
+    background-color: #333333;
 }
 
 .acf-submit:active {
-	background-color: #004085;
+    transform: scale(0.98);
+}
+
+.acf-submit:focus {
+    outline: 2px solid var(--acf-accent);
+    outline-offset: 2px;
 }
 
 .acf-mb-half {
-	margin-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .acf-email-form-success {
-	padding: 1rem;
-	background-color: #d4edda;
-	border: 1px solid #c3e6cb;
-	border-radius: 4px;
-	color: #155724;
-	margin-top: 1rem;
+    padding: 1rem 1.25rem;
+    background-color: #ecfdf3;
+    border: 1px solid #a6f4c5;
+    border-radius: 8px;
+    color: #027a48;
+    margin-top: 1rem;
+    font-weight: 500;
+}
+
+/* Inline layout variant */
+.acf-email-form--inline {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 0.75rem;
+    max-width: 600px;
+}
+
+.acf-email-form--inline .acf-form-group {
+    flex: 1;
+}
+
+.acf-email-form--inline .acf-form-group:last-of-type {
+    flex: 0 0 auto;
+}
+
+.acf-email-form--inline .acf-submit {
+    width: auto;
+    white-space: nowrap;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    .acf-form-group label {
+        color: #e0e0e0;
+    }
+
+    .acf-input {
+        background: #1e1e1e;
+        border-color: #3c3c3c;
+        color: #e0e0e0;
+    }
+
+    .acf-input:focus {
+        border-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    }
+
+    .acf-input::placeholder {
+        color: #6b7280;
+    }
+
+    .acf-submit {
+        background-color: #ffffff;
+        color: #080808;
+    }
+
+    .acf-submit:hover {
+        background-color: #e0e0e0;
+    }
+
+    .acf-email-form-success {
+        background-color: #052e16;
+        border-color: #166534;
+        color: #86efac;
+    }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .acf-email-form--inline {
+        flex-direction: column;
+    }
+
+    .acf-email-form--inline .acf-submit {
+        width: 100%;
+    }
 }

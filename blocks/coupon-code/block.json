@@ -3,7 +3,7 @@
   "name": "acf/cb-coupon-code",
   "title": "Coupon Code",
   "description": "A coupon code block with offer details, copyable coupon code, and discount activation button.",
-  "category": "common",
+  "category": "acf-blocks",
   "icon": "tickets",
   "keywords": ["coupon", "discount", "offer"],
   "acf": {

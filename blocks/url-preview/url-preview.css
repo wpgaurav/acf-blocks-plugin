@@ -3,7 +3,7 @@
  */
 
 .acf-url-preview {
-    --acf-url-preview-accent: #0073aa;
+    --acf-accent: var(--wp--preset--color--primary, #080808);
     --acf-url-preview-bg: #ffffff;
     --acf-url-preview-border: #e0e0e0;
     --acf-url-preview-text: #1d2327;
@@ -17,7 +17,7 @@
     box-shadow: var(--acf-url-preview-shadow);
     overflow: hidden;
     transition: box-shadow 0.2s ease, transform 0.2s ease;
-    max-width: 600px;
+    width: 100%;
 }
 
 .acf-url-preview:hover {
@@ -46,7 +46,6 @@
 .acf-url-preview--horizontal {
     display: flex;
     flex-direction: row;
-    max-width: 800px;
 }
 
 .acf-url-preview--horizontal .acf-url-preview__image {
@@ -119,7 +118,7 @@
 .acf-url-preview__field-icon {
     display: inline-flex;
     align-items: center;
-    color: var(--acf-url-preview-accent);
+    color: var(--acf-accent);
 }
 
 .acf-url-preview__field-icon svg {
@@ -136,31 +135,37 @@
     color: var(--acf-url-preview-text);
 }
 
-/* Button */
+/* Buttons container */
+.acf-url-preview__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: auto;
+}
+
+/* Primary Button */
 .acf-url-preview__button {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     padding: 0.625rem 1.25rem;
-    background: var(--acf-url-preview-accent);
+    background: #080808;
     color: #ffffff;
     text-decoration: none;
     font-weight: 500;
     font-size: 0.9375rem;
     border-radius: 6px;
     transition: background 0.2s ease, transform 0.1s ease;
-    margin-top: auto;
-    width: fit-content;
 }
 
 .acf-url-preview__button:hover {
-    background: color-mix(in srgb, var(--acf-url-preview-accent) 85%, #000);
+    background: #333333;
     color: #ffffff;
     transform: translateX(2px);
 }
 
 .acf-url-preview__button:focus {
-    outline: 2px solid var(--acf-url-preview-accent);
+    outline: 2px solid var(--acf-accent);
     outline-offset: 2px;
 }
 
@@ -172,6 +177,18 @@
 
 .acf-url-preview__button:hover svg {
     transform: translateX(3px);
+}
+
+/* Secondary Button */
+.acf-url-preview__button--secondary {
+    background: transparent;
+    color: #080808;
+    border: 1px solid #080808;
+}
+
+.acf-url-preview__button--secondary:hover {
+    background: #f6f7f7;
+    color: #080808;
 }
 
 /* Placeholder state */
@@ -233,6 +250,14 @@
         font-size: 0.8125rem;
         padding: 0.25rem 0.5rem;
     }
+
+    .acf-url-preview__buttons {
+        flex-direction: column;
+    }
+
+    .acf-url-preview__button {
+        justify-content: center;
+    }
 }
 
 /* Dark mode support (if theme supports) */
@@ -247,17 +272,38 @@
     .acf-url-preview__field {
         background: #2c2c2c;
     }
+
+    .acf-url-preview__button {
+        background: #ffffff;
+        color: #080808;
+    }
+
+    .acf-url-preview__button:hover {
+        background: #e0e0e0;
+        color: #080808;
+    }
+
+    .acf-url-preview__button--secondary {
+        background: transparent;
+        color: #ffffff;
+        border-color: #ffffff;
+    }
+
+    .acf-url-preview__button--secondary:hover {
+        background: #2c2c2c;
+        color: #ffffff;
+    }
 }
 
 /* Alignment support */
 .alignwide .acf-url-preview,
 .alignwide.acf-url-preview {
-    max-width: 100%;
+    width: 100%;
 }
 
 .alignfull .acf-url-preview,
 .alignfull.acf-url-preview {
-    max-width: 100%;
+    width: 100%;
     border-radius: 0;
 }
 

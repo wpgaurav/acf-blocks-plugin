@@ -3,7 +3,7 @@
   "name": "acf/product-cards",
   "title": "Product Cards",
   "description": "A customizable product card block.",
-  "category": "formatting",
+  "category": "acf-blocks",
   "icon": "grid-view",
   "keywords": ["product", "card", "custom"],
   "acf": {

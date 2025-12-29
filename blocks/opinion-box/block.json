@@ -3,7 +3,7 @@
   "name": "acf/opinion-box",
   "title": "Opinion Box",
   "description": "A custom opinion box block for sharing thoughts.",
-  "category": "common",
+  "category": "acf-blocks",
   "icon": "admin-comments",
   "keywords": ["opinion", "box", "feedback"],
   "acf": {

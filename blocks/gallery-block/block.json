@@ -3,7 +3,7 @@
   "name": "acf/gallery",
   "title": "Gallery",
   "description": "A responsive gallery block with multiple layout options.",
-  "category": "media",
+  "category": "acf-blocks",
   "icon": "format-gallery",
   "keywords": ["gallery", "images", "photos", "grid"],
   "acf": {

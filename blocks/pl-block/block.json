@@ -3,7 +3,7 @@
   "name": "acf/pl-block",
   "title": "Product List Block",
   "description": "A product block with rank, icon, name, description, pricing, coupons, and offer buttons.",
-  "category": "common",
+  "category": "acf-blocks",
   "icon": "products",
   "keywords": ["product", "offer", "pricing", "coupon"],
   "acf": {
