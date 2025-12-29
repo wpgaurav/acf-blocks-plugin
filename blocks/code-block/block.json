@@ -1,0 +1,19 @@
+{
+  "apiVersion": 3,
+  "name": "acf/code-block",
+  "title": "Code Block",
+  "description": "Display code snippets with syntax highlighting and copy functionality.",
+  "category": "acf-blocks",
+  "icon": "editor-code",
+  "keywords": ["code", "syntax", "snippet", "programming", "highlight"],
+  "acf": {
+    "renderTemplate": "code-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "anchor": true
+  },
+  "style": "file:./code-block.css",
+  "editorStyle": "file:./code-block.css"
+}
