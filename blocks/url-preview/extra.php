@@ -220,7 +220,7 @@ function acf_url_preview_fetch_handler() {
         wp_send_json_error( __( 'Invalid URL', 'acf-blocks' ) );
     }
 
-    // Check for cached result (5-minute cache)
+    // Check for cached result (1-week cache)
     $cache_key = 'acf_url_preview_' . md5( $url );
     $cached = get_transient( $cache_key );
 
@@ -256,8 +256,8 @@ function acf_url_preview_fetch_handler() {
     // Parse the HTML
     $data = acf_url_preview_parse_html( $body, $url );
 
-    // Cache the result for 5 minutes
-    set_transient( $cache_key, $data, 5 * MINUTE_IN_SECONDS );
+    // Cache the result for 1 week
+    set_transient( $cache_key, $data, WEEK_IN_SECONDS );
 
     wp_send_json_success( $data );
 }
