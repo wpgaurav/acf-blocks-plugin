@@ -29,8 +29,9 @@ $block_id = 'changelog-' . uniqid();
 $anchor_attr = $anchor ? ' id="' . esc_attr($anchor) . '"' : '';
 ?>
 <div<?php echo $anchor_attr; ?> class="<?php echo esc_attr(implode(' ', $wrapper_classes)); ?>" data-changelog-id="<?php echo esc_attr($block_id); ?>">
-    <?php if ($is_timeline || $is_compact) : ?>
-    <style>
+    <?php if ($is_timeline || $is_compact) :
+        ob_start();
+        ?>
         <?php if ($is_timeline) : ?>
         [data-changelog-id="<?php echo esc_attr($block_id); ?>"] { padding-left: 2rem; border-left: 2px solid #e5e5e5; }
         [data-changelog-id="<?php echo esc_attr($block_id); ?>"] .acf-changelog-entry { position: relative; padding-left: 1.5rem; }
@@ -46,8 +47,10 @@ $anchor_attr = $anchor ? ' id="' . esc_attr($anchor) . '"' : '';
         [data-changelog-id="<?php echo esc_attr($block_id); ?>"] .acf-changelog-item { font-size: 0.9rem; }
         [data-changelog-id="<?php echo esc_attr($block_id); ?>"] .acf-changelog-badge { padding: 0.1rem 0.4rem; font-size: 0.65rem; }
         <?php endif; ?>
-    </style>
-    <?php endif; ?>
+        <?php
+        $css = ob_get_clean();
+        echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    endif; ?>
     <?php foreach ($entries as $entry) :
         $version = esc_html($entry['changelog_version'] ?? '');
         $date = esc_html($entry['changelog_date'] ?? '');

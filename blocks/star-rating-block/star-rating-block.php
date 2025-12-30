@@ -87,8 +87,7 @@ if ( ! $acf_star_rating_localized ) {
 }
 ?>
 <div id="<?php echo esc_attr( $anchor ); ?>" class="<?php echo esc_attr( implode( ' ', $class_name ) ); ?>">
-    <?php if ( $style_variation === 'dark' ): ?>
-    <style>
+    <?php if ( $style_variation === 'dark' ): ob_start(); ?>
         #<?php echo esc_attr( $anchor ); ?>.acf-star-rating {
             background: #1f2937;
             border-color: #374151;
@@ -124,9 +123,8 @@ if ( ! $acf_star_rating_localized ) {
         #<?php echo esc_attr( $anchor ); ?>.acf-star-rating .acf-star-rating__submit:hover {
             background: #f59e0b;
         }
-    </style>
-    <?php elseif ( $style_variation === 'minimal' ): ?>
-    <style>
+    <?php $css = ob_get_clean(); echo '<style>' . acf_blocks_minify_css( $css ) . '</style>'; ?>
+    <?php elseif ( $style_variation === 'minimal' ): ob_start(); ?>
         #<?php echo esc_attr( $anchor ); ?>.acf-star-rating {
             background: transparent;
             border: none;
@@ -146,9 +144,8 @@ if ( ! $acf_star_rating_localized ) {
         #<?php echo esc_attr( $anchor ); ?>.acf-star-rating .acf-star-rating__submit {
             border-radius: 4px;
         }
-    </style>
-    <?php elseif ( $style_variation === 'compact' ): ?>
-    <style>
+    <?php $css = ob_get_clean(); echo '<style>' . acf_blocks_minify_css( $css ) . '</style>'; ?>
+    <?php elseif ( $style_variation === 'compact' ): ob_start(); ?>
         #<?php echo esc_attr( $anchor ); ?>.acf-star-rating {
             padding: 1rem;
             border-radius: 8px;
@@ -185,9 +182,8 @@ if ( ! $acf_star_rating_localized ) {
             padding: 0.5rem 1rem;
             font-size: 0.875rem;
         }
-    </style>
-    <?php elseif ( $style_variation === 'gradient' ): ?>
-    <style>
+    <?php $css = ob_get_clean(); echo '<style>' . acf_blocks_minify_css( $css ) . '</style>'; ?>
+    <?php elseif ( $style_variation === 'gradient' ): ob_start(); ?>
         #<?php echo esc_attr( $anchor ); ?>.acf-star-rating {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
@@ -229,7 +225,7 @@ if ( ! $acf_star_rating_localized ) {
         #<?php echo esc_attr( $anchor ); ?>.acf-star-rating .acf-star-rating__thank-you {
             color: #a7f3d0;
         }
-    </style>
+    <?php $css = ob_get_clean(); echo '<style>' . acf_blocks_minify_css( $css ) . '</style>'; ?>
     <?php endif; ?>
     <?php if ( $heading ) : ?>
         <h3 class="acf-star-rating__heading"><?php echo esc_html( $heading ); ?></h3>

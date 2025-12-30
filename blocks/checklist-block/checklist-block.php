@@ -67,7 +67,9 @@ $anchor_attr = $anchor ? ' id="' . esc_attr( $anchor ) . '"' : '';
 ?>
 
 <div <?php echo $anchor_attr; ?> class="<?php echo esc_attr( implode( ' ', $wrapper_classes ) ); ?>" data-checklist-id="<?php echo esc_attr( $block_id ); ?>">
-    <style>
+    <?php
+    ob_start();
+    ?>
         [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] {
             --checklist-accent: <?php echo esc_attr( $accent_color ); ?>;
             --checklist-bg: <?php echo esc_attr( $bg_color ); ?>;
@@ -87,7 +89,10 @@ $anchor_attr = $anchor ? ' id="' . esc_attr( $anchor ) . '"' : '';
         [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__icon--empty { width: 18px; height: 18px; border-radius: 50%; }
         [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__checkmark svg { width: 12px; height: 12px; }
         <?php endif; ?>
-    </style>
+    <?php
+    $css = ob_get_clean();
+    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    ?>
 
     <?php if ( ! empty( $title ) ) : ?>
         <h3 class="acf-checklist__title"><?php echo esc_html( $title ); ?></h3>

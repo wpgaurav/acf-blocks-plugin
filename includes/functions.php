@@ -191,6 +191,28 @@ function acf_blocks_get_blocks_url() {
 }
 
 /**
+ * Minify CSS string for inline output.
+ *
+ * Removes comments, whitespace, and unnecessary characters from CSS.
+ *
+ * @param string $css The CSS string to minify.
+ * @return string Minified CSS.
+ */
+function acf_blocks_minify_css( $css ) {
+    // Remove comments
+    $css = preg_replace( '!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $css );
+    // Remove whitespace
+    $css = preg_replace( '/\s+/', ' ', $css );
+    // Remove space around selectors and braces
+    $css = preg_replace( '/\s*([\{\};:,>~+])\s*/', '$1', $css );
+    // Remove trailing semicolons before closing braces
+    $css = str_replace( ';}', '}', $css );
+    // Trim
+    $css = trim( $css );
+    return $css;
+}
+
+/**
  * Enqueue block editor assets for block transforms.
  *
  * Loads JavaScript that enables converting core blocks to ACF Blocks.

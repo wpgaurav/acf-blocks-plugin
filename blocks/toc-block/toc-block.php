@@ -299,31 +299,31 @@ if ( ! in_array( $title_tag, $allowed_title_tags ) ) {
     <?php if ( $sticky ) : ?>data-sticky="true" data-sticky-offset="<?php echo esc_attr( $sticky_offset ); ?>"<?php endif; ?>
     <?php if ( $highlight_active ) : ?>data-highlight-active="true"<?php endif; ?>
 >
-    <?php if ( $is_boxed || $is_dark || $is_minimal || $is_numbers ) : ?>
-    <style>
-        <?php if ( $is_boxed ) : ?>
+    <?php if ( $is_boxed || $is_dark || $is_minimal || $is_numbers ) :
+        ob_start();
+        if ( $is_boxed ) : ?>
         #<?php echo esc_attr( $block_id ); ?> { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 1.5rem; }
         #<?php echo esc_attr( $block_id ); ?> .acf-toc__title { font-size: 1.1em; padding-bottom: 0.75em; border-bottom: 1px solid #e9ecef; }
         #<?php echo esc_attr( $block_id ); ?> .acf-toc__content { border-left: none; padding-left: 0; opacity: 1; }
         #<?php echo esc_attr( $block_id ); ?> .acf-toc__link { display: block; padding: 0.4em 0.75em; border-radius: 4px; transition: background-color 0.15s ease, opacity 0.15s ease; }
         #<?php echo esc_attr( $block_id ); ?> .acf-toc__link:hover { background-color: #e9ecef; opacity: 1; }
-        <?php endif; ?>
-        <?php if ( $is_dark ) : ?>
+        <?php endif;
+        if ( $is_dark ) : ?>
         #<?php echo esc_attr( $block_id ); ?> { background: #1a1a2e; color: #ffffff; border-radius: 8px; padding: 1rem; }
         #<?php echo esc_attr( $block_id ); ?> .acf-toc__title { color: #ffffff; border-bottom: 1px solid #374151; padding-bottom: 0.75em; }
         #<?php echo esc_attr( $block_id ); ?> .acf-toc__content { border-left-color: #ffd700; opacity: 0.9; }
         #<?php echo esc_attr( $block_id ); ?> .acf-toc__link { color: #e0e0e0; }
         #<?php echo esc_attr( $block_id ); ?> .acf-toc__link:hover { color: #ffd700; opacity: 1; }
         #<?php echo esc_attr( $block_id ); ?> .acf-toc__link--active { color: #ffd700; }
-        <?php endif; ?>
-        <?php if ( $is_minimal ) : ?>
+        <?php endif;
+        if ( $is_minimal ) : ?>
         #<?php echo esc_attr( $block_id ); ?> { background: transparent; padding: 0; }
         #<?php echo esc_attr( $block_id ); ?> .acf-toc__title { font-size: 0.9em; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7; }
         #<?php echo esc_attr( $block_id ); ?> .acf-toc__content { border-left: none; padding-left: 0; }
         #<?php echo esc_attr( $block_id ); ?> .acf-toc__item { padding: 0.15em 0; }
         #<?php echo esc_attr( $block_id ); ?> .acf-toc__link { font-size: 0.95em; }
-        <?php endif; ?>
-        <?php if ( $is_numbers ) : ?>
+        <?php endif;
+        if ( $is_numbers ) : ?>
         #<?php echo esc_attr( $block_id ); ?> { counter-reset: toc-counter; }
         #<?php echo esc_attr( $block_id ); ?> .acf-toc__content { border-left: none; padding-left: 0; }
         #<?php echo esc_attr( $block_id ); ?> .acf-toc__item { counter-increment: toc-counter; }
@@ -334,8 +334,10 @@ if ( ! in_array( $title_tag, $allowed_title_tags ) ) {
         #<?php echo esc_attr( $block_id ); ?> .acf-toc__sublist { counter-reset: toc-subcounter; }
         #<?php echo esc_attr( $block_id ); ?> .acf-toc__sublist .acf-toc__item { counter-increment: toc-subcounter; }
         #<?php echo esc_attr( $block_id ); ?> .acf-toc__sublist .acf-toc__link::before { content: counter(toc-counter) "." counter(toc-subcounter) " "; font-weight: 500; color: #6c757d; }
-        <?php endif; ?>
-    </style>
+        <?php endif;
+        $variation_css = ob_get_clean();
+    ?>
+    <style><?php echo acf_blocks_minify_css( $variation_css ); ?></style>
     <?php endif; ?>
     <?php if ( $collapsible ) : ?>
         <details<?php echo ! $collapsed_default ? ' open' : ''; ?> class="acf-toc__details">
@@ -370,70 +372,19 @@ if ( $include_schema && ! $is_preview && ! empty( $headings ) ) {
 // Inline CSS for sticky behavior (only when sticky is enabled)
 if ( $sticky && ! defined( 'ACF_TOC_STICKY_CSS_LOADED' ) ) :
     define( 'ACF_TOC_STICKY_CSS_LOADED', true );
-?>
-<style>
-:root {
-    --acf-toc-sticky-offset: calc(var(--header-height, 0px) + var(--wp-admin--admin-bar--height, 0px) + 20px);
-}
-@media (min-width: 1400px) {
-    .acf-toc--sticky {
-        position: fixed;
-        top: var(--acf-toc-sticky-offset);
-        left: 0;
-        max-width: 220px;
-        max-height: calc(100vh - var(--acf-toc-sticky-offset) - 20px);
-        overflow-y: auto;
-        scrollbar-width: thin;
-        font-size: 0.8125em;
-        line-height: 1.4;
-        z-index: 100;
-    }
-    .acf-toc--sticky .acf-toc__title {
-        font-size: 0.875em;
-        margin-bottom: 0.5em;
-    }
-    .acf-toc--sticky .acf-toc__content {
-        padding-left: 0.75em;
-        border-left-width: 2px;
-    }
-    .acf-toc--sticky .acf-toc__item {
-        padding: 0.125em 0;
-    }
-    .acf-toc--sticky .acf-toc__sublist {
-        padding-left: 0.75em;
-        margin-top: 0.125em;
-    }
-    .acf-toc--sticky::-webkit-scrollbar {
-        width: 3px;
-    }
-    .acf-toc--sticky::-webkit-scrollbar-thumb {
-        background-color: rgba(0, 0, 0, 0.15);
-        border-radius: 2px;
-    }
-}
-</style>
-<?php
-    // Set custom offset if provided (adds to the default calculation)
+    $sticky_css = ':root{--acf-toc-sticky-offset:calc(var(--header-height,0px) + var(--wp-admin--admin-bar--height,0px) + 20px)}@media(min-width:1400px){.acf-toc--sticky{position:fixed;top:var(--acf-toc-sticky-offset);left:0;max-width:220px;max-height:calc(100vh - var(--acf-toc-sticky-offset) - 20px);overflow-y:auto;scrollbar-width:thin;font-size:0.8125em;line-height:1.4;z-index:100}.acf-toc--sticky .acf-toc__title{font-size:0.875em;margin-bottom:0.5em}.acf-toc--sticky .acf-toc__content{padding-left:0.75em;border-left-width:2px}.acf-toc--sticky .acf-toc__item{padding:0.125em 0}.acf-toc--sticky .acf-toc__sublist{padding-left:0.75em;margin-top:0.125em}.acf-toc--sticky::-webkit-scrollbar{width:3px}.acf-toc--sticky::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,0.15);border-radius:2px}}';
+    echo '<style>' . $sticky_css . '</style>';
+    // Set custom offset if provided
     if ( $sticky_offset && $sticky_offset != 20 ) {
-        echo '<style>#' . esc_attr( $block_id ) . ' { --acf-toc-sticky-offset: calc(var(--header-height, 0px) + var(--wp-admin--admin-bar--height, 0px) + ' . intval( $sticky_offset ) . 'px); }</style>';
+        echo '<style>#' . esc_attr( $block_id ) . '{--acf-toc-sticky-offset:calc(var(--header-height,0px) + var(--wp-admin--admin-bar--height,0px) + ' . intval( $sticky_offset ) . 'px)}</style>';
     }
 endif;
 
 // Inline CSS for smooth scroll (only when enabled)
 if ( $smooth_scroll && ! defined( 'ACF_TOC_SMOOTH_CSS_LOADED' ) ) :
     define( 'ACF_TOC_SMOOTH_CSS_LOADED', true );
-?>
-<style>
-html:has(.acf-toc--smooth-scroll) {
-    scroll-behavior: smooth;
-}
-@media (prefers-reduced-motion: reduce) {
-    html:has(.acf-toc--smooth-scroll) {
-        scroll-behavior: auto;
-    }
-}
-</style>
-<?php endif; ?>
+    echo '<style>html:has(.acf-toc--smooth-scroll){scroll-behavior:smooth}@media(prefers-reduced-motion:reduce){html:has(.acf-toc--smooth-scroll){scroll-behavior:auto}}</style>';
+endif;
 
 <?php
 // Inline JS for active section highlighting (only when enabled)

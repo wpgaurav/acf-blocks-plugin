@@ -25,8 +25,8 @@ echo '<div id="' . esc_attr($unique_id) . '" class="acf-compare-container acf-gr
 
 // Output inline styles for style variations
 if ( $style_variation === 'dark' ) :
+    ob_start();
     ?>
-    <style>
     #<?php echo esc_attr( $unique_id ); ?>.is-style-dark {
         background: #1a1a2e;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -55,11 +55,14 @@ if ( $style_variation === 'dark' ) :
     #<?php echo esc_attr( $unique_id ); ?>.is-style-dark .acf-compare-cta .button:hover {
         background: #ffed4a;
     }
-    </style>
+    <?php
+    $css = ob_get_clean();
+    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    ?>
     <?php
 elseif ( $style_variation === 'card' ) :
+    ob_start();
     ?>
-    <style>
     #<?php echo esc_attr( $unique_id ); ?>.is-style-card {
         background: transparent;
         box-shadow: none;
@@ -92,11 +95,14 @@ elseif ( $style_variation === 'card' ) :
             padding: 1.5rem;
         }
     }
-    </style>
+    <?php
+    $css = ob_get_clean();
+    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    ?>
     <?php
 elseif ( $style_variation === 'minimal' ) :
+    ob_start();
     ?>
-    <style>
     #<?php echo esc_attr( $unique_id ); ?>.is-style-minimal {
         background: transparent;
         box-shadow: none;
@@ -130,11 +136,14 @@ elseif ( $style_variation === 'minimal' ) :
         background: transparent;
         color: #005177;
     }
-    </style>
+    <?php
+    $css = ob_get_clean();
+    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    ?>
     <?php
 elseif ( $style_variation === 'bordered' ) :
+    ob_start();
     ?>
-    <style>
     #<?php echo esc_attr( $unique_id ); ?>.is-style-bordered {
         background: #ffffff;
         border: 3px solid #1a1a1a;
@@ -160,7 +169,10 @@ elseif ( $style_variation === 'bordered' ) :
     #<?php echo esc_attr( $unique_id ); ?>.is-style-bordered .acf-compare-cta .button:hover {
         background: #333333;
     }
-    </style>
+    <?php
+    $css = ob_get_clean();
+    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    ?>
     <?php
 endif;
 

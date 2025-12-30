@@ -40,8 +40,8 @@ if ( strpos( $className, 'is-style-card' ) !== false ) {
     <?php
     // Output inline styles for style variations
     if ( $style_variation === 'card' ) :
+        ob_start();
         ?>
-        <style>
         #<?php echo esc_attr( $unique_id ); ?>.is-style-card {
             background: #fff;
             border-radius: 12px;
@@ -62,11 +62,13 @@ if ( strpos( $className, 'is-style-card' ) !== false ) {
             background: #007bff;
             color: #fff;
         }
-        </style>
         <?php
+        $css = ob_get_clean();
+        echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+        ?><?php
     elseif ( $style_variation === 'dark' ) :
+        ob_start();
         ?>
-        <style>
         #<?php echo esc_attr( $unique_id ); ?>.is-style-dark {
             background: #1a1a2e;
             border-radius: 12px;
@@ -86,11 +88,13 @@ if ( strpos( $className, 'is-style-card' ) !== false ) {
         #<?php echo esc_attr( $unique_id ); ?>.is-style-dark .acf-tab-panel {
             color: #e0e0e0;
         }
-        </style>
         <?php
+        $css = ob_get_clean();
+        echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+        ?><?php
     elseif ( $style_variation === 'minimal' ) :
+        ob_start();
         ?>
-        <style>
         #<?php echo esc_attr( $unique_id ); ?>.is-style-minimal .acf-tabs-nav {
             border-bottom: none;
             gap: 2rem;
@@ -102,11 +106,13 @@ if ( strpos( $className, 'is-style-card' ) !== false ) {
         #<?php echo esc_attr( $unique_id ); ?>.is-style-minimal .acf-tab-button.active {
             font-weight: 600;
         }
-        </style>
         <?php
+        $css = ob_get_clean();
+        echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+        ?><?php
     elseif ( $style_variation === 'vertical' ) :
+        ob_start();
         ?>
-        <style>
         #<?php echo esc_attr( $unique_id ); ?>.is-style-vertical {
             display: flex;
             gap: 2rem;
@@ -151,8 +157,10 @@ if ( strpos( $className, 'is-style-card' ) !== false ) {
                 border-bottom-color: currentColor;
             }
         }
-        </style>
         <?php
+        $css = ob_get_clean();
+        echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+        ?><?php
     endif;
     ?>
     <?php if ( $tabs_items && is_array( $tabs_items ) && count( $tabs_items ) > 0 ) : ?>
