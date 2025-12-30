@@ -44,6 +44,10 @@ if ( $strikethrough ) {
     $wrapper_classes[] = 'acf-checklist--strikethrough';
 }
 
+// Detect style variation
+$is_card_style = $className && strpos( $className, 'is-style-card' ) !== false;
+$is_minimal_style = $className && strpos( $className, 'is-style-minimal' ) !== false;
+
 // Calculate progress
 $total_items   = count( $items );
 $checked_items = 0;
@@ -68,6 +72,21 @@ $anchor_attr = $anchor ? ' id="' . esc_attr( $anchor ) . '"' : '';
             --checklist-accent: <?php echo esc_attr( $accent_color ); ?>;
             --checklist-bg: <?php echo esc_attr( $bg_color ); ?>;
         }
+        <?php if ( $is_card_style ) : ?>
+        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] { background-color: var(--checklist-bg); padding: 1.5rem; border-radius: 12px; border: 1px solid #e5e7eb; }
+        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__item { background-color: #fff; padding: 0.875rem 1rem; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 0.5rem; }
+        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__item:last-child { margin-bottom: 0; }
+        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__item--checked { background-color: #f0fdf4; border-color: #bbf7d0; }
+        @media (max-width: 600px) { [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] { padding: 1rem; } [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__item { padding: 0.75rem; } }
+        <?php endif; ?>
+        <?php if ( $is_minimal_style ) : ?>
+        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] { padding: 0; }
+        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__item { padding: 0.5rem 0; border-bottom: none; }
+        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__progress-bar { height: 4px; }
+        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__checkmark,
+        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__icon--empty { width: 18px; height: 18px; border-radius: 50%; }
+        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__checkmark svg { width: 12px; height: 12px; }
+        <?php endif; ?>
     </style>
 
     <?php if ( ! empty( $title ) ) : ?>

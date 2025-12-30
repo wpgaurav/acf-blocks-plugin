@@ -48,17 +48,8 @@
     background-color: #3d3d3d;
 }
 
-.acf-code-block--dark .acf-code-block__line-number {
-    color: #6e7681;
-    border-right-color: #3d3d3d;
-}
-
 .acf-code-block--dark .acf-code-block__line--highlighted {
     background-color: rgba(255, 255, 255, 0.1);
-}
-
-.acf-code-block--dark .acf-code-block__line--highlighted .acf-code-block__line-number {
-    background-color: rgba(255, 255, 255, 0.05);
 }
 
 /* Light Theme */
@@ -100,17 +91,8 @@
     background-color: #eaeef2;
 }
 
-.acf-code-block--light .acf-code-block__line-number {
-    color: #6e7781;
-    border-right-color: #d0d7de;
-}
-
 .acf-code-block--light .acf-code-block__line--highlighted {
     background-color: rgba(255, 220, 0, 0.2);
-}
-
-.acf-code-block--light .acf-code-block__line--highlighted .acf-code-block__line-number {
-    background-color: rgba(255, 220, 0, 0.1);
 }
 
 /* Header */
@@ -185,31 +167,13 @@
 
 /* Lines */
 .acf-code-block__line {
-    display: flex;
+    display: block;
     min-height: 1.5em;
     line-height: 1.5;
 }
 
-.acf-code-block__line-number {
-    flex-shrink: 0;
-    min-width: 3em;
-    padding-right: 1rem;
-    margin-right: 1rem;
-    text-align: right;
-    user-select: none;
-    border-right: 1px solid;
-    box-sizing: border-box;
-}
-
 .acf-code-block__line-content {
-    flex: 1;
     white-space: pre;
-    overflow-x: auto;
-}
-
-/* Without line numbers */
-.acf-code-block:not(.acf-code-block--line-numbers) .acf-code-block__line-number {
-    display: none;
 }
 
 /* Font sizes */
@@ -276,11 +240,5 @@
     .acf-code-block__dots span {
         width: 10px;
         height: 10px;
-    }
-
-    .acf-code-block__line-number {
-        min-width: 2.5em;
-        padding-right: 0.75rem;
-        margin-right: 0.75rem;
     }
 }
