@@ -164,7 +164,7 @@
     background: #1a1a2e;
     color: #ffffff;
     border-radius: 8px;
-    padding: 1.5rem;
+    padding: 1rem;
 }
 
 .acf-toc.is-style-dark .acf-toc__title {
@@ -219,45 +219,40 @@
     font-size: 0.95em;
 }
 
-.acf-toc.is-style-minimal .acf-toc__link::before {
-    content: '→ ';
-    opacity: 0.5;
-}
-
 /* ============================================
    Style Variation: Numbered
    ============================================ */
-.acf-toc.is-style-numbered {
+.acf-toc.is-style-numbers {
     counter-reset: toc-counter;
 }
 
-.acf-toc.is-style-numbered .acf-toc__content {
+.acf-toc.is-style-numbers .acf-toc__content {
     border-left: none;
     padding-left: 0;
 }
 
-.acf-toc.is-style-numbered .acf-toc__item {
+.acf-toc.is-style-numbers .acf-toc__item {
     counter-increment: toc-counter;
 }
 
-.acf-toc.is-style-numbered > .acf-toc__content > ul > .acf-toc__item > .acf-toc__link::before,
-.acf-toc.is-style-numbered > .acf-toc__content > ol > .acf-toc__item > .acf-toc__link::before,
-.acf-toc.is-style-numbered > .acf-toc__details > .acf-toc__content > ul > .acf-toc__item > .acf-toc__link::before,
-.acf-toc.is-style-numbered > .acf-toc__details > .acf-toc__content > ol > .acf-toc__item > .acf-toc__link::before {
+.acf-toc.is-style-numbers > .acf-toc__content > ul > .acf-toc__item > .acf-toc__link::before,
+.acf-toc.is-style-numbers > .acf-toc__content > ol > .acf-toc__item > .acf-toc__link::before,
+.acf-toc.is-style-numbers > .acf-toc__details > .acf-toc__content > ul > .acf-toc__item > .acf-toc__link::before,
+.acf-toc.is-style-numbers > .acf-toc__details > .acf-toc__content > ol > .acf-toc__item > .acf-toc__link::before {
     content: counter(toc-counter) ". ";
     font-weight: 600;
     color: #007bff;
 }
 
-.acf-toc.is-style-numbered .acf-toc__sublist {
+.acf-toc.is-style-numbers .acf-toc__sublist {
     counter-reset: toc-subcounter;
 }
 
-.acf-toc.is-style-numbered .acf-toc__sublist .acf-toc__item {
+.acf-toc.is-style-numbers .acf-toc__sublist .acf-toc__item {
     counter-increment: toc-subcounter;
 }
 
-.acf-toc.is-style-numbered .acf-toc__sublist .acf-toc__link::before {
+.acf-toc.is-style-numbers .acf-toc__sublist .acf-toc__link::before {
     content: counter(toc-counter) "." counter(toc-subcounter) " ";
     font-weight: 500;
     color: #6c757d;
