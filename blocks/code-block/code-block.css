@@ -185,23 +185,26 @@
 
 /* Lines */
 .acf-code-block__line {
-    display: block;
+    display: flex;
     min-height: 1.5em;
     line-height: 1.5;
 }
 
 .acf-code-block__line-number {
-    display: inline-block;
-    min-width: 2.5em;
+    flex-shrink: 0;
+    min-width: 3em;
     padding-right: 1rem;
     margin-right: 1rem;
     text-align: right;
     user-select: none;
     border-right: 1px solid;
+    box-sizing: border-box;
 }
 
 .acf-code-block__line-content {
+    flex: 1;
     white-space: pre;
+    overflow-x: auto;
 }
 
 /* Without line numbers */
@@ -276,7 +279,7 @@
     }
 
     .acf-code-block__line-number {
-        min-width: 2em;
+        min-width: 2.5em;
         padding-right: 0.75rem;
         margin-right: 0.75rem;
     }

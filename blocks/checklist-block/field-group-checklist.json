@@ -1,0 +1,120 @@
+[
+    {
+        "key": "group_checklist_block",
+        "title": "Checklist Block",
+        "fields": [
+            {
+                "key": "field_checklist_content_tab",
+                "label": "Content",
+                "type": "tab",
+                "placement": "top"
+            },
+            {
+                "key": "field_checklist_title",
+                "label": "Title",
+                "name": "checklist_title",
+                "type": "text",
+                "instructions": "Optional title for the checklist",
+                "default_value": ""
+            },
+            {
+                "key": "field_checklist_items",
+                "label": "Checklist Items",
+                "name": "checklist_items",
+                "type": "repeater",
+                "instructions": "Add items to your checklist",
+                "min": 1,
+                "max": 50,
+                "layout": "block",
+                "button_label": "Add Item",
+                "sub_fields": [
+                    {
+                        "key": "field_checklist_item_text",
+                        "label": "Item Text",
+                        "name": "checklist_item_text",
+                        "type": "text",
+                        "required": 1
+                    },
+                    {
+                        "key": "field_checklist_item_checked",
+                        "label": "Checked",
+                        "name": "checklist_item_checked",
+                        "type": "true_false",
+                        "default_value": 0,
+                        "ui": 1
+                    }
+                ]
+            },
+            {
+                "key": "field_checklist_options_tab",
+                "label": "Options",
+                "type": "tab",
+                "placement": "top"
+            },
+            {
+                "key": "field_checklist_interactive",
+                "label": "Interactive",
+                "name": "checklist_interactive",
+                "type": "true_false",
+                "instructions": "Allow visitors to check/uncheck items (stored in browser only)",
+                "default_value": 0,
+                "ui": 1
+            },
+            {
+                "key": "field_checklist_show_progress",
+                "label": "Show Progress",
+                "name": "checklist_show_progress",
+                "type": "true_false",
+                "instructions": "Display a progress bar showing completion status",
+                "default_value": 0,
+                "ui": 1
+            },
+            {
+                "key": "field_checklist_strikethrough",
+                "label": "Strikethrough Completed",
+                "name": "checklist_strikethrough",
+                "type": "true_false",
+                "instructions": "Apply strikethrough style to checked items",
+                "default_value": 1,
+                "ui": 1
+            },
+            {
+                "key": "field_checklist_colors_tab",
+                "label": "Colors",
+                "type": "tab",
+                "placement": "top"
+            },
+            {
+                "key": "field_checklist_accent_color",
+                "label": "Accent Color",
+                "name": "checklist_accent_color",
+                "type": "color_picker",
+                "instructions": "Color for checkboxes and progress bar",
+                "default_value": "#16a34a"
+            },
+            {
+                "key": "field_checklist_bg_color",
+                "label": "Background Color",
+                "name": "checklist_bg_color",
+                "type": "color_picker",
+                "instructions": "Background color (for Card style)",
+                "default_value": "#f9fafb"
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "block",
+                    "operator": "==",
+                    "value": "acf/checklist"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "active": true
+    }
+]
