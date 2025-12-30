@@ -40,8 +40,8 @@ if ( strpos( $className, 'is-style-dark' ) !== false ) {
     <?php
     // Output inline styles for style variations
     if ( $style_variation === 'dark' ) :
+        ob_start();
         ?>
-        <style>
         #<?php echo esc_attr( $unique_id ); ?>.is-style-dark {
             background-color: #1a1a2e;
             border-left-color: #ffd700;
@@ -64,11 +64,12 @@ if ( strpos( $className, 'is-style-dark' ) !== false ) {
         #<?php echo esc_attr( $unique_id ); ?>.is-style-dark .acf-testimonial-rating .acf-testimonial-star {
             color: #555;
         }
-        </style>
         <?php
+        $css = ob_get_clean();
+        echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
     elseif ( $style_variation === 'card' ) :
+        ob_start();
         ?>
-        <style>
         #<?php echo esc_attr( $unique_id ); ?>.is-style-card {
             border-left: none;
             border-radius: 16px;
@@ -96,11 +97,12 @@ if ( strpos( $className, 'is-style-dark' ) !== false ) {
                 align-items: center;
             }
         }
-        </style>
         <?php
+        $css = ob_get_clean();
+        echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
     elseif ( $style_variation === 'minimal' ) :
+        ob_start();
         ?>
-        <style>
         #<?php echo esc_attr( $unique_id ); ?>.is-style-minimal {
             background: transparent;
             border-left: none;
@@ -120,11 +122,12 @@ if ( strpos( $className, 'is-style-dark' ) !== false ) {
             width: 48px;
             height: 48px;
         }
-        </style>
         <?php
+        $css = ob_get_clean();
+        echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
     elseif ( $style_variation === 'bubble' ) :
+        ob_start();
         ?>
-        <style>
         #<?php echo esc_attr( $unique_id ); ?>.is-style-bubble {
             background: #f5f5f5;
             border-left: none;
@@ -154,8 +157,9 @@ if ( strpos( $className, 'is-style-dark' ) !== false ) {
             margin-top: 2.5rem;
             padding-left: 0;
         }
-        </style>
         <?php
+        $css = ob_get_clean();
+        echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
     endif;
     ?>
     <?php if ( $quote ) : ?>

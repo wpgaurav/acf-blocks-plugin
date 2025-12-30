@@ -39,8 +39,8 @@ if ( strpos( $className, 'is-style-card' ) !== false ) {
     <?php
     // Output inline styles for style variations
     if ( $style_variation === 'card' ) :
+        ob_start();
         ?>
-        <style>
         #<?php echo esc_attr( $unique_id ); ?>.is-style-card {
             background: #fff;
             border-radius: 12px;
@@ -59,11 +59,12 @@ if ( strpos( $className, 'is-style-card' ) !== false ) {
         #<?php echo esc_attr( $unique_id ); ?>.is-style-card .acf-accordion-content {
             padding: 0 1.25rem 1rem;
         }
-        </style>
         <?php
+        $css = ob_get_clean();
+        echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
     elseif ( $style_variation === 'dark' ) :
+        ob_start();
         ?>
-        <style>
         #<?php echo esc_attr( $unique_id ); ?>.is-style-dark {
             background: #1a1a2e;
             border-radius: 12px;
@@ -86,11 +87,12 @@ if ( strpos( $className, 'is-style-card' ) !== false ) {
         #<?php echo esc_attr( $unique_id ); ?>.is-style-dark .acf-accordion-icon::after {
             background-color: #ffd700;
         }
-        </style>
         <?php
+        $css = ob_get_clean();
+        echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
     elseif ( $style_variation === 'minimal' ) :
+        ob_start();
         ?>
-        <style>
         #<?php echo esc_attr( $unique_id ); ?>.is-style-minimal .acf-accordion-item {
             border-bottom: 1px solid #e0e0e0;
             margin-bottom: 0;
@@ -103,11 +105,12 @@ if ( strpos( $className, 'is-style-card' ) !== false ) {
             width: 1rem;
             height: 1rem;
         }
-        </style>
         <?php
+        $css = ob_get_clean();
+        echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
     elseif ( $style_variation === 'bordered' ) :
+        ob_start();
         ?>
-        <style>
         #<?php echo esc_attr( $unique_id ); ?>.is-style-bordered .acf-accordion-item {
             border: 2px solid #1a1a1a;
             margin-bottom: 0.5rem;
@@ -123,8 +126,9 @@ if ( strpos( $className, 'is-style-card' ) !== false ) {
             padding: 1rem 1.25rem;
             background: #fff;
         }
-        </style>
         <?php
+        $css = ob_get_clean();
+        echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
     endif;
     ?>
     <?php

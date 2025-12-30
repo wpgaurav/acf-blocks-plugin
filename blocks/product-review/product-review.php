@@ -93,7 +93,9 @@ $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'full') : '';
 
 <div class="<?php echo esc_attr(implode(' ', $classes)); ?>"<?php echo $anchor_attr; ?> data-pr-id="<?php echo esc_attr($block_id); ?>">
     <?php if ($is_card || $is_minimal || $is_bordered) : ?>
-    <style>
+    <?php
+    ob_start();
+    ?>
         <?php if ($is_card) : ?>
         [data-pr-id="<?php echo esc_attr($block_id); ?>"] { box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: none; border-radius: 12px; padding: 2rem; }
         [data-pr-id="<?php echo esc_attr($block_id); ?>"] .acf-product-review-overall-rating { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border-radius: 8px; }
@@ -119,7 +121,10 @@ $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'full') : '';
         [data-pr-id="<?php echo esc_attr($block_id); ?>"] .acf-product-review-button { background: #1a1a1a; border-radius: 0; }
         [data-pr-id="<?php echo esc_attr($block_id); ?>"] .acf-product-review-button:hover { background: #333; }
         <?php endif; ?>
-    </style>
+    <?php
+    $css = ob_get_clean();
+    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    ?>
     <?php endif; ?>
     <?php if ($product_name) : ?>
         <h3 class="acf-product-review-title"><?php echo esc_html($product_name); ?></h3>

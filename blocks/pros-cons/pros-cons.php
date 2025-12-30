@@ -47,30 +47,35 @@ $block_id = 'pc-' . uniqid();
 ?>
 
 <div <?php echo $anchor_attr; ?> class="<?php echo esc_attr(implode(' ', $wrapper_classes)); ?>" data-pc-id="<?php echo esc_attr($block_id); ?>">
-    <style>
-        [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__negative {
-            background-color: <?php echo esc_attr($neg_bg); ?>;
-            border-left-color: <?php echo esc_attr($neg_border); ?>;
-        }
-        [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__negative .acf-pros-cons__title {
-            color: <?php echo esc_attr($neg_title_color); ?>;
-        }
-        [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__negative .acf-pros-cons__icon {
-            color: <?php echo esc_attr($neg_icon_color); ?>;
-            background-color: <?php echo esc_attr($neg_icon_color); ?>20;
-        }
-        [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__positive {
-            background-color: <?php echo esc_attr($pos_bg); ?>;
-            border-left-color: <?php echo esc_attr($pos_border); ?>;
-        }
-        [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__positive .acf-pros-cons__title {
-            color: <?php echo esc_attr($pos_title_color); ?>;
-        }
-        [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__positive .acf-pros-cons__icon {
-            color: <?php echo esc_attr($pos_icon_color); ?>;
-            background-color: <?php echo esc_attr($pos_icon_color); ?>20;
-        }
-    </style>
+    <?php
+    ob_start();
+    ?>
+    [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__negative {
+        background-color: <?php echo esc_attr($neg_bg); ?>;
+        border-left-color: <?php echo esc_attr($neg_border); ?>;
+    }
+    [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__negative .acf-pros-cons__title {
+        color: <?php echo esc_attr($neg_title_color); ?>;
+    }
+    [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__negative .acf-pros-cons__icon {
+        color: <?php echo esc_attr($neg_icon_color); ?>;
+        background-color: <?php echo esc_attr($neg_icon_color); ?>20;
+    }
+    [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__positive {
+        background-color: <?php echo esc_attr($pos_bg); ?>;
+        border-left-color: <?php echo esc_attr($pos_border); ?>;
+    }
+    [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__positive .acf-pros-cons__title {
+        color: <?php echo esc_attr($pos_title_color); ?>;
+    }
+    [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__positive .acf-pros-cons__icon {
+        color: <?php echo esc_attr($pos_icon_color); ?>;
+        background-color: <?php echo esc_attr($pos_icon_color); ?>20;
+    }
+    <?php
+    $css = ob_get_clean();
+    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    ?>
 
     <?php
     // Negative side

@@ -67,7 +67,7 @@ if (!empty($labelText)) {
 
 <div id="<?php echo esc_attr($block_id); ?>" class="<?php echo esc_attr(implode(' ', $classes)); ?>"<?php echo $style_attr; ?>>
     <?php if ($style_variation === 'dark'): ?>
-    <style>
+    <?php ob_start(); ?>
         #<?php echo esc_attr($block_id); ?>.acf-callout {
             background-color: #0a0a0a;
             border-color: #0a0a0a;
@@ -89,9 +89,9 @@ if (!empty($labelText)) {
             background-color: #ffffff;
             color: #0a0a0a;
         }
-    </style>
+    <?php $css = ob_get_clean(); echo '<style>' . acf_blocks_minify_css( $css ) . '</style>'; ?>
     <?php elseif ($style_variation === 'testimonial'): ?>
-    <style>
+    <?php ob_start(); ?>
         #<?php echo esc_attr($block_id); ?>.acf-callout {
             background-color: #fdf6e3;
             border-color: #f5e6c8;
@@ -105,9 +105,9 @@ if (!empty($labelText)) {
         #<?php echo esc_attr($block_id); ?>.acf-callout [class*="rating"] {
             color: #d4a600;
         }
-    </style>
+    <?php $css = ob_get_clean(); echo '<style>' . acf_blocks_minify_css( $css ) . '</style>'; ?>
     <?php elseif ($style_variation === 'dashed-light'): ?>
-    <style>
+    <?php ob_start(); ?>
         #<?php echo esc_attr($block_id); ?>.acf-callout {
             background-color: #ffffff;
             border: 3px dashed #c0c0c0;
@@ -143,9 +143,9 @@ if (!empty($labelText)) {
             transform: translateY(2px);
             box-shadow: 0 2px 0 #ccb42a;
         }
-    </style>
+    <?php $css = ob_get_clean(); echo '<style>' . acf_blocks_minify_css( $css ) . '</style>'; ?>
     <?php elseif ($style_variation === 'dashed-dark'): ?>
-    <style>
+    <?php ob_start(); ?>
         #<?php echo esc_attr($block_id); ?>.acf-callout {
             background-color: #3d3d3d;
             border: 3px dashed #5a5a5a;
@@ -184,9 +184,9 @@ if (!empty($labelText)) {
             transform: translateY(2px);
             box-shadow: 0 2px 0 #ccb42a;
         }
-    </style>
+    <?php $css = ob_get_clean(); echo '<style>' . acf_blocks_minify_css( $css ) . '</style>'; ?>
     <?php elseif ($style_variation === 'highlight'): ?>
-    <style>
+    <?php ob_start(); ?>
         #<?php echo esc_attr($block_id); ?>.acf-callout {
             background-color: #f0fff0;
             border: 3px dashed #90ee90;
@@ -225,7 +225,7 @@ if (!empty($labelText)) {
             transform: translateY(2px);
             box-shadow: 0 2px 0 #ccb42a;
         }
-    </style>
+    <?php $css = ob_get_clean(); echo '<style>' . acf_blocks_minify_css( $css ) . '</style>'; ?>
     <?php endif; ?>
     <?php if (!empty($iconImage) && $labelPosition === 'top') : ?>
         <div class="acf-callout-icon-image">

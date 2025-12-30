@@ -61,7 +61,9 @@ if ($className) {
 
 <div id="<?php echo esc_attr($block_id); ?>" class="<?php echo esc_attr($wrapper_classes); ?>"<?php echo $inline_style_attr; ?>>
 <?php if ($style_variation) : ?>
-    <style>
+<?php
+ob_start();
+?>
         <?php if ($style_variation === 'card') : ?>
         #<?php echo esc_attr($block_id); ?> .acf-feature-item {
             background-color: #fff;
@@ -254,7 +256,10 @@ if ($className) {
             background: rgba(255, 255, 255, 0.9);
         }
         <?php endif; ?>
-    </style>
+<?php
+$css = ob_get_clean();
+echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+?>
 <?php endif; ?>
     <?php if ($use_innerblocks) : ?>
         <div class="acf-feature-grid-header acf-feature-grid-innerblocks">

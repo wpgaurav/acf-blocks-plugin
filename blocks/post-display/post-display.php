@@ -64,7 +64,9 @@ if (strpos($className, 'is-style-dark') !== false) {
 
 <div id="<?php echo esc_attr($block_id); ?>" class="<?php echo esc_attr($container_class); ?>">
     <?php if ($style_variation === 'dark'): ?>
-    <style>
+    <?php
+    ob_start();
+    ?>
         #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item {
             background-color: #1a1a2e;
             border-color: #374151;
@@ -92,9 +94,14 @@ if (strpos($className, 'is-style-dark') !== false) {
         #<?php echo esc_attr($block_id); ?>.acf-post-display.acf-post-display-layout-text_links .acf-post-display-link {
             color: #ffd700;
         }
-    </style>
+    <?php
+    $css = ob_get_clean();
+    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    ?>
     <?php elseif ($style_variation === 'card'): ?>
-    <style>
+    <?php
+    ob_start();
+    ?>
         #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item {
             border: none;
             border-radius: 12px;
@@ -115,9 +122,14 @@ if (strpos($className, 'is-style-dark') !== false) {
         #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button:hover {
             background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
         }
-    </style>
+    <?php
+    $css = ob_get_clean();
+    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    ?>
     <?php elseif ($style_variation === 'minimal'): ?>
-    <style>
+    <?php
+    ob_start();
+    ?>
         #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item {
             background: transparent;
             border: none;
@@ -146,9 +158,14 @@ if (strpos($className, 'is-style-dark') !== false) {
             background: transparent;
             color: #005a87;
         }
-    </style>
+    <?php
+    $css = ob_get_clean();
+    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    ?>
     <?php elseif ($style_variation === 'bordered'): ?>
-    <style>
+    <?php
+    ob_start();
+    ?>
         #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item {
             border: 3px solid #1a1a1a;
             border-radius: 0;
@@ -167,7 +184,10 @@ if (strpos($className, 'is-style-dark') !== false) {
         #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button:hover {
             background: #333333;
         }
-    </style>
+    <?php
+    $css = ob_get_clean();
+    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    ?>
     <?php endif; ?>
     <?php if ($layout === 'text_links'): ?>
 

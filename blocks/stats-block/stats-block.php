@@ -64,7 +64,7 @@ $animation_class = $enable_animation ? ' acf-has-animation' : '';
 
 <div id="<?php echo esc_attr( $unique_id ); ?>" class="acf-stats-block<?php echo $layout_class . $animation_class . $custom_class; ?>"<?php echo $inline_style_attr; ?>>
     <?php if ( $style_variation === 'card' ): ?>
-    <style>
+    <?php ob_start(); ?>
         #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-item {
             background: #fff;
             border-radius: 16px;
@@ -75,9 +75,12 @@ $animation_class = $enable_animation ? ' acf-has-animation' : '';
         #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-item:hover {
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
         }
-    </style>
+    <?php
+    $css = ob_get_clean();
+    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    ?>
     <?php elseif ( $style_variation === 'dark' ): ?>
-    <style>
+    <?php ob_start(); ?>
         #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block {
             background: #1a1a2e;
             border-radius: 12px;
@@ -102,9 +105,12 @@ $animation_class = $enable_animation ? ' acf-has-animation' : '';
         #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-icon {
             color: #ffd700;
         }
-    </style>
+    <?php
+    $css = ob_get_clean();
+    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    ?>
     <?php elseif ( $style_variation === 'minimal' ): ?>
-    <style>
+    <?php ob_start(); ?>
         #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block {
             padding: 2rem 0;
         }
@@ -127,9 +133,12 @@ $animation_class = $enable_animation ? ' acf-has-animation' : '';
             text-transform: none;
             letter-spacing: 0;
         }
-    </style>
+    <?php
+    $css = ob_get_clean();
+    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    ?>
     <?php elseif ( $style_variation === 'bordered' ): ?>
-    <style>
+    <?php ob_start(); ?>
         #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-item {
             background: #fff;
             border: 3px solid #1a1a1a;
@@ -143,9 +152,12 @@ $animation_class = $enable_animation ? ' acf-has-animation' : '';
         #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-number {
             color: #1a1a1a;
         }
-    </style>
+    <?php
+    $css = ob_get_clean();
+    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    ?>
     <?php elseif ( $style_variation === 'gradient' ): ?>
-    <style>
+    <?php ob_start(); ?>
         #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-item {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 16px;
@@ -171,7 +183,10 @@ $animation_class = $enable_animation ? ' acf-has-animation' : '';
             color: #fff;
             opacity: 0.9;
         }
-    </style>
+    <?php
+    $css = ob_get_clean();
+    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    ?>
     <?php endif; ?>
     <?php
     if ( $stats_items && is_array( $stats_items ) && count( $stats_items ) > 0 ) :
