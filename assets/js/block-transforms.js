@@ -54,6 +54,26 @@
     }
 
     /**
+     * Build ACF repeater data in the flat format ACF expects
+     * ACF stores repeaters as: field_0_subfield, field_1_subfield, etc.
+     */
+    function buildRepeaterData( fieldName, items, subFieldMap ) {
+        const data = {};
+        data[ fieldName ] = items.length;
+
+        items.forEach( function( item, index ) {
+            Object.keys( subFieldMap ).forEach( function( subFieldName ) {
+                const value = typeof subFieldMap[ subFieldName ] === 'function'
+                    ? subFieldMap[ subFieldName ]( item, index )
+                    : subFieldMap[ subFieldName ];
+                data[ fieldName + '_' + index + '_' + subFieldName ] = value;
+            } );
+        } );
+
+        return data;
+    }
+
+    /**
      * Add transforms to ACF Code Block
      */
     function addCodeBlockTransforms( settings, name ) {
@@ -68,14 +88,16 @@
                         type: 'block',
                         blocks: [ 'core/code' ],
                         transform: function( attributes ) {
-                            // Extract code content
+                            // Extract code content - core/code stores as HTML
                             const codeContent = stripHtml( attributes.content || '' );
 
                             return createBlock( 'acf/code-block', {
                                 data: {
-                                    code: codeContent,
-                                    language: '',
-                                    filename: ''
+                                    code_content: codeContent,
+                                    code_language: 'plaintext',
+                                    code_filename: '',
+                                    code_theme: 'dark',
+                                    font_size: 'normal'
                                 }
                             } );
                         }
@@ -88,9 +110,11 @@
 
                             return createBlock( 'acf/code-block', {
                                 data: {
-                                    code: content,
-                                    language: '',
-                                    filename: ''
+                                    code_content: content,
+                                    code_language: 'plaintext',
+                                    code_filename: '',
+                                    code_theme: 'dark',
+                                    font_size: 'normal'
                                 }
                             } );
                         }
@@ -123,22 +147,27 @@
 
                             const listItems = extractListItems( mockBlock );
 
-                            // Build checklist items with all unchecked
-                            const checklistItems = listItems.map( function( text, index ) {
-                                return {
-                                    item_text: text,
-                                    item_checked: false
-                                };
-                            } );
-
-                            return createBlock( 'acf/checklist', {
-                                data: {
-                                    checklist_title: '',
-                                    checklist_items: checklistItems,
-                                    show_progress: false,
-                                    enable_strikethrough: true
+                            // Build ACF repeater data format
+                            const repeaterData = buildRepeaterData(
+                                'checklist_items',
+                                listItems,
+                                {
+                                    checklist_item_text: function( text ) { return text; },
+                                    checklist_item_checked: 0
                                 }
-                            } );
+                            );
+
+                            // Merge with other field defaults
+                            const data = Object.assign( {
+                                checklist_title: '',
+                                checklist_interactive: 0,
+                                checklist_show_progress: 0,
+                                checklist_strikethrough: 1,
+                                checklist_accent_color: '#16a34a',
+                                checklist_bg_color: '#f9fafb'
+                            }, repeaterData );
+
+                            return createBlock( 'acf/checklist', { data: data } );
                         }
                     }
                 ] )
@@ -169,29 +198,30 @@
 
                             const listItems = extractListItems( mockBlock );
 
-                            // Build changelog items with default "added" type
-                            const changelogItems = listItems.map( function( text ) {
-                                return {
-                                    changelog_type: 'added',
-                                    changelog_text: text
-                                };
-                            } );
-
-                            // Create a single changelog entry with default version and today's date
+                            // Get today's date
                             const today = new Date();
-                            const dateStr = today.toISOString().split( 'T' )[ 0 ];
-
-                            const changelogEntries = [ {
-                                changelog_version: '1.0.0',
-                                changelog_date: dateStr,
-                                changelog_items: changelogItems
-                            } ];
-
-                            return createBlock( 'acf/changelog', {
-                                data: {
-                                    changelog_entries: changelogEntries
-                                }
+                            const dateStr = today.toLocaleDateString( 'en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
                             } );
+
+                            // Build nested repeater data for changelog
+                            // Structure: changelog_entries[0] has changelog_items[0..n]
+                            const data = {
+                                changelog_entries: 1,
+                                changelog_entries_0_changelog_version: '1.0.0',
+                                changelog_entries_0_changelog_date: dateStr,
+                                changelog_entries_0_changelog_items: listItems.length
+                            };
+
+                            // Add each changelog item
+                            listItems.forEach( function( text, index ) {
+                                data[ 'changelog_entries_0_changelog_items_' + index + '_changelog_type' ] = 'added';
+                                data[ 'changelog_entries_0_changelog_items_' + index + '_changelog_text' ] = text;
+                            } );
+
+                            return createBlock( 'acf/changelog', { data: data } );
                         }
                     }
                 ] )

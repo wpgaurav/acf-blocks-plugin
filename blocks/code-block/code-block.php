@@ -15,9 +15,7 @@ defined( 'ABSPATH' ) || exit;
 $code_content    = get_field( 'code_content' ) ?: '';
 $code_language   = get_field( 'code_language' ) ?: 'plaintext';
 $code_filename   = get_field( 'code_filename' ) ?: '';
-$show_copy_button = get_field( 'show_copy_button' );
 $highlight_lines = get_field( 'highlight_lines' ) ?: '';
-$max_height      = get_field( 'max_height' ) ?: '';
 $code_theme      = get_field( 'code_theme' ) ?: 'dark';
 $font_size       = get_field( 'font_size' ) ?: 'normal';
 $custom_class    = get_field( 'custom_class' ) ?: '';
@@ -29,12 +27,6 @@ $wrapper_classes[] = 'acf-code-block--font-' . $font_size;
 
 if ( ! empty( $custom_class ) ) {
     $wrapper_classes[] = esc_attr( $custom_class );
-}
-
-// Build inline styles
-$inline_styles = '';
-if ( ! empty( $max_height ) ) {
-    $inline_styles = 'max-height: ' . intval( $max_height ) . 'px;';
 }
 
 // Parse highlight lines
@@ -54,7 +46,7 @@ if ( ! empty( $highlight_lines ) ) {
     }
 }
 
-// Generate unique ID for copy functionality
+// Generate unique ID for expand functionality
 $block_id = 'code-block-' . uniqid();
 
 // Language display names
@@ -92,8 +84,8 @@ $language_names = array(
 $language_display = isset( $language_names[ $code_language ] ) ? $language_names[ $code_language ] : $code_language;
 ?>
 
-<div class="<?php echo esc_attr( implode( ' ', $wrapper_classes ) ); ?>" id="<?php echo esc_attr( $block_id ); ?>">
-    <?php if ( ! empty( $code_filename ) || $code_language !== 'plaintext' || $show_copy_button ) : ?>
+<div class="<?php echo esc_attr( implode( ' ', $wrapper_classes ) ); ?>" id="<?php echo esc_attr( $block_id ); ?>" data-expandable="true">
+    <?php if ( ! empty( $code_filename ) || $code_language !== 'plaintext' ) : ?>
         <div class="acf-code-block__header">
             <div class="acf-code-block__header-left">
                 <span class="acf-code-block__dots">
@@ -107,28 +99,16 @@ $language_display = isset( $language_names[ $code_language ] ) ? $language_names
                     <span class="acf-code-block__language"><?php echo esc_html( $language_display ); ?></span>
                 <?php endif; ?>
             </div>
-            <?php if ( $show_copy_button ) : ?>
-                <button type="button" class="acf-code-block__copy" data-target="<?php echo esc_attr( $block_id ); ?>" aria-label="<?php esc_attr_e( 'Copy code', 'acf-blocks' ); ?>">
-                    <svg class="acf-code-block__copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                    <svg class="acf-code-block__check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    <span class="acf-code-block__copy-text"><?php esc_html_e( 'Copy', 'acf-blocks' ); ?></span>
-                </button>
-            <?php endif; ?>
         </div>
     <?php endif; ?>
 
-    <div class="acf-code-block__content"<?php echo ! empty( $inline_styles ) ? ' style="' . esc_attr( $inline_styles ) . '"' : ''; ?>>
+    <div class="acf-code-block__content">
         <?php if ( ! empty( $code_content ) ) : ?>
             <?php
             $lines = explode( "\n", $code_content );
             $line_num = 1;
             ?>
-            <pre class="acf-code-block__pre"><code class="acf-code-block__code language-<?php echo esc_attr( $code_language ); ?>" data-code="<?php echo esc_attr( $code_content ); ?>"><?php
+            <pre class="acf-code-block__pre"><code class="acf-code-block__code language-<?php echo esc_attr( $code_language ); ?>"><?php
                 foreach ( $lines as $index => $line ) :
                     $is_highlighted = in_array( $line_num, $highlight_array );
                     $line_class = $is_highlighted ? 'acf-code-block__line acf-code-block__line--highlighted' : 'acf-code-block__line';
@@ -141,70 +121,66 @@ $language_display = isset( $language_names[ $code_language ] ) ? $language_names
             <pre class="acf-code-block__pre"><code class="acf-code-block__code"><?php esc_html_e( 'No code provided.', 'acf-blocks' ); ?></code></pre>
         <?php endif; ?>
     </div>
+
+    <button type="button" class="acf-code-block__expand" aria-expanded="false" style="display: none;">
+        <span class="acf-code-block__expand-text"><?php esc_html_e( 'Show more', 'acf-blocks' ); ?></span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+    </button>
 </div>
 
-<?php if ( $show_copy_button ) : ?>
 <script>
 (function() {
     var block = document.getElementById('<?php echo esc_js( $block_id ); ?>');
     if (!block) return;
 
-    var copyBtn = block.querySelector('.acf-code-block__copy');
-    if (!copyBtn) return;
+    var content = block.querySelector('.acf-code-block__content');
+    var expandBtn = block.querySelector('.acf-code-block__expand');
+    var expandText = block.querySelector('.acf-code-block__expand-text');
+    var maxHeight = 900;
 
-    copyBtn.addEventListener('click', function() {
-        var codeEl = block.querySelector('.acf-code-block__code');
-        var code = codeEl ? codeEl.getAttribute('data-code') : '';
+    function checkHeight() {
+        if (!content || !expandBtn) return;
 
-        if (!code) {
-            var lines = block.querySelectorAll('.acf-code-block__line-content');
-            code = Array.prototype.map.call(lines, function(line) {
-                return line.textContent;
-            }).join('\n');
-        }
+        // Temporarily remove max-height to measure full height
+        content.style.maxHeight = 'none';
+        var fullHeight = content.scrollHeight;
 
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(code).then(function() {
-                showCopied();
-            }).catch(function() {
-                fallbackCopy(code);
-            });
+        if (fullHeight > maxHeight) {
+            content.style.maxHeight = maxHeight + 'px';
+            block.classList.add('acf-code-block--collapsed');
+            expandBtn.style.display = 'flex';
         } else {
-            fallbackCopy(code);
+            content.style.maxHeight = 'none';
+            block.classList.remove('acf-code-block--collapsed');
+            expandBtn.style.display = 'none';
         }
-    });
-
-    function fallbackCopy(text) {
-        var textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.left = '-9999px';
-        document.body.appendChild(textarea);
-        textarea.select();
-        try {
-            document.execCommand('copy');
-            showCopied();
-        } catch (err) {
-            console.error('Copy failed:', err);
-        }
-        document.body.removeChild(textarea);
     }
 
-    function showCopied() {
-        var copyIcon = copyBtn.querySelector('.acf-code-block__copy-icon');
-        var checkIcon = copyBtn.querySelector('.acf-code-block__check-icon');
-        var copyText = copyBtn.querySelector('.acf-code-block__copy-text');
+    if (expandBtn) {
+        expandBtn.addEventListener('click', function() {
+            var isExpanded = block.classList.contains('acf-code-block--expanded');
 
-        if (copyIcon) copyIcon.style.display = 'none';
-        if (checkIcon) checkIcon.style.display = 'inline';
-        if (copyText) copyText.textContent = '<?php echo esc_js( __( 'Copied!', 'acf-blocks' ) ); ?>';
-
-        setTimeout(function() {
-            if (copyIcon) copyIcon.style.display = 'inline';
-            if (checkIcon) checkIcon.style.display = 'none';
-            if (copyText) copyText.textContent = '<?php echo esc_js( __( 'Copy', 'acf-blocks' ) ); ?>';
-        }, 2000);
+            if (isExpanded) {
+                block.classList.remove('acf-code-block--expanded');
+                block.classList.add('acf-code-block--collapsed');
+                content.style.maxHeight = maxHeight + 'px';
+                expandBtn.setAttribute('aria-expanded', 'false');
+                expandText.textContent = '<?php echo esc_js( __( 'Show more', 'acf-blocks' ) ); ?>';
+                expandBtn.querySelector('svg').style.transform = 'rotate(0deg)';
+            } else {
+                block.classList.remove('acf-code-block--collapsed');
+                block.classList.add('acf-code-block--expanded');
+                content.style.maxHeight = 'none';
+                expandBtn.setAttribute('aria-expanded', 'true');
+                expandText.textContent = '<?php echo esc_js( __( 'Show less', 'acf-blocks' ) ); ?>';
+                expandBtn.querySelector('svg').style.transform = 'rotate(180deg)';
+            }
+        });
     }
+
+    // Check height on load
+    checkHeight();
 })();
 </script>
-<?php endif; ?>
