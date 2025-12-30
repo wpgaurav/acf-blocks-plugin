@@ -6,6 +6,8 @@
 .acf-toc {
     font-size: inherit;
     line-height: inherit;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 /* Title */

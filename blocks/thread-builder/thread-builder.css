@@ -1,4 +1,9 @@
 /* Thread Builder Styles */
+.acf-thread-builder {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
 /* Width variations */
 .acf-thread-narrow {
     max-width: 400px;

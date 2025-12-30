@@ -4,6 +4,8 @@
     --acf-accent: var(--wp--preset--color--primary, #080808);
     width: 100%;
     box-sizing: border-box;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .acf-clear::after {

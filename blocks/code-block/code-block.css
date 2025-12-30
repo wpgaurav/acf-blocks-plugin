@@ -6,6 +6,8 @@
     border-radius: 8px;
     overflow: hidden;
     font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 /* Dark Theme (Default) */
