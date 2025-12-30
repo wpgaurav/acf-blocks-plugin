@@ -33,6 +33,7 @@ jobs:
             --exclude='*.log' \
             --exclude='package-lock.json' \
             --exclude='composer.lock' \
+            --exclude='landing.html' \
             ./ build/acf-blocks-plugin/
 
           # Create zip file
