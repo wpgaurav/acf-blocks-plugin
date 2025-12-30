@@ -1,0 +1,49 @@
+{
+  "apiVersion": 3,
+  "name": "acf/checklist",
+  "title": "Checklist",
+  "description": "Display an interactive checklist with customizable items and styling.",
+  "category": "acf-blocks",
+  "icon": "yes-alt",
+  "keywords": ["checklist", "todo", "tasks", "list", "checkbox"],
+  "acf": {
+    "renderTemplate": "checklist-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "anchor": true,
+    "mode": true
+  },
+  "styles": [
+    {
+      "name": "default",
+      "label": "Default",
+      "isDefault": true
+    },
+    {
+      "name": "card",
+      "label": "Card"
+    },
+    {
+      "name": "minimal",
+      "label": "Minimal"
+    }
+  ],
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "checklist_title": "Getting Started",
+        "checklist_items": [
+          {"checklist_item_text": "Create your account", "checklist_item_checked": true},
+          {"checklist_item_text": "Complete your profile", "checklist_item_checked": true},
+          {"checklist_item_text": "Explore the dashboard", "checklist_item_checked": false},
+          {"checklist_item_text": "Invite team members", "checklist_item_checked": false}
+        ]
+      }
+    }
+  },
+  "style": "file:./checklist.css",
+  "editorStyle": "file:./checklist.css"
+}
