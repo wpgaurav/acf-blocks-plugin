@@ -19,6 +19,7 @@ $read_more_text = get_field('pd_read_more_text') ?: 'Read More';
 
 // Block unique ID
 $block_id = 'post-display-' . $block['id'];
+$className = $block['className'] ?? '';
 
 // Begin output
 if (!$selected_posts) {
@@ -42,10 +43,132 @@ if ($custom_class) {
     $container_classes[] = $custom_class;
 }
 
+if ($className) {
+    $container_classes[] = $className;
+}
+
 $container_class = implode(' ', $container_classes);
+
+// Detect style variation
+$style_variation = '';
+if (strpos($className, 'is-style-dark') !== false) {
+    $style_variation = 'dark';
+} elseif (strpos($className, 'is-style-card') !== false) {
+    $style_variation = 'card';
+} elseif (strpos($className, 'is-style-minimal') !== false) {
+    $style_variation = 'minimal';
+} elseif (strpos($className, 'is-style-bordered') !== false) {
+    $style_variation = 'bordered';
+}
 ?>
 
 <div id="<?php echo esc_attr($block_id); ?>" class="<?php echo esc_attr($container_class); ?>">
+    <?php if ($style_variation === 'dark'): ?>
+    <style>
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item {
+            background-color: #1a1a2e;
+            border-color: #374151;
+            color: #ffffff;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-title a {
+            color: #ffffff;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-title a:hover {
+            color: #ffd700;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-meta {
+            color: #9ca3af;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-excerpt {
+            color: #d1d5db;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button {
+            background-color: #ffd700;
+            color: #1a1a2e;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button:hover {
+            background-color: #ffed4a;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display.acf-post-display-layout-text_links .acf-post-display-link {
+            color: #ffd700;
+        }
+    </style>
+    <?php elseif ($style_variation === 'card'): ?>
+    <style>
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-content {
+            padding: 1.5rem;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button {
+            border-radius: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+    </style>
+    <?php elseif ($style_variation === 'minimal'): ?>
+    <style>
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item {
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item:hover {
+            box-shadow: none;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-content {
+            padding: 0;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-thumb {
+            border-bottom: none;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button {
+            background: transparent;
+            color: #0073aa;
+            padding: 0;
+            text-decoration: underline;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button:hover {
+            background: transparent;
+            color: #005a87;
+        }
+    </style>
+    <?php elseif ($style_variation === 'bordered'): ?>
+    <style>
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item {
+            border: 3px solid #1a1a1a;
+            border-radius: 0;
+            background: #ffffff;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item:hover {
+            box-shadow: 4px 4px 0 #1a1a1a;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-title a {
+            color: #1a1a1a;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button {
+            background: #1a1a1a;
+            border-radius: 0;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button:hover {
+            background: #333333;
+        }
+    </style>
+    <?php endif; ?>
     <?php if ($layout === 'text_links'): ?>
 
         <ul class="acf-post-display-list">

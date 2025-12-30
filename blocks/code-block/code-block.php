@@ -12,26 +12,20 @@
 defined( 'ABSPATH' ) || exit;
 
 // Get block values
-$code_content      = get_field( 'code_content' ) ?: '';
-$code_language     = get_field( 'code_language' ) ?: 'plaintext';
-$code_filename     = get_field( 'code_filename' ) ?: '';
-$show_line_numbers = get_field( 'show_line_numbers' );
-$show_copy_button  = get_field( 'show_copy_button' );
-$highlight_lines   = get_field( 'highlight_lines' ) ?: '';
-$start_line        = get_field( 'start_line' ) ?: 1;
-$max_height        = get_field( 'max_height' ) ?: '';
-$code_theme        = get_field( 'code_theme' ) ?: 'dark';
-$font_size         = get_field( 'font_size' ) ?: 'normal';
-$custom_class      = get_field( 'custom_class' ) ?: '';
+$code_content    = get_field( 'code_content' ) ?: '';
+$code_language   = get_field( 'code_language' ) ?: 'plaintext';
+$code_filename   = get_field( 'code_filename' ) ?: '';
+$show_copy_button = get_field( 'show_copy_button' );
+$highlight_lines = get_field( 'highlight_lines' ) ?: '';
+$max_height      = get_field( 'max_height' ) ?: '';
+$code_theme      = get_field( 'code_theme' ) ?: 'dark';
+$font_size       = get_field( 'font_size' ) ?: 'normal';
+$custom_class    = get_field( 'custom_class' ) ?: '';
 
 // Build classes
 $wrapper_classes = array( 'acf-code-block' );
 $wrapper_classes[] = 'acf-code-block--' . $code_theme;
 $wrapper_classes[] = 'acf-code-block--font-' . $font_size;
-
-if ( $show_line_numbers ) {
-    $wrapper_classes[] = 'acf-code-block--line-numbers';
-}
 
 if ( ! empty( $custom_class ) ) {
     $wrapper_classes[] = esc_attr( $custom_class );
@@ -132,17 +126,13 @@ $language_display = isset( $language_names[ $code_language ] ) ? $language_names
         <?php if ( ! empty( $code_content ) ) : ?>
             <?php
             $lines = explode( "\n", $code_content );
-            $line_num = intval( $start_line );
+            $line_num = 1;
             ?>
             <pre class="acf-code-block__pre"><code class="acf-code-block__code language-<?php echo esc_attr( $code_language ); ?>" data-code="<?php echo esc_attr( $code_content ); ?>"><?php
                 foreach ( $lines as $index => $line ) :
                     $is_highlighted = in_array( $line_num, $highlight_array );
                     $line_class = $is_highlighted ? 'acf-code-block__line acf-code-block__line--highlighted' : 'acf-code-block__line';
-                    ?><span class="<?php echo esc_attr( $line_class ); ?>"><?php
-                        if ( $show_line_numbers ) :
-                            ?><span class="acf-code-block__line-number"><?php echo esc_html( $line_num ); ?></span><?php
-                        endif;
-                        ?><span class="acf-code-block__line-content"><?php echo esc_html( $line ); ?></span>
+                    ?><span class="<?php echo esc_attr( $line_class ); ?>"><span class="acf-code-block__line-content"><?php echo esc_html( $line ); ?></span>
 </span><?php
                     $line_num++;
                 endforeach;

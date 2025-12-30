@@ -18,21 +18,6 @@
 [data-type="security"] .acf-changelog-badge { background: #fce7f3; color: #9d174d; }
 [data-type="deprecated"] .acf-changelog-badge { background: #f3f4f6; color: #4b5563; }
 
-/* Timeline Variation */
-.acf-changelog.is-style-timeline { padding-left: 2rem; border-left: 2px solid #e5e5e5; }
-.acf-changelog.is-style-timeline .acf-changelog-entry { position: relative; padding-left: 1.5rem; }
-.acf-changelog.is-style-timeline .acf-changelog-entry::before { content: ''; position: absolute; left: -2.35rem; top: 0.5rem; width: 12px; height: 12px; background: #007bff; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 2px #007bff; }
-.acf-changelog.is-style-timeline .acf-changelog-version { color: #007bff; }
-
-/* Compact Variation */
-.acf-changelog.is-style-compact .acf-changelog-entry { margin-bottom: 1rem; padding-bottom: 1rem; }
-.acf-changelog.is-style-compact .acf-changelog-header { margin-bottom: 0.5rem; }
-.acf-changelog.is-style-compact .acf-changelog-version { font-size: 1.1rem; }
-.acf-changelog.is-style-compact .acf-changelog-list { gap: 0.25rem; }
-.acf-changelog.is-style-compact .acf-changelog-item { font-size: 0.9rem; }
-.acf-changelog.is-style-compact .acf-changelog-badge { padding: 0.1rem 0.4rem; font-size: 0.65rem; }
-
 @media (max-width: 480px) {
     .acf-changelog-item { flex-direction: column; gap: 0.25rem; }
-    .acf-changelog.is-style-timeline { padding-left: 1.5rem; }
 }

@@ -13,6 +13,23 @@ $anchor = !empty($block['anchor']) ? $block['anchor'] : '';
 $className = !empty($block['className']) ? $block['className'] : '';
 $align = !empty($block['align']) ? 'align' . $block['align'] : '';
 
+// Detect style variation
+$style_variation = '';
+if (strpos($className, 'is-style-card') !== false) {
+    $style_variation = 'card';
+} elseif (strpos($className, 'is-style-dark') !== false) {
+    $style_variation = 'dark';
+} elseif (strpos($className, 'is-style-minimal') !== false) {
+    $style_variation = 'minimal';
+} elseif (strpos($className, 'is-style-bordered') !== false) {
+    $style_variation = 'bordered';
+} elseif (strpos($className, 'is-style-gradient') !== false) {
+    $style_variation = 'gradient';
+}
+
+// Generate unique block ID for scoping inline styles
+$block_id = $anchor ? $anchor : 'acf-feature-grid-' . uniqid();
+
 // ACF fields
 $use_innerblocks = get_field('acf_fg_use_innerblocks');
 $heading = get_field('acf_feature_grid_heading');
@@ -31,7 +48,6 @@ $inline_style_attr = $inline_style ? ' style="' . esc_attr($inline_style) . '"' 
 
 $columns_class = $columns ? ' columns-' . esc_attr($columns) : ' columns-3';
 $layout_class = $layout_style ? ' layout-' . esc_attr($layout_style) : ' layout-default';
-$anchor_attr = $anchor ? ' id="' . esc_attr($anchor) . '"' : '';
 
 // Build wrapper classes
 $wrapper_classes = 'acf-feature-grid-block' . $columns_class . $layout_class . $custom_class;
@@ -43,7 +59,203 @@ if ($className) {
 }
 ?>
 
-<div class="<?php echo esc_attr($wrapper_classes); ?>"<?php echo $anchor_attr . $inline_style_attr; ?>>
+<div id="<?php echo esc_attr($block_id); ?>" class="<?php echo esc_attr($wrapper_classes); ?>"<?php echo $inline_style_attr; ?>>
+<?php if ($style_variation) : ?>
+    <style>
+        <?php if ($style_variation === 'card') : ?>
+        #<?php echo esc_attr($block_id); ?> .acf-feature-item {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+            padding: 2rem;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        <?php elseif ($style_variation === 'dark') : ?>
+        #<?php echo esc_attr($block_id); ?> {
+            background: #1a1a2e;
+            color: #fff;
+            border-radius: 12px;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-grid-heading {
+            color: #fff;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-grid-subheading {
+            color: #a0a0a0;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-item {
+            background: #2d2d44;
+            border-radius: 8px;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-title {
+            color: #fff;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-description {
+            color: #b0b0b0;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-icon {
+            color: #ffd700;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-link {
+            color: #ffd700;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-link:hover {
+            color: #ffed4a;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-button-primary,
+        #<?php echo esc_attr($block_id); ?> .acf-cta-primary,
+        #<?php echo esc_attr($block_id); ?> .acf-cta-large {
+            background: #ffd700;
+            border-color: #ffd700;
+            color: #1a1a2e;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-button-primary:hover,
+        #<?php echo esc_attr($block_id); ?> .acf-cta-primary:hover,
+        #<?php echo esc_attr($block_id); ?> .acf-cta-large:hover {
+            background: #ffed4a;
+            border-color: #ffed4a;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-button-secondary,
+        #<?php echo esc_attr($block_id); ?> .acf-cta-secondary {
+            color: #ffd700;
+            border-color: #ffd700;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-button-secondary:hover,
+        #<?php echo esc_attr($block_id); ?> .acf-cta-secondary:hover {
+            background: #ffd700;
+            color: #1a1a2e;
+        }
+        <?php elseif ($style_variation === 'minimal') : ?>
+        #<?php echo esc_attr($block_id); ?> {
+            padding: 2rem 0;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-item:hover {
+            background: transparent;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-icon {
+            font-size: 2rem;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-title {
+            font-size: 1.25rem;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-button-primary {
+            background: transparent;
+            border-color: transparent;
+            color: #007bff;
+            padding-left: 0;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-button-primary:hover {
+            background: transparent;
+            color: #0056b3;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-cta-primary,
+        #<?php echo esc_attr($block_id); ?> .acf-cta-large {
+            background: transparent;
+            color: #007bff;
+            border: 2px solid #007bff;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-cta-primary:hover,
+        #<?php echo esc_attr($block_id); ?> .acf-cta-large:hover {
+            background: #007bff;
+            color: #fff;
+        }
+        <?php elseif ($style_variation === 'bordered') : ?>
+        #<?php echo esc_attr($block_id); ?> .acf-feature-item {
+            border: 3px solid #1a1a1a;
+            border-radius: 0;
+            background: #fff;
+            padding: 2rem;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-item:hover {
+            box-shadow: 6px 6px 0 #1a1a1a;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-icon {
+            color: #1a1a1a;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-button-primary {
+            background: #1a1a1a;
+            border-color: #1a1a1a;
+            border-radius: 0;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-button-primary:hover {
+            background: #333;
+            border-color: #333;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-cta-primary,
+        #<?php echo esc_attr($block_id); ?> .acf-cta-large {
+            background: #1a1a1a;
+            border-color: #1a1a1a;
+            border-radius: 0;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-cta-primary:hover,
+        #<?php echo esc_attr($block_id); ?> .acf-cta-large:hover {
+            background: #333;
+            border-color: #333;
+        }
+        <?php elseif ($style_variation === 'gradient') : ?>
+        #<?php echo esc_attr($block_id); ?> .acf-feature-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            color: #fff;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-title {
+            color: #fff;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-description {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-icon {
+            color: #fff;
+            opacity: 0.9;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-link {
+            color: #fff;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-feature-link:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-button-primary {
+            background: #fff;
+            border-color: #fff;
+            color: #667eea;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-button-primary:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(255, 255, 255, 0.9);
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-button-secondary {
+            border-color: #fff;
+            color: #fff;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-button-secondary:hover {
+            background: #fff;
+            color: #667eea;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-cta-primary,
+        #<?php echo esc_attr($block_id); ?> .acf-cta-large {
+            background: #fff;
+            border-color: #fff;
+            color: #667eea;
+        }
+        #<?php echo esc_attr($block_id); ?> .acf-cta-primary:hover,
+        #<?php echo esc_attr($block_id); ?> .acf-cta-large:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+        <?php endif; ?>
+    </style>
+<?php endif; ?>
     <?php if ($use_innerblocks) : ?>
         <div class="acf-feature-grid-header acf-feature-grid-innerblocks">
             <InnerBlocks />

@@ -28,12 +28,32 @@ if ( ! isset( $stats_unique_ids ) ) {
 $unique_id = 'stats_' . uniqid();
 $stats_unique_ids[] = $unique_id;
 
+$className = $block['className'] ?? '';
+
 $stats_items = get_field( 'acf_stats_items' );
 $layout      = get_field( 'acf_stats_layout' );
 $enable_animation = get_field( 'acf_stats_enable_animation' );
 
+// Detect style variation
+$style_variation = '';
+if ( strpos( $className, 'is-style-card' ) !== false ) {
+    $style_variation = 'card';
+} elseif ( strpos( $className, 'is-style-dark' ) !== false ) {
+    $style_variation = 'dark';
+} elseif ( strpos( $className, 'is-style-minimal' ) !== false ) {
+    $style_variation = 'minimal';
+} elseif ( strpos( $className, 'is-style-bordered' ) !== false ) {
+    $style_variation = 'bordered';
+} elseif ( strpos( $className, 'is-style-gradient' ) !== false ) {
+    $style_variation = 'gradient';
+}
+
 $custom_class = get_field( 'acf_stats_class' );
 $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
+
+if ( $className ) {
+    $custom_class .= ' ' . esc_attr( $className );
+}
 
 $inline_style = get_field( 'acf_stats_inline' );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
@@ -43,6 +63,116 @@ $animation_class = $enable_animation ? ' acf-has-animation' : '';
 ?>
 
 <div id="<?php echo esc_attr( $unique_id ); ?>" class="acf-stats-block<?php echo $layout_class . $animation_class . $custom_class; ?>"<?php echo $inline_style_attr; ?>>
+    <?php if ( $style_variation === 'card' ): ?>
+    <style>
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-item {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #eee;
+            padding: 2rem;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-item:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+    </style>
+    <?php elseif ( $style_variation === 'dark' ): ?>
+    <style>
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block {
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 3rem 2rem;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-item {
+            background: #2d2d44;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-item:hover {
+            background: #3d3d5c;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-number {
+            color: #ffd700;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-prefix,
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-suffix {
+            color: #a0a0a0;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-label {
+            color: #e0e0e0;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-icon {
+            color: #ffd700;
+        }
+    </style>
+    <?php elseif ( $style_variation === 'minimal' ): ?>
+    <style>
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block {
+            padding: 2rem 0;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-item {
+            background: transparent;
+            border-radius: 0;
+            border-bottom: 2px solid #e0e0e0;
+            padding: 1.5rem 1rem;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-item:hover {
+            background: transparent;
+            box-shadow: none;
+            transform: none;
+            border-bottom-color: #007bff;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-number {
+            font-size: 2.5rem;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-label {
+            text-transform: none;
+            letter-spacing: 0;
+        }
+    </style>
+    <?php elseif ( $style_variation === 'bordered' ): ?>
+    <style>
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-item {
+            background: #fff;
+            border: 3px solid #1a1a1a;
+            border-radius: 0;
+            padding: 2rem;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-item:hover {
+            box-shadow: 6px 6px 0 #1a1a1a;
+            transform: translate(-3px, -3px);
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-number {
+            color: #1a1a1a;
+        }
+    </style>
+    <?php elseif ( $style_variation === 'gradient' ): ?>
+    <style>
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            color: #fff;
+            padding: 2rem;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-number {
+            color: #fff;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-prefix,
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-suffix {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-label {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.acf-stats-block .acf-stat-icon {
+            color: #fff;
+            opacity: 0.9;
+        }
+    </style>
+    <?php endif; ?>
     <?php
     if ( $stats_items && is_array( $stats_items ) && count( $stats_items ) > 0 ) :
         foreach ( $stats_items as $index => $stat ) :

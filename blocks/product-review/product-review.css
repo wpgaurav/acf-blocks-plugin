@@ -207,117 +207,11 @@
 }
 
 /* ============================================
-   Style Variation: Card
-   ============================================ */
-.acf-product-review.is-style-card {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border: none;
-    border-radius: 12px;
-    padding: 2rem;
-}
-
-.acf-product-review.is-style-card .acf-product-review-overall-rating {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff;
-    border-radius: 8px;
-}
-
-.acf-product-review.is-style-card .acf-product-review-rating-number {
-    color: #fff;
-}
-
-.acf-product-review.is-style-card .acf-product-review-button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 50px;
-}
-
-.acf-product-review.is-style-card .acf-product-review-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-/* ============================================
-   Style Variation: Minimal
-   ============================================ */
-.acf-product-review.is-style-minimal {
-    background: transparent;
-    border: none;
-    border-radius: 0;
-    padding: 0;
-}
-
-.acf-product-review.is-style-minimal .acf-product-review-overall-rating {
-    background: transparent;
-    padding: 0;
-    text-align: left;
-}
-
-.acf-product-review.is-style-minimal .acf-product-review-rating-stars {
-    justify-content: flex-start;
-}
-
-.acf-product-review.is-style-minimal h4 {
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.acf-product-review.is-style-minimal .acf-product-review-feature-ratings li {
-    border-bottom: none;
-}
-
-.acf-product-review.is-style-minimal .acf-product-review-button {
-    background: transparent;
-    border: 2px solid #0073aa;
-    color: #0073aa;
-}
-
-.acf-product-review.is-style-minimal .acf-product-review-button:hover {
-    background: #0073aa;
-    color: #fff;
-}
-
-/* ============================================
-   Style Variation: Bordered
-   ============================================ */
-.acf-product-review.is-style-bordered {
-    border: 3px solid #1a1a1a;
-    border-radius: 0;
-    background: #fff;
-}
-
-.acf-product-review.is-style-bordered .acf-product-review-overall-rating {
-    background: #1a1a1a;
-    color: #fff;
-    border-radius: 0;
-}
-
-.acf-product-review.is-style-bordered .acf-product-review-rating-number {
-    color: #fff;
-}
-
-.acf-product-review.is-style-bordered h4 {
-    border-bottom-color: #1a1a1a;
-}
-
-.acf-product-review.is-style-bordered .acf-product-review-button {
-    background: #1a1a1a;
-    border-radius: 0;
-}
-
-.acf-product-review.is-style-bordered .acf-product-review-button:hover {
-    background: #333;
-}
-
-/* ============================================
    Responsive Styles
    ============================================ */
 @media (max-width: 768px) {
     .acf-product-review {
         padding: 1rem;
-    }
-
-    .acf-product-review.is-style-card {
-        padding: 1.5rem;
     }
 
     .acf-product-review-pros-cons {

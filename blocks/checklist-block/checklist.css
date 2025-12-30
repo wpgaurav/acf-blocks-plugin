@@ -147,59 +147,6 @@
     margin: 0;
 }
 
-/* ===== STYLE VARIATIONS ===== */
-
-/* Card Style */
-.is-style-card.acf-checklist {
-    background-color: var(--checklist-bg);
-    padding: 1.5rem;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
-}
-
-.is-style-card .acf-checklist__item {
-    background-color: #fff;
-    padding: 0.875rem 1rem;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
-    margin-bottom: 0.5rem;
-}
-
-.is-style-card .acf-checklist__item:last-child {
-    margin-bottom: 0;
-}
-
-.is-style-card .acf-checklist__item--checked {
-    background-color: #f0fdf4;
-    border-color: #bbf7d0;
-}
-
-/* Minimal Style */
-.is-style-minimal.acf-checklist {
-    padding: 0;
-}
-
-.is-style-minimal .acf-checklist__item {
-    padding: 0.5rem 0;
-    border-bottom: none;
-}
-
-.is-style-minimal .acf-checklist__progress-bar {
-    height: 4px;
-}
-
-.is-style-minimal .acf-checklist__checkmark,
-.is-style-minimal .acf-checklist__icon--empty {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-}
-
-.is-style-minimal .acf-checklist__checkmark svg {
-    width: 12px;
-    height: 12px;
-}
-
 /* Alignment support */
 .acf-checklist.alignwide {
     width: 100%;
@@ -221,13 +168,5 @@
 
     .acf-checklist__progress-text {
         text-align: center;
-    }
-
-    .is-style-card.acf-checklist {
-        padding: 1rem;
-    }
-
-    .is-style-card .acf-checklist__item {
-        padding: 0.75rem;
     }
 }
