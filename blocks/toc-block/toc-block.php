@@ -386,7 +386,6 @@ if ( $smooth_scroll && ! defined( 'ACF_TOC_SMOOTH_CSS_LOADED' ) ) :
     echo '<style>html:has(.acf-toc--smooth-scroll){scroll-behavior:smooth}@media(prefers-reduced-motion:reduce){html:has(.acf-toc--smooth-scroll){scroll-behavior:auto}}</style>';
 endif;
 
-<?php
 // Inline JS for active section highlighting (only when enabled)
 if ( $highlight_active && ! defined( 'ACF_TOC_HIGHLIGHT_JS_LOADED' ) ) :
     define( 'ACF_TOC_HIGHLIGHT_JS_LOADED', true );
