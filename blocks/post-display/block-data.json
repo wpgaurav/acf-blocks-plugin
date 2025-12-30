@@ -9,7 +9,7 @@
                 "name": "pd_selected_posts",
                 "aria-label": "",
                 "type": "relationship",
-                "instructions": "Select the posts you want to display. Supports all post types.",
+                "instructions": "Select the posts you want to display.",
                 "required": 1,
                 "conditional_logic": 0,
                 "wrapper": {
@@ -17,7 +17,13 @@
                     "class": "",
                     "id": ""
                 },
-                "post_type": [],
+                "post_type": [
+                    "post",
+                    "page",
+                    "deal",
+                    "snippet",
+                    "tool"
+                ],
                 "filters": [
                     "search",
                     "post_type"

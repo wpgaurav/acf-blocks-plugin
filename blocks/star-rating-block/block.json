@@ -2,10 +2,10 @@
   "apiVersion": 3,
   "name": "acf/star-rating",
   "title": "Star Rating",
-  "description": "Collects visitor star ratings and displays the aggregate score.",
+  "description": "Collects visitor star ratings and displays the aggregate score with CreativeWork schema.",
   "category": "acf-blocks",
   "icon": "star-filled",
-  "keywords": ["rating", "feedback", "stars"],
+  "keywords": ["rating", "feedback", "stars", "review", "schema"],
   "acf": {
     "renderTemplate": "star-rating-block.php",
     "blockVersion": 3
@@ -15,6 +15,29 @@
     "anchor": true,
     "jsx": true
   },
+  "styles": [
+    {
+      "name": "default",
+      "label": "Default",
+      "isDefault": true
+    },
+    {
+      "name": "dark",
+      "label": "Dark"
+    },
+    {
+      "name": "minimal",
+      "label": "Minimal"
+    },
+    {
+      "name": "compact",
+      "label": "Compact"
+    },
+    {
+      "name": "gradient",
+      "label": "Gradient"
+    }
+  ],
   "style": "file:./star-rating-block.css",
   "editorStyle": "file:./star-rating-block.css"
 }
