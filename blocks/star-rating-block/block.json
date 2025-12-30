@@ -11,7 +11,7 @@
     "blockVersion": 3
   },
   "supports": {
-    "align": true,
+    "align": ["wide", "full"],
     "anchor": true,
     "jsx": true
   },
