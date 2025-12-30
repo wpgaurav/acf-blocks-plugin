@@ -1,0 +1,30 @@
+{
+  "apiVersion": 3,
+  "name": "acf/pros-cons",
+  "title": "Pros & Cons",
+  "description": "Display a two-column pros and cons comparison block.",
+  "category": "acf-blocks",
+  "icon": "columns",
+  "keywords": ["pros", "cons", "comparison", "versus", "positive", "negative"],
+  "acf": {
+    "renderTemplate": "pros-cons.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "anchor": true,
+    "mode": true
+  },
+  "style": "file:./pros-cons.css",
+  "editorStyle": "file:./pros-cons.css",
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "pros_title": "Pros",
+        "cons_title": "Cons",
+        "is_preview": true
+      }
+    }
+  }
+}

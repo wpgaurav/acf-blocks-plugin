@@ -2,86 +2,295 @@
  * Callout Block Styles
  */
 
+/* Base Styles */
 .acf-callout {
     position: relative;
     border: 1px solid #e0e0e0;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 2rem;
     background: #fff;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
-.acf-callout.has-icon {
-    padding-top: 2.5rem;
-}
-
-.acf-callout-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.acf-callout-icon-image {
+    text-align: center;
     margin-bottom: 1rem;
 }
 
-.acf-callout-icon.icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: #0073aa;
-    color: #fff;
-}
-
-.acf-callout-icon.icon i {
-    font-size: 24px;
-}
-
-.acf-callout-icon.image img {
-    max-width: 100px;
+.acf-callout-icon-image img {
+    max-width: 80px;
     height: auto;
 }
 
-.acf-callout-title {
-    font-size: 1.5rem;
-    font-weight: 600;
+.acf-callout.has-icon-image {
+    padding-top: 0;
+}
+
+.acf-callout.has-icon-image .acf-callout-icon-image {
+    margin-top: -40px;
     margin-bottom: 1rem;
 }
 
-.acf-callout-text {
+.acf-callout-label {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     margin-bottom: 1rem;
+    color: #d4a600;
+}
+
+.acf-callout-label-bottom {
+    margin-top: 1rem;
+    margin-bottom: 0;
+}
+
+.acf-callout-content {
     line-height: 1.6;
 }
 
-.acf-callout-action {
-    margin-top: 1.5rem;
+.acf-callout-content > *:first-child {
+    margin-top: 0;
 }
 
-.acf-callout-button {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background-color: #0073aa;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+.acf-callout-content > *:last-child {
+    margin-bottom: 0;
 }
 
-.acf-callout-button:hover {
-    background-color: #005a87;
+/* Alignment */
+.acf-callout.alignwide,
+.acf-callout.alignfull {
+    width: 100%;
 }
 
-.acf-callout.image-overlay {
-    background-size: cover;
-    background-position: center;
-    color: #fff;
+.acf-callout.alignfull {
+    border-radius: 0;
 }
 
-.acf-callout.shadow-small {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+/* ============================================
+   Style Variation: Dark
+   ============================================ */
+.acf-callout.is-style-dark {
+    background-color: #0a0a0a;
+    border-color: #0a0a0a;
+    color: #ffffff;
 }
 
-.acf-callout.text-center {
-    text-align: center;
+.acf-callout.is-style-dark .acf-callout-label {
+    color: #ffd700;
 }
 
-.acf-callout.text-center .acf-callout-icon {
-    margin-left: auto;
-    margin-right: auto;
+.acf-callout.is-style-dark a {
+    color: #ffffff;
+}
+
+.acf-callout.is-style-dark .wp-block-button__link {
+    background-color: transparent;
+    border: 2px solid #ffffff;
+    color: #ffffff;
+    border-radius: 50px;
+}
+
+.acf-callout.is-style-dark .wp-block-button__link:hover {
+    background-color: #ffffff;
+    color: #0a0a0a;
+}
+
+/* ============================================
+   Style Variation: Testimonial
+   ============================================ */
+.acf-callout.is-style-testimonial {
+    background-color: #fdf6e3;
+    border-color: #f5e6c8;
+    color: #3d3d3d;
+}
+
+.acf-callout.is-style-testimonial .acf-callout-label {
+    color: #b8860b;
+}
+
+/* Star ratings in testimonial */
+.acf-callout.is-style-testimonial .wp-block-paragraph:has(⭐),
+.acf-callout.is-style-testimonial [class*="stars"],
+.acf-callout.is-style-testimonial [class*="rating"] {
+    color: #d4a600;
+}
+
+/* ============================================
+   Style Variation: Dashed Light
+   ============================================ */
+.acf-callout.is-style-dashed-light {
+    background-color: #ffffff;
+    border: 3px dashed #c0c0c0;
+    color: #3d3d3d;
+}
+
+.acf-callout.is-style-dashed-light .acf-callout-label {
+    color: #7cb342;
+}
+
+/* Arrow list styling */
+.acf-callout.is-style-dashed-light .wp-block-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.acf-callout.is-style-dashed-light .wp-block-list li {
+    position: relative;
+    padding-left: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.acf-callout.is-style-dashed-light .wp-block-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: #7cb342;
+    font-weight: bold;
+}
+
+.acf-callout.is-style-dashed-light .wp-block-button__link {
+    background-color: #ffe135;
+    color: #0a0a0a;
+    border-radius: 50px;
+    font-weight: 600;
+    box-shadow: 0 4px 0 #ccb42a;
+}
+
+.acf-callout.is-style-dashed-light .wp-block-button__link:hover {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #ccb42a;
+}
+
+/* ============================================
+   Style Variation: Dashed Dark
+   ============================================ */
+.acf-callout.is-style-dashed-dark {
+    background-color: #3d3d3d;
+    border: 3px dashed #5a5a5a;
+    color: #ffffff;
+}
+
+.acf-callout.is-style-dashed-dark .acf-callout-label {
+    color: #ffd700;
+}
+
+.acf-callout.is-style-dashed-dark a {
+    color: #ffffff;
+}
+
+/* Arrow list styling */
+.acf-callout.is-style-dashed-dark .wp-block-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.acf-callout.is-style-dashed-dark .wp-block-list li {
+    position: relative;
+    padding-left: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.acf-callout.is-style-dashed-dark .wp-block-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: #7cb342;
+    font-weight: bold;
+}
+
+.acf-callout.is-style-dashed-dark .wp-block-button__link {
+    background-color: #ffe135;
+    color: #0a0a0a;
+    border-radius: 50px;
+    font-weight: 600;
+    box-shadow: 0 4px 0 #ccb42a;
+}
+
+.acf-callout.is-style-dashed-dark .wp-block-button__link:hover {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #ccb42a;
+}
+
+/* ============================================
+   Style Variation: Highlight
+   ============================================ */
+.acf-callout.is-style-highlight {
+    background-color: #f0fff0;
+    border: 3px dashed #90ee90;
+    color: #2d4a2d;
+}
+
+.acf-callout.is-style-highlight .acf-callout-label {
+    color: #228b22;
+}
+
+.acf-callout.is-style-highlight .acf-callout-icon-image img {
+    max-width: 60px;
+}
+
+/* Arrow list styling */
+.acf-callout.is-style-highlight .wp-block-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.acf-callout.is-style-highlight .wp-block-list li {
+    position: relative;
+    padding-left: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.acf-callout.is-style-highlight .wp-block-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: #228b22;
+    font-weight: bold;
+}
+
+.acf-callout.is-style-highlight .wp-block-button__link {
+    background-color: #ffe135;
+    color: #0a0a0a;
+    border-radius: 50px;
+    font-weight: 600;
+    box-shadow: 0 4px 0 #ccb42a;
+}
+
+.acf-callout.is-style-highlight .wp-block-button__link:hover {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #ccb42a;
+}
+
+/* ============================================
+   Mark/Highlight text styling
+   ============================================ */
+.acf-callout mark,
+.acf-callout .has-inline-highlight {
+    background-color: rgba(173, 216, 230, 0.5);
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+}
+
+.acf-callout.is-style-dark mark {
+    background-color: rgba(255, 215, 0, 0.3);
+}
+
+/* ============================================
+   Responsive Styles
+   ============================================ */
+@media (max-width: 768px) {
+    .acf-callout {
+        padding: 1.5rem;
+    }
+
+    .acf-callout.has-icon-image .acf-callout-icon-image {
+        margin-top: -30px;
+    }
+
+    .acf-callout-icon-image img {
+        max-width: 60px;
+    }
 }

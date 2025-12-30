@@ -4,344 +4,84 @@
         "title": "Callout Block",
         "fields": [
             {
-                "key": "field_callout_content_tab",
-                "label": "Content",
+                "key": "field_callout_options_tab",
+                "label": "Options",
                 "name": "",
                 "type": "tab",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0,
                 "placement": "top",
                 "endpoint": 0
             },
             {
-                "key": "field_callout_title",
-                "label": "Title",
-                "name": "callout_title",
+                "key": "field_callout_label",
+                "label": "Label",
+                "name": "callout_label",
                 "type": "text",
+                "instructions": "Optional label text (e.g., 'CASE STUDY', 'PRO TIP')",
+                "required": 0
+            },
+            {
+                "key": "field_callout_label_position",
+                "label": "Label Position",
+                "name": "callout_label_position",
+                "type": "select",
                 "instructions": "",
                 "required": 0,
-                "conditional_logic": 0
-            },
-            {
-                "key": "field_callout_text",
-                "label": "Text",
-                "name": "callout_text",
-                "type": "wysiwyg",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0,
-                "tabs": "all",
-                "toolbar": "full",
-                "media_upload": 1,
-                "default_value": ""
-            },
-            {
-                "key": "field_callout_list",
-                "label": "List",
-                "name": "callout_list",
-                "type": "wysiwyg",
-                "instructions": "Add list items with HTML markup",
-                "required": 0,
-                "conditional_logic": 0,
-                "tabs": "all",
-                "toolbar": "basic",
-                "media_upload": 0,
-                "default_value": ""
-            },
-            {
-                "key": "field_callout_icon_tab",
-                "label": "Icon",
-                "name": "",
-                "type": "tab",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0,
-                "placement": "top",
-                "endpoint": 0
-            },
-            {
-                "key": "field_callout_icon",
-                "label": "Icon",
-                "name": "callout_icon",
-                "type": "text",
-                "instructions": "Enter Font Awesome icon class (e.g., 'fas fa-star')",
-                "required": 0,
-                "conditional_logic": 0
+                "choices": {
+                    "top": "Top",
+                    "bottom": "Bottom"
+                },
+                "default_value": "top",
+                "conditional_logic": [
+                    [
+                        {
+                            "field": "field_callout_label",
+                            "operator": "!=empty"
+                        }
+                    ]
+                ]
             },
             {
                 "key": "field_callout_iconImage",
-                "label": "Icon Image",
+                "label": "Icon/Image",
                 "name": "callout_iconImage",
                 "type": "image",
-                "instructions": "Upload an image to use as icon (only used if no icon class is specified)",
+                "instructions": "Optional image to display above the content (e.g., lightbulb icon)",
                 "required": 0,
-                "conditional_logic": 0,
                 "return_format": "url",
-                "preview_size": "medium",
+                "preview_size": "thumbnail",
                 "library": "all"
-            },
-            {
-                "key": "field_callout_iconColor",
-                "label": "Icon Color",
-                "name": "callout_iconColor",
-                "type": "color_picker",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0
-            },
-            {
-                "key": "field_callout_button_tab",
-                "label": "Button",
-                "name": "",
-                "type": "tab",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0,
-                "placement": "top",
-                "endpoint": 0
-            },
-            {
-                "key": "field_callout_buttonText",
-                "label": "Button Text",
-                "name": "callout_buttonText",
-                "type": "text",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0
-            },
-            {
-                "key": "field_callout_url",
-                "label": "URL",
-                "name": "callout_url",
-                "type": "url",
-                "instructions": "Link for the button",
-                "required": 0,
-                "conditional_logic": 0
-            },
-            {
-                "key": "field_callout_popup",
-                "label": "Popup ID",
-                "name": "callout_popup",
-                "type": "text",
-                "instructions": "Enter a popup ID (only used if no URL is specified)",
-                "required": 0,
-                "conditional_logic": 0
-            },
-            {
-                "key": "field_callout_style_tab",
-                "label": "Styling",
-                "name": "",
-                "type": "tab",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0,
-                "placement": "top",
-                "endpoint": 0
-            },
-            {
-                "key": "field_callout_alignment",
-                "label": "Text Alignment",
-                "name": "callout_alignment",
-                "type": "select",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0,
-                "choices": {
-                    "left": "Left",
-                    "center": "Center",
-                    "right": "Right"
-                },
-                "default_value": "left"
-            },
-            {
-                "key": "field_callout_marginBottom",
-                "label": "Margin Bottom",
-                "name": "callout_marginBottom",
-                "type": "select",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0,
-                "choices": {
-                    "mb-none": "None",
-                    "mb-single": "Small",
-                    "mb-double": "Medium",
-                    "mb-triple": "Large"
-                },
-                "default_value": "mb-double"
-            },
-            {
-                "key": "field_callout_padding",
-                "label": "Padding",
-                "name": "callout_padding",
-                "type": "select",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0,
-                "choices": {
-                    "block-none": "None",
-                    "block-min": "Small",
-                    "block-mid": "Medium",
-                    "block-max": "Large"
-                },
-                "default_value": "block-mid"
-            },
-            {
-                "key": "field_callout_shadow",
-                "label": "Shadow",
-                "name": "callout_shadow",
-                "type": "true_false",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0,
-                "ui": 1
             },
             {
                 "key": "field_callout_colors_tab",
                 "label": "Colors",
                 "name": "",
                 "type": "tab",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0,
                 "placement": "top",
                 "endpoint": 0
-            },
-            {
-                "key": "field_callout_textColor",
-                "label": "Text Color",
-                "name": "callout_textColor",
-                "type": "color_picker",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0
-            },
-            {
-                "key": "field_callout_textColorClass",
-                "label": "Text Color Class",
-                "name": "callout_textColorClass",
-                "type": "select",
-                "instructions": "Theme color class (overrides custom text color)",
-                "required": 0,
-                "conditional_logic": 0,
-                "choices": {
-                    "": "None",
-                    "text-primary": "Primary",
-                    "text-secondary": "Secondary",
-                    "text-light": "Light",
-                    "text-dark": "Dark"
-                },
-                "default_value": ""
             },
             {
                 "key": "field_callout_bgColor",
                 "label": "Background Color",
                 "name": "callout_bgColor",
                 "type": "color_picker",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0
+                "instructions": "Override the style variation background color",
+                "required": 0
             },
             {
-                "key": "field_callout_bgColorClass",
-                "label": "Background Color Class",
-                "name": "callout_bgColorClass",
-                "type": "select",
-                "instructions": "Theme background class (overrides custom background color)",
-                "required": 0,
-                "conditional_logic": 0,
-                "choices": {
-                    "": "None",
-                    "bg-primary": "Primary",
-                    "bg-secondary": "Secondary",
-                    "bg-light": "Light",
-                    "bg-dark": "Dark"
-                },
-                "default_value": ""
+                "key": "field_callout_textColor",
+                "label": "Text Color",
+                "name": "callout_textColor",
+                "type": "color_picker",
+                "instructions": "Override the style variation text color",
+                "required": 0
             },
             {
                 "key": "field_callout_borderColor",
                 "label": "Border Color",
                 "name": "callout_borderColor",
                 "type": "color_picker",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0
-            },
-            {
-                "key": "field_callout_bgImage",
-                "label": "Background Image",
-                "name": "callout_bgImage",
-                "type": "image",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0,
-                "return_format": "url",
-                "preview_size": "medium",
-                "library": "all"
-            },
-            {
-                "key": "field_callout_button_styles_tab",
-                "label": "Button Styles",
-                "name": "",
-                "type": "tab",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0,
-                "placement": "top",
-                "endpoint": 0
-            },
-            {
-                "key": "field_callout_buttonColor",
-                "label": "Button Color",
-                "name": "callout_buttonColor",
-                "type": "color_picker",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0
-            },
-            {
-                "key": "field_callout_buttonColorClass",
-                "label": "Button Color Class",
-                "name": "callout_buttonColorClass",
-                "type": "select",
-                "instructions": "Theme button class (overrides custom button color)",
-                "required": 0,
-                "conditional_logic": 0,
-                "choices": {
-                    "": "None",
-                    "button-primary": "Primary",
-                    "button-secondary": "Secondary",
-                    "button-light": "Light",
-                    "button-dark": "Dark"
-                },
-                "default_value": ""
-            },
-            {
-                "key": "field_callout_buttonTextColor",
-                "label": "Button Text Color",
-                "name": "callout_buttonTextColor",
-                "type": "color_picker",
-                "instructions": "",
-                "required": 0,
-                "conditional_logic": 0
-            },
-            {
-                "key": "field_callout_buttonTextColorClass",
-                "label": "Button Text Color Class",
-                "name": "callout_buttonTextColorClass",
-                "type": "select",
-                "instructions": "Theme button text class (overrides custom button text color)",
-                "required": 0,
-                "conditional_logic": 0,
-                "choices": {
-                    "": "None",
-                    "text-primary": "Primary",
-                    "text-secondary": "Secondary",
-                    "text-light": "Light",
-                    "text-dark": "Dark"
-                },
-                "default_value": ""
+                "instructions": "Override the style variation border color",
+                "required": 0
             }
         ],
         "location": [
@@ -358,9 +98,6 @@
         "style": "default",
         "label_placement": "top",
         "instruction_placement": "label",
-        "hide_on_screen": "",
-        "active": true,
-        "description": "",
-        "show_in_rest": 0
+        "active": true
     }
 ]

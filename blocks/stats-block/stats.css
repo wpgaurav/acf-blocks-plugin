@@ -2,6 +2,8 @@
     padding: 40px 20px;
     display: flex;
     gap: 40px;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 /* Horizontal Layout */

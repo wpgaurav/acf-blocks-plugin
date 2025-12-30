@@ -2,27 +2,70 @@
   "apiVersion": 3,
   "name": "acf/callout",
   "title": "Callout",
-  "description": "Display a styled callout box with title, text, and button.",
+  "description": "Display a styled callout box with customizable content using core blocks.",
   "category": "acf-blocks",
   "icon": "megaphone",
-  "keywords": ["callout", "cta", "button"],
+  "keywords": ["callout", "cta", "button", "box"],
   "acf": {
     "renderTemplate": "template.php",
     "blockVersion": 3
   },
   "supports": {
-    "align": ["wide", "full"]
+    "align": ["wide", "full"],
+    "mode": true,
+    "anchor": true,
+    "jsx": true
   },
+  "styles": [
+    {
+      "name": "default",
+      "label": "Default",
+      "isDefault": true
+    },
+    {
+      "name": "dark",
+      "label": "Dark"
+    },
+    {
+      "name": "testimonial",
+      "label": "Testimonial"
+    },
+    {
+      "name": "dashed-light",
+      "label": "Dashed Light"
+    },
+    {
+      "name": "dashed-dark",
+      "label": "Dashed Dark"
+    },
+    {
+      "name": "highlight",
+      "label": "Highlight"
+    }
+  ],
   "style": "file:./callout.css",
   "editorStyle": "file:./callout.css",
   "example": {
     "attributes": {
       "mode": "preview",
       "data": {
-        "callout_title": "Callout",
-        "callout_text": "This is an example callout block",
         "is_preview": true
       }
-    }
+    },
+    "innerBlocks": [
+      {
+        "name": "core/heading",
+        "attributes": {
+          "level": 3,
+          "content": "Callout Title"
+        }
+      },
+      {
+        "name": "core/paragraph",
+        "attributes": {
+          "content": "This is an example callout block with InnerBlocks support."
+        }
+      }
+    ]
   }
 }

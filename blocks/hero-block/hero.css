@@ -3,6 +3,8 @@
     padding: 60px 20px;
     text-align: center;
     overflow: hidden;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .acf-hero-image {

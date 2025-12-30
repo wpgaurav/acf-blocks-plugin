@@ -1,0 +1,151 @@
+[
+    {
+        "key": "group_pros_cons_block",
+        "title": "Pros & Cons Block",
+        "fields": [
+            {
+                "key": "field_pc_content_tab",
+                "label": "Content",
+                "type": "tab",
+                "placement": "top"
+            },
+            {
+                "key": "field_pc_show_first",
+                "label": "Show First",
+                "name": "pc_show_first",
+                "type": "select",
+                "instructions": "Choose which side to display first",
+                "choices": {
+                    "negative": "Negative (Cons)",
+                    "positive": "Positive (Pros)"
+                },
+                "default_value": "negative"
+            },
+            {
+                "key": "field_pc_negative_tab",
+                "label": "Negative Side",
+                "type": "tab",
+                "placement": "top"
+            },
+            {
+                "key": "field_pc_cons_title",
+                "label": "Title",
+                "name": "pc_cons_title",
+                "type": "text",
+                "default_value": "Cons"
+            },
+            {
+                "key": "field_pc_cons_list",
+                "label": "List Items",
+                "name": "pc_cons_list",
+                "type": "wysiwyg",
+                "instructions": "Add list items. Use bold for headings within items.",
+                "tabs": "visual",
+                "toolbar": "basic",
+                "media_upload": 0,
+                "default_value": "<ul>\n<li><strong>Item heading:</strong> Description text here.</li>\n</ul>"
+            },
+            {
+                "key": "field_pc_positive_tab",
+                "label": "Positive Side",
+                "type": "tab",
+                "placement": "top"
+            },
+            {
+                "key": "field_pc_pros_title",
+                "label": "Title",
+                "name": "pc_pros_title",
+                "type": "text",
+                "default_value": "Pros"
+            },
+            {
+                "key": "field_pc_pros_list",
+                "label": "List Items",
+                "name": "pc_pros_list",
+                "type": "wysiwyg",
+                "instructions": "Add list items. Use bold for headings within items.",
+                "tabs": "visual",
+                "toolbar": "basic",
+                "media_upload": 0,
+                "default_value": "<ul>\n<li><strong>Item heading:</strong> Description text here.</li>\n</ul>"
+            },
+            {
+                "key": "field_pc_colors_tab",
+                "label": "Colors",
+                "type": "tab",
+                "placement": "top"
+            },
+            {
+                "key": "field_pc_neg_bg_color",
+                "label": "Negative Background",
+                "name": "pc_neg_bg_color",
+                "type": "color_picker",
+                "default_value": "#fef2f2"
+            },
+            {
+                "key": "field_pc_neg_border_color",
+                "label": "Negative Border",
+                "name": "pc_neg_border_color",
+                "type": "color_picker",
+                "default_value": "#dc2626"
+            },
+            {
+                "key": "field_pc_neg_title_color",
+                "label": "Negative Title Color",
+                "name": "pc_neg_title_color",
+                "type": "color_picker",
+                "default_value": "#dc2626"
+            },
+            {
+                "key": "field_pc_neg_icon_color",
+                "label": "Negative Icon Color",
+                "name": "pc_neg_icon_color",
+                "type": "color_picker",
+                "default_value": "#dc2626"
+            },
+            {
+                "key": "field_pc_pos_bg_color",
+                "label": "Positive Background",
+                "name": "pc_pos_bg_color",
+                "type": "color_picker",
+                "default_value": "#f0fdf4"
+            },
+            {
+                "key": "field_pc_pos_border_color",
+                "label": "Positive Border",
+                "name": "pc_pos_border_color",
+                "type": "color_picker",
+                "default_value": "#16a34a"
+            },
+            {
+                "key": "field_pc_pos_title_color",
+                "label": "Positive Title Color",
+                "name": "pc_pos_title_color",
+                "type": "color_picker",
+                "default_value": "#16a34a"
+            },
+            {
+                "key": "field_pc_pos_icon_color",
+                "label": "Positive Icon Color",
+                "name": "pc_pos_icon_color",
+                "type": "color_picker",
+                "default_value": "#16a34a"
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "block",
+                    "operator": "==",
+                    "value": "acf/pros-cons"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "active": true
+    }
+]
