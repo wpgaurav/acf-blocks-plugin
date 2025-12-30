@@ -2,7 +2,7 @@
  * Star Rating Block Styles
  */
 
-/* Base Styles */
+/* Base Styles - Protected from theme overrides */
 .acf-star-rating {
     background: #ffffff;
     border: 1px solid #e5e7eb;
@@ -12,21 +12,32 @@
     max-width: 480px;
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    line-height: 1.5;
+    color: #1f2937;
 }
 
 .acf-star-rating.alignwide,
 .acf-star-rating.alignfull {
     max-width: none;
+    width: 100%;
 }
 
 .acf-star-rating__heading {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    margin: 0 0 0.5rem 0 !important;
+    padding: 0 !important;
+    color: inherit;
+    line-height: 1.3;
 }
 
 .acf-star-rating__description {
-    margin-bottom: 1.5rem;
+    margin: 0 0 1.5rem 0 !important;
+    padding: 0 !important;
     color: #4b5563;
+    font-size: 1rem;
+    line-height: 1.6;
 }
 
 .acf-star-rating__aggregate {
@@ -145,15 +156,19 @@
 }
 
 .acf-star-rating__thank-you {
-    margin-top: 1rem;
+    margin: 1rem 0 0 0 !important;
+    padding: 0 !important;
     font-weight: 600;
     color: #047857;
+    font-size: 1rem;
 }
 
 .acf-star-rating__error {
-    margin-top: 1rem;
+    margin: 1rem 0 0 0 !important;
+    padding: 0 !important;
     color: #b91c1c;
     font-weight: 600;
+    font-size: 0.9rem;
 }
 
 .acf-star-rating .screen-reader-text {
