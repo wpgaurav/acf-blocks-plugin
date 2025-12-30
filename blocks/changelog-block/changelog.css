@@ -1,0 +1,38 @@
+/* Changelog Block */
+.acf-changelog { margin: 0.5rem 0; }
+.acf-changelog-entry { margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid #e5e5e5; }
+.acf-changelog-entry:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.acf-changelog-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.acf-changelog-version { font-size: 1.5rem; font-weight: 700; color: #1a1a1a; }
+.acf-changelog-date { font-size: 0.9rem; color: #666; }
+.acf-changelog-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.acf-changelog-item { display: flex; align-items: flex-start; gap: 0.75rem; }
+.acf-changelog-badge { display: inline-block; padding: 0.15rem 0.5rem; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; border-radius: 3px; flex-shrink: 0; }
+.acf-changelog-text { line-height: 1.5; }
+
+/* Badge Colors */
+[data-type="added"] .acf-changelog-badge { background: #d1fae5; color: #065f46; }
+[data-type="changed"] .acf-changelog-badge { background: #dbeafe; color: #1e40af; }
+[data-type="fixed"] .acf-changelog-badge { background: #fef3c7; color: #92400e; }
+[data-type="removed"] .acf-changelog-badge { background: #fee2e2; color: #991b1b; }
+[data-type="security"] .acf-changelog-badge { background: #fce7f3; color: #9d174d; }
+[data-type="deprecated"] .acf-changelog-badge { background: #f3f4f6; color: #4b5563; }
+
+/* Timeline Variation */
+.acf-changelog.is-style-timeline { padding-left: 2rem; border-left: 2px solid #e5e5e5; }
+.acf-changelog.is-style-timeline .acf-changelog-entry { position: relative; padding-left: 1.5rem; }
+.acf-changelog.is-style-timeline .acf-changelog-entry::before { content: ''; position: absolute; left: -2.35rem; top: 0.5rem; width: 12px; height: 12px; background: #007bff; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 2px #007bff; }
+.acf-changelog.is-style-timeline .acf-changelog-version { color: #007bff; }
+
+/* Compact Variation */
+.acf-changelog.is-style-compact .acf-changelog-entry { margin-bottom: 1rem; padding-bottom: 1rem; }
+.acf-changelog.is-style-compact .acf-changelog-header { margin-bottom: 0.5rem; }
+.acf-changelog.is-style-compact .acf-changelog-version { font-size: 1.1rem; }
+.acf-changelog.is-style-compact .acf-changelog-list { gap: 0.25rem; }
+.acf-changelog.is-style-compact .acf-changelog-item { font-size: 0.9rem; }
+.acf-changelog.is-style-compact .acf-changelog-badge { padding: 0.1rem 0.4rem; font-size: 0.65rem; }
+
+@media (max-width: 480px) {
+    .acf-changelog-item { flex-direction: column; gap: 0.25rem; }
+    .acf-changelog.is-style-timeline { padding-left: 1.5rem; }
+}
