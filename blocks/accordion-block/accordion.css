@@ -90,6 +90,102 @@
     margin-bottom: 0;
 }
 
+/* ============================================
+   Style Variation: Card
+   ============================================ */
+.acf-accordion.is-style-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    padding: 0.5rem;
+}
+
+.acf-accordion.is-style-card .acf-accordion-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+}
+
+.acf-accordion.is-style-card .acf-accordion-title {
+    padding: 1rem 1.25rem;
+}
+
+.acf-accordion.is-style-card .acf-accordion-content {
+    padding: 0 1.25rem 1rem;
+}
+
+/* ============================================
+   Style Variation: Dark
+   ============================================ */
+.acf-accordion.is-style-dark {
+    background: #1a1a2e;
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.acf-accordion.is-style-dark .acf-accordion-item {
+    border-bottom: 1px solid #3d3d5c;
+}
+
+.acf-accordion.is-style-dark .acf-accordion-item:last-child {
+    border-bottom: none;
+}
+
+.acf-accordion.is-style-dark .acf-accordion-title {
+    color: #fff;
+}
+
+.acf-accordion.is-style-dark .acf-accordion-content,
+.acf-accordion.is-style-dark .acf-accordion-content p {
+    color: #b0b0b0;
+}
+
+.acf-accordion.is-style-dark .acf-accordion-icon::before,
+.acf-accordion.is-style-dark .acf-accordion-icon::after {
+    background-color: #ffd700;
+}
+
+/* ============================================
+   Style Variation: Minimal
+   ============================================ */
+.acf-accordion.is-style-minimal .acf-accordion-item {
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 0;
+}
+
+.acf-accordion.is-style-minimal .acf-accordion-title {
+    padding: 1rem 0;
+    font-weight: 500;
+}
+
+.acf-accordion.is-style-minimal .acf-accordion-icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* ============================================
+   Style Variation: Bordered
+   ============================================ */
+.acf-accordion.is-style-bordered .acf-accordion-item {
+    border: 2px solid #1a1a1a;
+    margin-bottom: 0.5rem;
+}
+
+.acf-accordion.is-style-bordered .acf-accordion-title {
+    padding: 1rem 1.25rem;
+    background: #fff;
+}
+
+.acf-accordion.is-style-bordered .acf-accordion-item[open] .acf-accordion-title {
+    border-bottom: 2px solid #1a1a1a;
+}
+
+.acf-accordion.is-style-bordered .acf-accordion-content {
+    padding: 1rem 1.25rem;
+    background: #fff;
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
     .acf-accordion-icon,

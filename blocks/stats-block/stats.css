@@ -109,6 +109,138 @@
     justify-content: flex-start;
 }
 
+/* ============================================
+   Style Variation: Card
+   ============================================ */
+.acf-stats-block.is-style-card .acf-stat-item {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #eee;
+    padding: 2rem;
+}
+
+.acf-stats-block.is-style-card .acf-stat-item:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* ============================================
+   Style Variation: Dark
+   ============================================ */
+.acf-stats-block.is-style-dark {
+    background: #1a1a2e;
+    border-radius: 12px;
+    padding: 3rem 2rem;
+}
+
+.acf-stats-block.is-style-dark .acf-stat-item {
+    background: #2d2d44;
+}
+
+.acf-stats-block.is-style-dark .acf-stat-item:hover {
+    background: #3d3d5c;
+}
+
+.acf-stats-block.is-style-dark .acf-stat-number {
+    color: #ffd700;
+}
+
+.acf-stats-block.is-style-dark .acf-stat-prefix,
+.acf-stats-block.is-style-dark .acf-stat-suffix {
+    color: #a0a0a0;
+}
+
+.acf-stats-block.is-style-dark .acf-stat-label {
+    color: #e0e0e0;
+}
+
+.acf-stats-block.is-style-dark .acf-stat-icon {
+    color: #ffd700;
+}
+
+/* ============================================
+   Style Variation: Minimal
+   ============================================ */
+.acf-stats-block.is-style-minimal {
+    padding: 2rem 0;
+}
+
+.acf-stats-block.is-style-minimal .acf-stat-item {
+    background: transparent;
+    border-radius: 0;
+    border-bottom: 2px solid #e0e0e0;
+    padding: 1.5rem 1rem;
+}
+
+.acf-stats-block.is-style-minimal .acf-stat-item:hover {
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+    border-bottom-color: #007bff;
+}
+
+.acf-stats-block.is-style-minimal .acf-stat-number {
+    font-size: 2.5rem;
+}
+
+.acf-stats-block.is-style-minimal .acf-stat-label {
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+/* ============================================
+   Style Variation: Bordered
+   ============================================ */
+.acf-stats-block.is-style-bordered .acf-stat-item {
+    background: #fff;
+    border: 3px solid #1a1a1a;
+    border-radius: 0;
+    padding: 2rem;
+}
+
+.acf-stats-block.is-style-bordered .acf-stat-item:hover {
+    box-shadow: 6px 6px 0 #1a1a1a;
+    transform: translate(-3px, -3px);
+}
+
+.acf-stats-block.is-style-bordered .acf-stat-number {
+    color: #1a1a1a;
+}
+
+/* ============================================
+   Style Variation: Gradient
+   ============================================ */
+.acf-stats-block.is-style-gradient .acf-stat-item {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    color: #fff;
+    padding: 2rem;
+}
+
+.acf-stats-block.is-style-gradient .acf-stat-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.acf-stats-block.is-style-gradient .acf-stat-number {
+    color: #fff;
+}
+
+.acf-stats-block.is-style-gradient .acf-stat-prefix,
+.acf-stats-block.is-style-gradient .acf-stat-suffix {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.acf-stats-block.is-style-gradient .acf-stat-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.acf-stats-block.is-style-gradient .acf-stat-icon {
+    color: #fff;
+    opacity: 0.9;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .acf-stats-block.acf-stats-horizontal {

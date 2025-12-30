@@ -11,9 +11,54 @@
     "blockVersion": 3
   },
   "supports": {
-    "align": true,
+    "align": ["wide", "full"],
     "mode": true,
-    "jsx": true
+    "jsx": true,
+    "anchor": true
+  },
+  "styles": [
+    {
+      "name": "default",
+      "label": "Default",
+      "isDefault": true
+    },
+    {
+      "name": "card",
+      "label": "Card"
+    },
+    {
+      "name": "dark",
+      "label": "Dark"
+    },
+    {
+      "name": "minimal",
+      "label": "Minimal"
+    },
+    {
+      "name": "vertical",
+      "label": "Vertical"
+    }
+  ],
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "acf_tabs_items": [
+          {
+            "acf_tab_title": "Overview",
+            "acf_tab_content": "This is the overview content. Add your main introduction and key points here."
+          },
+          {
+            "acf_tab_title": "Features",
+            "acf_tab_content": "List your features and benefits in this tab. Perfect for highlighting key aspects."
+          },
+          {
+            "acf_tab_title": "Pricing",
+            "acf_tab_content": "Display pricing information and packages. Make it easy for visitors to compare options."
+          }
+        ]
+      }
+    }
   },
   "style": "file:./tabs.css",
   "editorStyle": "file:./tabs.css"

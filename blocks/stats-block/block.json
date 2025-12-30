@@ -11,9 +11,67 @@
     "blockVersion": 3
   },
   "supports": {
-    "align": true,
+    "align": ["wide", "full"],
     "mode": true,
-    "jsx": true
+    "jsx": true,
+    "anchor": true
+  },
+  "styles": [
+    {
+      "name": "default",
+      "label": "Default",
+      "isDefault": true
+    },
+    {
+      "name": "card",
+      "label": "Card"
+    },
+    {
+      "name": "dark",
+      "label": "Dark"
+    },
+    {
+      "name": "minimal",
+      "label": "Minimal"
+    },
+    {
+      "name": "bordered",
+      "label": "Bordered"
+    },
+    {
+      "name": "gradient",
+      "label": "Gradient"
+    }
+  ],
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "acf_stats_layout": "horizontal",
+        "acf_stats_items": [
+          {
+            "acf_stat_number": 1000,
+            "acf_stat_suffix": "+",
+            "acf_stat_label": "Happy Customers"
+          },
+          {
+            "acf_stat_number": 50,
+            "acf_stat_suffix": "M",
+            "acf_stat_label": "Downloads"
+          },
+          {
+            "acf_stat_number": 99,
+            "acf_stat_suffix": "%",
+            "acf_stat_label": "Satisfaction Rate"
+          },
+          {
+            "acf_stat_number": 24,
+            "acf_stat_suffix": "/7",
+            "acf_stat_label": "Support Available"
+          }
+        ]
+      }
+    }
   },
   "style": "file:./stats.css",
   "editorStyle": "file:./stats.css"

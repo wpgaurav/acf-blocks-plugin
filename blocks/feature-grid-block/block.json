@@ -43,6 +43,33 @@
       "label": "Gradient Cards"
     }
   ],
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "acf_feature_grid_heading": "Our Features",
+        "acf_feature_grid_subheading": "Discover what makes us different",
+        "acf_feature_grid_columns": "3",
+        "acf_feature_grid_items": [
+          {
+            "acf_feature_icon": "⚡",
+            "acf_feature_title": "Lightning Fast",
+            "acf_feature_description": "Optimized for performance with minimal footprint."
+          },
+          {
+            "acf_feature_icon": "🎨",
+            "acf_feature_title": "Customizable",
+            "acf_feature_description": "Multiple style variations to match your design."
+          },
+          {
+            "acf_feature_icon": "🔧",
+            "acf_feature_title": "Easy Setup",
+            "acf_feature_description": "Simple configuration with powerful options."
+          }
+        ]
+      }
+    }
+  },
   "style": "file:./feature-grid.css",
   "editorStyle": "file:./feature-grid.css"
 }
