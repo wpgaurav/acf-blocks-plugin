@@ -2,19 +2,47 @@
   "apiVersion": 3,
   "name": "acf/feature-grid",
   "title": "Feature Grid",
-  "description": "A grid layout to showcase features with icons, titles, and descriptions.",
+  "description": "A grid layout to showcase features with icons, titles, descriptions, and buttons. Supports native blocks for header content.",
   "category": "acf-blocks",
   "icon": "grid-view",
-  "keywords": ["features", "grid", "services", "benefits"],
+  "keywords": ["features", "grid", "services", "benefits", "cards"],
   "acf": {
     "renderTemplate": "feature-grid-block.php",
     "blockVersion": 3
   },
   "supports": {
-    "align": true,
+    "align": ["wide", "full"],
     "mode": true,
-    "jsx": true
+    "jsx": true,
+    "anchor": true
   },
+  "styles": [
+    {
+      "name": "default",
+      "label": "Default",
+      "isDefault": true
+    },
+    {
+      "name": "card",
+      "label": "Card"
+    },
+    {
+      "name": "dark",
+      "label": "Dark"
+    },
+    {
+      "name": "minimal",
+      "label": "Minimal"
+    },
+    {
+      "name": "bordered",
+      "label": "Bordered"
+    },
+    {
+      "name": "gradient",
+      "label": "Gradient Cards"
+    }
+  ],
   "style": "file:./feature-grid.css",
   "editorStyle": "file:./feature-grid.css"
 }
