@@ -11,7 +11,7 @@
     "blockVersion": 3
   },
   "supports": {
-    "align": true,
+    "align": ["wide", "full"],
     "mode": true,
     "jsx": true,
     "anchor": true
@@ -39,6 +39,17 @@
       "label": "Speech Bubble"
     }
   ],
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "acf_testimonial_quote": "This plugin has transformed how we build our WordPress sites. The blocks are beautifully designed and incredibly easy to use.",
+        "acf_testimonial_author_name": "Jane Smith",
+        "acf_testimonial_author_title": "Product Manager at TechCorp",
+        "acf_testimonial_rating": 5
+      }
+    }
+  },
   "style": "file:./testimonial.css",
   "editorStyle": "file:./testimonial.css"
 }

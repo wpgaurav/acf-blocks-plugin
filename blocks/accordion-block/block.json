@@ -11,9 +11,54 @@
     "blockVersion": 3
   },
   "supports": {
-    "align": true,
+    "align": ["wide", "full"],
     "mode": true,
-    "jsx": true
+    "jsx": true,
+    "anchor": true
+  },
+  "styles": [
+    {
+      "name": "default",
+      "label": "Default",
+      "isDefault": true
+    },
+    {
+      "name": "card",
+      "label": "Card"
+    },
+    {
+      "name": "dark",
+      "label": "Dark"
+    },
+    {
+      "name": "minimal",
+      "label": "Minimal"
+    },
+    {
+      "name": "bordered",
+      "label": "Bordered"
+    }
+  ],
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "acf_accord_groups": [
+          {
+            "acf_accord_group_title": "What is this plugin about?",
+            "acf_accord_group_content": "This plugin provides a collection of customizable ACF blocks for the WordPress block editor."
+          },
+          {
+            "acf_accord_group_title": "How do I customize the styles?",
+            "acf_accord_group_content": "You can use the block style variations or add custom CSS classes for advanced styling."
+          },
+          {
+            "acf_accord_group_title": "Is FAQ schema supported?",
+            "acf_accord_group_content": "Yes, you can enable FAQ schema from the block settings to improve SEO."
+          }
+        ]
+      }
+    }
   },
   "style": "file:./accordion.css",
   "editorStyle": "file:./accordion.css"

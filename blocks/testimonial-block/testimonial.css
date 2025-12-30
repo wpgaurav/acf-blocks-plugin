@@ -20,6 +20,12 @@
     line-height: 1.7;
     margin: 0 0 1.5rem 0;
     color: #333;
+    background: transparent;
+}
+
+.acf-testimonial-quote p {
+    background: transparent;
+    margin: 0;
 }
 
 .acf-testimonial-quote-icon {
@@ -88,8 +94,10 @@
     color: #ffffff;
 }
 
-.acf-testimonial-block.is-style-dark .acf-testimonial-quote {
+.acf-testimonial-block.is-style-dark .acf-testimonial-quote,
+.acf-testimonial-block.is-style-dark .acf-testimonial-quote p {
     color: #e0e0e0;
+    background: transparent;
 }
 
 .acf-testimonial-block.is-style-dark .acf-testimonial-quote-icon {
@@ -190,8 +198,10 @@
     display: none;
 }
 
-.acf-testimonial-block.is-style-bubble .acf-testimonial-quote {
+.acf-testimonial-block.is-style-bubble .acf-testimonial-quote,
+.acf-testimonial-block.is-style-bubble .acf-testimonial-quote p {
     margin-bottom: 0;
+    background: transparent;
 }
 
 .acf-testimonial-block.is-style-bubble .acf-testimonial-author {

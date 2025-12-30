@@ -3,12 +3,36 @@
     "title": "Feature Grid Block",
     "fields": [
         {
+            "key": "acf_fg_header_tab",
+            "label": "Header",
+            "type": "tab",
+            "placement": "top"
+        },
+        {
+            "key": "acf_fg_use_innerblocks",
+            "label": "Use Native Blocks for Header",
+            "name": "acf_fg_use_innerblocks",
+            "type": "true_false",
+            "instructions": "Enable to use WordPress blocks (headings, paragraphs, etc.) for the header section.",
+            "default_value": 0,
+            "ui": 1
+        },
+        {
             "key": "acf_feature_grid_heading",
             "label": "Heading",
             "name": "acf_feature_grid_heading",
             "type": "text",
             "instructions": "Enter a heading for the feature grid.",
-            "required": 0
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "acf_fg_use_innerblocks",
+                        "operator": "!=",
+                        "value": "1"
+                    }
+                ]
+            ]
         },
         {
             "key": "acf_feature_grid_subheading",
@@ -17,7 +41,22 @@
             "type": "textarea",
             "instructions": "Enter a subheading or description.",
             "required": 0,
-            "rows": 3
+            "rows": 3,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "acf_fg_use_innerblocks",
+                        "operator": "!=",
+                        "value": "1"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "acf_fg_features_tab",
+            "label": "Features",
+            "type": "tab",
+            "placement": "top"
         },
         {
             "key": "acf_feature_grid_items",
@@ -35,7 +74,7 @@
                     "label": "Icon",
                     "name": "acf_feature_icon",
                     "type": "text",
-                    "instructions": "Enter an icon (emoji, text, or CSS class like 'fa-star').",
+                    "instructions": "Enter an icon (emoji, text, or icon class).",
                     "required": 0
                 },
                 {
@@ -72,8 +111,43 @@
                     "type": "link",
                     "instructions": "Add an optional link for this feature.",
                     "required": 0
+                },
+                {
+                    "key": "acf_feature_button",
+                    "label": "Button",
+                    "name": "acf_feature_button",
+                    "type": "link",
+                    "instructions": "Add a button for this feature (appears below description).",
+                    "required": 0
+                },
+                {
+                    "key": "acf_feature_button_style",
+                    "label": "Button Style",
+                    "name": "acf_feature_button_style",
+                    "type": "select",
+                    "instructions": "Choose the button style.",
+                    "choices": {
+                        "primary": "Primary (Filled)",
+                        "secondary": "Secondary (Outline)",
+                        "text": "Text Link"
+                    },
+                    "default_value": "primary",
+                    "conditional_logic": [
+                        [
+                            {
+                                "field": "acf_feature_button",
+                                "operator": "!=empty"
+                            }
+                        ]
+                    ]
                 }
             ]
+        },
+        {
+            "key": "acf_fg_layout_tab",
+            "label": "Layout",
+            "type": "tab",
+            "placement": "top"
         },
         {
             "key": "acf_feature_grid_columns",
@@ -97,11 +171,49 @@
             "instructions": "Select the layout style for the features.",
             "required": 0,
             "choices": {
-                "default": "Default",
-                "centered": "Centered",
-                "card": "Card Style"
+                "default": "Default (Left Aligned)",
+                "centered": "Centered"
             },
             "default_value": "default"
+        },
+        {
+            "key": "acf_fg_cta_tab",
+            "label": "CTA Button",
+            "type": "tab",
+            "placement": "top"
+        },
+        {
+            "key": "acf_fg_cta_button",
+            "label": "Footer CTA Button",
+            "name": "acf_fg_cta_button",
+            "type": "link",
+            "instructions": "Add a call-to-action button at the bottom of the feature grid."
+        },
+        {
+            "key": "acf_fg_cta_style",
+            "label": "CTA Button Style",
+            "name": "acf_fg_cta_style",
+            "type": "select",
+            "choices": {
+                "primary": "Primary (Filled)",
+                "secondary": "Secondary (Outline)",
+                "large": "Large Primary"
+            },
+            "default_value": "primary",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "acf_fg_cta_button",
+                        "operator": "!=empty"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "acf_fg_advanced_tab",
+            "label": "Advanced",
+            "type": "tab",
+            "placement": "top"
         },
         {
             "key": "acf_feature_grid_class",
@@ -134,10 +246,5 @@
     "style": "default",
     "label_placement": "top",
     "instruction_placement": "label",
-    "hide_on_screen": "",
-    "active": true,
-    "description": "",
-    "acf": {
-        "blockVersion": 3
-    }
+    "active": true
 }

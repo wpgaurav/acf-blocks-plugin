@@ -21,9 +21,11 @@
     "attributes": {
       "mode": "preview",
       "data": {
-        "pros_title": "Pros",
-        "cons_title": "Cons",
-        "is_preview": true
+        "pc_show_first": "positive",
+        "pc_pros_title": "Pros",
+        "pc_pros_list": "<ul><li><strong>Easy to use:</strong> Simple and intuitive interface</li><li><strong>Fast performance:</strong> Optimized for speed</li><li><strong>Great support:</strong> 24/7 customer assistance</li></ul>",
+        "pc_cons_title": "Cons",
+        "pc_cons_list": "<ul><li><strong>Learning curve:</strong> Takes time to master advanced features</li><li><strong>Price:</strong> Premium features require subscription</li></ul>"
       }
     }
   }
