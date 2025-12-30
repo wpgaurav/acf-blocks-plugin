@@ -214,11 +214,12 @@ if ( ! is_array( $heading_levels ) || empty( $heading_levels ) ) {
 
 // Build block classes
 $block_classes = array( 'acf-toc' );
+$className = $block['className'] ?? '';
 if ( ! empty( $block['align'] ) ) {
     $block_classes[] = 'align' . $block['align'];
 }
-if ( ! empty( $block['className'] ) ) {
-    $block_classes[] = $block['className'];
+if ( ! empty( $className ) ) {
+    $block_classes[] = $className;
 }
 if ( ! empty( $custom_class ) ) {
     $block_classes[] = esc_attr( $custom_class );
@@ -232,6 +233,12 @@ if ( $smooth_scroll ) {
 if ( $highlight_active ) {
     $block_classes[] = 'acf-toc--highlight-active';
 }
+
+// Detect style variation
+$is_boxed = $className && strpos( $className, 'is-style-boxed' ) !== false;
+$is_dark = $className && strpos( $className, 'is-style-dark' ) !== false;
+$is_minimal = $className && strpos( $className, 'is-style-minimal' ) !== false;
+$is_numbers = $className && strpos( $className, 'is-style-numbers' ) !== false;
 
 // Generate unique ID for this block instance
 $block_id = ! empty( $block['id'] ) ? $block['id'] : 'acf-toc-' . uniqid();
@@ -292,6 +299,44 @@ if ( ! in_array( $title_tag, $allowed_title_tags ) ) {
     <?php if ( $sticky ) : ?>data-sticky="true" data-sticky-offset="<?php echo esc_attr( $sticky_offset ); ?>"<?php endif; ?>
     <?php if ( $highlight_active ) : ?>data-highlight-active="true"<?php endif; ?>
 >
+    <?php if ( $is_boxed || $is_dark || $is_minimal || $is_numbers ) : ?>
+    <style>
+        <?php if ( $is_boxed ) : ?>
+        #<?php echo esc_attr( $block_id ); ?> { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 1.5rem; }
+        #<?php echo esc_attr( $block_id ); ?> .acf-toc__title { font-size: 1.1em; padding-bottom: 0.75em; border-bottom: 1px solid #e9ecef; }
+        #<?php echo esc_attr( $block_id ); ?> .acf-toc__content { border-left: none; padding-left: 0; opacity: 1; }
+        #<?php echo esc_attr( $block_id ); ?> .acf-toc__link { display: block; padding: 0.4em 0.75em; border-radius: 4px; transition: background-color 0.15s ease, opacity 0.15s ease; }
+        #<?php echo esc_attr( $block_id ); ?> .acf-toc__link:hover { background-color: #e9ecef; opacity: 1; }
+        <?php endif; ?>
+        <?php if ( $is_dark ) : ?>
+        #<?php echo esc_attr( $block_id ); ?> { background: #1a1a2e; color: #ffffff; border-radius: 8px; padding: 1rem; }
+        #<?php echo esc_attr( $block_id ); ?> .acf-toc__title { color: #ffffff; border-bottom: 1px solid #374151; padding-bottom: 0.75em; }
+        #<?php echo esc_attr( $block_id ); ?> .acf-toc__content { border-left-color: #ffd700; opacity: 0.9; }
+        #<?php echo esc_attr( $block_id ); ?> .acf-toc__link { color: #e0e0e0; }
+        #<?php echo esc_attr( $block_id ); ?> .acf-toc__link:hover { color: #ffd700; opacity: 1; }
+        #<?php echo esc_attr( $block_id ); ?> .acf-toc__link--active { color: #ffd700; }
+        <?php endif; ?>
+        <?php if ( $is_minimal ) : ?>
+        #<?php echo esc_attr( $block_id ); ?> { background: transparent; padding: 0; }
+        #<?php echo esc_attr( $block_id ); ?> .acf-toc__title { font-size: 0.9em; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.7; }
+        #<?php echo esc_attr( $block_id ); ?> .acf-toc__content { border-left: none; padding-left: 0; }
+        #<?php echo esc_attr( $block_id ); ?> .acf-toc__item { padding: 0.15em 0; }
+        #<?php echo esc_attr( $block_id ); ?> .acf-toc__link { font-size: 0.95em; }
+        <?php endif; ?>
+        <?php if ( $is_numbers ) : ?>
+        #<?php echo esc_attr( $block_id ); ?> { counter-reset: toc-counter; }
+        #<?php echo esc_attr( $block_id ); ?> .acf-toc__content { border-left: none; padding-left: 0; }
+        #<?php echo esc_attr( $block_id ); ?> .acf-toc__item { counter-increment: toc-counter; }
+        #<?php echo esc_attr( $block_id ); ?> > .acf-toc__content > ul > .acf-toc__item > .acf-toc__link::before,
+        #<?php echo esc_attr( $block_id ); ?> > .acf-toc__content > ol > .acf-toc__item > .acf-toc__link::before,
+        #<?php echo esc_attr( $block_id ); ?> > .acf-toc__details > .acf-toc__content > ul > .acf-toc__item > .acf-toc__link::before,
+        #<?php echo esc_attr( $block_id ); ?> > .acf-toc__details > .acf-toc__content > ol > .acf-toc__item > .acf-toc__link::before { content: counter(toc-counter) ". "; font-weight: 600; color: #007bff; }
+        #<?php echo esc_attr( $block_id ); ?> .acf-toc__sublist { counter-reset: toc-subcounter; }
+        #<?php echo esc_attr( $block_id ); ?> .acf-toc__sublist .acf-toc__item { counter-increment: toc-subcounter; }
+        #<?php echo esc_attr( $block_id ); ?> .acf-toc__sublist .acf-toc__link::before { content: counter(toc-counter) "." counter(toc-subcounter) " "; font-weight: 500; color: #6c757d; }
+        <?php endif; ?>
+    </style>
+    <?php endif; ?>
     <?php if ( $collapsible ) : ?>
         <details<?php echo ! $collapsed_default ? ' open' : ''; ?> class="acf-toc__details">
             <summary class="acf-toc__summary">

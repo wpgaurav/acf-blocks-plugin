@@ -10,6 +10,11 @@ $align = $block['align'] ?? '';
 $className = $block['className'] ?? '';
 $anchor = $block['anchor'] ?? '';
 
+// Detect style variation
+$is_card = $className && strpos($className, 'is-style-card') !== false;
+$is_minimal = $className && strpos($className, 'is-style-minimal') !== false;
+$is_bordered = $className && strpos($className, 'is-style-bordered') !== false;
+
 // Build classes
 $classes = ['acf-product-review'];
 if (!empty($align)) {
@@ -18,6 +23,9 @@ if (!empty($align)) {
 if (!empty($className)) {
     $classes[] = $className;
 }
+
+// Generate unique ID for scoped styles
+$block_id = 'pr-' . uniqid();
 $anchor_attr = !empty($anchor) ? ' id="' . esc_attr($anchor) . '"' : '';
 
 /**
@@ -83,7 +91,36 @@ $product_availability = get_field('product_availability') ?: 'InStock';
 $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'full') : '';
 ?>
 
-<div class="<?php echo esc_attr(implode(' ', $classes)); ?>"<?php echo $anchor_attr; ?>>
+<div class="<?php echo esc_attr(implode(' ', $classes)); ?>"<?php echo $anchor_attr; ?> data-pr-id="<?php echo esc_attr($block_id); ?>">
+    <?php if ($is_card || $is_minimal || $is_bordered) : ?>
+    <style>
+        <?php if ($is_card) : ?>
+        [data-pr-id="<?php echo esc_attr($block_id); ?>"] { box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: none; border-radius: 12px; padding: 2rem; }
+        [data-pr-id="<?php echo esc_attr($block_id); ?>"] .acf-product-review-overall-rating { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border-radius: 8px; }
+        [data-pr-id="<?php echo esc_attr($block_id); ?>"] .acf-product-review-rating-number { color: #fff; }
+        [data-pr-id="<?php echo esc_attr($block_id); ?>"] .acf-product-review-button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50px; }
+        [data-pr-id="<?php echo esc_attr($block_id); ?>"] .acf-product-review-button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+        @media (max-width: 768px) { [data-pr-id="<?php echo esc_attr($block_id); ?>"] { padding: 1.5rem; } }
+        <?php endif; ?>
+        <?php if ($is_minimal) : ?>
+        [data-pr-id="<?php echo esc_attr($block_id); ?>"] { background: transparent; border: none; border-radius: 0; padding: 0; }
+        [data-pr-id="<?php echo esc_attr($block_id); ?>"] .acf-product-review-overall-rating { background: transparent; padding: 0; text-align: left; }
+        [data-pr-id="<?php echo esc_attr($block_id); ?>"] .acf-product-review-rating-stars { justify-content: flex-start; }
+        [data-pr-id="<?php echo esc_attr($block_id); ?>"] h4 { border-bottom: none; padding-bottom: 0; }
+        [data-pr-id="<?php echo esc_attr($block_id); ?>"] .acf-product-review-feature-ratings li { border-bottom: none; }
+        [data-pr-id="<?php echo esc_attr($block_id); ?>"] .acf-product-review-button { background: transparent; border: 2px solid #0073aa; color: #0073aa; }
+        [data-pr-id="<?php echo esc_attr($block_id); ?>"] .acf-product-review-button:hover { background: #0073aa; color: #fff; }
+        <?php endif; ?>
+        <?php if ($is_bordered) : ?>
+        [data-pr-id="<?php echo esc_attr($block_id); ?>"] { border: 3px solid #1a1a1a; border-radius: 0; background: #fff; }
+        [data-pr-id="<?php echo esc_attr($block_id); ?>"] .acf-product-review-overall-rating { background: #1a1a1a; color: #fff; border-radius: 0; }
+        [data-pr-id="<?php echo esc_attr($block_id); ?>"] .acf-product-review-rating-number { color: #fff; }
+        [data-pr-id="<?php echo esc_attr($block_id); ?>"] h4 { border-bottom-color: #1a1a1a; }
+        [data-pr-id="<?php echo esc_attr($block_id); ?>"] .acf-product-review-button { background: #1a1a1a; border-radius: 0; }
+        [data-pr-id="<?php echo esc_attr($block_id); ?>"] .acf-product-review-button:hover { background: #333; }
+        <?php endif; ?>
+    </style>
+    <?php endif; ?>
     <?php if ($product_name) : ?>
         <h3 class="acf-product-review-title"><?php echo esc_html($product_name); ?></h3>
     <?php endif; ?>

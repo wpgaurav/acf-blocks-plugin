@@ -21,9 +21,140 @@ $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"
 
 $style_class = $tab_style ? ' acf-tabs-' . esc_attr( $tab_style ) : ' acf-tabs-default';
 $unique_id   = 'acf-tabs-' . ( $block['id'] ?? uniqid() );
+
+// Detect style variation from className
+$className = isset( $block['className'] ) ? $block['className'] : '';
+$style_variation = '';
+if ( strpos( $className, 'is-style-card' ) !== false ) {
+	$style_variation = 'card';
+} elseif ( strpos( $className, 'is-style-dark' ) !== false ) {
+	$style_variation = 'dark';
+} elseif ( strpos( $className, 'is-style-minimal' ) !== false ) {
+	$style_variation = 'minimal';
+} elseif ( strpos( $className, 'is-style-vertical' ) !== false ) {
+	$style_variation = 'vertical';
+}
 ?>
 
 <div id="<?php echo esc_attr( $unique_id ); ?>" class="acf-tabs-block<?php echo $style_class . $custom_class; ?>"<?php echo $inline_style_attr; ?>>
+    <?php
+    // Output inline styles for style variations
+    if ( $style_variation === 'card' ) :
+        ?>
+        <style>
+        #<?php echo esc_attr( $unique_id ); ?>.is-style-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.is-style-card .acf-tabs-nav {
+            border-bottom: none;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.is-style-card .acf-tab-button {
+            background: #f5f5f5;
+            border-radius: 8px;
+            border-bottom: none;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.is-style-card .acf-tab-button.active {
+            background: #007bff;
+            color: #fff;
+        }
+        </style>
+        <?php
+    elseif ( $style_variation === 'dark' ) :
+        ?>
+        <style>
+        #<?php echo esc_attr( $unique_id ); ?>.is-style-dark {
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.is-style-dark .acf-tabs-nav {
+            border-bottom-color: #3d3d5c;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.is-style-dark .acf-tab-button {
+            color: #a0a0a0;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.is-style-dark .acf-tab-button.active {
+            color: #fff;
+            border-bottom-color: #ffd700;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.is-style-dark .acf-tabs-content,
+        #<?php echo esc_attr( $unique_id ); ?>.is-style-dark .acf-tab-panel {
+            color: #e0e0e0;
+        }
+        </style>
+        <?php
+    elseif ( $style_variation === 'minimal' ) :
+        ?>
+        <style>
+        #<?php echo esc_attr( $unique_id ); ?>.is-style-minimal .acf-tabs-nav {
+            border-bottom: none;
+            gap: 2rem;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.is-style-minimal .acf-tab-button {
+            padding: 0.5rem 0;
+            font-weight: 400;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.is-style-minimal .acf-tab-button.active {
+            font-weight: 600;
+        }
+        </style>
+        <?php
+    elseif ( $style_variation === 'vertical' ) :
+        ?>
+        <style>
+        #<?php echo esc_attr( $unique_id ); ?>.is-style-vertical {
+            display: flex;
+            gap: 2rem;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.is-style-vertical .acf-tabs-nav {
+            flex-direction: column;
+            border-bottom: none;
+            border-right: 1px solid currentColor;
+            padding-right: 1rem;
+            margin-bottom: 0;
+            min-width: 150px;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.is-style-vertical .acf-tab-button {
+            border-bottom: none;
+            border-right: 2px solid transparent;
+            margin-right: -1px;
+            text-align: left;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.is-style-vertical .acf-tab-button.active {
+            border-right-color: currentColor;
+        }
+        #<?php echo esc_attr( $unique_id ); ?>.is-style-vertical .acf-tabs-content {
+            flex: 1;
+            padding: 0;
+        }
+        @media (max-width: 480px) {
+            #<?php echo esc_attr( $unique_id ); ?>.is-style-vertical {
+                flex-direction: column;
+            }
+            #<?php echo esc_attr( $unique_id ); ?>.is-style-vertical .acf-tabs-nav {
+                border-right: none;
+                border-bottom: 1px solid currentColor;
+                padding-right: 0;
+                padding-bottom: 0.5rem;
+                min-width: auto;
+            }
+            #<?php echo esc_attr( $unique_id ); ?>.is-style-vertical .acf-tab-button {
+                border-right: none;
+                border-bottom: 2px solid transparent;
+            }
+            #<?php echo esc_attr( $unique_id ); ?>.is-style-vertical .acf-tab-button.active {
+                border-bottom-color: currentColor;
+            }
+        }
+        </style>
+        <?php
+    endif;
+    ?>
     <?php if ( $tabs_items && is_array( $tabs_items ) && count( $tabs_items ) > 0 ) : ?>
         <div class="acf-tabs-nav" role="tablist">
             <?php foreach ( $tabs_items as $index => $tab ) :

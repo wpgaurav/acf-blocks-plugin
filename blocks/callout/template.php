@@ -10,6 +10,23 @@ $align = $block['align'] ?? '';
 $className = $block['className'] ?? '';
 $anchor = $block['anchor'] ?? '';
 
+// Generate block ID
+$block_id = $anchor ?: 'callout-' . $block['id'];
+
+// Detect style variation
+$style_variation = '';
+if (strpos($className, 'is-style-dark') !== false) {
+    $style_variation = 'dark';
+} elseif (strpos($className, 'is-style-testimonial') !== false) {
+    $style_variation = 'testimonial';
+} elseif (strpos($className, 'is-style-dashed-light') !== false) {
+    $style_variation = 'dashed-light';
+} elseif (strpos($className, 'is-style-dashed-dark') !== false) {
+    $style_variation = 'dashed-dark';
+} elseif (strpos($className, 'is-style-highlight') !== false) {
+    $style_variation = 'highlight';
+}
+
 // Get ACF fields for styling
 $iconImage = get_field('callout_iconImage');
 $labelText = get_field('callout_label');
@@ -46,10 +63,170 @@ if (!empty($labelText)) {
     $classes[] = 'has-label';
 }
 
-$anchor_attr = !empty($anchor) ? ' id="' . esc_attr($anchor) . '"' : '';
 ?>
 
-<div class="<?php echo esc_attr(implode(' ', $classes)); ?>"<?php echo $anchor_attr . $style_attr; ?>>
+<div id="<?php echo esc_attr($block_id); ?>" class="<?php echo esc_attr(implode(' ', $classes)); ?>"<?php echo $style_attr; ?>>
+    <?php if ($style_variation === 'dark'): ?>
+    <style>
+        #<?php echo esc_attr($block_id); ?>.acf-callout {
+            background-color: #0a0a0a;
+            border-color: #0a0a0a;
+            color: #ffffff;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .acf-callout-label {
+            color: #ffd700;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout a {
+            color: #ffffff;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-button__link {
+            background-color: transparent;
+            border: 2px solid #ffffff;
+            color: #ffffff;
+            border-radius: 50px;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-button__link:hover {
+            background-color: #ffffff;
+            color: #0a0a0a;
+        }
+    </style>
+    <?php elseif ($style_variation === 'testimonial'): ?>
+    <style>
+        #<?php echo esc_attr($block_id); ?>.acf-callout {
+            background-color: #fdf6e3;
+            border-color: #f5e6c8;
+            color: #3d3d3d;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .acf-callout-label {
+            color: #b8860b;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-paragraph:has(⭐),
+        #<?php echo esc_attr($block_id); ?>.acf-callout [class*="stars"],
+        #<?php echo esc_attr($block_id); ?>.acf-callout [class*="rating"] {
+            color: #d4a600;
+        }
+    </style>
+    <?php elseif ($style_variation === 'dashed-light'): ?>
+    <style>
+        #<?php echo esc_attr($block_id); ?>.acf-callout {
+            background-color: #ffffff;
+            border: 3px dashed #c0c0c0;
+            color: #3d3d3d;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .acf-callout-label {
+            color: #7cb342;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-list li {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-list li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #7cb342;
+            font-weight: bold;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-button__link {
+            background-color: #ffe135;
+            color: #0a0a0a;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 4px 0 #ccb42a;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-button__link:hover {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #ccb42a;
+        }
+    </style>
+    <?php elseif ($style_variation === 'dashed-dark'): ?>
+    <style>
+        #<?php echo esc_attr($block_id); ?>.acf-callout {
+            background-color: #3d3d3d;
+            border: 3px dashed #5a5a5a;
+            color: #ffffff;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .acf-callout-label {
+            color: #ffd700;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout a {
+            color: #ffffff;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-list li {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-list li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #7cb342;
+            font-weight: bold;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-button__link {
+            background-color: #ffe135;
+            color: #0a0a0a;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 4px 0 #ccb42a;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-button__link:hover {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #ccb42a;
+        }
+    </style>
+    <?php elseif ($style_variation === 'highlight'): ?>
+    <style>
+        #<?php echo esc_attr($block_id); ?>.acf-callout {
+            background-color: #f0fff0;
+            border: 3px dashed #90ee90;
+            color: #2d4a2d;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .acf-callout-label {
+            color: #228b22;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .acf-callout-icon-image img {
+            max-width: 60px;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-list li {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-list li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #228b22;
+            font-weight: bold;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-button__link {
+            background-color: #ffe135;
+            color: #0a0a0a;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 4px 0 #ccb42a;
+        }
+        #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-button__link:hover {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #ccb42a;
+        }
+    </style>
+    <?php endif; ?>
     <?php if (!empty($iconImage) && $labelPosition === 'top') : ?>
         <div class="acf-callout-icon-image">
             <img src="<?php echo esc_url($iconImage); ?>" alt="" loading="lazy" />
