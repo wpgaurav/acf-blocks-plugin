@@ -189,3 +189,26 @@ function acf_blocks_get_blocks_dir() {
 function acf_blocks_get_blocks_url() {
     return ACF_BLOCKS_PLUGIN_URL . 'blocks/';
 }
+
+/**
+ * Enqueue block editor assets for block transforms.
+ *
+ * Loads JavaScript that enables converting core blocks to ACF Blocks.
+ */
+function acf_blocks_enqueue_editor_assets() {
+    $script_path = ACF_BLOCKS_PLUGIN_DIR . 'assets/js/block-transforms.js';
+    $script_url  = ACF_BLOCKS_PLUGIN_URL . 'assets/js/block-transforms.js';
+
+    if ( ! file_exists( $script_path ) ) {
+        return;
+    }
+
+    wp_enqueue_script(
+        'acf-blocks-transforms',
+        $script_url,
+        array( 'wp-blocks', 'wp-hooks', 'wp-element' ),
+        ACF_BLOCKS_VERSION,
+        true
+    );
+}
+add_action( 'enqueue_block_editor_assets', 'acf_blocks_enqueue_editor_assets' );
