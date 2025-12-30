@@ -3,6 +3,12 @@
     "title": "Star Rating Block",
     "fields": [
         {
+            "key": "field_md_sr_content_tab",
+            "label": "Content",
+            "type": "tab",
+            "placement": "top"
+        },
+        {
             "key": "field_md_sr_heading",
             "label": "Heading",
             "name": "md_sr_heading",
@@ -36,6 +42,90 @@
             "instructions": "Message displayed after a visitor submits a rating.",
             "default_value": "Thanks for rating!",
             "required": 0
+        },
+        {
+            "key": "field_md_sr_prevoter_tab",
+            "label": "Pre-Voter Data",
+            "type": "tab",
+            "placement": "top"
+        },
+        {
+            "key": "field_md_sr_initial_count",
+            "label": "Initial Vote Count",
+            "name": "md_sr_initial_count",
+            "type": "number",
+            "instructions": "Add pre-existing vote count (e.g., 170 votes). Leave empty for 0.",
+            "min": 0,
+            "default_value": 0
+        },
+        {
+            "key": "field_md_sr_initial_rating",
+            "label": "Initial Average Rating",
+            "name": "md_sr_initial_rating",
+            "type": "number",
+            "instructions": "Add pre-existing average rating (e.g., 4.5 stars). Leave empty for 0.",
+            "min": 0,
+            "max": 5,
+            "step": 0.1,
+            "default_value": 0
+        },
+        {
+            "key": "field_md_sr_schema_tab",
+            "label": "Schema & SEO",
+            "type": "tab",
+            "placement": "top"
+        },
+        {
+            "key": "field_md_sr_enable_schema",
+            "label": "Enable Schema Markup",
+            "name": "md_sr_enable_schema",
+            "type": "true_false",
+            "instructions": "Add CreativeWork schema with AggregateRating for SEO.",
+            "default_value": 1,
+            "ui": 1
+        },
+        {
+            "key": "field_md_sr_schema_type",
+            "label": "Schema Type",
+            "name": "md_sr_schema_type",
+            "type": "select",
+            "instructions": "Choose the schema type for this content.",
+            "choices": {
+                "CreativeWork": "Creative Work",
+                "Article": "Article",
+                "BlogPosting": "Blog Post",
+                "WebPage": "Web Page",
+                "HowTo": "How To Guide",
+                "Recipe": "Recipe",
+                "SoftwareApplication": "Software/App",
+                "Product": "Product"
+            },
+            "default_value": "CreativeWork",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_md_sr_enable_schema",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_md_sr_schema_name",
+            "label": "Item Name (Optional)",
+            "name": "md_sr_schema_name",
+            "type": "text",
+            "instructions": "Override the page/post title for schema. Leave empty to use page title.",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_md_sr_enable_schema",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ]
         }
     ],
     "location": [
@@ -52,10 +142,5 @@
     "style": "default",
     "label_placement": "top",
     "instruction_placement": "label",
-    "hide_on_screen": "",
-    "active": true,
-    "description": "",
-    "acf": {
-        "blockVersion": 3
-    }
+    "active": true
 }

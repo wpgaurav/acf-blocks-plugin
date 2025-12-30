@@ -1,0 +1,223 @@
+[
+    {
+        "key": "group_product_review_block",
+        "title": "Product Review Block",
+        "fields": [
+            {
+                "key": "field_pr_content_tab",
+                "label": "Product Info",
+                "type": "tab",
+                "placement": "top"
+            },
+            {
+                "key": "field_pr_product_name",
+                "label": "Product Name",
+                "name": "product_name",
+                "type": "text",
+                "required": 1
+            },
+            {
+                "key": "field_pr_product_image",
+                "label": "Product Image",
+                "name": "product_image",
+                "type": "image",
+                "return_format": "id",
+                "preview_size": "medium"
+            },
+            {
+                "key": "field_pr_overall_rating",
+                "label": "Overall Rating",
+                "name": "overall_rating",
+                "type": "number",
+                "instructions": "Rating from 1 to 5",
+                "min": 1,
+                "max": 5,
+                "step": 0.1
+            },
+            {
+                "key": "field_pr_summary",
+                "label": "Summary",
+                "name": "summary",
+                "type": "textarea",
+                "rows": 4
+            },
+            {
+                "key": "field_pr_features_tab",
+                "label": "Feature Ratings",
+                "type": "tab",
+                "placement": "top"
+            },
+            {
+                "key": "field_pr_features",
+                "label": "Features",
+                "name": "features",
+                "type": "repeater",
+                "layout": "table",
+                "button_label": "Add Feature",
+                "sub_fields": [
+                    {
+                        "key": "field_pr_feature_name",
+                        "label": "Feature Name",
+                        "name": "feature_name",
+                        "type": "text"
+                    },
+                    {
+                        "key": "field_pr_feature_rating",
+                        "label": "Rating",
+                        "name": "feature_rating",
+                        "type": "number",
+                        "min": 1,
+                        "max": 5,
+                        "step": 0.5
+                    }
+                ]
+            },
+            {
+                "key": "field_pr_pros_cons_tab",
+                "label": "Pros & Cons",
+                "type": "tab",
+                "placement": "top"
+            },
+            {
+                "key": "field_pr_pros",
+                "label": "Pros",
+                "name": "pros",
+                "type": "repeater",
+                "layout": "table",
+                "button_label": "Add Pro",
+                "sub_fields": [
+                    {
+                        "key": "field_pr_pro_text",
+                        "label": "Pro",
+                        "name": "pro_text",
+                        "type": "text"
+                    }
+                ]
+            },
+            {
+                "key": "field_pr_cons",
+                "label": "Cons",
+                "name": "cons",
+                "type": "repeater",
+                "layout": "table",
+                "button_label": "Add Con",
+                "sub_fields": [
+                    {
+                        "key": "field_pr_con_text",
+                        "label": "Con",
+                        "name": "con_text",
+                        "type": "text"
+                    }
+                ]
+            },
+            {
+                "key": "field_pr_offer_tab",
+                "label": "Offer/Pricing",
+                "type": "tab",
+                "placement": "top"
+            },
+            {
+                "key": "field_pr_offer_url",
+                "label": "Offer URL",
+                "name": "offer_url",
+                "type": "url"
+            },
+            {
+                "key": "field_pr_offer_cta_text",
+                "label": "CTA Button Text",
+                "name": "offer_cta_text",
+                "type": "text",
+                "default_value": "Get Offer"
+            },
+            {
+                "key": "field_pr_offer_price_currency",
+                "label": "Currency",
+                "name": "offer_price_currency",
+                "type": "select",
+                "choices": {
+                    "USD": "USD ($)",
+                    "EUR": "EUR (€)",
+                    "GBP": "GBP (£)",
+                    "INR": "INR (₹)",
+                    "CAD": "CAD ($)",
+                    "AUD": "AUD ($)"
+                },
+                "default_value": "USD"
+            },
+            {
+                "key": "field_pr_offer_price",
+                "label": "Price",
+                "name": "offer_price",
+                "type": "text"
+            },
+            {
+                "key": "field_pr_payment_term",
+                "label": "Payment Term",
+                "name": "payment_term",
+                "type": "text",
+                "instructions": "e.g., /month, /year, one-time"
+            },
+            {
+                "key": "field_pr_schema_tab",
+                "label": "Schema & SEO",
+                "type": "tab",
+                "placement": "top"
+            },
+            {
+                "key": "field_pr_enable_json_ld",
+                "label": "Enable Schema Markup",
+                "name": "enable_json_ld",
+                "type": "true_false",
+                "default_value": 1,
+                "ui": 1
+            },
+            {
+                "key": "field_pr_author_name",
+                "label": "Reviewer Name",
+                "name": "author_name",
+                "type": "text",
+                "instructions": "Name of the person reviewing this product"
+            },
+            {
+                "key": "field_pr_brand",
+                "label": "Brand",
+                "name": "product_brand",
+                "type": "text"
+            },
+            {
+                "key": "field_pr_sku",
+                "label": "SKU",
+                "name": "product_sku",
+                "type": "text"
+            },
+            {
+                "key": "field_pr_availability",
+                "label": "Availability",
+                "name": "product_availability",
+                "type": "select",
+                "choices": {
+                    "InStock": "In Stock",
+                    "OutOfStock": "Out of Stock",
+                    "PreOrder": "Pre-Order",
+                    "Discontinued": "Discontinued"
+                },
+                "default_value": "InStock"
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "block",
+                    "operator": "==",
+                    "value": "acf/product-review"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "active": true
+    }
+]

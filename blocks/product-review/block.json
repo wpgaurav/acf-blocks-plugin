@@ -2,19 +2,38 @@
   "apiVersion": 3,
   "name": "acf/product-review",
   "title": "Product Review",
-  "description": "A custom product review block with structured data.",
+  "description": "A product review block with structured schema data for Google rich results.",
   "category": "acf-blocks",
-  "icon": "admin-comments",
-  "keywords": ["review", "product", "rating"],
+  "icon": "star-filled",
+  "keywords": ["review", "product", "rating", "schema"],
   "acf": {
     "renderTemplate": "product-review.php",
     "blockVersion": 3
   },
   "supports": {
-    "align": true,
+    "align": ["wide", "full"],
     "mode": true,
     "anchor": true
   },
+  "styles": [
+    {
+      "name": "default",
+      "label": "Default",
+      "isDefault": true
+    },
+    {
+      "name": "card",
+      "label": "Card"
+    },
+    {
+      "name": "minimal",
+      "label": "Minimal"
+    },
+    {
+      "name": "bordered",
+      "label": "Bordered"
+    }
+  ],
   "style": "file:./product-review.css",
   "editorStyle": "file:./product-review.css"
 }

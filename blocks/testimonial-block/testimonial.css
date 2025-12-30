@@ -1,10 +1,16 @@
+/**
+ * Testimonial Block Styles
+ */
+
+/* Base Styles */
 .acf-testimonial-block {
-    padding: 40px;
+    padding: 2rem;
     background-color: #fff;
     border-left: 4px solid #007bff;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    margin: 20px 0;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .acf-testimonial-quote {
@@ -12,7 +18,7 @@
     font-size: 1.25rem;
     font-style: italic;
     line-height: 1.7;
-    margin: 0 0 30px 0;
+    margin: 0 0 1.5rem 0;
     color: #333;
 }
 
@@ -22,13 +28,13 @@
     opacity: 0.3;
     line-height: 1;
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 0.5rem;
 }
 
 .acf-testimonial-author {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 1rem;
 }
 
 .acf-testimonial-author-image {
@@ -49,14 +55,14 @@
 .acf-testimonial-author-name {
     font-weight: bold;
     font-size: 1.125rem;
-    margin-bottom: 5px;
+    margin-bottom: 0.25rem;
     color: #333;
 }
 
 .acf-testimonial-author-title {
     color: #666;
     font-size: 0.95rem;
-    margin-bottom: 8px;
+    margin-bottom: 0.5rem;
 }
 
 .acf-testimonial-rating {
@@ -73,9 +79,132 @@
     color: #ffc107;
 }
 
+/* ============================================
+   Style Variation: Dark
+   ============================================ */
+.acf-testimonial-block.is-style-dark {
+    background-color: #1a1a2e;
+    border-left-color: #ffd700;
+    color: #ffffff;
+}
+
+.acf-testimonial-block.is-style-dark .acf-testimonial-quote {
+    color: #e0e0e0;
+}
+
+.acf-testimonial-block.is-style-dark .acf-testimonial-quote-icon {
+    color: #ffd700;
+}
+
+.acf-testimonial-block.is-style-dark .acf-testimonial-author-name {
+    color: #ffffff;
+}
+
+.acf-testimonial-block.is-style-dark .acf-testimonial-author-title {
+    color: #a0a0a0;
+}
+
+.acf-testimonial-block.is-style-dark .acf-testimonial-rating .acf-testimonial-star {
+    color: #555;
+}
+
+/* ============================================
+   Style Variation: Card
+   ============================================ */
+.acf-testimonial-block.is-style-card {
+    border-left: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+    padding: 2.5rem;
+    text-align: center;
+}
+
+.acf-testimonial-block.is-style-card .acf-testimonial-quote-icon {
+    margin: 0 auto 1rem;
+}
+
+.acf-testimonial-block.is-style-card .acf-testimonial-author {
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.acf-testimonial-block.is-style-card .acf-testimonial-author-image img {
+    width: 80px;
+    height: 80px;
+    border: 4px solid #f0f0f0;
+}
+
+.acf-testimonial-block.is-style-card .acf-testimonial-rating {
+    justify-content: center;
+}
+
+/* ============================================
+   Style Variation: Minimal
+   ============================================ */
+.acf-testimonial-block.is-style-minimal {
+    background: transparent;
+    border-left: none;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 1rem 0;
+}
+
+.acf-testimonial-block.is-style-minimal .acf-testimonial-quote {
+    border-left: 3px solid #e0e0e0;
+    padding-left: 1.5rem;
+    font-style: normal;
+}
+
+.acf-testimonial-block.is-style-minimal .acf-testimonial-quote-icon {
+    display: none;
+}
+
+.acf-testimonial-block.is-style-minimal .acf-testimonial-author-image img {
+    width: 48px;
+    height: 48px;
+}
+
+/* ============================================
+   Style Variation: Speech Bubble
+   ============================================ */
+.acf-testimonial-block.is-style-bubble {
+    background: #f5f5f5;
+    border-left: none;
+    border-radius: 20px;
+    position: relative;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.acf-testimonial-block.is-style-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 40px;
+    border-width: 20px 20px 0;
+    border-style: solid;
+    border-color: #f5f5f5 transparent transparent;
+}
+
+.acf-testimonial-block.is-style-bubble .acf-testimonial-quote-icon {
+    display: none;
+}
+
+.acf-testimonial-block.is-style-bubble .acf-testimonial-quote {
+    margin-bottom: 0;
+}
+
+.acf-testimonial-block.is-style-bubble .acf-testimonial-author {
+    margin-top: 2.5rem;
+    padding-left: 0;
+}
+
+/* ============================================
+   Responsive Styles
+   ============================================ */
 @media (max-width: 768px) {
     .acf-testimonial-block {
-        padding: 30px 20px;
+        padding: 1.5rem;
     }
 
     .acf-testimonial-quote {
@@ -85,6 +214,10 @@
     .acf-testimonial-author {
         flex-direction: column;
         align-items: flex-start;
-        gap: 15px;
+        gap: 1rem;
+    }
+
+    .acf-testimonial-block.is-style-card .acf-testimonial-author {
+        align-items: center;
     }
 }

@@ -1,80 +1,117 @@
 <?php
 /**
- * Helper function to convert a numeric rating (out of 5)
- * into star icons.
+ * Product Review Block Template
  *
- * @param float $rating The numeric rating.
- * @return string The HTML for star icons.
+ * @param array $block The block settings and attributes.
  */
-if ( ! function_exists( 'render_stars' ) ) {
-    function render_stars( $rating ) {
-        $fullStars  = floor( $rating );
-        $halfStar   = ( $rating - $fullStars ) >= 0.5 ? 1 : 0;
-        $emptyStars = 5 - $fullStars - $halfStar;
-        $output     = '';
-        
-        for ( $i = 0; $i < $fullStars; $i++ ) {
-            $output .= '<i class="acf-product-review-icon-star-full" aria-hidden="true"></i>';
+
+// Get block attributes
+$align = $block['align'] ?? '';
+$className = $block['className'] ?? '';
+$anchor = $block['anchor'] ?? '';
+
+// Build classes
+$classes = ['acf-product-review'];
+if (!empty($align)) {
+    $classes[] = 'align' . $align;
+}
+if (!empty($className)) {
+    $classes[] = $className;
+}
+$anchor_attr = !empty($anchor) ? ' id="' . esc_attr($anchor) . '"' : '';
+
+/**
+ * Render stars as inline SVG for performance
+ */
+if (!function_exists('acf_render_star_svg')) {
+    function acf_render_star_svg($rating, $size = 20) {
+        $fullStars = floor($rating);
+        $hasHalf = ($rating - $fullStars) >= 0.5;
+        $emptyStars = 5 - $fullStars - ($hasHalf ? 1 : 0);
+        $output = '';
+        $color = '#ffb400';
+        $emptyColor = '#e0e0e0';
+
+        // Full star SVG
+        $fullSvg = '<svg width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="' . $color . '" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+
+        // Half star SVG
+        $halfSvg = '<svg width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="half-' . uniqid() . '"><stop offset="50%" stop-color="' . $color . '"/><stop offset="50%" stop-color="' . $emptyColor . '"/></linearGradient></defs><path fill="url(#half-' . uniqid() . ')" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+
+        // Empty star SVG
+        $emptySvg = '<svg width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="' . $emptyColor . '" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+
+        for ($i = 0; $i < $fullStars; $i++) {
+            $output .= $fullSvg;
         }
-        if ( $halfStar ) {
-            $output .= '<i class="acf-product-review-icon-star-half" aria-hidden="true"></i>';
+        if ($hasHalf) {
+            // Unique gradient ID for half star
+            $gradId = 'half-grad-' . uniqid();
+            $output .= '<svg width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="' . $gradId . '"><stop offset="50%" stop-color="' . $color . '"/><stop offset="50%" stop-color="' . $emptyColor . '"/></linearGradient></defs><path fill="url(#' . $gradId . ')" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
         }
-        for ( $i = 0; $i < $emptyStars; $i++ ) {
-            $output .= '<i class="acf-product-review-icon-star-empty" aria-hidden="true"></i>';
+        for ($i = 0; $i < $emptyStars; $i++) {
+            $output .= $emptySvg;
         }
+
         return $output;
     }
 }
 
-$product_name    = get_field( 'product_name' );
-$image_id        = get_field( 'product_image' );
-$overall_rating  = get_field( 'overall_rating' );
-$features        = get_field( 'features' );
-$pros            = get_field( 'pros' );
-$cons            = get_field( 'cons' );
-$summary         = get_field( 'summary' );
-$author_name     = get_field( 'author_name' );
-$enable_json     = get_field( 'enable_json_ld' );
+// Get ACF fields
+$product_name = get_field('product_name');
+$image_id = get_field('product_image');
+$overall_rating = get_field('overall_rating');
+$features = get_field('features');
+$pros = get_field('pros');
+$cons = get_field('cons');
+$summary = get_field('summary');
+$author_name = get_field('author_name');
+$enable_json = get_field('enable_json_ld');
 
-// New offer fields. If not set, default to an empty string.
-$offer_url       = get_field( 'offer_url' ) ?: '';
-$offer_currency  = get_field( 'offer_price_currency' ) ?: 'USD';
-$offer_price     = get_field( 'offer_price' ) ?: '0.00';
-$offer_cta_text     = get_field( 'offer_cta_text' ) ?: 'Get Offer';
-$payment_term     = get_field( 'payment_term' ) ?: '';
+// Offer fields
+$offer_url = get_field('offer_url') ?: '';
+$offer_currency = get_field('offer_price_currency') ?: 'USD';
+$offer_price = get_field('offer_price') ?: '';
+$offer_cta_text = get_field('offer_cta_text') ?: 'Get Offer';
+$payment_term = get_field('payment_term') ?: '';
 
-$image_url = $image_id ? wp_get_attachment_image_url( $image_id, 'full' ) : '';
+// Schema fields
+$product_brand = get_field('product_brand') ?: '';
+$product_sku = get_field('product_sku') ?: '';
+$product_availability = get_field('product_availability') ?: 'InStock';
+
+$image_url = $image_id ? wp_get_attachment_image_url($image_id, 'full') : '';
 ?>
 
-<div class="acf-product-review">
-    <?php if ( $product_name ) : ?>
-        <h3 class="acf-product-review-title"><?php echo esc_html( $product_name ); ?></h3>
+<div class="<?php echo esc_attr(implode(' ', $classes)); ?>"<?php echo $anchor_attr; ?>>
+    <?php if ($product_name) : ?>
+        <h3 class="acf-product-review-title"><?php echo esc_html($product_name); ?></h3>
     <?php endif; ?>
 
-    <?php if ( $image_url ) : ?>
-        <img class="acf-product-review-image" src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( $product_name ); ?>" loading="lazy" decoding="async" />
+    <?php if ($image_url) : ?>
+        <img class="acf-product-review-image" src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($product_name); ?>" loading="lazy" decoding="async" />
     <?php endif; ?>
 
-    <?php if ( $overall_rating ) : ?>
+    <?php if ($overall_rating) : ?>
         <div class="acf-product-review-overall-rating">
             <div class="acf-product-review-rating-stars">
-                <?php echo render_stars( $overall_rating ); ?>
+                <?php echo acf_render_star_svg($overall_rating, 24); ?>
             </div>
             <div class="acf-product-review-rating-number">
-                <?php echo number_format( $overall_rating, 1 ); ?>/5
+                <?php echo number_format($overall_rating, 1); ?>/5
             </div>
         </div>
     <?php endif; ?>
 
-    <?php if ( $features ) : ?>
+    <?php if ($features) : ?>
         <div class="acf-product-review-feature-ratings">
             <h4>Feature Ratings</h4>
             <ul>
-                <?php foreach ( $features as $feature ) : ?>
+                <?php foreach ($features as $feature) : ?>
                     <li>
-                        <span class="acf-product-review-feature-name"><?php echo esc_html( $feature['feature_name'] ); ?></span>
+                        <span class="acf-product-review-feature-name"><?php echo esc_html($feature['feature_name']); ?></span>
                         <span class="acf-product-review-feature-rating">
-                            <?php echo render_stars( $feature['feature_rating'] ); ?>
+                            <?php echo acf_render_star_svg($feature['feature_rating'], 16); ?>
                         </span>
                     </li>
                 <?php endforeach; ?>
@@ -83,112 +120,150 @@ $image_url = $image_id ? wp_get_attachment_image_url( $image_id, 'full' ) : '';
     <?php endif; ?>
 
     <div class="acf-product-review-pros-cons">
-        <?php if ( $pros ) : ?>
+        <?php if ($pros) : ?>
             <div class="acf-product-review-pros">
                 <h4>Pros</h4>
                 <ul class="acf-product-review-list-checkmark">
-                    <?php foreach ( $pros as $pro ) : ?>
-                        <li><?php echo esc_html( $pro['pro_text'] ); ?></li>
+                    <?php foreach ($pros as $pro) : ?>
+                        <li><?php echo esc_html($pro['pro_text']); ?></li>
                     <?php endforeach; ?>
                 </ul>
             </div>
         <?php endif; ?>
 
-        <?php if ( $cons ) : ?>
+        <?php if ($cons) : ?>
             <div class="acf-product-review-cons">
                 <h4>Cons</h4>
                 <ul class="acf-product-review-list-cross">
-                    <?php foreach ( $cons as $con ) : ?>
-                        <li><?php echo esc_html( $con['con_text'] ); ?></li>
+                    <?php foreach ($cons as $con) : ?>
+                        <li><?php echo esc_html($con['con_text']); ?></li>
                     <?php endforeach; ?>
                 </ul>
             </div>
         <?php endif; ?>
     </div>
 
-    <?php if ( $summary ) : ?>
+    <?php if ($summary) : ?>
         <div class="acf-product-review-summary">
             <h4>Summary</h4>
-            <?php echo wp_kses_post( wpautop( $summary ) ); ?>
+            <?php echo wp_kses_post(wpautop($summary)); ?>
         </div>
     <?php endif; ?>
-	<?php if ( $offer_price ) : ?>
-        <p>
-			<span class="acf-product-review-bold acf-product-review-mb-single">Price:</span> <?php echo esc_html( $offer_currency ); ?> <?php echo esc_html( $offer_price ); ?> <?php echo esc_html( $payment_term ); ?>
-	</p>
-	<?php endif; ?>
-	<?php if ( $offer_url ) : ?>
-	<a href="<?php echo esc_html( $offer_url ); ?>" rel="nofollow sponsored" class="acf-product-review-button-default"><?php echo esc_html( $offer_cta_text ); ?></a>
+
+    <?php if ($offer_price) : ?>
+        <p class="acf-product-review-price">
+            <span class="acf-product-review-bold">Price:</span> <?php echo esc_html($offer_currency); ?> <?php echo esc_html($offer_price); ?> <?php echo esc_html($payment_term); ?>
+        </p>
     <?php endif; ?>
 
-    <?php if ( $enable_json && $product_name ) : ?>
+    <?php if ($offer_url) : ?>
+        <a href="<?php echo esc_url($offer_url); ?>" rel="nofollow sponsored" class="acf-product-review-button"><?php echo esc_html($offer_cta_text); ?></a>
+    <?php endif; ?>
+
+    <?php if ($enable_json && $product_name) : ?>
     <?php
+    // Build comprehensive Google Product schema
     $json_data = [
-        '@context'    => 'https://schema.org/',
-        '@type'       => 'Product',
-        'name'        => $product_name,
-        'image'       => $image_url,
-        'description' => $summary,
-        'review'      => [
-            '@type'        => 'Review',
-            'reviewRating' => [
-                '@type'       => 'Rating',
-                'ratingValue' => $overall_rating,
-                'bestRating'  => 5
-            ],
-            'author'       => [
-                '@type' => 'Person',
-                'name'  => $author_name
-            ],
-            'positiveNotes' => [
-                '@type'           => 'ItemList',
-                'itemListElement' => []
-            ],
-            'negativeNotes' => [
-                '@type'           => 'ItemList',
-                'itemListElement' => []
-            ]
-        ],
-        'offers'      => [
-            '@type'         => 'Offer',
-            'url'           => $offer_url,
-            'priceCurrency' => $offer_currency,
-            'price'         => $offer_price
-        ]
+        '@context' => 'https://schema.org/',
+        '@type' => 'Product',
+        'name' => $product_name,
     ];
 
-    // Populate positiveNotes.
-    if ( ! empty( $pros ) && is_array( $pros ) ) {
+    if ($image_url) {
+        $json_data['image'] = $image_url;
+    }
+
+    if ($summary) {
+        $json_data['description'] = wp_strip_all_tags($summary);
+    }
+
+    if ($product_brand) {
+        $json_data['brand'] = [
+            '@type' => 'Brand',
+            'name' => $product_brand
+        ];
+    }
+
+    if ($product_sku) {
+        $json_data['sku'] = $product_sku;
+    }
+
+    // Review data
+    $json_data['review'] = [
+        '@type' => 'Review',
+        'reviewRating' => [
+            '@type' => 'Rating',
+            'ratingValue' => $overall_rating,
+            'bestRating' => 5,
+            'worstRating' => 1
+        ],
+        'datePublished' => get_the_date('c'),
+    ];
+
+    if ($author_name) {
+        $json_data['review']['author'] = [
+            '@type' => 'Person',
+            'name' => $author_name
+        ];
+    }
+
+    // Positive notes (pros)
+    if (!empty($pros) && is_array($pros)) {
+        $json_data['review']['positiveNotes'] = [
+            '@type' => 'ItemList',
+            'itemListElement' => []
+        ];
         $pos_index = 1;
-        foreach ( $pros as $pro ) {
-            if ( ! empty( $pro['pro_text'] ) ) {
+        foreach ($pros as $pro) {
+            if (!empty($pro['pro_text'])) {
                 $json_data['review']['positiveNotes']['itemListElement'][] = [
-                    '@type'    => 'ListItem',
+                    '@type' => 'ListItem',
                     'position' => $pos_index,
-                    'name'     => $pro['pro_text']
+                    'name' => $pro['pro_text']
                 ];
                 $pos_index++;
             }
         }
     }
 
-    // Populate negativeNotes.
-    if ( ! empty( $cons ) && is_array( $cons ) ) {
+    // Negative notes (cons)
+    if (!empty($cons) && is_array($cons)) {
+        $json_data['review']['negativeNotes'] = [
+            '@type' => 'ItemList',
+            'itemListElement' => []
+        ];
         $neg_index = 1;
-        foreach ( $cons as $con ) {
-            if ( ! empty( $con['con_text'] ) ) {
+        foreach ($cons as $con) {
+            if (!empty($con['con_text'])) {
                 $json_data['review']['negativeNotes']['itemListElement'][] = [
-                    '@type'    => 'ListItem',
+                    '@type' => 'ListItem',
                     'position' => $neg_index,
-                    'name'     => $con['con_text']
+                    'name' => $con['con_text']
                 ];
                 $neg_index++;
             }
         }
     }
+
+    // Offer data
+    if ($offer_url || $offer_price) {
+        $json_data['offers'] = [
+            '@type' => 'Offer',
+            'availability' => 'https://schema.org/' . $product_availability
+        ];
+
+        if ($offer_url) {
+            $json_data['offers']['url'] = $offer_url;
+        }
+
+        if ($offer_price) {
+            $json_data['offers']['price'] = $offer_price;
+            $json_data['offers']['priceCurrency'] = $offer_currency;
+        }
+    }
     ?>
     <script type="application/ld+json">
-    <?php echo wp_json_encode( $json_data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT ); ?>
+    <?php echo wp_json_encode($json_data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
     </script>
     <?php endif; ?>
 </div>
