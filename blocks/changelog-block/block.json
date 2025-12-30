@@ -1,0 +1,53 @@
+{
+  "apiVersion": 3,
+  "name": "acf/changelog",
+  "title": "Changelog",
+  "description": "Display version history and release notes in a clean format.",
+  "category": "acf-blocks",
+  "icon": "backup",
+  "keywords": ["changelog", "version", "release", "history", "updates"],
+  "acf": {
+    "renderTemplate": "changelog-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "anchor": true,
+    "mode": true
+  },
+  "styles": [
+    {
+      "name": "default",
+      "label": "Default",
+      "isDefault": true
+    },
+    {
+      "name": "timeline",
+      "label": "Timeline"
+    },
+    {
+      "name": "compact",
+      "label": "Compact"
+    }
+  ],
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "changelog_entries": [
+          {
+            "changelog_version": "1.2.0",
+            "changelog_date": "2024-01-15",
+            "changelog_items": [
+              {"changelog_type": "added", "changelog_text": "New feature for user profiles"},
+              {"changelog_type": "fixed", "changelog_text": "Fixed login redirect issue"},
+              {"changelog_type": "changed", "changelog_text": "Improved dashboard performance"}
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "style": "file:./changelog.css",
+  "editorStyle": "file:./changelog.css"
+}

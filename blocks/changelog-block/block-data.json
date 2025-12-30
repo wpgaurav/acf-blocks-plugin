@@ -1,0 +1,68 @@
+{
+  "key": "group_changelog_block",
+  "title": "Changelog Block",
+  "fields": [
+    {
+      "key": "field_changelog_entries",
+      "label": "Versions",
+      "name": "changelog_entries",
+      "type": "repeater",
+      "layout": "block",
+      "button_label": "Add Version",
+      "sub_fields": [
+        {
+          "key": "field_changelog_version",
+          "label": "Version",
+          "name": "changelog_version",
+          "type": "text",
+          "placeholder": "1.0.0",
+          "wrapper": {"width": "50"}
+        },
+        {
+          "key": "field_changelog_date",
+          "label": "Date",
+          "name": "changelog_date",
+          "type": "date_picker",
+          "display_format": "F j, Y",
+          "return_format": "F j, Y",
+          "wrapper": {"width": "50"}
+        },
+        {
+          "key": "field_changelog_items",
+          "label": "Changes",
+          "name": "changelog_items",
+          "type": "repeater",
+          "layout": "table",
+          "button_label": "Add Change",
+          "sub_fields": [
+            {
+              "key": "field_changelog_type",
+              "label": "Type",
+              "name": "changelog_type",
+              "type": "select",
+              "choices": {
+                "added": "Added",
+                "changed": "Changed",
+                "fixed": "Fixed",
+                "removed": "Removed",
+                "security": "Security",
+                "deprecated": "Deprecated"
+              },
+              "default_value": "added",
+              "wrapper": {"width": "25"}
+            },
+            {
+              "key": "field_changelog_text",
+              "label": "Description",
+              "name": "changelog_text",
+              "type": "text",
+              "wrapper": {"width": "75"}
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "location": [[{"param": "block", "operator": "==", "value": "acf/changelog"}]],
+  "active": true
+}
