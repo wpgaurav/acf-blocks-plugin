@@ -316,9 +316,8 @@ $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'full') : '';
         }
 
         // Add priceValidUntil (recommended by Google for Offer schema)
-        if ($price_valid_until) {
-            $json_data['offers']['priceValidUntil'] = $price_valid_until;
-        }
+        // Default to December 31st of current year if not set
+        $json_data['offers']['priceValidUntil'] = $price_valid_until ?: date('Y') . '-12-31';
     }
     ?>
     <script type="application/ld+json">
