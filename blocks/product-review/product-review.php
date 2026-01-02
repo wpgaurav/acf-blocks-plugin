@@ -244,10 +244,9 @@ $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'full') : '';
         'datePublished' => get_the_date('c'),
     ];
 
-    // Add dateModified if set (signals freshness to Google)
-    if ($review_date_modified) {
-        $json_data['review']['dateModified'] = $review_date_modified;
-    }
+    // Add dateModified (signals freshness to Google)
+    // Default to post modified date if not set
+    $json_data['review']['dateModified'] = $review_date_modified ?: get_the_modified_date('Y-m-d');
 
     // Add reviewBody (full review text for rich snippets)
     if ($summary) {
