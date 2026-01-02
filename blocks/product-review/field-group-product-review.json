@@ -158,6 +158,15 @@
                 "instructions": "e.g., /month, /year, one-time"
             },
             {
+                "key": "field_pr_price_valid_until",
+                "label": "Price Valid Until",
+                "name": "price_valid_until",
+                "type": "date_picker",
+                "instructions": "Date until which the price is valid (recommended for Offer schema)",
+                "display_format": "F j, Y",
+                "return_format": "Y-m-d"
+            },
+            {
                 "key": "field_pr_schema_tab",
                 "label": "Schema & SEO",
                 "type": "tab",
@@ -177,6 +186,15 @@
                 "name": "author_name",
                 "type": "text",
                 "instructions": "Name of the person reviewing this product"
+            },
+            {
+                "key": "field_pr_date_modified",
+                "label": "Review Last Updated",
+                "name": "review_date_modified",
+                "type": "date_picker",
+                "instructions": "Date when the review was last updated (signals freshness to Google)",
+                "display_format": "F j, Y",
+                "return_format": "Y-m-d"
             },
             {
                 "key": "field_pr_brand",

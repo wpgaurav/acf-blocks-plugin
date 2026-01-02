@@ -87,6 +87,8 @@ $payment_term = get_field('payment_term') ?: '';
 $product_brand = get_field('product_brand') ?: '';
 $product_sku = get_field('product_sku') ?: '';
 $product_availability = get_field('product_availability') ?: 'InStock';
+$price_valid_until = get_field('price_valid_until') ?: '';
+$review_date_modified = get_field('review_date_modified') ?: '';
 
 $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'full') : '';
 ?>
@@ -242,6 +244,16 @@ $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'full') : '';
         'datePublished' => get_the_date('c'),
     ];
 
+    // Add dateModified if set (signals freshness to Google)
+    if ($review_date_modified) {
+        $json_data['review']['dateModified'] = $review_date_modified;
+    }
+
+    // Add reviewBody (full review text for rich snippets)
+    if ($summary) {
+        $json_data['review']['reviewBody'] = wp_strip_all_tags($summary);
+    }
+
     if ($author_name) {
         $json_data['review']['author'] = [
             '@type' => 'Person',
@@ -301,6 +313,11 @@ $image_url = $image_id ? wp_get_attachment_image_url($image_id, 'full') : '';
         if ($offer_price) {
             $json_data['offers']['price'] = $offer_price;
             $json_data['offers']['priceCurrency'] = $offer_currency;
+        }
+
+        // Add priceValidUntil (recommended by Google for Offer schema)
+        if ($price_valid_until) {
+            $json_data['offers']['priceValidUntil'] = $price_valid_until;
         }
     }
     ?>
