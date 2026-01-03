@@ -68,6 +68,7 @@ if (!function_exists('acf_render_star_svg')) {
 // Get ACF fields
 $product_name = get_field('product_name');
 $image_id = get_field('product_image');
+$image_direct_url = get_field('product_image_url');
 $overall_rating = get_field('overall_rating');
 $features = get_field('features');
 $pros = get_field('pros');
@@ -90,7 +91,13 @@ $product_availability = get_field('product_availability') ?: 'InStock';
 $price_valid_until = get_field('price_valid_until') ?: '';
 $review_date_modified = get_field('review_date_modified') ?: '';
 
-$image_url = $image_id ? wp_get_attachment_image_url($image_id, 'full') : '';
+// Determine image URL - direct URL takes priority
+$image_url = '';
+if ( $image_direct_url ) {
+    $image_url = $image_direct_url;
+} elseif ( $image_id ) {
+    $image_url = wp_get_attachment_image_url($image_id, 'full');
+}
 ?>
 
 <div class="<?php echo esc_attr(implode(' ', $classes)); ?>"<?php echo $anchor_attr; ?> data-pr-id="<?php echo esc_attr($block_id); ?>">

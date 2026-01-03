@@ -14,15 +14,24 @@
                 "label": "Product Name",
                 "name": "product_name",
                 "type": "text",
-                "required": 1
+                "required": 1,
+                "default_value": "Product Name"
             },
             {
                 "key": "field_pr_product_image",
                 "label": "Product Image",
                 "name": "product_image",
                 "type": "image",
+                "instructions": "Upload an image from the media library.",
                 "return_format": "id",
                 "preview_size": "medium"
+            },
+            {
+                "key": "field_pr_product_image_url",
+                "label": "Or Image URL",
+                "name": "product_image_url",
+                "type": "url",
+                "instructions": "Alternatively, enter a direct image URL. This takes priority over the uploaded image."
             },
             {
                 "key": "field_pr_overall_rating",
@@ -32,14 +41,18 @@
                 "instructions": "Rating from 1 to 5",
                 "min": 1,
                 "max": 5,
-                "step": 0.1
+                "step": 0.1,
+                "default_value": 4.5
             },
             {
                 "key": "field_pr_summary",
                 "label": "Summary",
                 "name": "summary",
-                "type": "textarea",
-                "rows": 4
+                "type": "wysiwyg",
+                "tabs": "visual",
+                "toolbar": "basic",
+                "media_upload": 0,
+                "default_value": "Write your product review summary here."
             },
             {
                 "key": "field_pr_features_tab",

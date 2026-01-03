@@ -10,15 +10,26 @@
 
 // Retrieve field values.
 $image       = get_field('pb_image');
+$image_url   = get_field('pb_image_url');
 $title       = get_field('pb_title');
 $rating      = get_field('pb_rating');
 $description = get_field('pb_description');
+
+// Determine image source - direct URL takes priority
+$img_src = '';
+$img_alt = $title ?: 'Product image';
+if ( $image_url ) {
+    $img_src = $image_url;
+} elseif ( $image ) {
+    $img_src = $image['url'];
+    $img_alt = $image['alt'] ?: $img_alt;
+}
 ?>
 
 <div class="acf-product-box grid-2" style="align-items:center">
-    <?php if( $image ): ?>
+    <?php if( $img_src ): ?>
     <div class="acf-product-box__image">
-        <?php echo wp_get_attachment_image( $image['ID'], 'md-block', false, array( 'class' => 'acf-product-box__image-img', 'loading' => 'lazy', 'decoding' => 'async' ) ); ?>
+        <img src="<?php echo esc_url( $img_src ); ?>" alt="<?php echo esc_attr( $img_alt ); ?>" class="acf-product-box__image-img" loading="lazy" decoding="async" />
     </div>
 <?php endif; ?>
 

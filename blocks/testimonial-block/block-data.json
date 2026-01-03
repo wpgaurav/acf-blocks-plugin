@@ -6,10 +6,13 @@
             "key": "acf_testimonial_quote",
             "label": "Testimonial Quote",
             "name": "acf_testimonial_quote",
-            "type": "textarea",
+            "type": "wysiwyg",
             "instructions": "Enter the testimonial quote.",
             "required": 0,
-            "rows": 5
+            "tabs": "visual",
+            "toolbar": "basic",
+            "media_upload": 0,
+            "default_value": "This is an amazing product that has completely transformed my workflow."
         },
         {
             "key": "acf_testimonial_author_name",
@@ -17,7 +20,8 @@
             "name": "acf_testimonial_author_name",
             "type": "text",
             "instructions": "Enter the name of the person giving the testimonial.",
-            "required": 0
+            "required": 0,
+            "default_value": "John Doe"
         },
         {
             "key": "acf_testimonial_author_title",
@@ -25,17 +29,26 @@
             "name": "acf_testimonial_author_title",
             "type": "text",
             "instructions": "Enter the author's title or company name.",
-            "required": 0
+            "required": 0,
+            "default_value": "CEO, Company Name"
         },
         {
             "key": "acf_testimonial_author_image",
             "label": "Author Image",
             "name": "acf_testimonial_author_image",
             "type": "image",
-            "instructions": "Upload an image of the author.",
+            "instructions": "Upload an image from the media library.",
             "required": 0,
             "return_format": "array",
             "preview_size": "thumbnail"
+        },
+        {
+            "key": "acf_testimonial_author_image_url",
+            "label": "Or Image URL",
+            "name": "acf_testimonial_author_image_url",
+            "type": "url",
+            "instructions": "Alternatively, enter a direct image URL. This takes priority over the uploaded image.",
+            "required": 0
         },
         {
             "key": "acf_testimonial_rating",

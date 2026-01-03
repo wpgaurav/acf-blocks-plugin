@@ -11,9 +11,21 @@
 $headline    = get_field( 'acf_hero_headline' );
 $subheadline = get_field( 'acf_hero_subheadline' );
 $image       = get_field( 'acf_hero_image' );
+$image_url   = get_field( 'acf_hero_image_url' );
 $cta_text    = get_field( 'acf_hero_cta_text' );
 $cta_url     = get_field( 'acf_hero_cta_url' );
 $cta_style   = get_field( 'acf_hero_cta_style' );
+
+// Determine image source - direct URL takes priority
+$img_src = '';
+$img_alt = '';
+if ( $image_url ) {
+    $img_src = $image_url;
+    $img_alt = $headline ?: 'Hero image';
+} elseif ( $image ) {
+    $img_src = $image['url'];
+    $img_alt = $image['alt'] ?: $headline;
+}
 
 $custom_class = get_field( 'acf_hero_class' );
 $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
@@ -23,9 +35,9 @@ $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"
 ?>
 
 <div class="acf-hero-block<?php echo $custom_class; ?>"<?php echo $inline_style_attr; ?>>
-    <?php if ( $image ) : ?>
+    <?php if ( $img_src ) : ?>
         <div class="acf-hero-image">
-            <img src="<?php echo esc_url( $image['url'] ); ?>" alt="<?php echo esc_attr( $image['alt'] ); ?>" fetchpriority="high" decoding="async" />
+            <img src="<?php echo esc_url( $img_src ); ?>" alt="<?php echo esc_attr( $img_alt ); ?>" fetchpriority="high" decoding="async" />
         </div>
     <?php endif; ?>
 
@@ -35,7 +47,7 @@ $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"
         <?php endif; ?>
 
         <?php if ( $subheadline ) : ?>
-            <p class="acf-hero-subheadline"><?php echo esc_html( $subheadline ); ?></p>
+            <div class="acf-hero-subheadline"><?php echo wp_kses_post( $subheadline ); ?></div>
         <?php endif; ?>
 
         <?php if ( $cta_text && $cta_url ) : ?>

@@ -1,6 +1,18 @@
 <?php
 $avatar = get_field('ob_avatar');
+$avatar_url = get_field('ob_avatar_url');
 $citation = get_field('ob_citation');
+$name = get_field('ob_name');
+
+// Determine image source - direct URL takes priority
+$img_src = '';
+$img_alt = $name ?: 'Author';
+if ( $avatar_url ) {
+    $img_src = $avatar_url;
+} elseif ( $avatar ) {
+    $img_src = $avatar['url'];
+    $img_alt = $avatar['alt'] ?: $img_alt;
+}
 ?>
 
 <div class="acf-opinion-box">
@@ -9,17 +21,14 @@ $citation = get_field('ob_citation');
     </div>
 
     <div class="acf-opinion-box-meta">
-        <?php if($avatar): ?>
+        <?php if($img_src): ?>
             <div class="acf-opinion-box-avatar">
-                <?php echo wp_get_attachment_image($avatar['ID'], 'thumbnail', false, [
-                    'class' => 'acf-opinion-box-avatar-image',
-                    'loading' => 'lazy'
-                ]); ?>
+                <img src="<?php echo esc_url($img_src); ?>" alt="<?php echo esc_attr($img_alt); ?>" class="acf-opinion-box-avatar-image" loading="lazy" />
             </div>
         <?php endif; ?>
 
         <div class="acf-opinion-box-author">
-            <?php if($name = get_field('ob_name')): ?>
+            <?php if($name): ?>
                 <div class="acf-opinion-box-author-name"><?php echo esc_html($name); ?></div>
             <?php endif; ?>
 

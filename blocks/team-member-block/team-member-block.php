@@ -9,12 +9,23 @@
  */
 
 $photo        = get_field( 'acf_team_member_photo' );
+$photo_url    = get_field( 'acf_team_member_photo_url' );
 $name         = get_field( 'acf_team_member_name' );
 $title        = get_field( 'acf_team_member_title' );
 $bio          = get_field( 'acf_team_member_bio' );
 $email        = get_field( 'acf_team_member_email' );
 $phone        = get_field( 'acf_team_member_phone' );
 $social_links = get_field( 'acf_team_member_social_links' );
+
+// Determine image source - direct URL takes priority
+$img_src = '';
+$img_alt = $name ?: 'Team member';
+if ( $photo_url ) {
+    $img_src = $photo_url;
+} elseif ( $photo ) {
+    $img_src = $photo['url'];
+    $img_alt = $photo['alt'] ?: $img_alt;
+}
 
 $custom_class = get_field( 'acf_team_member_class' );
 $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
@@ -24,9 +35,9 @@ $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"
 ?>
 
 <div class="acf-team-member-block<?php echo $custom_class; ?>"<?php echo $inline_style_attr; ?>>
-    <?php if ( $photo ) : ?>
+    <?php if ( $img_src ) : ?>
         <div class="acf-team-member-photo">
-            <img src="<?php echo esc_url( $photo['url'] ); ?>" alt="<?php echo esc_attr( $photo['alt'] ? $photo['alt'] : $name ); ?>" loading="lazy" decoding="async" />
+            <img src="<?php echo esc_url( $img_src ); ?>" alt="<?php echo esc_attr( $img_alt ); ?>" loading="lazy" decoding="async" />
         </div>
     <?php endif; ?>
 
@@ -41,7 +52,7 @@ $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"
 
         <?php if ( $bio ) : ?>
             <div class="acf-team-member-bio">
-                <?php echo wpautop( esc_html( $bio ) ); ?>
+                <?php echo wp_kses_post( $bio ); ?>
             </div>
         <?php endif; ?>
 

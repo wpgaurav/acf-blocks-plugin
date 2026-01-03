@@ -8,26 +8,38 @@
             "name": "acf_hero_headline",
             "type": "text",
             "instructions": "Enter the main headline for the hero block.",
-            "required": 0
+            "required": 0,
+            "default_value": "Your Headline Here"
         },
         {
             "key": "acf_hero_subheadline",
             "label": "Subheadline",
             "name": "acf_hero_subheadline",
-            "type": "textarea",
+            "type": "wysiwyg",
             "instructions": "Enter the subheadline or description.",
             "required": 0,
-            "rows": 3
+            "default_value": "Add a compelling subheadline to engage your visitors.",
+            "tabs": "visual",
+            "toolbar": "basic",
+            "media_upload": 0
         },
         {
             "key": "acf_hero_image",
             "label": "Background/Featured Image",
             "name": "acf_hero_image",
             "type": "image",
-            "instructions": "Upload an image for the hero block.",
+            "instructions": "Upload an image from the media library.",
             "required": 0,
             "return_format": "array",
             "preview_size": "medium"
+        },
+        {
+            "key": "acf_hero_image_url",
+            "label": "Or Image URL",
+            "name": "acf_hero_image_url",
+            "type": "url",
+            "instructions": "Alternatively, enter a direct image URL. This takes priority over the uploaded image.",
+            "required": 0
         },
         {
             "key": "acf_hero_cta_text",
@@ -35,7 +47,8 @@
             "name": "acf_hero_cta_text",
             "type": "text",
             "instructions": "Enter the call-to-action button text.",
-            "required": 0
+            "required": 0,
+            "default_value": "Get Started"
         },
         {
             "key": "acf_hero_cta_url",
