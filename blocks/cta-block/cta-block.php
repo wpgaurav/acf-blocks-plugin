@@ -45,7 +45,7 @@ $inline_style_attr = ! empty( $style_parts ) ? ' style="' . implode( '; ', $styl
 
         <?php if ( $description ) : ?>
             <div class="acf-cta-description">
-                <?php echo wpautop( esc_html( $description ) ); ?>
+                <?php echo wp_kses_post( $description ); ?>
             </div>
         <?php endif; ?>
 

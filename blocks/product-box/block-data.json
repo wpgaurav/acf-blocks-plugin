@@ -7,11 +7,19 @@
             "label": "Product Image",
             "name": "pb_image",
             "type": "image",
-            "instructions": "Select the product image.",
+            "instructions": "Select the product image from the media library.",
             "required": 0,
             "return_format": "array",
             "preview_size": "medium",
             "library": "all"
+        },
+        {
+            "key": "field_pb_image_url",
+            "label": "Or Image URL",
+            "name": "pb_image_url",
+            "type": "url",
+            "instructions": "Alternatively, enter a direct image URL. This takes priority over the uploaded image.",
+            "required": 0
         },
         {
             "key": "field_pb_title",
@@ -19,7 +27,8 @@
             "name": "pb_title",
             "type": "text",
             "instructions": "Enter the product title.",
-            "required": 0
+            "required": 0,
+            "default_value": "Product Title"
         },
         {
             "key": "field_pb_rating",
@@ -40,9 +49,10 @@
             "type": "wysiwyg",
             "instructions": "Enter the product description.",
             "required": 0,
-            "tabs": "all",
-            "toolbar": "full",
-            "media_upload": 1
+            "tabs": "visual",
+            "toolbar": "basic",
+            "media_upload": 0,
+            "default_value": "<p>Add your product description here.</p>"
         },
         {
             "key": "field_pb_buttons",

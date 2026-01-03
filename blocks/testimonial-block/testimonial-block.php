@@ -12,7 +12,18 @@ $quote       = get_field( 'acf_testimonial_quote' );
 $author_name = get_field( 'acf_testimonial_author_name' );
 $author_title = get_field( 'acf_testimonial_author_title' );
 $author_image = get_field( 'acf_testimonial_author_image' );
+$author_image_url = get_field( 'acf_testimonial_author_image_url' );
 $rating      = get_field( 'acf_testimonial_rating' );
+
+// Determine image source - direct URL takes priority
+$img_src = '';
+$img_alt = $author_name ?: 'Author';
+if ( $author_image_url ) {
+    $img_src = $author_image_url;
+} elseif ( $author_image ) {
+    $img_src = $author_image['url'];
+    $img_alt = $author_image['alt'] ?: $img_alt;
+}
 
 $custom_class = get_field( 'acf_testimonial_class' );
 $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
@@ -165,14 +176,14 @@ if ( strpos( $className, 'is-style-dark' ) !== false ) {
     <?php if ( $quote ) : ?>
         <blockquote class="acf-testimonial-quote">
             <span class="acf-testimonial-quote-icon">&ldquo;</span>
-            <?php echo wpautop( esc_html( $quote ) ); ?>
+            <?php echo wp_kses_post( $quote ); ?>
         </blockquote>
     <?php endif; ?>
 
     <div class="acf-testimonial-author">
-        <?php if ( $author_image ) : ?>
+        <?php if ( $img_src ) : ?>
             <div class="acf-testimonial-author-image">
-                <img src="<?php echo esc_url( $author_image['url'] ); ?>" alt="<?php echo esc_attr( $author_image['alt'] ); ?>" loading="lazy" decoding="async" />
+                <img src="<?php echo esc_url( $img_src ); ?>" alt="<?php echo esc_attr( $img_alt ); ?>" loading="lazy" decoding="async" />
             </div>
         <?php endif; ?>
 

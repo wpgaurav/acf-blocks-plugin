@@ -7,10 +7,18 @@
             "label": "Photo",
             "name": "acf_team_member_photo",
             "type": "image",
-            "instructions": "Upload a photo of the team member.",
+            "instructions": "Upload a photo from the media library.",
             "required": 0,
             "return_format": "array",
             "preview_size": "medium"
+        },
+        {
+            "key": "acf_team_member_photo_url",
+            "label": "Or Photo URL",
+            "name": "acf_team_member_photo_url",
+            "type": "url",
+            "instructions": "Alternatively, enter a direct image URL. This takes priority over the uploaded image.",
+            "required": 0
         },
         {
             "key": "acf_team_member_name",
@@ -18,7 +26,8 @@
             "name": "acf_team_member_name",
             "type": "text",
             "instructions": "Enter the team member's name.",
-            "required": 0
+            "required": 0,
+            "default_value": "Team Member Name"
         },
         {
             "key": "acf_team_member_title",
@@ -26,16 +35,20 @@
             "name": "acf_team_member_title",
             "type": "text",
             "instructions": "Enter the team member's title or position.",
-            "required": 0
+            "required": 0,
+            "default_value": "Position Title"
         },
         {
             "key": "acf_team_member_bio",
             "label": "Bio",
             "name": "acf_team_member_bio",
-            "type": "textarea",
+            "type": "wysiwyg",
             "instructions": "Enter a short bio for the team member.",
             "required": 0,
-            "rows": 5
+            "tabs": "visual",
+            "toolbar": "basic",
+            "media_upload": 0,
+            "default_value": "A brief biography about this team member and their expertise."
         },
         {
             "key": "acf_team_member_email",

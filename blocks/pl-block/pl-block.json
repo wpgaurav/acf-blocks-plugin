@@ -31,7 +31,7 @@
                 "type": "text",
                 "instructions": "Enter the product name.",
                 "required": 1,
-                "default_value": "",
+                "default_value": "Product Name",
                 "placeholder": "Product Name"
             },
             {
@@ -41,9 +41,10 @@
                 "type": "wysiwyg",
                 "instructions": "Enter the product description.",
                 "required": 0,
-                "tabs": "all",
-                "toolbar": "full",
-                "media_upload": 1
+                "tabs": "visual",
+                "toolbar": "basic",
+                "media_upload": 0,
+                "default_value": "<p>Add your product description here.</p>"
             },
             {
                 "key": "field_pl_block_pricing",
@@ -176,7 +177,7 @@
                 {
                     "param": "block",
                     "operator": "==",
-                    "value": "acf/pl_block"
+                    "value": "acf/pl-block"
                 }
             ]
         ],

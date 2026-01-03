@@ -8,16 +8,20 @@
             "name": "acf_cta_heading",
             "type": "text",
             "instructions": "Enter the heading for the CTA block.",
-            "required": 0
+            "required": 0,
+            "default_value": "Ready to Get Started?"
         },
         {
             "key": "acf_cta_description",
             "label": "Description",
             "name": "acf_cta_description",
-            "type": "textarea",
+            "type": "wysiwyg",
             "instructions": "Enter the description text.",
             "required": 0,
-            "rows": 4
+            "tabs": "visual",
+            "toolbar": "basic",
+            "media_upload": 0,
+            "default_value": "Take the next step and discover what we can do for you."
         },
         {
             "key": "acf_cta_button_text",
@@ -25,7 +29,8 @@
             "name": "acf_cta_button_text",
             "type": "text",
             "instructions": "Enter the button text.",
-            "required": 0
+            "required": 0,
+            "default_value": "Get Started"
         },
         {
             "key": "acf_cta_button_url",
