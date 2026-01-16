@@ -67,6 +67,7 @@ if (!function_exists('acf_render_star_svg')) {
 
 // Get ACF fields
 $product_name = get_field('product_name');
+$show_title = get_field('show_title');
 $image_id = get_field('product_image');
 $image_direct_url = get_field('product_image_url');
 $overall_rating = get_field('overall_rating');
@@ -83,6 +84,8 @@ $offer_currency = get_field('offer_price_currency') ?: 'USD';
 $offer_price = get_field('offer_price') ?: '';
 $offer_cta_text = get_field('offer_cta_text') ?: 'Get Offer';
 $payment_term = get_field('payment_term') ?: '';
+$link_rel = get_field('link_rel') ?: 'nofollow sponsored';
+$link_target = get_field('link_target') ?: '_blank';
 
 // Schema fields
 $product_brand = get_field('product_brand') ?: '';
@@ -135,7 +138,7 @@ if ( $image_direct_url ) {
     echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
     ?>
     <?php endif; ?>
-    <?php if ($product_name) : ?>
+    <?php if ($product_name && $show_title) : ?>
         <h3 class="acf-product-review-title"><?php echo esc_html($product_name); ?></h3>
     <?php endif; ?>
 
@@ -208,7 +211,7 @@ if ( $image_direct_url ) {
     <?php endif; ?>
 
     <?php if ($offer_url) : ?>
-        <a href="<?php echo esc_url($offer_url); ?>" rel="nofollow sponsored" class="acf-product-review-button"><?php echo esc_html($offer_cta_text); ?></a>
+        <a href="<?php echo esc_url($offer_url); ?>"<?php echo $link_rel ? ' rel="' . esc_attr($link_rel) . '"' : ''; ?> target="<?php echo esc_attr($link_target); ?>" class="acf-product-review-button"><?php echo esc_html($offer_cta_text); ?></a>
     <?php endif; ?>
 
     <?php if ($enable_json && $product_name) : ?>
