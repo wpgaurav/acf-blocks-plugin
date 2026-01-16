@@ -18,6 +18,15 @@
                 "default_value": "Product Name"
             },
             {
+                "key": "field_pr_show_title",
+                "label": "Show Title",
+                "name": "show_title",
+                "type": "true_false",
+                "instructions": "Display the product title. The title is still used in schema markup even when hidden.",
+                "default_value": 1,
+                "ui": 1
+            },
+            {
                 "key": "field_pr_product_image",
                 "label": "Product Image",
                 "name": "product_image",
@@ -141,6 +150,26 @@
                 "name": "offer_cta_text",
                 "type": "text",
                 "default_value": "Get Offer"
+            },
+            {
+                "key": "field_pr_link_rel",
+                "label": "Link Rel Attribute",
+                "name": "link_rel",
+                "type": "text",
+                "instructions": "Rel attribute for the offer link (e.g., nofollow, sponsored, noopener)",
+                "default_value": "nofollow sponsored"
+            },
+            {
+                "key": "field_pr_link_target",
+                "label": "Link Target",
+                "name": "link_target",
+                "type": "select",
+                "instructions": "Where to open the offer link",
+                "choices": {
+                    "_blank": "New Tab (_blank)",
+                    "_self": "Same Tab (_self)"
+                },
+                "default_value": "_blank"
             },
             {
                 "key": "field_pr_offer_price_currency",
