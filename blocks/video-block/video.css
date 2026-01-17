@@ -102,7 +102,7 @@
 }
 
 /* Hide loading spinner when video is loaded */
-.acf-video-wrapper:has(iframe),
+.acf-video-wrapper:has(iframe)::before,
 .acf-video-wrapper:has(video)::before {
     display: none;
 }
