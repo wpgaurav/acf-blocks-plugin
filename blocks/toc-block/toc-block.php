@@ -373,17 +373,19 @@ if ( $include_schema && ! $is_preview && ! empty( $headings ) ) {
 if ( $sticky && ! defined( 'ACF_TOC_STICKY_CSS_LOADED' ) ) :
     define( 'ACF_TOC_STICKY_CSS_LOADED', true );
     $sticky_css = ':root{--acf-toc-sticky-offset:calc(var(--header-height,0px) + var(--wp-admin--admin-bar--height,0px) + 20px)}@media(min-width:1400px){.acf-toc--sticky{position:fixed;top:var(--acf-toc-sticky-offset);left:0;max-width:220px;max-height:calc(100vh - var(--acf-toc-sticky-offset) - 20px);overflow-y:auto;scrollbar-width:thin;font-size:0.8125em;line-height:1.4;z-index:100}.acf-toc--sticky .acf-toc__title{font-size:0.875em;margin-bottom:0.5em}.acf-toc--sticky .acf-toc__content{padding-left:0.75em;border-left-width:2px}.acf-toc--sticky .acf-toc__item{padding:0.125em 0}.acf-toc--sticky .acf-toc__sublist{padding-left:0.75em;margin-top:0.125em}.acf-toc--sticky::-webkit-scrollbar{width:3px}.acf-toc--sticky::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,0.15);border-radius:2px}}';
-    echo '<style>' . $sticky_css . '</style>';
+    echo '<style>' . acf_blocks_minify_css( $sticky_css ) . '</style>';
     // Set custom offset if provided
     if ( $sticky_offset && $sticky_offset != 20 ) {
-        echo '<style>#' . esc_attr( $block_id ) . '{--acf-toc-sticky-offset:calc(var(--header-height,0px) + var(--wp-admin--admin-bar--height,0px) + ' . intval( $sticky_offset ) . 'px)}</style>';
+        $offset_css = '#' . esc_attr( $block_id ) . '{--acf-toc-sticky-offset:calc(var(--header-height,0px) + var(--wp-admin--admin-bar--height,0px) + ' . intval( $sticky_offset ) . 'px)}';
+        echo '<style>' . acf_blocks_minify_css( $offset_css ) . '</style>';
     }
 endif;
 
 // Inline CSS for smooth scroll (only when enabled)
 if ( $smooth_scroll && ! defined( 'ACF_TOC_SMOOTH_CSS_LOADED' ) ) :
     define( 'ACF_TOC_SMOOTH_CSS_LOADED', true );
-    echo '<style>html:has(.acf-toc--smooth-scroll){scroll-behavior:smooth}@media(prefers-reduced-motion:reduce){html:has(.acf-toc--smooth-scroll){scroll-behavior:auto}}</style>';
+    $smooth_css = 'html:has(.acf-toc--smooth-scroll){scroll-behavior:smooth}@media(prefers-reduced-motion:reduce){html:has(.acf-toc--smooth-scroll){scroll-behavior:auto}}';
+    echo '<style>' . acf_blocks_minify_css( $smooth_css ) . '</style>';
 endif;
 
 // Inline JS for active section highlighting (only when enabled)
