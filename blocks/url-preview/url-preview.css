@@ -34,7 +34,7 @@
 
 .acf-url-preview--vertical .acf-url-preview__image {
     width: 100%;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 12 / 5;
     overflow: hidden;
 }
 
@@ -44,29 +44,62 @@
     object-fit: cover;
 }
 
-/* Horizontal Layout */
+/* Horizontal Layout - Minimal design with thumbnail */
 .acf-url-preview--horizontal {
     display: flex;
     flex-direction: row;
+    align-items: center;
 }
 
 .acf-url-preview--horizontal .acf-url-preview__image {
-    flex: 0 0 40%;
-    max-width: 300px;
-    min-height: 200px;
+    flex: 0 0 auto;
+    width: 120px;
+    height: 120px;
+    min-height: auto;
     overflow: hidden;
+    border-radius: 6px;
+    margin: 0.75rem;
 }
 
 .acf-url-preview--horizontal .acf-url-preview__image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 6px;
 }
 
 .acf-url-preview--horizontal .acf-url-preview__content {
     flex: 1;
     display: flex;
     flex-direction: column;
+    padding: 0.75rem 1rem 0.75rem 0;
+}
+
+.acf-url-preview--horizontal .acf-url-preview__title {
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+.acf-url-preview--horizontal .acf-url-preview__description {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.acf-url-preview--horizontal .acf-url-preview__fields {
+    margin-bottom: 0.5rem;
+}
+
+.acf-url-preview--horizontal .acf-url-preview__buttons {
+    gap: 0.5rem;
+}
+
+.acf-url-preview--horizontal .acf-url-preview__button {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
 }
 
 /* Image position for horizontal layout */
@@ -219,17 +252,108 @@
     font-size: 0.9375rem;
 }
 
+/* Card Style Variations */
+
+/* Compact style */
+.acf-url-preview--compact .acf-url-preview__content {
+    padding: 1rem;
+}
+
+.acf-url-preview--compact .acf-url-preview__title {
+    font-size: 1.1rem;
+}
+
+.acf-url-preview--compact .acf-url-preview__description {
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Minimal style */
+.acf-url-preview--minimal {
+    border: none;
+}
+
+.acf-url-preview--minimal:hover {
+    box-shadow: none;
+}
+
+.acf-url-preview--minimal .acf-url-preview__content {
+    padding: 1rem 0;
+}
+
+.acf-url-preview--minimal .acf-url-preview__field {
+    background: #f0f0f0;
+}
+
+/* Featured style */
+.acf-url-preview--featured .acf-url-preview__title {
+    font-size: 1.5rem;
+}
+
+.acf-url-preview--featured .acf-url-preview__description {
+    font-size: 1rem;
+}
+
+.acf-url-preview--featured .acf-url-preview__content {
+    padding: 1.5rem 2rem;
+}
+
+.acf-url-preview--featured:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Dark style */
+.acf-url-preview--dark .acf-url-preview__button {
+    background: #ffffff;
+    color: #1d2327;
+}
+
+.acf-url-preview--dark .acf-url-preview__button:hover {
+    background: #f0f0f0;
+    color: #1d2327;
+}
+
+.acf-url-preview--dark .acf-url-preview__button--secondary {
+    background: transparent;
+    color: #ffffff;
+    border-color: #ffffff;
+}
+
+.acf-url-preview--dark .acf-url-preview__button--secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.acf-url-preview--dark .acf-url-preview__field {
+    background: #3c434a;
+}
+
+.acf-url-preview--dark .acf-url-preview__field-icon {
+    color: #72aee6;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
     .acf-url-preview--horizontal {
         flex-direction: column;
+        align-items: stretch;
     }
 
     .acf-url-preview--horizontal .acf-url-preview__image {
-        flex: none;
-        max-width: none;
-        aspect-ratio: 16 / 9;
-        min-height: auto;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 12 / 5;
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .acf-url-preview--horizontal .acf-url-preview__image img {
+        border-radius: 0;
+    }
+
+    .acf-url-preview--horizontal .acf-url-preview__content {
+        padding: 1rem;
     }
 
     .acf-url-preview--image-right {
@@ -259,6 +383,15 @@
 
     .acf-url-preview__button {
         justify-content: center;
+    }
+
+    /* Featured style responsive */
+    .acf-url-preview--featured .acf-url-preview__title {
+        font-size: 1.25rem;
+    }
+
+    .acf-url-preview--featured .acf-url-preview__content {
+        padding: 1rem;
     }
 }
 

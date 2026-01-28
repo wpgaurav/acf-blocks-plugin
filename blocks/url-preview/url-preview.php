@@ -28,18 +28,32 @@ $show_secondary_button = get_field( 'show_secondary_button' );
 $secondary_button_text = get_field( 'secondary_button_text' );
 $secondary_button_url = get_field( 'secondary_button_url' );
 $card_layout = get_field( 'card_layout' ) ?: 'vertical';
+$card_style = get_field( 'card_style' ) ?: 'default';
 $image_position = get_field( 'image_position' ) ?: 'left';
+$local_image_size = get_field( 'local_image_size' ) ?: 'medium_large';
 $custom_class = get_field( 'custom_class' );
 $custom_inline = get_field( 'custom_inline' );
 
 // Determine image URL
 $image_url = '';
 if ( 'local' === $image_source && $local_image ) {
-    $image_url = isset( $local_image['sizes']['medium_large'] ) ? $local_image['sizes']['medium_large'] : $local_image['url'];
+    // For horizontal layout, default to thumbnail size for minimal display
+    $size_to_use = ( 'horizontal' === $card_layout ) ? 'thumbnail' : $local_image_size;
+
+    if ( 'full' === $size_to_use ) {
+        $image_url = $local_image['url'];
+    } elseif ( isset( $local_image['sizes'][ $size_to_use ] ) ) {
+        $image_url = $local_image['sizes'][ $size_to_use ];
+    } else {
+        // Fallback to full URL if size not available
+        $image_url = $local_image['url'];
+    }
+
     if ( empty( $image_alt ) && ! empty( $local_image['alt'] ) ) {
         $image_alt = $local_image['alt'];
     }
 } elseif ( 'external' === $image_source && $external_image ) {
+    // For external images, always use the full URL
     $image_url = $external_image;
 }
 
@@ -50,16 +64,30 @@ $classes[] = 'acf-url-preview--' . $card_layout;
 if ( 'horizontal' === $card_layout ) {
     $classes[] = 'acf-url-preview--image-' . $image_position;
 }
+if ( 'default' !== $card_style ) {
+    $classes[] = 'acf-url-preview--' . $card_style;
+}
 if ( $custom_class ) {
     $classes[] = esc_attr( $custom_class );
 }
 $class_string = implode( ' ', $classes );
 
-// Build inline styles
+// Build inline styles for card style variations
+$style_variations = array(
+    'compact' => '--acf-url-preview-radius: 4px; --acf-url-preview-shadow: 0 1px 3px rgba(0,0,0,0.08);',
+    'minimal' => '--acf-url-preview-border: transparent; --acf-url-preview-shadow: none; --acf-url-preview-bg: transparent;',
+    'featured' => '--acf-url-preview-radius: 12px; --acf-url-preview-shadow: 0 8px 24px rgba(0,0,0,0.12); --acf-url-preview-border: transparent;',
+    'dark' => '--acf-url-preview-bg: #1d2327; --acf-url-preview-text: #ffffff; --acf-url-preview-text-secondary: #c3c4c7; --acf-url-preview-border: #3c434a;',
+);
+
 $inline_styles = '';
-if ( $custom_inline ) {
-    $inline_styles .= esc_attr( $custom_inline );
+if ( isset( $style_variations[ $card_style ] ) ) {
+    $inline_styles .= $style_variations[ $card_style ];
 }
+if ( $custom_inline ) {
+    $inline_styles .= ' ' . $custom_inline;
+}
+$inline_styles = trim( $inline_styles );
 
 // Icon SVGs - minimal inline for performance
 $icons = array(

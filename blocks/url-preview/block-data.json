@@ -106,6 +106,31 @@
             ]
         },
         {
+            "key": "field_url_preview_local_image_size",
+            "label": "Image Size",
+            "name": "local_image_size",
+            "type": "select",
+            "instructions": "Choose the thumbnail size for local images. Horizontal layout uses 'thumbnail' by default.",
+            "required": 0,
+            "choices": {
+                "thumbnail": "Thumbnail (150×150)",
+                "medium": "Medium (300×300)",
+                "medium_large": "Medium Large (768×auto)",
+                "large": "Large (1024×1024)",
+                "full": "Full Size"
+            },
+            "default_value": "medium_large",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_url_preview_image_source",
+                        "operator": "==",
+                        "value": "local"
+                    }
+                ]
+            ]
+        },
+        {
             "key": "field_url_preview_import_message",
             "label": "",
             "name": "",
@@ -359,6 +384,22 @@
             },
             "default_value": "vertical",
             "layout": "horizontal"
+        },
+        {
+            "key": "field_url_preview_card_style",
+            "label": "Card Style",
+            "name": "card_style",
+            "type": "select",
+            "instructions": "Choose a visual style for the card.",
+            "required": 0,
+            "choices": {
+                "default": "Default",
+                "compact": "Compact",
+                "minimal": "Minimal",
+                "featured": "Featured",
+                "dark": "Dark"
+            },
+            "default_value": "default"
         },
         {
             "key": "field_url_preview_image_position",

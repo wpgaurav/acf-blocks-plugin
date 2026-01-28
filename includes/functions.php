@@ -32,6 +32,66 @@ function acf_blocks_register_category( $categories ) {
 add_filter( 'block_categories_all', 'acf_blocks_register_category', 10, 1 );
 
 /**
+ * Pre-register block stylesheets so WordPress loads them as separate files.
+ *
+ * This ensures stylesheets are loaded as separate files in both the editor
+ * and frontend when should_load_separate_assets() is true.
+ */
+function acf_blocks_register_styles() {
+    $blocks_dir = ACF_BLOCKS_PLUGIN_DIR . 'blocks/';
+    $blocks_url = ACF_BLOCKS_PLUGIN_URL . 'blocks/';
+
+    if ( ! is_dir( $blocks_dir ) ) {
+        return;
+    }
+
+    $block_folders = glob( $blocks_dir . '*', GLOB_ONLYDIR );
+
+    if ( ! $block_folders ) {
+        return;
+    }
+
+    foreach ( $block_folders as $block_folder ) {
+        $block_folder = trailingslashit( $block_folder );
+        $block_json   = $block_folder . 'block.json';
+
+        if ( ! file_exists( $block_json ) || ! is_readable( $block_json ) ) {
+            continue;
+        }
+
+        $metadata = json_decode( file_get_contents( $block_json ), true );
+
+        if ( empty( $metadata['name'] ) ) {
+            continue;
+        }
+
+        // Get the folder name for building the CSS path
+        $folder_name = basename( rtrim( $block_folder, '/' ) );
+
+        // Check for style property in block.json
+        if ( ! empty( $metadata['style'] ) && is_string( $metadata['style'] ) ) {
+            // Extract filename from "file:./filename.css"
+            if ( strpos( $metadata['style'], 'file:./' ) === 0 ) {
+                $css_file = substr( $metadata['style'], 7 );
+                $css_path = $block_folder . $css_file;
+                $css_url  = $blocks_url . $folder_name . '/' . $css_file;
+
+                if ( file_exists( $css_path ) ) {
+                    $handle = str_replace( '/', '-', $metadata['name'] ) . '-style';
+                    wp_register_style(
+                        $handle,
+                        $css_url,
+                        array(),
+                        ACF_BLOCKS_VERSION
+                    );
+                }
+            }
+        }
+    }
+}
+add_action( 'init', 'acf_blocks_register_styles', 5 );
+
+/**
  * Load ACF blocks from block.json files.
  *
  * Scans the blocks directory and registers each block that has a block.json file.
@@ -60,8 +120,20 @@ function acf_blocks_load_blocks() {
         $extra_php    = $block_folder . 'extra.php';
 
         if ( file_exists( $block_json ) && is_readable( $block_json ) ) {
-            // Register via block.json metadata
-            $result = register_block_type( $block_folder );
+            // Read block.json to get the block name for style handle
+            $metadata = json_decode( file_get_contents( $block_json ), true );
+            $args     = array();
+
+            // If we pre-registered a style, use the handle instead of file path
+            if ( ! empty( $metadata['name'] ) && ! empty( $metadata['style'] ) ) {
+                $handle = str_replace( '/', '-', $metadata['name'] ) . '-style';
+                if ( wp_style_is( $handle, 'registered' ) ) {
+                    $args['style'] = $handle;
+                }
+            }
+
+            // Register via block.json metadata with style override
+            $result = register_block_type( $block_folder, $args );
 
             if ( is_wp_error( $result ) ) {
                 if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
