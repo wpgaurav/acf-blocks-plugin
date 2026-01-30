@@ -2,7 +2,7 @@
   "apiVersion": 3,
   "name": "acf/team-member",
   "title": "Team Member",
-  "description": "A team member block with photo, name, title, bio, and social links.",
+  "description": "A team member block with photo, core blocks for name/title/bio, and social links.",
   "category": "acf-blocks",
   "icon": "groups",
   "keywords": ["team", "member", "staff", "person", "profile"],
@@ -16,5 +16,35 @@
     "jsx": true
   },
   "style": "file:./team-member.css",
-  "editorStyle": "file:./team-member.css"
+  "editorStyle": "file:./team-member.css",
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "is_preview": true
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "core/heading",
+        "attributes": {
+          "level": 3,
+          "content": "Jane Smith"
+        }
+      },
+      {
+        "name": "core/paragraph",
+        "attributes": {
+          "content": "Product Manager",
+          "className": "acf-team-member-title"
+        }
+      },
+      {
+        "name": "core/paragraph",
+        "attributes": {
+          "content": "Jane leads our product team with 10 years of experience in tech."
+        }
+      }
+    ]
+  }
 }

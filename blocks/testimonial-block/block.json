@@ -2,7 +2,7 @@
   "apiVersion": 3,
   "name": "acf/testimonial",
   "title": "Testimonial",
-  "description": "A customizable testimonial block with quote, author, and rating.",
+  "description": "A customizable testimonial block with core blocks for quote content, plus author info and rating.",
   "category": "acf-blocks",
   "icon": "format-quote",
   "keywords": ["testimonial", "review", "quote", "customer"],
@@ -43,12 +43,19 @@
     "attributes": {
       "mode": "preview",
       "data": {
-        "acf_testimonial_quote": "This plugin has transformed how we build our WordPress sites. The blocks are beautifully designed and incredibly easy to use.",
         "acf_testimonial_author_name": "Jane Smith",
         "acf_testimonial_author_title": "Product Manager at TechCorp",
         "acf_testimonial_rating": 5
       }
-    }
+    },
+    "innerBlocks": [
+      {
+        "name": "core/paragraph",
+        "attributes": {
+          "content": "This plugin has transformed how we build our WordPress sites. The blocks are beautifully designed and incredibly easy to use."
+        }
+      }
+    ]
   },
   "style": "file:./testimonial.css",
   "editorStyle": "file:./testimonial.css"

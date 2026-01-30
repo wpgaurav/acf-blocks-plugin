@@ -2,7 +2,7 @@
   "apiVersion": 3,
   "name": "acf/product-box",
   "title": "Product Box",
-  "description": "A product box with image, title, rating, and description.",
+  "description": "A product box with image, rating, and core blocks for title and description.",
   "category": "acf-blocks",
   "icon": "cart",
   "keywords": ["product", "box", "rating"],
@@ -13,8 +13,34 @@
   "supports": {
     "align": true,
     "mode": true,
-    "anchor": true
+    "anchor": true,
+    "jsx": true
   },
   "style": "file:./product-box.css",
-  "editorStyle": "file:./product-box.css"
+  "editorStyle": "file:./product-box.css",
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "pb_rating": 4,
+        "is_preview": true
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "core/heading",
+        "attributes": {
+          "level": 3,
+          "content": "Product Name",
+          "className": "acf-product-box__title fw-900 med-title"
+        }
+      },
+      {
+        "name": "core/paragraph",
+        "attributes": {
+          "content": "A great product with excellent features and performance."
+        }
+      }
+    ]
+  }
 }

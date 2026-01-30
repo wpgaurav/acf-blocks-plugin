@@ -2,7 +2,7 @@
   "apiVersion": 3,
   "name": "acf/cta",
   "title": "Call to Action",
-  "description": "A customizable call-to-action block with heading, description, and button.",
+  "description": "A customizable call-to-action block with heading, description, and button using core blocks.",
   "category": "acf-blocks",
   "icon": "megaphone",
   "keywords": ["cta", "call to action", "button", "conversion"],
@@ -16,5 +16,39 @@
     "jsx": true
   },
   "style": "file:./cta.css",
-  "editorStyle": "file:./cta.css"
+  "editorStyle": "file:./cta.css",
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "is_preview": true
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "core/heading",
+        "attributes": {
+          "level": 2,
+          "content": "Ready to Get Started?"
+        }
+      },
+      {
+        "name": "core/paragraph",
+        "attributes": {
+          "content": "Join thousands of satisfied customers and take your business to the next level."
+        }
+      },
+      {
+        "name": "core/buttons",
+        "innerBlocks": [
+          {
+            "name": "core/button",
+            "attributes": {
+              "text": "Get Started Now"
+            }
+          }
+        ]
+      }
+    ]
+  }
 }

@@ -2,7 +2,7 @@
   "apiVersion": 3,
   "name": "acf/hero",
   "title": "Hero",
-  "description": "A customizable hero block with headline, subheadline, image, and CTA.",
+  "description": "A customizable hero block with image and core blocks for headline, subheadline, and CTA.",
   "category": "acf-blocks",
   "icon": "cover-image",
   "keywords": ["hero", "banner", "header", "featured"],
@@ -16,5 +16,39 @@
     "jsx": true
   },
   "style": "file:./hero.css",
-  "editorStyle": "file:./hero.css"
+  "editorStyle": "file:./hero.css",
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "is_preview": true
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "core/heading",
+        "attributes": {
+          "level": 1,
+          "content": "Welcome to Our Platform"
+        }
+      },
+      {
+        "name": "core/paragraph",
+        "attributes": {
+          "content": "Build something amazing with our powerful tools and resources."
+        }
+      },
+      {
+        "name": "core/buttons",
+        "innerBlocks": [
+          {
+            "name": "core/button",
+            "attributes": {
+              "text": "Get Started"
+            }
+          }
+        ]
+      }
+    ]
+  }
 }
