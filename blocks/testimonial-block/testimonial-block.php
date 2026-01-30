@@ -2,13 +2,16 @@
 /**
  * Testimonial Block Template.
  *
+ * Uses core blocks via InnerBlocks for the quote content.
+ * Falls back to legacy ACF fields for backward compatibility.
+ * ACF fields are retained for author info, image, rating, and styling.
+ *
  * @param array       $block      Block settings and attributes.
  * @param string      $content    The block inner HTML (empty).
  * @param bool        $is_preview True during AJAX preview.
  * @param int|string  $post_id    The post ID.
  */
 
-$quote       = get_field( 'acf_testimonial_quote' );
 $author_name = get_field( 'acf_testimonial_author_name' );
 $author_title = get_field( 'acf_testimonial_author_title' );
 $author_image = get_field( 'acf_testimonial_author_image' );
@@ -45,6 +48,14 @@ if ( strpos( $className, 'is-style-dark' ) !== false ) {
 } elseif ( strpos( $className, 'is-style-bubble' ) !== false ) {
 	$style_variation = 'bubble';
 }
+
+// Check for legacy ACF field content (backward compatibility)
+$legacy_quote = get_field( 'acf_testimonial_quote' );
+$has_legacy_content = ! empty( $legacy_quote );
+
+$inner_blocks_template = [
+    [ 'core/paragraph', [ 'placeholder' => 'Write testimonial quote here...' ] ]
+];
 ?>
 
 <div id="<?php echo esc_attr( $unique_id ); ?>" class="acf-testimonial-block<?php echo $custom_class; ?>"<?php echo $inline_style_attr; ?>>
@@ -173,12 +184,14 @@ if ( strpos( $className, 'is-style-dark' ) !== false ) {
         echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
     endif;
     ?>
-    <?php if ( $quote ) : ?>
-        <blockquote class="acf-testimonial-quote">
-            <span class="acf-testimonial-quote-icon">&ldquo;</span>
-            <?php echo wp_kses_post( $quote ); ?>
-        </blockquote>
-    <?php endif; ?>
+    <blockquote class="acf-testimonial-quote">
+        <span class="acf-testimonial-quote-icon">&ldquo;</span>
+        <?php if ( $has_legacy_content && empty( trim( $content ) ) ) : ?>
+            <?php echo wp_kses_post( $legacy_quote ); ?>
+        <?php else : ?>
+            <InnerBlocks template="<?php echo esc_attr( wp_json_encode( $inner_blocks_template ) ); ?>" templateLock="false" />
+        <?php endif; ?>
+    </blockquote>
 
     <div class="acf-testimonial-author">
         <?php if ( $img_src ) : ?>
