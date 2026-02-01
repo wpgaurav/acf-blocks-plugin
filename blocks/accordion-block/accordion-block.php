@@ -140,7 +140,6 @@ if ( strpos( $className, 'is-style-card' ) !== false ) {
             <details class="acf-accordion-item"<?php echo $is_first ? ' open' : ''; ?>>
                 <summary class="acf-accordion-title">
                     <?php echo do_shortcode( wp_kses_post( $group['acf_accord_group_title'] ) ); ?>
-                    <span class="acf-accordion-icon" aria-hidden="true"></span>
                 </summary>
                 <div class="acf-accordion-content">
                     <?php echo wpautop( do_shortcode( wp_kses_post( $group['acf_accord_group_content'] ) ) ); ?>
