@@ -66,30 +66,30 @@ if (!function_exists('acf_render_star_svg')) {
 }
 
 // Get ACF fields
-$product_name = acf_blocks_acf_blocks_get_field('product_name', $block);
-$show_title = acf_blocks_acf_blocks_get_field('show_title', $block);
-$image_id = acf_blocks_acf_blocks_get_field('product_image', $block);
-$image_direct_url = acf_blocks_acf_blocks_get_field('product_image_url', $block);
-$overall_rating = acf_blocks_acf_blocks_get_field('overall_rating', $block);
+$product_name = acf_blocks_get_field('product_name', $block);
+$show_title = acf_blocks_get_field('show_title', $block);
+$image_id = acf_blocks_get_field('product_image', $block);
+$image_direct_url = acf_blocks_get_field('product_image_url', $block);
+$overall_rating = acf_blocks_get_field('overall_rating', $block);
 $features = acf_blocks_get_repeater('features', [ 'feature_name', 'feature_rating' => 'number' ], $block);
 $pros = acf_blocks_get_repeater('pros', [ 'pro_text' ], $block);
 $cons = acf_blocks_get_repeater('cons', [ 'con_text' ], $block);
-$summary = acf_blocks_acf_blocks_get_field('summary', $block);
-$author_name = acf_blocks_acf_blocks_get_field('author_name', $block);
-$enable_json = acf_blocks_acf_blocks_get_field('enable_json_ld', $block);
+$summary = acf_blocks_get_field('summary', $block);
+$author_name = acf_blocks_get_field('author_name', $block);
+$enable_json = acf_blocks_get_field('enable_json_ld', $block);
 
 // Offer fields
-$offer_url = acf_blocks_acf_blocks_get_field('offer_url', $block) ?: '';
-$offer_currency = acf_blocks_acf_blocks_get_field('offer_price_currency', $block) ?: 'USD';
-$offer_price = acf_blocks_acf_blocks_get_field('offer_price', $block) ?: '';
-$offer_cta_text = acf_blocks_acf_blocks_get_field('offer_cta_text', $block) ?: 'Get Offer';
-$payment_term = acf_blocks_acf_blocks_get_field('payment_term', $block) ?: '';
-$link_rel = acf_blocks_acf_blocks_get_field('link_rel', $block) ?: 'nofollow sponsored';
-$link_target = acf_blocks_acf_blocks_get_field('link_target', $block) ?: '_blank';
+$offer_url = acf_blocks_get_field('offer_url', $block) ?: '';
+$offer_currency = acf_blocks_get_field('offer_price_currency', $block) ?: 'USD';
+$offer_price = acf_blocks_get_field('offer_price', $block) ?: '';
+$offer_cta_text = acf_blocks_get_field('offer_cta_text', $block) ?: 'Get Offer';
+$payment_term = acf_blocks_get_field('payment_term', $block) ?: '';
+$link_rel = acf_blocks_get_field('link_rel', $block) ?: 'nofollow sponsored';
+$link_target = acf_blocks_get_field('link_target', $block) ?: '_blank';
 
 // Schema fields
-$product_brand = acf_blocks_acf_blocks_get_field('product_brand', $block) ?: '';
-$product_sku = acf_blocks_acf_blocks_get_field('product_sku', $block) ?: '';
+$product_brand = acf_blocks_get_field('product_brand', $block) ?: '';
+$product_sku = acf_blocks_get_field('product_sku', $block) ?: '';
 $product_availability = acf_blocks_get_field('product_availability', $block) ?: 'InStock';
 $price_valid_until = acf_blocks_get_field('price_valid_until', $block) ?: '';
 $review_date_modified = acf_blocks_get_field('review_date_modified', $block) ?: '';
