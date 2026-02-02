@@ -17,13 +17,13 @@ $anchor    = $block['anchor'] ?? '';
 $className = $block['className'] ?? '';
 
 // Get block values
-$title         = get_field( 'checklist_title' ) ?: '';
-$items         = get_field( 'checklist_items' ) ?: array();
-$interactive   = get_field( 'checklist_interactive' );
-$show_progress = get_field( 'checklist_show_progress' );
-$strikethrough = get_field( 'checklist_strikethrough' );
-$accent_color  = get_field( 'checklist_accent_color' ) ?: '#16a34a';
-$bg_color      = get_field( 'checklist_bg_color' ) ?: '#f9fafb';
+$title         = acf_blocks_get_field( 'checklist_title', $block ) ?: '';
+$items         = acf_blocks_get_repeater( 'checklist_items', [ 'checklist_item_text', 'checklist_item_checked' => 'bool' ], $block );
+$interactive   = acf_blocks_get_field( 'checklist_interactive', $block );
+$show_progress = acf_blocks_get_field( 'checklist_show_progress', $block );
+$strikethrough = acf_blocks_get_field( 'checklist_strikethrough', $block );
+$accent_color  = acf_blocks_get_field( 'checklist_accent_color', $block ) ?: '#16a34a';
+$bg_color      = acf_blocks_get_field( 'checklist_bg_color', $block ) ?: '#f9fafb';
 
 // Build wrapper classes
 $wrapper_classes = array( 'acf-checklist' );

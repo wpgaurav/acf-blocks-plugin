@@ -14,23 +14,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Retrieve ACF field values.
-$form_type            = get_field( 'form_type' );
-$form_action_url      = get_field( 'form_action_url' );
-$webhook_url          = get_field( 'webhook_url' );
-$webhook_auth_headers = get_field( 'webhook_auth_headers' );
+$form_type            = acf_blocks_get_field( 'form_type', $block );
+$form_action_url      = acf_blocks_get_field( 'form_action_url', $block );
+$webhook_url          = acf_blocks_get_field( 'webhook_url', $block );
+$webhook_auth_headers = acf_blocks_get_field( 'webhook_auth_headers', $block );
 
-$display_name         = get_field( 'display_name_field' );
-$name_required        = get_field( 'name_field_required' );
-$name_field_attrs     = get_field( 'name_field_attributes' );
-$email_field_attrs    = get_field( 'email_field_attributes' );
+$display_name         = acf_blocks_get_field( 'display_name_field', $block );
+$name_required        = acf_blocks_get_field( 'name_field_required', $block );
+$name_field_attrs     = acf_blocks_get_field( 'name_field_attributes', $block );
+$email_field_attrs    = acf_blocks_get_field( 'email_field_attributes', $block );
 
-$hidden_fields        = get_field( 'hidden_fields' );
+$hidden_fields        = acf_blocks_get_field( 'hidden_fields', $block );
 
-$button_text          = get_field( 'button_text' );
-$button_attrs         = get_field( 'button_attributes' );
+$button_text          = acf_blocks_get_field( 'button_text', $block );
+$button_attrs         = acf_blocks_get_field( 'button_attributes', $block );
 
-$success_message      = get_field( 'success_message' );
-$form_attrs           = get_field( 'form_attributes' );
+$success_message      = acf_blocks_get_field( 'success_message', $block );
+$form_attrs           = acf_blocks_get_field( 'form_attributes', $block );
 
 // Set default classes.
 $default_form_class   = 'acf-email-form acf-email-form-full';

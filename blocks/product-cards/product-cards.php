@@ -1,16 +1,16 @@
 <?php
-$title = get_field('pc_block_title');
-$title_color = get_field('pc_block_title_color');
-$title_bg_color = get_field('pc_block_title_bg_color');
-$image = get_field('pc_block_product_image');
-$description = get_field('pc_block_description');
-$root_class = get_field('pc_block_root_class');
-$button_text = get_field('pc_block_button_text');
-$button_url = get_field('pc_block_button_url');
-$button_rel = get_field('pc_block_button_rel');
-$text_link = get_field('pc_block_text_link');
-$text_link_url = get_field('pc_block_text_link_url');
-$text_link_rel = get_field('pc_block_text_link_rel');
+$title = acf_blocks_get_field('pc_block_title', $block);
+$title_color = acf_blocks_get_field('pc_block_title_color', $block);
+$title_bg_color = acf_blocks_get_field('pc_block_title_bg_color', $block);
+$image = acf_blocks_get_field('pc_block_product_image', $block);
+$description = acf_blocks_get_field('pc_block_description', $block);
+$root_class = acf_blocks_get_field('pc_block_root_class', $block);
+$button_text = acf_blocks_get_field('pc_block_button_text', $block);
+$button_url = acf_blocks_get_field('pc_block_button_url', $block);
+$button_rel = acf_blocks_get_field('pc_block_button_rel', $block);
+$text_link = acf_blocks_get_field('pc_block_text_link', $block);
+$text_link_url = acf_blocks_get_field('pc_block_text_link_url', $block);
+$text_link_rel = acf_blocks_get_field('pc_block_text_link_rel', $block);
 ?>
 
 <div class="acf-product-cards <?php echo esc_attr($root_class); ?>">

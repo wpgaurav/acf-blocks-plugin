@@ -20,14 +20,14 @@
  *       • pl_block_button_class (text)
  */
 
-$rank         = get_field('pl_block_rank');
-$icon         = get_field('pl_block_icon');
-$product_name = get_field('pl_block_product_name');
-$description  = get_field('pl_block_description');
-$pricing      = get_field('pl_block_pricing');
-$coupons      = get_field('pl_block_coupons');
-$buttons      = get_field('pl_block_buttons');
-$image_width =  get_field('pl_block_image_width');
+$rank         = acf_blocks_get_field('pl_block_rank', $block);
+$icon         = acf_blocks_get_field('pl_block_icon', $block);
+$product_name = acf_blocks_get_field('pl_block_product_name', $block);
+$description  = acf_blocks_get_field('pl_block_description', $block);
+$pricing      = acf_blocks_get_repeater('pl_block_pricing', [ 'pl_price_label', 'pl_price_value' ], $block);
+$coupons      = acf_blocks_get_repeater('pl_block_coupons', [ 'pl_coupon_text', 'pl_coupon_code' ], $block);
+$buttons      = acf_blocks_get_repeater('pl_block_buttons', [ 'pl_btn_text', 'pl_btn_url', 'pl_btn_class', 'pl_btn_rel' ], $block);
+$image_width =  acf_blocks_get_field('pl_block_image_width', $block);
 $width_style = $image_width ? $image_width : '64px';
 ?>
 

@@ -1,17 +1,11 @@
 <?php
 /**
- * ACF Blocks Compatibility Layer
+ * ACF Blocks Compatibility Layer for ACF 6.7+
  *
- * Fixes repeater field data resolution in ACF 6.7+ block rendering.
- *
- * Problem: ACF stores block data in a flat format (repeater_0_subfield => value)
- * but acf_setup_meta() in ACF 6.7+ doesn't reconstruct repeater arrays from
- * this flat format when field keys don't use the standard "field_" prefix.
- * This causes get_field() to return false for all repeater fields in blocks.
- *
- * Solution: Hook into acf/pre_load_value to intercept repeater field loading
- * during block rendering, and parse the structured data directly from the
- * raw block attributes stored in $block['data'].
+ * ACF 6.7+ changed how acf_setup_meta() processes flat block data,
+ * causing get_field() to return false/empty for fields in block render
+ * templates. This provides drop-in helper functions that read directly
+ * from $block['data'] when get_field() fails.
  *
  * @package ACF_Blocks
  * @since 1.6.0
@@ -22,118 +16,132 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Global store for raw block data before ACF processes it.
+ * Get a field value from an ACF block, with $block['data'] fallback.
  *
- * @var array<string, array>
+ * @param string $name  The field name.
+ * @param array  $block The block array passed to render templates.
+ * @return mixed The field value or null.
  */
-global $acf_blocks_raw_data;
-$acf_blocks_raw_data = array();
-
-/**
- * Capture raw block data before ACF's acf_setup_meta() processes it.
- *
- * @param array $block The block settings and attributes.
- * @return array Unmodified block array.
- */
-function acf_blocks_capture_block_data( $block ) {
-    global $acf_blocks_raw_data;
-
-    $id = $block['id'] ?? '';
-    if ( $id && ! empty( $block['data'] ) ) {
-        $acf_blocks_raw_data[ $id ] = $block['data'];
+function acf_blocks_get_field( $name, $block = array() ) {
+    // Try native get_field first (works in older ACF versions).
+    $value = get_field( $name );
+    if ( $value !== false && $value !== null && $value !== '' ) {
+        return $value;
     }
 
-    return $block;
+    // Fallback: read directly from block data.
+    $data = $block['data'] ?? array();
+    return $data[ $name ] ?? null;
 }
-add_filter( 'acf/pre_render_block', 'acf_blocks_capture_block_data', 5 );
 
 /**
- * Fix get_field() for repeater fields in ACF block context.
+ * Get a repeater field as a structured array from an ACF block.
  *
- * Intercepts value loading for repeater fields when rendering blocks
- * and reconstructs the structured array from flat block data.
- *
- * @param mixed      $value   The pre-loaded value (null by default).
- * @param int|string $post_id The post ID or block ID string.
- * @param array      $field   The ACF field array.
- * @return mixed Reconstructed repeater array or original value.
+ * @param string $name       The repeater field name.
+ * @param array  $sub_names  Array of sub-field names (strings) or associative
+ *                           array of name => type for special handling.
+ *                           Supported types: 'text' (default), 'image', 'link',
+ *                           'bool', 'repeater' (with nested sub-field names).
+ * @param array  $block      The block array passed to render templates.
+ * @return array Array of rows, each row is an associative array.
  */
-function acf_blocks_fix_repeater_loading( $value, $post_id, $field ) {
-    // Only fix repeater fields in block context.
-    if ( $field['type'] !== 'repeater' ) {
+function acf_blocks_get_repeater( $name, $sub_names, $block = array() ) {
+    // Try native get_field first.
+    $value = get_field( $name );
+    if ( ! empty( $value ) && is_array( $value ) ) {
         return $value;
     }
 
-    if ( ! is_string( $post_id ) || strpos( $post_id, 'block_' ) !== 0 ) {
-        return $value;
-    }
-
-    global $acf_blocks_raw_data;
-    $data = isset( $acf_blocks_raw_data[ $post_id ] ) ? $acf_blocks_raw_data[ $post_id ] : null;
-
-    // Fall back to acf_get_meta if raw data wasn't captured.
+    // Fallback: parse from flat block data.
+    $data = $block['data'] ?? array();
     if ( empty( $data ) ) {
-        $data = acf_get_meta( $post_id );
+        return array();
     }
 
-    if ( empty( $data ) || ! is_array( $data ) ) {
-        return $value;
+    // Normalize sub_names to associative array with types.
+    $fields = array();
+    foreach ( $sub_names as $key => $val ) {
+        if ( is_int( $key ) ) {
+            // Simple string: field name with default 'text' type.
+            $fields[ $val ] = 'text';
+        } else {
+            // Associative: name => type.
+            $fields[ $key ] = $val;
+        }
     }
 
-    $sub_fields = $field['sub_fields'] ?? array();
-    if ( empty( $sub_fields ) ) {
-        return $value;
-    }
-
-    $result = acf_blocks_parse_repeater_from_flat( $data, $field['name'], $sub_fields );
-
-    return ( $result !== false ) ? $result : $value;
-}
-add_filter( 'acf/pre_load_value', 'acf_blocks_fix_repeater_loading', 10, 3 );
-
-/**
- * Parse flat ACF block data into a structured repeater array.
- *
- * Converts flat format:
- *   repeater_0_subfield => "value"
- *   repeater_1_subfield => "value"
- *   repeater            => 2
- *
- * Into structured array:
- *   [ ['subfield' => 'value'], ['subfield' => 'value'] ]
- *
- * Handles nested repeaters, image fields, link fields, and true/false fields.
- *
- * @param array  $data       The flat block data array.
- * @param string $field_name The repeater field name.
- * @param array  $sub_fields Array of ACF sub-field definitions.
- * @return array|false Structured repeater data or false if no rows found.
- */
-function acf_blocks_parse_repeater_from_flat( $data, $field_name, $sub_fields ) {
-    // Determine row count from the stored count value or by scanning keys.
-    $count = isset( $data[ $field_name ] ) ? intval( $data[ $field_name ] ) : 0;
-
+    // Determine row count.
+    $count = isset( $data[ $name ] ) ? intval( $data[ $name ] ) : 0;
     if ( $count < 1 ) {
-        $count = acf_blocks_count_repeater_rows( $data, $field_name, $sub_fields );
+        // Try counting by scanning keys.
+        $count = 0;
+        $field_names_list = array_keys( $fields );
+        while ( isset( $data[ $name . '_' . $count . '_' . $field_names_list[0] ] ) ) {
+            $count++;
+        }
     }
 
     if ( $count < 1 ) {
-        return false;
+        return array();
     }
 
     $rows = array();
-
     for ( $i = 0; $i < $count; $i++ ) {
         $row = array();
+        foreach ( $fields as $sub_name => $type ) {
+            $key   = $name . '_' . $i . '_' . $sub_name;
+            $value = $data[ $key ] ?? null;
 
-        foreach ( $sub_fields as $sf ) {
-            $key   = $field_name . '_' . $i . '_' . $sf['name'];
-            $value = isset( $data[ $key ] ) ? $data[ $key ] : null;
-            $value = acf_blocks_format_sub_field_value( $value, $sf, $data, $key );
+            switch ( $type ) {
+                case 'image':
+                    if ( $value && is_numeric( $value ) ) {
+                        $img = wp_get_attachment_image_src( intval( $value ), 'full' );
+                        if ( $img ) {
+                            $value = array(
+                                'ID'  => intval( $value ),
+                                'url' => $img[0],
+                                'alt' => get_post_meta( intval( $value ), '_wp_attachment_image_alt', true ),
+                            );
+                        }
+                    }
+                    break;
 
-            $row[ $sf['name'] ] = $value;
+                case 'image_url':
+                    // Image field with return_format = url.
+                    if ( $value && is_numeric( $value ) ) {
+                        $img = wp_get_attachment_image_src( intval( $value ), 'full' );
+                        $value = $img ? $img[0] : '';
+                    }
+                    break;
+
+                case 'link':
+                    if ( $value && is_string( $value ) ) {
+                        $unserialized = @unserialize( $value );
+                        if ( false !== $unserialized ) {
+                            $value = $unserialized;
+                        }
+                    }
+                    if ( is_array( $value ) ) {
+                        $value = wp_parse_args( $value, array(
+                            'title'  => '',
+                            'url'    => '',
+                            'target' => '',
+                        ) );
+                    }
+                    break;
+
+                case 'bool':
+                    $value = (bool) $value;
+                    break;
+
+                case 'int':
+                case 'number':
+                    $value = $value !== null ? intval( $value ) : 0;
+                    break;
+            }
+
+            $row[ $sub_name ] = $value;
         }
-
         $rows[] = $row;
     }
 
@@ -141,94 +149,43 @@ function acf_blocks_parse_repeater_from_flat( $data, $field_name, $sub_fields ) 
 }
 
 /**
- * Count repeater rows by scanning data keys for sub-field entries.
+ * Get a nested repeater from flat block data.
  *
- * @param array  $data       The flat block data.
- * @param string $field_name The repeater field name.
- * @param array  $sub_fields The sub-field definitions.
- * @return int Number of rows found.
+ * Used when a repeater contains another repeater as a sub-field.
+ *
+ * @param string $parent_key  Full parent key prefix (e.g., "repeater_0_nested").
+ * @param array  $sub_names   Sub-field names/types for the nested repeater.
+ * @param array  $data        The flat block data array.
+ * @return array Array of nested rows.
  */
-function acf_blocks_count_repeater_rows( $data, $field_name, $sub_fields ) {
-    $count = 0;
-
-    while ( true ) {
-        $found = false;
-
-        foreach ( $sub_fields as $sf ) {
-            if ( isset( $data[ $field_name . '_' . $count . '_' . $sf['name'] ] ) ) {
-                $found = true;
-                break;
-            }
+function acf_blocks_get_nested_repeater( $parent_key, $sub_names, $data ) {
+    // Normalize sub_names.
+    $fields = array();
+    foreach ( $sub_names as $key => $val ) {
+        if ( is_int( $key ) ) {
+            $fields[ $val ] = 'text';
+        } else {
+            $fields[ $key ] = $val;
         }
-
-        if ( ! $found ) {
-            break;
-        }
-
-        $count++;
     }
 
-    return $count;
-}
-
-/**
- * Format a sub-field value based on its ACF field type.
- *
- * @param mixed  $value      The raw value.
- * @param array  $sf         The sub-field definition.
- * @param array  $data       The full flat data array (for nested repeaters).
- * @param string $parent_key The parent key prefix (for nested repeaters).
- * @return mixed The formatted value.
- */
-function acf_blocks_format_sub_field_value( $value, $sf, $data, $parent_key ) {
-    switch ( $sf['type'] ) {
-        case 'image':
-            if ( $value && is_numeric( $value ) ) {
-                $image = wp_get_attachment_image_src( intval( $value ), 'full' );
-                if ( $image ) {
-                    $value = array(
-                        'ID'  => intval( $value ),
-                        'url' => $image[0],
-                        'alt' => get_post_meta( intval( $value ), '_wp_attachment_image_alt', true ),
-                    );
-                }
-            }
-            break;
-
-        case 'link':
-            if ( $value && is_string( $value ) ) {
-                $unserialized = @unserialize( $value );
-                if ( false !== $unserialized ) {
-                    $value = $unserialized;
-                }
-            }
-            // Ensure link arrays have required keys.
-            if ( is_array( $value ) ) {
-                $value = wp_parse_args( $value, array(
-                    'title'  => '',
-                    'url'    => '',
-                    'target' => '',
-                ) );
-            }
-            break;
-
-        case 'true_false':
-            $value = (bool) $value;
-            break;
-
-        case 'repeater':
-            // Handle nested repeaters.
-            $nested_subs = $sf['sub_fields'] ?? array();
-            if ( ! empty( $nested_subs ) ) {
-                $nested_field = $parent_key; // The full flat key prefix for this nested repeater.
-                // For nested repeaters, the parent key IS the prefix (e.g., repeater_0_nested).
-                $value = acf_blocks_parse_repeater_from_flat( $data, $parent_key, $nested_subs );
-                if ( false === $value ) {
-                    $value = array();
-                }
-            }
-            break;
+    $field_names_list = array_keys( $fields );
+    $count = isset( $data[ $parent_key ] ) ? intval( $data[ $parent_key ] ) : 0;
+    if ( $count < 1 ) {
+        $count = 0;
+        while ( isset( $data[ $parent_key . '_' . $count . '_' . $field_names_list[0] ] ) ) {
+            $count++;
+        }
     }
 
-    return $value;
+    $rows = array();
+    for ( $i = 0; $i < $count; $i++ ) {
+        $row = array();
+        foreach ( $fields as $sub_name => $type ) {
+            $row[ $sub_name ] = $data[ $parent_key . '_' . $i . '_' . $sub_name ] ?? null;
+        }
+        $rows[] = $row;
+    }
+
+    return $rows;
 }

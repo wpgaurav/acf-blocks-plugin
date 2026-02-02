@@ -28,12 +28,12 @@ if (strpos($className, 'is-style-dark') !== false) {
 }
 
 // Get ACF fields for styling
-$iconImage = get_field('callout_iconImage');
-$labelText = get_field('callout_label');
-$labelPosition = get_field('callout_label_position') ?: 'top';
-$bgColor = get_field('callout_bgColor');
-$textColor = get_field('callout_textColor');
-$borderColor = get_field('callout_borderColor');
+$iconImage = acf_blocks_get_field('callout_iconImage', $block);
+$labelText = acf_blocks_get_field('callout_label', $block);
+$labelPosition = acf_blocks_get_field('callout_label_position', $block) ?: 'top';
+$bgColor = acf_blocks_get_field('callout_bgColor', $block);
+$textColor = acf_blocks_get_field('callout_textColor', $block);
+$borderColor = acf_blocks_get_field('callout_borderColor', $block);
 
 // Build inline styles
 $styles = [];

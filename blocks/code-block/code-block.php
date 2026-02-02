@@ -12,13 +12,13 @@
 defined( 'ABSPATH' ) || exit;
 
 // Get block values
-$code_content    = get_field( 'code_content' ) ?: '';
-$code_language   = get_field( 'code_language' ) ?: 'plaintext';
-$code_filename   = get_field( 'code_filename' ) ?: '';
-$highlight_lines = get_field( 'highlight_lines' ) ?: '';
-$code_theme      = get_field( 'code_theme' ) ?: 'dark';
-$font_size       = get_field( 'font_size' ) ?: 'normal';
-$custom_class    = get_field( 'custom_class' ) ?: '';
+$code_content    = acf_blocks_get_field( 'code_content', $block ) ?: '';
+$code_language   = acf_blocks_get_field( 'code_language', $block ) ?: 'plaintext';
+$code_filename   = acf_blocks_get_field( 'code_filename', $block ) ?: '';
+$highlight_lines = acf_blocks_get_field( 'highlight_lines', $block ) ?: '';
+$code_theme      = acf_blocks_get_field( 'code_theme', $block ) ?: 'dark';
+$font_size       = acf_blocks_get_field( 'font_size', $block ) ?: 'normal';
+$custom_class    = acf_blocks_get_field( 'custom_class', $block ) ?: '';
 
 // Build classes
 $wrapper_classes = array( 'acf-code-block' );

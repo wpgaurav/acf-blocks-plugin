@@ -13,9 +13,9 @@
  */
 
 // Retrieve field values.
-$image       = get_field('pb_image');
-$image_url   = get_field('pb_image_url');
-$rating      = get_field('pb_rating');
+$image       = acf_blocks_get_field('pb_image', $block);
+$image_url   = acf_blocks_get_field('pb_image_url', $block);
+$rating      = acf_blocks_get_field('pb_rating', $block);
 
 // Determine image source - direct URL takes priority
 $img_src = '';
@@ -28,8 +28,8 @@ if ( $image_url ) {
 }
 
 // Check for legacy ACF field content (backward compatibility)
-$legacy_title       = get_field('pb_title');
-$legacy_description = get_field('pb_description');
+$legacy_title       = acf_blocks_get_field('pb_title', $block);
+$legacy_description = acf_blocks_get_field('pb_description', $block);
 $has_legacy_content = $legacy_title || $legacy_description;
 
 $inner_blocks_template = [

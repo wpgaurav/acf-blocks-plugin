@@ -10,13 +10,13 @@
  * @param int|string  $post_id    The post ID.
  */
 
-$tabs_items = get_field( 'acf_tabs_items' );
-$tab_style  = get_field( 'acf_tabs_style' );
+$tabs_items = acf_blocks_get_repeater( 'acf_tabs_items', [ 'acf_tab_title', 'acf_tab_icon', 'acf_tab_content' ], $block );
+$tab_style  = acf_blocks_get_field( 'acf_tabs_style', $block );
 
-$custom_class = get_field( 'acf_tabs_class' );
+$custom_class = acf_blocks_get_field( 'acf_tabs_class', $block );
 $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
 
-$inline_style      = get_field( 'acf_tabs_inline' );
+$inline_style      = acf_blocks_get_field( 'acf_tabs_inline', $block );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
 
 $style_class = $tab_style ? ' acf-tabs-' . esc_attr( $tab_style ) : ' acf-tabs-default';

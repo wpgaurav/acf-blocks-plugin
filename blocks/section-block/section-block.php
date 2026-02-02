@@ -9,26 +9,26 @@
  */
 
 // Get basic structure fields
-$html_tag     = get_field('acf_section_html_tag') ?: 'section';
-$custom_tag   = get_field('acf_section_custom_tag');
-$section_id   = get_field('acf_section_id');
-$custom_css   = get_field('acf_custom_css');
+$html_tag     = acf_blocks_get_field('acf_section_html_tag', $block) ?: 'section';
+$custom_tag   = acf_blocks_get_field('acf_section_custom_tag', $block);
+$section_id   = acf_blocks_get_field('acf_section_id', $block);
+$custom_css   = acf_blocks_get_field('acf_custom_css', $block);
 
 // Get utility classes instead of individual styling options
-$layout_class = get_field('acf_layout_class') ?: '';
-$spacing_class = get_field('acf_spacing_class') ?: '';
-$bg_class = get_field('acf_bg_class') ?: '';
-$text_class = get_field('acf_text_class') ?: '';
-$responsive_class = get_field('acf_responsive_class') ?: '';
+$layout_class = acf_blocks_get_field('acf_layout_class', $block) ?: '';
+$spacing_class = acf_blocks_get_field('acf_spacing_class', $block) ?: '';
+$bg_class = acf_blocks_get_field('acf_bg_class', $block) ?: '';
+$text_class = acf_blocks_get_field('acf_text_class', $block) ?: '';
+$responsive_class = acf_blocks_get_field('acf_responsive_class', $block) ?: '';
 
 // Get custom classes
-$custom_class = get_field('acf_section_custom_class');
+$custom_class = acf_blocks_get_field('acf_section_custom_class', $block);
 
 // Get background fields (keeping these as they're important for visual design)
-$bg_color  = get_field('acf_bg_color');
-$bg_image  = get_field('acf_bg_image');
-$bg_overlay = get_field('acf_bg_overlay');
-$bg_video  = get_field('acf_bg_video');
+$bg_color  = acf_blocks_get_field('acf_bg_color', $block);
+$bg_image  = acf_blocks_get_field('acf_bg_image', $block);
+$bg_overlay = acf_blocks_get_field('acf_bg_overlay', $block);
+$bg_video  = acf_blocks_get_field('acf_bg_video', $block);
 
 // Determine the final HTML tag
 $tag = ($html_tag === 'custom' && !empty($custom_tag)) ? $custom_tag : $html_tag;

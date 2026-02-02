@@ -8,22 +8,22 @@
  * @param int|string  $post_id    The post ID.
  */
 
-$video_type      = get_field( 'acf_video_type' );
-$video_url       = get_field( 'acf_video_url' );
-$video_file      = get_field( 'acf_video_file' );
-$video_poster    = get_field( 'acf_video_poster' );
-$video_title     = get_field( 'acf_video_title' );
-$video_caption   = get_field( 'acf_video_caption' );
-$aspect_ratio    = get_field( 'acf_video_aspect_ratio' );
-$autoplay        = get_field( 'acf_video_autoplay' );
-$loop            = get_field( 'acf_video_loop' );
-$muted           = get_field( 'acf_video_muted' );
-$controls        = get_field( 'acf_video_controls' );
+$video_type      = acf_blocks_get_field( 'acf_video_type', $block );
+$video_url       = acf_blocks_get_field( 'acf_video_url', $block );
+$video_file      = acf_blocks_get_field( 'acf_video_file', $block );
+$video_poster    = acf_blocks_get_field( 'acf_video_poster', $block );
+$video_title     = acf_blocks_get_field( 'acf_video_title', $block );
+$video_caption   = acf_blocks_get_field( 'acf_video_caption', $block );
+$aspect_ratio    = acf_blocks_get_field( 'acf_video_aspect_ratio', $block );
+$autoplay        = acf_blocks_get_field( 'acf_video_autoplay', $block );
+$loop            = acf_blocks_get_field( 'acf_video_loop', $block );
+$muted           = acf_blocks_get_field( 'acf_video_muted', $block );
+$controls        = acf_blocks_get_field( 'acf_video_controls', $block );
 
-$custom_class = get_field( 'acf_video_class' );
+$custom_class = acf_blocks_get_field( 'acf_video_class', $block );
 $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
 
-$inline_style = get_field( 'acf_video_inline' );
+$inline_style = acf_blocks_get_field( 'acf_video_inline', $block );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
 
 $aspect_ratio_class = $aspect_ratio ? ' acf-aspect-' . esc_attr( $aspect_ratio ) : ' acf-aspect-16-9';

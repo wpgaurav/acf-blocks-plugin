@@ -8,16 +8,16 @@
  * @param int|string  $post_id    The post ID.
  */
 
-$images      = get_field( 'acf_gallery_images' );
-$layout      = get_field( 'acf_gallery_layout' );
-$columns     = get_field( 'acf_gallery_columns' );
-$gap         = get_field( 'acf_gallery_gap' );
-$lightbox    = get_field( 'acf_gallery_enable_lightbox' );
+$images      = acf_blocks_get_field( 'acf_gallery_images', $block );
+$layout      = acf_blocks_get_field( 'acf_gallery_layout', $block );
+$columns     = acf_blocks_get_field( 'acf_gallery_columns', $block );
+$gap         = acf_blocks_get_field( 'acf_gallery_gap', $block );
+$lightbox    = acf_blocks_get_field( 'acf_gallery_enable_lightbox', $block );
 
-$custom_class = get_field( 'acf_gallery_class' );
+$custom_class = acf_blocks_get_field( 'acf_gallery_class', $block );
 $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
 
-$inline_style = get_field( 'acf_gallery_inline' );
+$inline_style = acf_blocks_get_field( 'acf_gallery_inline', $block );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
 
 $layout_class = $layout ? ' acf-gallery-' . esc_attr( $layout ) : ' acf-gallery-grid';

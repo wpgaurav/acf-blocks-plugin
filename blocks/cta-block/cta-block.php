@@ -12,13 +12,13 @@
  * @param int|string  $post_id    The post ID.
  */
 
-$background_color = get_field( 'acf_cta_background_color' );
-$text_color  = get_field( 'acf_cta_text_color' );
+$background_color = acf_blocks_get_field( 'acf_cta_background_color', $block );
+$text_color  = acf_blocks_get_field( 'acf_cta_text_color', $block );
 
-$custom_class = get_field( 'acf_cta_class' );
+$custom_class = acf_blocks_get_field( 'acf_cta_class', $block );
 $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
 
-$inline_style = get_field( 'acf_cta_inline' );
+$inline_style = acf_blocks_get_field( 'acf_cta_inline', $block );
 $style_parts = [];
 
 if ( $background_color ) {
@@ -36,11 +36,11 @@ if ( $inline_style ) {
 $inline_style_attr = ! empty( $style_parts ) ? ' style="' . implode( '; ', $style_parts ) . '"' : '';
 
 // Check for legacy ACF field content (backward compatibility)
-$legacy_heading     = get_field( 'acf_cta_heading' );
-$legacy_description = get_field( 'acf_cta_description' );
-$legacy_button_text = get_field( 'acf_cta_button_text' );
-$legacy_button_url  = get_field( 'acf_cta_button_url' );
-$legacy_button_style = get_field( 'acf_cta_button_style' );
+$legacy_heading     = acf_blocks_get_field( 'acf_cta_heading', $block );
+$legacy_description = acf_blocks_get_field( 'acf_cta_description', $block );
+$legacy_button_text = acf_blocks_get_field( 'acf_cta_button_text', $block );
+$legacy_button_url  = acf_blocks_get_field( 'acf_cta_button_url', $block );
+$legacy_button_style = acf_blocks_get_field( 'acf_cta_button_style', $block );
 $has_legacy_content = $legacy_heading || $legacy_description || $legacy_button_text;
 
 $inner_blocks_template = [

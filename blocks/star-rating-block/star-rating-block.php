@@ -23,17 +23,17 @@ if ( ! function_exists( 'acf_star_rating_render_stars' ) ) {
 $align = $block['align'] ?? '';
 $className = $block['className'] ?? '';
 
-$heading      = get_field( 'md_sr_heading' );
-$description  = get_field( 'md_sr_description' );
-$button_label = get_field( 'md_sr_button_label' ) ?: __( 'Submit Rating', 'acf-blocks' );
-$thank_you    = get_field( 'md_sr_thank_you' ) ?: __( 'Thanks for rating!', 'acf-blocks' );
+$heading      = acf_blocks_get_field( 'md_sr_heading', $block );
+$description  = acf_blocks_get_field( 'md_sr_description', $block );
+$button_label = acf_blocks_get_field( 'md_sr_button_label', $block ) ?: __( 'Submit Rating', 'acf-blocks' );
+$thank_you    = acf_blocks_get_field( 'md_sr_thank_you', $block ) ?: __( 'Thanks for rating!', 'acf-blocks' );
 
-$initial_count  = (int) get_field( 'md_sr_initial_count' ) ?: 0;
-$initial_rating = (float) get_field( 'md_sr_initial_rating' ) ?: 0;
+$initial_count  = (int) acf_blocks_get_field( 'md_sr_initial_count', $block ) ?: 0;
+$initial_rating = (float) acf_blocks_get_field( 'md_sr_initial_rating', $block ) ?: 0;
 
-$enable_schema = get_field( 'md_sr_enable_schema' );
-$schema_type   = get_field( 'md_sr_schema_type' ) ?: 'CreativeWork';
-$schema_name   = get_field( 'md_sr_schema_name' );
+$enable_schema = acf_blocks_get_field( 'md_sr_enable_schema', $block );
+$schema_type   = acf_blocks_get_field( 'md_sr_schema_type', $block ) ?: 'CreativeWork';
+$schema_name   = acf_blocks_get_field( 'md_sr_schema_name', $block );
 
 $anchor = ! empty( $block['anchor'] ) ? $block['anchor'] : 'star-rating-' . str_replace( 'block_', '', $block['id'] );
 

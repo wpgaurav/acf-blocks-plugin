@@ -190,22 +190,22 @@ if ( ! function_exists( 'acf_toc_generate_schema' ) ) {
 }
 
 // Retrieve field values
-$title             = get_field( 'toc_title' ) ?: 'Table of Contents';
-$title_tag         = get_field( 'toc_title_tag' ) ?: 'p';
-$heading_levels    = get_field( 'toc_heading_levels' ) ?: array( 'h2' );
-$list_type         = get_field( 'toc_list_type' ) ?: 'ul';
-$collapsible       = get_field( 'toc_collapsible' );
-$collapsed_default = get_field( 'toc_collapsed_default' );
-$sticky            = get_field( 'toc_sticky' );
-$sticky_offset     = get_field( 'toc_sticky_offset' ) ?: 20;
-$smooth_scroll     = get_field( 'toc_smooth_scroll' );
-$highlight_active  = get_field( 'toc_highlight_active' );
-$custom_class      = get_field( 'toc_custom_class' );
-$title_class       = get_field( 'toc_title_class' );
-$list_class        = get_field( 'toc_list_class' );
-$link_class        = get_field( 'toc_link_class' );
-$include_schema    = get_field( 'toc_schema' );
-$aria_label        = get_field( 'toc_aria_label' ) ?: 'Table of Contents';
+$title             = acf_blocks_get_field( 'toc_title', $block ) ?: 'Table of Contents';
+$title_tag         = acf_blocks_get_field( 'toc_title_tag', $block ) ?: 'p';
+$heading_levels    = acf_blocks_get_field( 'toc_heading_levels', $block ) ?: array( 'h2' );
+$list_type         = acf_blocks_get_field( 'toc_list_type', $block ) ?: 'ul';
+$collapsible       = acf_blocks_get_field( 'toc_collapsible', $block );
+$collapsed_default = acf_blocks_get_field( 'toc_collapsed_default', $block );
+$sticky            = acf_blocks_get_field( 'toc_sticky', $block );
+$sticky_offset     = acf_blocks_get_field( 'toc_sticky_offset', $block ) ?: 20;
+$smooth_scroll     = acf_blocks_get_field( 'toc_smooth_scroll', $block );
+$highlight_active  = acf_blocks_get_field( 'toc_highlight_active', $block );
+$custom_class      = acf_blocks_get_field( 'toc_custom_class', $block );
+$title_class       = acf_blocks_get_field( 'toc_title_class', $block );
+$list_class        = acf_blocks_get_field( 'toc_list_class', $block );
+$link_class        = acf_blocks_get_field( 'toc_link_class', $block );
+$include_schema    = acf_blocks_get_field( 'toc_schema', $block );
+$aria_label        = acf_blocks_get_field( 'toc_aria_label', $block ) ?: 'Table of Contents';
 
 // Validate heading levels
 if ( ! is_array( $heading_levels ) || empty( $heading_levels ) ) {

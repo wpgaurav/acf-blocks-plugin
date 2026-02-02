@@ -2,7 +2,7 @@
 /**
  * Changelog Block Template.
  */
-$entries = get_field('changelog_entries');
+$entries = acf_blocks_get_repeater('changelog_entries', [ 'changelog_version', 'changelog_date', 'changelog_items' ], $block);
 if (empty($entries)) {
     if (!empty($is_preview)) {
         echo '<p><em>Add changelog entries to display version history.</em></p>';

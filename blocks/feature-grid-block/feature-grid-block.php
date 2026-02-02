@@ -31,19 +31,27 @@ if (strpos($className, 'is-style-card') !== false) {
 $block_id = $anchor ? $anchor : 'acf-feature-grid-' . uniqid();
 
 // ACF fields
-$use_innerblocks = get_field('acf_fg_use_innerblocks');
-$heading = get_field('acf_feature_grid_heading');
-$subheading = get_field('acf_feature_grid_subheading');
-$features = get_field('acf_feature_grid_items');
-$columns = get_field('acf_feature_grid_columns');
-$layout_style = get_field('acf_feature_grid_layout');
-$cta_button = get_field('acf_fg_cta_button');
-$cta_style = get_field('acf_fg_cta_style') ?: 'primary';
+$use_innerblocks = acf_blocks_get_field('acf_fg_use_innerblocks', $block);
+$heading = acf_blocks_get_field('acf_feature_grid_heading', $block);
+$subheading = acf_blocks_get_field('acf_feature_grid_subheading', $block);
+$features = acf_blocks_get_repeater('acf_feature_grid_items', [
+    'acf_feature_icon',
+    'acf_feature_image' => 'image',
+    'acf_feature_title',
+    'acf_feature_description',
+    'acf_feature_link' => 'link',
+    'acf_feature_button' => 'link',
+    'acf_feature_button_style',
+], $block);
+$columns = acf_blocks_get_field('acf_feature_grid_columns', $block);
+$layout_style = acf_blocks_get_field('acf_feature_grid_layout', $block);
+$cta_button = acf_blocks_get_field('acf_fg_cta_button', $block);
+$cta_style = acf_blocks_get_field('acf_fg_cta_style', $block) ?: 'primary';
 
-$custom_class = get_field('acf_feature_grid_class');
+$custom_class = acf_blocks_get_field('acf_feature_grid_class', $block);
 $custom_class = $custom_class ? ' ' . esc_attr($custom_class) : '';
 
-$inline_style = get_field('acf_feature_grid_inline');
+$inline_style = acf_blocks_get_field('acf_feature_grid_inline', $block);
 $inline_style_attr = $inline_style ? ' style="' . esc_attr($inline_style) . '"' : '';
 
 $columns_class = $columns ? ' columns-' . esc_attr($columns) : ' columns-3';

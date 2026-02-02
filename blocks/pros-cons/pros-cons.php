@@ -11,22 +11,22 @@ $anchor = $block['anchor'] ?? '';
 $className = $block['className'] ?? '';
 
 // Content fields
-$show_first = get_field('pc_show_first') ?: 'negative';
-$cons_title = get_field('pc_cons_title') ?: 'Cons';
-$cons_list = get_field('pc_cons_list');
-$pros_title = get_field('pc_pros_title') ?: 'Pros';
-$pros_list = get_field('pc_pros_list');
+$show_first = acf_blocks_get_field('pc_show_first', $block) ?: 'negative';
+$cons_title = acf_blocks_get_field('pc_cons_title', $block) ?: 'Cons';
+$cons_list = acf_blocks_get_field('pc_cons_list', $block);
+$pros_title = acf_blocks_get_field('pc_pros_title', $block) ?: 'Pros';
+$pros_list = acf_blocks_get_field('pc_pros_list', $block);
 
 // Color fields with defaults
-$neg_bg = get_field('pc_neg_bg_color') ?: '#fef2f2';
-$neg_border = get_field('pc_neg_border_color') ?: '#dc2626';
-$neg_title_color = get_field('pc_neg_title_color') ?: '#dc2626';
-$neg_icon_color = get_field('pc_neg_icon_color') ?: '#dc2626';
+$neg_bg = acf_blocks_get_field('pc_neg_bg_color', $block) ?: '#fef2f2';
+$neg_border = acf_blocks_get_field('pc_neg_border_color', $block) ?: '#dc2626';
+$neg_title_color = acf_blocks_get_field('pc_neg_title_color', $block) ?: '#dc2626';
+$neg_icon_color = acf_blocks_get_field('pc_neg_icon_color', $block) ?: '#dc2626';
 
-$pos_bg = get_field('pc_pos_bg_color') ?: '#f0fdf4';
-$pos_border = get_field('pc_pos_border_color') ?: '#16a34a';
-$pos_title_color = get_field('pc_pos_title_color') ?: '#16a34a';
-$pos_icon_color = get_field('pc_pos_icon_color') ?: '#16a34a';
+$pos_bg = acf_blocks_get_field('pc_pos_bg_color', $block) ?: '#f0fdf4';
+$pos_border = acf_blocks_get_field('pc_pos_border_color', $block) ?: '#16a34a';
+$pos_title_color = acf_blocks_get_field('pc_pos_title_color', $block) ?: '#16a34a';
+$pos_icon_color = acf_blocks_get_field('pc_pos_icon_color', $block) ?: '#16a34a';
 
 // Build wrapper classes
 $wrapper_classes = ['acf-pros-cons'];

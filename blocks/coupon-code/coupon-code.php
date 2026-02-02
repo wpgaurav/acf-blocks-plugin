@@ -8,11 +8,11 @@
  * @param int    $post_id    The post ID this block is saved to.
  */
 
-$offer_details          = get_field( 'cb_offer_details' );
-$coupon_code            = get_field( 'cb_code' );
-$copy_coupon_text       = get_field( 'cb_copy_text' ) ?: __( 'Copy Coupon', 'acf-blocks' );
-$activate_discount_text = get_field( 'cb_activate_text' ) ?: __( 'Activate Discount', 'acf-blocks' );
-$activate_discount_url  = get_field( 'cb_activate_url' );
+$offer_details          = acf_blocks_get_field( 'cb_offer_details', $block );
+$coupon_code            = acf_blocks_get_field( 'cb_code', $block );
+$copy_coupon_text       = acf_blocks_get_field( 'cb_copy_text', $block ) ?: __( 'Copy Coupon', 'acf-blocks' );
+$activate_discount_text = acf_blocks_get_field( 'cb_activate_text', $block ) ?: __( 'Activate Discount', 'acf-blocks' );
+$activate_discount_url  = acf_blocks_get_field( 'cb_activate_url', $block );
 
 $block_id = 'coupon-' . ( $block['id'] ?? uniqid() );
 ?>

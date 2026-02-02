@@ -12,11 +12,11 @@
  * @param int|string  $post_id    The post ID.
  */
 
-$author_name = get_field( 'acf_testimonial_author_name' );
-$author_title = get_field( 'acf_testimonial_author_title' );
-$author_image = get_field( 'acf_testimonial_author_image' );
-$author_image_url = get_field( 'acf_testimonial_author_image_url' );
-$rating      = get_field( 'acf_testimonial_rating' );
+$author_name = acf_blocks_get_field( 'acf_testimonial_author_name', $block );
+$author_title = acf_blocks_get_field( 'acf_testimonial_author_title', $block );
+$author_image = acf_blocks_get_field( 'acf_testimonial_author_image', $block );
+$author_image_url = acf_blocks_get_field( 'acf_testimonial_author_image_url', $block );
+$rating      = acf_blocks_get_field( 'acf_testimonial_rating', $block );
 
 // Determine image source - direct URL takes priority
 $img_src = '';
@@ -28,10 +28,10 @@ if ( $author_image_url ) {
     $img_alt = $author_image['alt'] ?: $img_alt;
 }
 
-$custom_class = get_field( 'acf_testimonial_class' );
+$custom_class = acf_blocks_get_field( 'acf_testimonial_class', $block );
 $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
 
-$inline_style = get_field( 'acf_testimonial_inline' );
+$inline_style = acf_blocks_get_field( 'acf_testimonial_inline', $block );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
 
 $unique_id = 'acf-testimonial-' . ( $block['id'] ?? uniqid() );
@@ -50,7 +50,7 @@ if ( strpos( $className, 'is-style-dark' ) !== false ) {
 }
 
 // Check for legacy ACF field content (backward compatibility)
-$legacy_quote = get_field( 'acf_testimonial_quote' );
+$legacy_quote = acf_blocks_get_field( 'acf_testimonial_quote', $block );
 $has_legacy_content = ! empty( $legacy_quote );
 
 $inner_blocks_template = [

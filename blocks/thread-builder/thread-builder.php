@@ -8,12 +8,23 @@
  */
 
 // Load block settings
-$theme = get_field('thread_theme') ?: 'light';
-$width = get_field('thread_width') ?: 'medium';
-$show_connector = get_field('thread_show_connector');
-$connector_color = get_field('thread_connector_color') ?: '#1DA1F2';
-$show_engagement = get_field('thread_show_engagement');
-$thread_posts = get_field('thread_posts');
+$theme = acf_blocks_get_field('thread_theme', $block) ?: 'light';
+$width = acf_blocks_get_field('thread_width', $block) ?: 'medium';
+$show_connector = acf_blocks_get_field('thread_show_connector', $block);
+$connector_color = acf_blocks_get_field('thread_connector_color', $block) ?: '#1DA1F2';
+$show_engagement = acf_blocks_get_field('thread_show_engagement', $block);
+$thread_posts = acf_blocks_get_repeater('thread_posts', [
+    'author_name',
+    'author_handle',
+    'author_avatar' => 'image_url',
+    'verified' => 'bool',
+    'content',
+    'media' => 'image_url',
+    'timestamp',
+    'replies' => 'number',
+    'reposts' => 'number',
+    'likes' => 'number',
+], $block);
 
 // Width class map
 $width_class_map = [

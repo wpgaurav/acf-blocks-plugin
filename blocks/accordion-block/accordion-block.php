@@ -10,13 +10,13 @@
  * @param int|string  $post_id    The post ID.
  */
 
-$groups            = get_field( 'acf_accord_groups' );
-$enable_faq_schema = get_field( 'acf_accord_enable_faq_schema' ) ? true : false;
+$groups            = acf_blocks_get_repeater( 'acf_accord_groups', [ 'acf_accord_group_title', 'acf_accord_group_content' ], $block );
+$enable_faq_schema = acf_blocks_get_field( 'acf_accord_enable_faq_schema', $block ) ? true : false;
 
-$custom_class = get_field( 'acf_accordion_class' );
+$custom_class = acf_blocks_get_field( 'acf_accordion_class', $block );
 $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
 
-$inline_style      = get_field( 'acf_accordion_inline' );
+$inline_style      = acf_blocks_get_field( 'acf_accordion_inline', $block );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
 
 $unique_id = 'acf-accordion-' . ( $block['id'] ?? uniqid() );

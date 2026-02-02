@@ -11,28 +11,28 @@
  */
 
 // Get field values
-$source_url = get_field( 'source_url' );
-$title = get_field( 'preview_title' );
-$description = get_field( 'preview_description' );
-$image_source = get_field( 'image_source' ) ?: 'external';
-$external_image = get_field( 'external_image_url' );
-$local_image = get_field( 'local_image' );
-$image_alt = get_field( 'image_alt' );
-$custom_fields = get_field( 'custom_fields' );
-$show_button = get_field( 'show_button' );
-$button_text = get_field( 'button_text' ) ?: __( 'View Details', 'acf-blocks' );
-$button_url = get_field( 'button_url' ) ?: $source_url;
-$button_new_tab = get_field( 'button_new_tab' );
-$button_nofollow = get_field( 'button_nofollow' );
-$show_secondary_button = get_field( 'show_secondary_button' );
-$secondary_button_text = get_field( 'secondary_button_text' );
-$secondary_button_url = get_field( 'secondary_button_url' );
-$card_layout = get_field( 'card_layout' ) ?: 'vertical';
-$card_style = get_field( 'card_style' ) ?: 'default';
-$image_position = get_field( 'image_position' ) ?: 'left';
-$local_image_size = get_field( 'local_image_size' ) ?: 'medium_large';
-$custom_class = get_field( 'custom_class' );
-$custom_inline = get_field( 'custom_inline' );
+$source_url = acf_blocks_get_field( 'source_url', $block );
+$title = acf_blocks_get_field( 'preview_title', $block );
+$description = acf_blocks_get_field( 'preview_description', $block );
+$image_source = acf_blocks_get_field( 'image_source', $block ) ?: 'external';
+$external_image = acf_blocks_get_field( 'external_image_url', $block );
+$local_image = acf_blocks_get_field( 'local_image', $block );
+$image_alt = acf_blocks_get_field( 'image_alt', $block );
+$custom_fields = acf_blocks_get_repeater( 'custom_fields', [ 'field_label', 'field_value', 'field_icon' ], $block );
+$show_button = acf_blocks_get_field( 'show_button', $block );
+$button_text = acf_blocks_get_field( 'button_text', $block ) ?: __( 'View Details', 'acf-blocks' );
+$button_url = acf_blocks_get_field( 'button_url', $block ) ?: $source_url;
+$button_new_tab = acf_blocks_get_field( 'button_new_tab', $block );
+$button_nofollow = acf_blocks_get_field( 'button_nofollow', $block );
+$show_secondary_button = acf_blocks_get_field( 'show_secondary_button', $block );
+$secondary_button_text = acf_blocks_get_field( 'secondary_button_text', $block );
+$secondary_button_url = acf_blocks_get_field( 'secondary_button_url', $block );
+$card_layout = acf_blocks_get_field( 'card_layout', $block ) ?: 'vertical';
+$card_style = acf_blocks_get_field( 'card_style', $block ) ?: 'default';
+$image_position = acf_blocks_get_field( 'image_position', $block ) ?: 'left';
+$local_image_size = acf_blocks_get_field( 'local_image_size', $block ) ?: 'medium_large';
+$custom_class = acf_blocks_get_field( 'custom_class', $block );
+$custom_inline = acf_blocks_get_field( 'custom_inline', $block );
 
 // Determine image URL
 $image_url = '';

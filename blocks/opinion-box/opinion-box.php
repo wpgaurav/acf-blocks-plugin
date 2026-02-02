@@ -1,8 +1,8 @@
 <?php
-$avatar = get_field('ob_avatar');
-$avatar_url = get_field('ob_avatar_url');
-$citation = get_field('ob_citation');
-$name = get_field('ob_name');
+$avatar = acf_blocks_get_field('ob_avatar', $block);
+$avatar_url = acf_blocks_get_field('ob_avatar_url', $block);
+$citation = acf_blocks_get_field('ob_citation', $block);
+$name = acf_blocks_get_field('ob_name', $block);
 
 // Determine image source - direct URL takes priority
 $img_src = '';
@@ -32,7 +32,7 @@ if ( $avatar_url ) {
                 <div class="acf-opinion-box-author-name"><?php echo esc_html($name); ?></div>
             <?php endif; ?>
 
-            <?php if($designation = get_field('ob_designation')): ?>
+            <?php if($designation = acf_blocks_get_field('ob_designation', $block)): ?>
                 <div class="acf-opinion-box-author-designation"><?php echo esc_html($designation); ?></div>
             <?php endif; ?>
         </div>

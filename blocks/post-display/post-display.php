@@ -6,16 +6,16 @@
  */
 
 // Get ACF fields
-$selected_posts = get_field('pd_selected_posts');
-$layout = get_field('pd_layout') ?: 'text_links';
-$columns = get_field('pd_columns') ?: 2;
-$show_excerpt = get_field('pd_show_excerpt') ?: false;
-$show_date = get_field('pd_show_date') ?: false;
-$show_author = get_field('pd_show_author') ?: false;
-$title_tag = get_field('pd_title_tag') ?: 'h3';
-$custom_class = get_field('pd_custom_class') ?: '';
-$show_read_more = get_field('pd_show_read_more');
-$read_more_text = get_field('pd_read_more_text') ?: 'Read More';
+$selected_posts = acf_blocks_get_field('pd_selected_posts', $block);
+$layout = acf_blocks_get_field('pd_layout', $block) ?: 'text_links';
+$columns = acf_blocks_get_field('pd_columns', $block) ?: 2;
+$show_excerpt = acf_blocks_get_field('pd_show_excerpt', $block) ?: false;
+$show_date = acf_blocks_get_field('pd_show_date', $block) ?: false;
+$show_author = acf_blocks_get_field('pd_show_author', $block) ?: false;
+$title_tag = acf_blocks_get_field('pd_title_tag', $block) ?: 'h3';
+$custom_class = acf_blocks_get_field('pd_custom_class', $block) ?: '';
+$show_read_more = acf_blocks_get_field('pd_show_read_more', $block);
+$read_more_text = acf_blocks_get_field('pd_read_more_text', $block) ?: 'Read More';
 
 // Block unique ID
 $block_id = 'post-display-' . $block['id'];

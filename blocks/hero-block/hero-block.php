@@ -12,8 +12,8 @@
  * @param int|string  $post_id    The post ID.
  */
 
-$image       = get_field( 'acf_hero_image' );
-$image_url   = get_field( 'acf_hero_image_url' );
+$image       = acf_blocks_get_field( 'acf_hero_image', $block );
+$image_url   = acf_blocks_get_field( 'acf_hero_image_url', $block );
 
 // Determine image source - direct URL takes priority
 $img_src = '';
@@ -26,18 +26,18 @@ if ( $image_url ) {
     $img_alt = $image['alt'] ?: 'Hero image';
 }
 
-$custom_class = get_field( 'acf_hero_class' );
+$custom_class = acf_blocks_get_field( 'acf_hero_class', $block );
 $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
 
-$inline_style = get_field( 'acf_hero_inline' );
+$inline_style = acf_blocks_get_field( 'acf_hero_inline', $block );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
 
 // Check for legacy ACF field content (backward compatibility)
-$legacy_headline    = get_field( 'acf_hero_headline' );
-$legacy_subheadline = get_field( 'acf_hero_subheadline' );
-$legacy_cta_text    = get_field( 'acf_hero_cta_text' );
-$legacy_cta_url     = get_field( 'acf_hero_cta_url' );
-$legacy_cta_style   = get_field( 'acf_hero_cta_style' );
+$legacy_headline    = acf_blocks_get_field( 'acf_hero_headline', $block );
+$legacy_subheadline = acf_blocks_get_field( 'acf_hero_subheadline', $block );
+$legacy_cta_text    = acf_blocks_get_field( 'acf_hero_cta_text', $block );
+$legacy_cta_url     = acf_blocks_get_field( 'acf_hero_cta_url', $block );
+$legacy_cta_style   = acf_blocks_get_field( 'acf_hero_cta_style', $block );
 $has_legacy_content = $legacy_headline || $legacy_subheadline || $legacy_cta_text;
 
 $inner_blocks_template = [

@@ -12,11 +12,11 @@
  * @param int|string  $post_id    The post ID.
  */
 
-$photo        = get_field( 'acf_team_member_photo' );
-$photo_url    = get_field( 'acf_team_member_photo_url' );
-$email        = get_field( 'acf_team_member_email' );
-$phone        = get_field( 'acf_team_member_phone' );
-$social_links = get_field( 'acf_team_member_social_links' );
+$photo        = acf_blocks_get_field( 'acf_team_member_photo', $block );
+$photo_url    = acf_blocks_get_field( 'acf_team_member_photo_url', $block );
+$email        = acf_blocks_get_field( 'acf_team_member_email', $block );
+$phone        = acf_blocks_get_field( 'acf_team_member_phone', $block );
+$social_links = acf_blocks_get_repeater( 'acf_team_member_social_links', [ 'acf_social_platform', 'acf_social_url' ], $block );
 
 // Determine image source - direct URL takes priority
 $img_src = '';
@@ -28,16 +28,16 @@ if ( $photo_url ) {
     $img_alt = $photo['alt'] ?: $img_alt;
 }
 
-$custom_class = get_field( 'acf_team_member_class' );
+$custom_class = acf_blocks_get_field( 'acf_team_member_class', $block );
 $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
 
-$inline_style = get_field( 'acf_team_member_inline' );
+$inline_style = acf_blocks_get_field( 'acf_team_member_inline', $block );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
 
 // Check for legacy ACF field content (backward compatibility)
-$legacy_name  = get_field( 'acf_team_member_name' );
-$legacy_title = get_field( 'acf_team_member_title' );
-$legacy_bio   = get_field( 'acf_team_member_bio' );
+$legacy_name  = acf_blocks_get_field( 'acf_team_member_name', $block );
+$legacy_title = acf_blocks_get_field( 'acf_team_member_title', $block );
+$legacy_bio   = acf_blocks_get_field( 'acf_team_member_bio', $block );
 $has_legacy_content = $legacy_name || $legacy_title || $legacy_bio;
 
 $inner_blocks_template = [
