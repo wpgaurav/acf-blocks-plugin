@@ -63,6 +63,11 @@ function acf_blocks_init() {
 }
 add_action( 'plugins_loaded', 'acf_blocks_init' );
 
+// License Manager (loads independently of ACF requirement)
+require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/license-manager.php';
+$acf_blocks_license = new ACF_Blocks_License_Manager( __FILE__ );
+$acf_blocks_license->hook();
+
 /**
  * Activation hook.
  */
