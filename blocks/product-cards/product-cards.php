@@ -1,7 +1,18 @@
 <?php
+/**
+ * Product Cards Block Template.
+ *
+ * A customizable product card block with header, image, description, and CTA buttons.
+ *
+ * @var array   $block       The block settings and attributes.
+ * @var string  $content     The block inner HTML.
+ * @var bool    $is_preview  True during AJAX preview.
+ * @var int     $post_id     The post ID this block is saved to.
+ */
+
 $title = acf_blocks_get_field('pc_block_title', $block);
-$title_color = acf_blocks_get_field('pc_block_title_color', $block);
-$title_bg_color = acf_blocks_get_field('pc_block_title_bg_color', $block);
+$title_color = acf_blocks_get_field('pc_block_title_color', $block) ?: '#FFFFFF';
+$title_bg_color = acf_blocks_get_field('pc_block_title_bg_color', $block) ?: '#007bff';
 $image = acf_blocks_get_field('pc_block_product_image', $block);
 $description = acf_blocks_get_field('pc_block_description', $block);
 $root_class = acf_blocks_get_field('pc_block_root_class', $block);
@@ -11,11 +22,19 @@ $button_rel = acf_blocks_get_field('pc_block_button_rel', $block);
 $text_link = acf_blocks_get_field('pc_block_text_link', $block);
 $text_link_url = acf_blocks_get_field('pc_block_text_link_url', $block);
 $text_link_rel = acf_blocks_get_field('pc_block_text_link_rel', $block);
+
+// Build wrapper classes
+$wrapper_classes = ['acf-product-cards'];
+if ($root_class) {
+    $wrapper_classes[] = $root_class;
+}
+
+$wrapper_attributes = get_block_wrapper_attributes(['class' => implode(' ', $wrapper_classes)]);
 ?>
 
-<div class="acf-product-cards <?php echo esc_attr($root_class); ?>">
+<div <?php echo $wrapper_attributes; ?>>
     <div class="acf-product-cards__header" style="background-color: <?php echo esc_attr($title_bg_color); ?>; color: <?php echo esc_attr($title_color); ?>;">
-        <h2><?php echo esc_html($title); ?></h2>
+        <?php echo esc_html($title); ?>
     </div>
     <?php if ($image): ?>
         <div class="acf-product-cards__image">
@@ -23,15 +42,17 @@ $text_link_rel = acf_blocks_get_field('pc_block_text_link_rel', $block);
         </div>
     <?php endif; ?>
     <div class="acf-product-cards__content">
-        <p><?php echo esc_html($description); ?></p>
+        <?php if ($description): ?>
+            <p class="acf-product-cards__description"><?php echo esc_html($description); ?></p>
+        <?php endif; ?>
         <?php if ($button_url && $button_text): ?>
-            <a href="<?php echo esc_url($button_url); ?>" class="acf-product-cards__button" rel="<?php echo esc_attr($button_rel); ?>">
+            <a href="<?php echo esc_url($button_url); ?>" class="acf-product-cards__button"<?php echo $button_rel ? ' rel="' . esc_attr($button_rel) . '"' : ''; ?>>
                 <?php echo esc_html($button_text); ?>
             </a>
         <?php endif; ?>
         <?php if ($text_link && $text_link_url): ?>
             <p class="acf-product-cards__link">
-                <a href="<?php echo esc_url($text_link_url); ?>" rel="<?php echo esc_attr($text_link_rel); ?>">
+                <a href="<?php echo esc_url($text_link_url); ?>"<?php echo $text_link_rel ? ' rel="' . esc_attr($text_link_rel) . '"' : ''; ?>>
                     <?php echo esc_html($text_link); ?>
                 </a>
             </p>
