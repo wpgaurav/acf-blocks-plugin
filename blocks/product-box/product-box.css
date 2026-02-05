@@ -1,7 +1,12 @@
 /* Product Box Block - Modern Amazon-style Design */
 /* Supports both light and dark mode */
+/* High specificity selectors for theme compatibility */
 
-.acf-product-box {
+/* ==========================================================================
+   CSS Custom Properties (scoped to block)
+   ========================================================================== */
+
+.wp-block-acf-product-box.acf-product-box {
     --pb-bg: #ffffff;
     --pb-bg-hover: #fafafa;
     --pb-border: #e5e7eb;
@@ -28,25 +33,14 @@
     --pb-feature-bullet: #22c55e;
     --pb-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
     --pb-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-
-    position: relative;
-    background: var(--pb-bg);
-    border: 1px solid var(--pb-border);
-    border-radius: 12px;
-    padding: 24px;
-    margin: 20px 0;
-    box-shadow: var(--pb-shadow);
-    transition: box-shadow 0.3s ease, transform 0.2s ease;
-    overflow: hidden;
 }
 
-.acf-product-box:hover {
-    box-shadow: var(--pb-shadow-hover);
-}
+/* ==========================================================================
+   Dark Mode Support
+   ========================================================================== */
 
-/* Dark mode support */
 @media (prefers-color-scheme: dark) {
-    .acf-product-box {
+    .wp-block-acf-product-box.acf-product-box {
         --pb-bg: #1f2937;
         --pb-bg-hover: #374151;
         --pb-border: #374151;
@@ -65,10 +59,14 @@
     }
 }
 
-/* WordPress dark mode class support */
-.is-dark-theme .acf-product-box,
-.dark .acf-product-box,
-[data-theme="dark"] .acf-product-box {
+/* WordPress/Theme dark mode class support */
+.is-dark-theme .wp-block-acf-product-box.acf-product-box,
+.dark .wp-block-acf-product-box.acf-product-box,
+.flavor-dark .wp-block-acf-product-box.acf-product-box,
+[data-theme="dark"] .wp-block-acf-product-box.acf-product-box,
+html.dark .wp-block-acf-product-box.acf-product-box,
+body.dark .wp-block-acf-product-box.acf-product-box,
+body.flavor-dark .wp-block-acf-product-box.acf-product-box {
     --pb-bg: #1f2937;
     --pb-bg-hover: #374151;
     --pb-border: #374151;
@@ -86,8 +84,42 @@
     --pb-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
 }
 
-/* Badge */
-.acf-product-box__badge {
+/* ==========================================================================
+   Main Container
+   ========================================================================== */
+
+.wp-block-acf-product-box.acf-product-box {
+    position: relative;
+    display: block;
+    background: var(--pb-bg);
+    border: 1px solid var(--pb-border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--pb-shadow);
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+    overflow: hidden;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    line-height: 1.5;
+}
+
+.wp-block-acf-product-box.acf-product-box *,
+.wp-block-acf-product-box.acf-product-box *::before,
+.wp-block-acf-product-box.acf-product-box *::after {
+    box-sizing: border-box;
+}
+
+.wp-block-acf-product-box.acf-product-box:hover {
+    box-shadow: var(--pb-shadow-hover);
+}
+
+/* ==========================================================================
+   Badge
+   ========================================================================== */
+
+.wp-block-acf-product-box.acf-product-box .acf-product-box__badge {
     position: absolute;
     top: 16px;
     right: 16px;
@@ -99,10 +131,15 @@
     color: #ffffff;
     border-radius: 4px;
     z-index: 10;
+    line-height: 1.2;
+    margin: 0;
 }
 
-/* Layout */
-.acf-product-box__layout {
+/* ==========================================================================
+   Layout Grid
+   ========================================================================== */
+
+.wp-block-acf-product-box.acf-product-box .acf-product-box__layout {
     display: grid;
     grid-template-columns: 1fr;
     gap: 24px;
@@ -110,20 +147,23 @@
 }
 
 @media (min-width: 640px) {
-    .acf-product-box__layout {
+    .wp-block-acf-product-box.acf-product-box .acf-product-box__layout {
         grid-template-columns: 280px 1fr;
         gap: 32px;
     }
 }
 
 @media (min-width: 1024px) {
-    .acf-product-box__layout {
+    .wp-block-acf-product-box.acf-product-box .acf-product-box__layout {
         grid-template-columns: 320px 1fr;
     }
 }
 
-/* Image */
-.acf-product-box__image {
+/* ==========================================================================
+   Image
+   ========================================================================== */
+
+.wp-block-acf-product-box.acf-product-box .acf-product-box__image {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -131,80 +171,108 @@
     border-radius: 8px;
     padding: 16px;
     overflow: hidden;
+    margin: 0;
 }
 
-.acf-product-box__image img {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__image img {
     max-width: 100%;
+    width: auto;
     height: auto;
     object-fit: contain;
     transition: transform 0.3s ease;
+    display: block;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
 }
 
-.acf-product-box:hover .acf-product-box__image img {
+.wp-block-acf-product-box.acf-product-box:hover .acf-product-box__image img {
     transform: scale(1.02);
 }
 
-/* Content */
-.acf-product-box__content {
+/* ==========================================================================
+   Content Area
+   ========================================================================== */
+
+.wp-block-acf-product-box.acf-product-box .acf-product-box__content {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-/* Title */
-.acf-product-box__title {
+/* ==========================================================================
+   Title
+   ========================================================================== */
+
+.wp-block-acf-product-box.acf-product-box .acf-product-box__title {
     margin: 0 0 4px 0;
+    padding: 0;
     font-size: 1.25rem;
     font-weight: 600;
     line-height: 1.4;
     color: var(--pb-text);
+    border: none;
+    background: none;
 }
 
 @media (min-width: 640px) {
-    .acf-product-box__title {
+    .wp-block-acf-product-box.acf-product-box .acf-product-box__title {
         font-size: 1.375rem;
     }
 }
 
-.acf-product-box__title a {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__title a {
     color: var(--pb-title-link);
     text-decoration: none;
     transition: color 0.2s ease;
+    border: none;
+    background: none;
+    box-shadow: none;
 }
 
-.acf-product-box__title a:hover {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__title a:hover,
+.wp-block-acf-product-box.acf-product-box .acf-product-box__title a:focus {
     color: var(--pb-title-link-hover);
     text-decoration: underline;
 }
 
-/* Rating */
-.acf-product-box__rating {
+/* ==========================================================================
+   Rating
+   ========================================================================== */
+
+.wp-block-acf-product-box.acf-product-box .acf-product-box__rating {
     display: flex;
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
 }
 
-.acf-product-box__stars {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__stars {
     display: inline-flex;
     gap: 2px;
 }
 
-.acf-product-box__stars .star {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__stars .star {
     font-size: 18px;
     line-height: 1;
+    font-style: normal;
+    display: inline-block;
 }
 
-.acf-product-box__stars .star--full {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__stars .star--full {
     color: var(--pb-star-filled);
 }
 
-.acf-product-box__stars .star--half {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__stars .star--half {
     color: var(--pb-star-filled);
     position: relative;
 }
 
-.acf-product-box__stars .star--half::after {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__stars .star--half::after {
     content: '★';
     position: absolute;
     left: 0;
@@ -214,17 +282,22 @@
     color: var(--pb-star-filled);
 }
 
-.acf-product-box__stars .star--empty {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__stars .star--empty {
     color: var(--pb-star-empty);
 }
 
-.acf-product-box__rating-count {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__rating-count {
     font-size: 14px;
     color: var(--pb-text-muted);
+    margin: 0;
+    padding: 0;
 }
 
-/* Features list */
-.acf-product-box__features {
+/* ==========================================================================
+   Features List
+   ========================================================================== */
+
+.wp-block-acf-product-box.acf-product-box .acf-product-box__features {
     list-style: none;
     margin: 8px 0;
     padding: 0;
@@ -233,15 +306,17 @@
     gap: 6px;
 }
 
-.acf-product-box__features li {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__features li {
     position: relative;
     padding-left: 20px;
     font-size: 14px;
     line-height: 1.5;
     color: var(--pb-text);
+    margin: 0;
+    list-style: none;
 }
 
-.acf-product-box__features li::before {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__features li::before {
     content: '';
     position: absolute;
     left: 0;
@@ -252,22 +327,28 @@
     border-radius: 50%;
 }
 
-/* Pricing */
-.acf-product-box__pricing {
+/* ==========================================================================
+   Pricing
+   ========================================================================== */
+
+.wp-block-acf-product-box.acf-product-box .acf-product-box__pricing {
     display: flex;
     align-items: baseline;
     gap: 12px;
     flex-wrap: wrap;
     margin: 8px 0;
+    padding: 0;
 }
 
-.acf-product-box__original-price {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__original-price {
     font-size: 14px;
     color: var(--pb-price-original);
     text-decoration: line-through;
+    margin: 0;
+    padding: 0;
 }
 
-.acf-product-box__discount {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__discount {
     display: inline-flex;
     align-items: center;
     padding: 2px 8px;
@@ -276,45 +357,60 @@
     color: var(--pb-discount-text);
     background: var(--pb-discount-bg);
     border-radius: 4px;
+    margin: 0;
+    line-height: 1.4;
 }
 
-.acf-product-box__current-price {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__current-price {
     font-size: 1.75rem;
     font-weight: 700;
     color: var(--pb-price-current);
     letter-spacing: -0.5px;
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
 }
 
-.acf-product-box__price-note {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__price-note {
     font-size: 13px;
     color: var(--pb-text-muted);
     margin-top: -4px;
+    margin-bottom: 0;
+    padding: 0;
 }
 
-/* Description */
-.acf-product-box__description {
+/* ==========================================================================
+   Description
+   ========================================================================== */
+
+.wp-block-acf-product-box.acf-product-box .acf-product-box__description {
     font-size: 14px;
     line-height: 1.6;
     color: var(--pb-text-muted);
 }
 
-.acf-product-box__description p {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__description p {
     margin: 0 0 8px 0;
+    padding: 0;
 }
 
-.acf-product-box__description p:last-child {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__description p:last-child {
     margin-bottom: 0;
 }
 
-/* Buttons */
-.acf-product-box__buttons {
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.wp-block-acf-product-box.acf-product-box .acf-product-box__buttons {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
     margin-top: 8px;
+    padding: 0;
 }
 
-.acf-product-box__btn {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -327,105 +423,171 @@
     cursor: pointer;
     transition: all 0.2s ease;
     border: 2px solid transparent;
+    line-height: 1.4;
+    box-shadow: none;
+    outline: none;
+    font-family: inherit;
 }
 
-.acf-product-box__btn-icon {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__btn:focus {
+    outline: 2px solid var(--pb-btn-primary-bg);
+    outline-offset: 2px;
+}
+
+.wp-block-acf-product-box.acf-product-box .acf-product-box__btn-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
 }
 
-.acf-product-box__btn-icon svg {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__btn-icon svg {
     width: 16px;
     height: 16px;
+    display: block;
 }
 
 /* Primary button */
-.acf-product-box__btn--primary {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__btn.acf-product-box__btn--primary {
     background: var(--pb-btn-primary-bg);
     color: var(--pb-btn-primary-text);
     border-color: var(--pb-btn-primary-bg);
 }
 
-.acf-product-box__btn--primary:hover {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__btn.acf-product-box__btn--primary:hover,
+.wp-block-acf-product-box.acf-product-box .acf-product-box__btn.acf-product-box__btn--primary:focus {
     background: var(--pb-btn-primary-hover);
     border-color: var(--pb-btn-primary-hover);
     transform: translateY(-1px);
+    text-decoration: none;
 }
 
 /* Secondary button */
-.acf-product-box__btn--secondary {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__btn.acf-product-box__btn--secondary {
     background: var(--pb-btn-secondary-bg);
     color: var(--pb-btn-secondary-text);
     border-color: var(--pb-btn-secondary-border);
 }
 
-.acf-product-box__btn--secondary:hover {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__btn.acf-product-box__btn--secondary:hover,
+.wp-block-acf-product-box.acf-product-box .acf-product-box__btn.acf-product-box__btn--secondary:focus {
     background: var(--pb-btn-secondary-hover);
+    text-decoration: none;
 }
 
 /* Amazon-style button */
-.acf-product-box__btn--amazon {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__btn.acf-product-box__btn--amazon {
     background: var(--pb-btn-amazon-bg);
     color: var(--pb-btn-amazon-text);
     border-color: var(--pb-btn-amazon-bg);
 }
 
-.acf-product-box__btn--amazon:hover {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__btn.acf-product-box__btn--amazon:hover,
+.wp-block-acf-product-box.acf-product-box .acf-product-box__btn.acf-product-box__btn--amazon:focus {
     background: var(--pb-btn-amazon-hover);
     border-color: var(--pb-btn-amazon-hover);
     transform: translateY(-1px);
+    text-decoration: none;
 }
 
 /* Custom style - inherits base styles only */
-.acf-product-box__btn--custom {
+.wp-block-acf-product-box.acf-product-box .acf-product-box__btn.acf-product-box__btn--custom {
     background: var(--pb-btn-secondary-bg);
     color: var(--pb-btn-secondary-text);
     border-color: var(--pb-btn-secondary-border);
 }
 
-/* Responsive adjustments */
+/* ==========================================================================
+   Responsive Adjustments
+   ========================================================================== */
+
 @media (max-width: 639px) {
-    .acf-product-box {
+    .wp-block-acf-product-box.acf-product-box {
         padding: 16px;
     }
 
-    .acf-product-box__badge {
+    .wp-block-acf-product-box.acf-product-box .acf-product-box__badge {
         top: 12px;
         right: 12px;
         padding: 4px 8px;
         font-size: 11px;
     }
 
-    .acf-product-box__current-price {
+    .wp-block-acf-product-box.acf-product-box .acf-product-box__current-price {
         font-size: 1.5rem;
     }
 
-    .acf-product-box__btn {
+    .wp-block-acf-product-box.acf-product-box .acf-product-box__btn {
         padding: 10px 16px;
         font-size: 13px;
         width: 100%;
     }
 
-    .acf-product-box__buttons {
+    .wp-block-acf-product-box.acf-product-box .acf-product-box__buttons {
         flex-direction: column;
     }
 }
 
-/* Editor styles */
-.block-editor-block-list__block .acf-product-box {
-    margin: 20px 0;
+/* ==========================================================================
+   Block Editor Specific Styles
+   ========================================================================== */
+
+/* Editor preview wrapper */
+.block-editor-block-list__block[data-type="acf/product-box"] .wp-block-acf-product-box.acf-product-box,
+.editor-styles-wrapper .wp-block-acf-product-box.acf-product-box {
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
-/* Alignment support */
-.acf-product-box.alignwide {
+/* Ensure ACF preview iframe inherits styles */
+.acf-block-preview .wp-block-acf-product-box.acf-product-box {
+    margin: 0;
+}
+
+/* Fix for editor color scheme */
+.editor-styles-wrapper .is-dark-theme .wp-block-acf-product-box.acf-product-box {
+    --pb-bg: #1f2937;
+    --pb-bg-hover: #374151;
+    --pb-border: #374151;
+    --pb-text: #f9fafb;
+    --pb-text-muted: #9ca3af;
+    --pb-title-link: #f87171;
+    --pb-title-link-hover: #fca5a5;
+    --pb-star-empty: #4b5563;
+    --pb-price-current: #f9fafb;
+    --pb-price-original: #6b7280;
+}
+
+/* ==========================================================================
+   Alignment Support
+   ========================================================================== */
+
+.wp-block-acf-product-box.acf-product-box.alignwide {
     max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.acf-product-box.alignfull {
+.wp-block-acf-product-box.acf-product-box.alignfull {
     max-width: none;
+    width: 100%;
     border-radius: 0;
     border-left: none;
     border-right: none;
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+@media print {
+    .wp-block-acf-product-box.acf-product-box {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        break-inside: avoid;
+    }
+
+    .wp-block-acf-product-box.acf-product-box .acf-product-box__btn {
+        border: 1px solid #333;
+    }
 }
