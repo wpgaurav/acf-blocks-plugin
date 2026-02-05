@@ -2,19 +2,18 @@
   "apiVersion": 3,
   "name": "acf/product-box",
   "title": "Product Box",
-  "description": "A product box with image, rating, and core blocks for title and description.",
+  "description": "Amazon-style product listing with image, pricing, features, ratings, and multiple CTA buttons. Supports dark and light mode.",
   "category": "acf-blocks",
   "icon": "cart",
-  "keywords": ["product", "box", "rating"],
+  "keywords": ["product", "box", "rating", "amazon", "price", "deal"],
   "acf": {
     "renderTemplate": "product-box.php",
     "blockVersion": 3
   },
   "supports": {
-    "align": true,
+    "align": ["wide", "full"],
     "mode": true,
-    "anchor": true,
-    "jsx": true
+    "anchor": true
   },
   "style": "file:./product-box.css",
   "editorStyle": "file:./product-box.css",
@@ -22,25 +21,21 @@
     "attributes": {
       "mode": "preview",
       "data": {
-        "pb_rating": 4,
-        "is_preview": true
+        "pb_title": "PHILIPS Brilliance 49\" SuperWide Curved Monitor",
+        "pb_badge_text": "SAVE 6%",
+        "pb_badge_color": "#22c55e",
+        "pb_rating": 4.5,
+        "pb_rating_count": "1,234 ratings",
+        "pb_original_price": "$988.15",
+        "pb_discount_percent": "-6%",
+        "pb_current_price": "$927.58",
+        "pb_features_0_pb_feature_text": "49-Inch Class Super wide 32:9 LED monitor",
+        "pb_features_1_pb_feature_text": "1800R curved VA screen for immersive viewing",
+        "pb_buttons_0_pb_cta_text": "Grab This",
+        "pb_buttons_0_pb_cta_url": "#",
+        "pb_buttons_0_pb_cta_style": "amazon",
+        "pb_buttons_0_pb_cta_icon": "amazon"
       }
-    },
-    "innerBlocks": [
-      {
-        "name": "core/heading",
-        "attributes": {
-          "level": 3,
-          "content": "Product Name",
-          "className": "acf-product-box__title fw-900 med-title"
-        }
-      },
-      {
-        "name": "core/paragraph",
-        "attributes": {
-          "content": "A great product with excellent features and performance."
-        }
-      }
-    ]
+    }
   }
 }

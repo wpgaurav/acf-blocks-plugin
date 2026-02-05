@@ -92,7 +92,7 @@
         {
           "param": "block",
           "operator": "==",
-          "value": "acf/product_cards"
+          "value": "acf/product-cards"
         }
       ]
     ],

@@ -22,6 +22,24 @@
             "required": 0
         },
         {
+            "key": "field_pb_badge_text",
+            "label": "Sale Badge Text",
+            "name": "pb_badge_text",
+            "type": "text",
+            "instructions": "Optional badge text shown in corner (e.g., 'SAVE 10%', 'HOT DEAL', 'BEST SELLER').",
+            "required": 0,
+            "placeholder": "SAVE 10%"
+        },
+        {
+            "key": "field_pb_badge_color",
+            "label": "Badge Background Color",
+            "name": "pb_badge_color",
+            "type": "color_picker",
+            "instructions": "Background color for the badge.",
+            "required": 0,
+            "default_value": "#22c55e"
+        },
+        {
             "key": "field_pb_title",
             "label": "Product Title",
             "name": "pb_title",
@@ -31,28 +49,98 @@
             "default_value": "Product Title"
         },
         {
+            "key": "field_pb_title_url",
+            "label": "Title Link URL",
+            "name": "pb_title_url",
+            "type": "url",
+            "instructions": "Optional URL to link the title to the product page.",
+            "required": 0
+        },
+        {
             "key": "field_pb_rating",
             "label": "Rating",
             "name": "pb_rating",
             "type": "number",
-            "instructions": "Enter a rating from 0 to 5 (supports half stars like 4.5).",
+            "instructions": "Enter a rating from 0 to 5 (supports half stars like 4.5). Leave at 0 to hide.",
             "required": 0,
             "min": 0,
             "max": 5,
             "step": 0.5,
-            "default_value": 5
+            "default_value": 0
+        },
+        {
+            "key": "field_pb_rating_count",
+            "label": "Rating Count",
+            "name": "pb_rating_count",
+            "type": "text",
+            "instructions": "Number of ratings/reviews (e.g., '1,234 ratings').",
+            "required": 0
+        },
+        {
+            "key": "field_pb_features",
+            "label": "Product Features",
+            "name": "pb_features",
+            "type": "repeater",
+            "instructions": "Add bullet point features/highlights.",
+            "required": 0,
+            "min": 0,
+            "max": 10,
+            "layout": "table",
+            "button_label": "Add Feature",
+            "sub_fields": [
+                {
+                    "key": "field_pb_feature_text",
+                    "label": "Feature",
+                    "name": "pb_feature_text",
+                    "type": "text",
+                    "instructions": "",
+                    "required": 1
+                }
+            ]
+        },
+        {
+            "key": "field_pb_original_price",
+            "label": "Original Price",
+            "name": "pb_original_price",
+            "type": "text",
+            "instructions": "Original/list price to show strikethrough (e.g., '$99.99').",
+            "required": 0
+        },
+        {
+            "key": "field_pb_discount_percent",
+            "label": "Discount Percentage",
+            "name": "pb_discount_percent",
+            "type": "text",
+            "instructions": "Discount percentage to display (e.g., '-15%').",
+            "required": 0
+        },
+        {
+            "key": "field_pb_current_price",
+            "label": "Current Price",
+            "name": "pb_current_price",
+            "type": "text",
+            "instructions": "Current/sale price (e.g., '$79.99').",
+            "required": 0
+        },
+        {
+            "key": "field_pb_price_note",
+            "label": "Price Note",
+            "name": "pb_price_note",
+            "type": "text",
+            "instructions": "Optional note below price (e.g., 'Free shipping', 'Prime eligible').",
+            "required": 0
         },
         {
             "key": "field_pb_description",
             "label": "Description",
             "name": "pb_description",
             "type": "wysiwyg",
-            "instructions": "Enter the product description.",
+            "instructions": "Enter additional product description (optional).",
             "required": 0,
             "tabs": "visual",
             "toolbar": "basic",
             "media_upload": 0,
-            "default_value": "<p>Add your product description here.</p>"
+            "default_value": ""
         },
         {
             "key": "field_pb_buttons",
@@ -63,7 +151,7 @@
             "required": 0,
             "min": 0,
             "max": 4,
-            "layout": "table",
+            "layout": "block",
             "button_label": "Add Button",
             "sub_fields": [
                 {
@@ -72,7 +160,8 @@
                     "name": "pb_cta_text",
                     "type": "text",
                     "instructions": "",
-                    "required": 1
+                    "required": 1,
+                    "default_value": "Buy Now"
                 },
                 {
                     "key": "field_pb_cta_url",
@@ -83,11 +172,42 @@
                     "required": 1
                 },
                 {
+                    "key": "field_pb_cta_style",
+                    "label": "Button Style",
+                    "name": "pb_cta_style",
+                    "type": "select",
+                    "instructions": "Choose button appearance.",
+                    "required": 0,
+                    "choices": {
+                        "primary": "Primary (Filled)",
+                        "secondary": "Secondary (Outline)",
+                        "amazon": "Amazon Style",
+                        "custom": "Custom (use CSS class)"
+                    },
+                    "default_value": "primary"
+                },
+                {
+                    "key": "field_pb_cta_icon",
+                    "label": "Button Icon",
+                    "name": "pb_cta_icon",
+                    "type": "select",
+                    "instructions": "Optional icon before button text.",
+                    "required": 0,
+                    "choices": {
+                        "none": "None",
+                        "cart": "Shopping Cart",
+                        "amazon": "Amazon",
+                        "external": "External Link",
+                        "check": "Checkmark"
+                    },
+                    "default_value": "none"
+                },
+                {
                     "key": "field_pb_cta_class",
                     "label": "CSS Class",
                     "name": "pb_cta_class",
                     "type": "text",
-                    "instructions": "Optional CSS class for the button.",
+                    "instructions": "Optional additional CSS class for the button.",
                     "required": 0
                 },
                 {
@@ -116,5 +236,5 @@
     "label_placement": "top",
     "instruction_placement": "label",
     "active": true,
-    "description": "Field group for the Product Box block."
+    "description": "Field group for the Product Box block with Amazon-style product listing features."
 }
