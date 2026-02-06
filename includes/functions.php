@@ -306,3 +306,212 @@ function acf_blocks_enqueue_editor_assets() {
     );
 }
 add_action( 'enqueue_block_editor_assets', 'acf_blocks_enqueue_editor_assets' );
+
+/**
+ * Enqueue all ACF block styles in the editor iframe at high priority.
+ *
+ * This ensures styles load at the bottom of the head for maximum specificity.
+ * Uses a very high priority (999999) to load after theme and other plugin styles.
+ */
+function acf_blocks_enqueue_editor_styles() {
+    $blocks_dir = ACF_BLOCKS_PLUGIN_DIR . 'blocks/';
+    $blocks_url = ACF_BLOCKS_PLUGIN_URL . 'blocks/';
+
+    if ( ! is_dir( $blocks_dir ) ) {
+        return;
+    }
+
+    $block_folders = glob( $blocks_dir . '*', GLOB_ONLYDIR );
+
+    if ( ! $block_folders ) {
+        return;
+    }
+
+    foreach ( $block_folders as $block_folder ) {
+        $block_folder = trailingslashit( $block_folder );
+        $block_json   = $block_folder . 'block.json';
+
+        if ( ! file_exists( $block_json ) || ! is_readable( $block_json ) ) {
+            continue;
+        }
+
+        $metadata = json_decode( file_get_contents( $block_json ), true );
+
+        if ( empty( $metadata['name'] ) ) {
+            continue;
+        }
+
+        $folder_name = basename( rtrim( $block_folder, '/' ) );
+
+        // Check for style property in block.json
+        if ( ! empty( $metadata['style'] ) && is_string( $metadata['style'] ) ) {
+            if ( strpos( $metadata['style'], 'file:./' ) === 0 ) {
+                $css_file = substr( $metadata['style'], 7 );
+                $css_path = $block_folder . $css_file;
+                $css_url  = $blocks_url . $folder_name . '/' . $css_file;
+
+                if ( file_exists( $css_path ) ) {
+                    $handle = 'acf-blocks-editor-' . $folder_name;
+                    wp_enqueue_style(
+                        $handle,
+                        $css_url,
+                        array(),
+                        ACF_BLOCKS_VERSION
+                    );
+                }
+            }
+        }
+
+        // Also check for editorStyle
+        if ( ! empty( $metadata['editorStyle'] ) && is_string( $metadata['editorStyle'] ) ) {
+            if ( strpos( $metadata['editorStyle'], 'file:./' ) === 0 ) {
+                $css_file = substr( $metadata['editorStyle'], 7 );
+                $css_path = $block_folder . $css_file;
+                $css_url  = $blocks_url . $folder_name . '/' . $css_file;
+
+                // Only enqueue if different from style
+                if ( file_exists( $css_path ) && ( empty( $metadata['style'] ) || $metadata['editorStyle'] !== $metadata['style'] ) ) {
+                    $handle = 'acf-blocks-editor-' . $folder_name . '-editor';
+                    wp_enqueue_style(
+                        $handle,
+                        $css_url,
+                        array(),
+                        ACF_BLOCKS_VERSION
+                    );
+                }
+            }
+        }
+    }
+}
+// Use very high priority to ensure styles load at the bottom of head
+add_action( 'enqueue_block_assets', 'acf_blocks_enqueue_editor_styles', 999999 );
+
+/**
+ * Add ACF block styles to editor via add_editor_style for iframe support.
+ *
+ * This method ensures styles are loaded in the editor iframe even before
+ * any blocks are inserted, providing consistent preview styling.
+ */
+function acf_blocks_add_editor_styles() {
+    $blocks_dir = ACF_BLOCKS_PLUGIN_DIR . 'blocks/';
+    $blocks_url = ACF_BLOCKS_PLUGIN_URL . 'blocks/';
+
+    if ( ! is_dir( $blocks_dir ) ) {
+        return;
+    }
+
+    $block_folders = glob( $blocks_dir . '*', GLOB_ONLYDIR );
+
+    if ( ! $block_folders ) {
+        return;
+    }
+
+    $style_urls = array();
+
+    foreach ( $block_folders as $block_folder ) {
+        $block_folder = trailingslashit( $block_folder );
+        $block_json   = $block_folder . 'block.json';
+
+        if ( ! file_exists( $block_json ) || ! is_readable( $block_json ) ) {
+            continue;
+        }
+
+        $metadata = json_decode( file_get_contents( $block_json ), true );
+
+        if ( empty( $metadata['name'] ) ) {
+            continue;
+        }
+
+        $folder_name = basename( rtrim( $block_folder, '/' ) );
+
+        // Check for style property in block.json
+        if ( ! empty( $metadata['style'] ) && is_string( $metadata['style'] ) ) {
+            if ( strpos( $metadata['style'], 'file:./' ) === 0 ) {
+                $css_file = substr( $metadata['style'], 7 );
+                $css_path = $block_folder . $css_file;
+                $css_url  = $blocks_url . $folder_name . '/' . $css_file;
+
+                if ( file_exists( $css_path ) ) {
+                    $style_urls[] = $css_url;
+                }
+            }
+        }
+    }
+
+    // Add all styles to the editor
+    foreach ( $style_urls as $url ) {
+        add_editor_style( $url );
+    }
+}
+add_action( 'after_setup_theme', 'acf_blocks_add_editor_styles', 999 );
+
+/**
+ * Inject ACF block styles directly into block editor settings.
+ *
+ * This provides a fallback method to ensure styles are always available
+ * in the block editor iframe with maximum specificity.
+ *
+ * @param array $editor_settings Editor settings array.
+ * @return array Modified editor settings.
+ */
+function acf_blocks_inject_editor_styles( $editor_settings ) {
+    $blocks_dir = ACF_BLOCKS_PLUGIN_DIR . 'blocks/';
+
+    if ( ! is_dir( $blocks_dir ) ) {
+        return $editor_settings;
+    }
+
+    $block_folders = glob( $blocks_dir . '*', GLOB_ONLYDIR );
+
+    if ( ! $block_folders ) {
+        return $editor_settings;
+    }
+
+    $combined_css = '';
+
+    foreach ( $block_folders as $block_folder ) {
+        $block_folder = trailingslashit( $block_folder );
+        $block_json   = $block_folder . 'block.json';
+
+        if ( ! file_exists( $block_json ) || ! is_readable( $block_json ) ) {
+            continue;
+        }
+
+        $metadata = json_decode( file_get_contents( $block_json ), true );
+
+        if ( empty( $metadata['name'] ) ) {
+            continue;
+        }
+
+        // Check for style property in block.json
+        if ( ! empty( $metadata['style'] ) && is_string( $metadata['style'] ) ) {
+            if ( strpos( $metadata['style'], 'file:./' ) === 0 ) {
+                $css_file = substr( $metadata['style'], 7 );
+                $css_path = $block_folder . $css_file;
+
+                if ( file_exists( $css_path ) && is_readable( $css_path ) ) {
+                    $css_content = file_get_contents( $css_path );
+                    if ( $css_content ) {
+                        $combined_css .= "\n/* ACF Block: " . esc_html( $metadata['name'] ) . " */\n";
+                        $combined_css .= $css_content;
+                    }
+                }
+            }
+        }
+    }
+
+    if ( ! empty( $combined_css ) ) {
+        // Ensure styles array exists
+        if ( ! isset( $editor_settings['styles'] ) ) {
+            $editor_settings['styles'] = array();
+        }
+
+        // Add our styles at the end for maximum specificity
+        $editor_settings['styles'][] = array(
+            'css' => $combined_css,
+        );
+    }
+
+    return $editor_settings;
+}
+add_filter( 'block_editor_settings_all', 'acf_blocks_inject_editor_styles', 999999 );
