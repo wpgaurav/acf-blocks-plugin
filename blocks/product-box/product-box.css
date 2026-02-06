@@ -154,7 +154,7 @@ body.flavor-dark .acf-product-box {
 .acf-product-box .acf-product-box__badge,
 .acf-product-box__badge {
     position: absolute !important;
-    top: 16px !important;
+    top: 8px !important;
     right: 16px !important;
     left: auto !important;
     bottom: auto !important;
@@ -184,7 +184,7 @@ body.flavor-dark .acf-product-box {
     display: grid !important;
     grid-template-columns: 1fr;
     gap: 24px;
-    align-items: start;
+    align-items: center;
     position: relative;
 }
 
