@@ -154,7 +154,7 @@ body.flavor-dark .acf-product-box {
 .acf-product-box .acf-product-box__badge,
 .acf-product-box__badge {
     position: absolute !important;
-    top: 16px !important;
+    top: 8px !important;
     right: 16px !important;
     left: auto !important;
     bottom: auto !important;
@@ -184,7 +184,7 @@ body.flavor-dark .acf-product-box {
     display: grid !important;
     grid-template-columns: 1fr;
     gap: 24px;
-    align-items: start;
+    align-items: center;
     position: relative;
 }
 
@@ -246,6 +246,18 @@ body.flavor-dark .acf-product-box {
 .wp-block-acf-product-box:hover .acf-product-box__image img,
 .acf-product-box:hover .acf-product-box__image img {
     transform: scale(1.02);
+}
+
+/* Placeholder SVG for products without images */
+.wp-block-acf-product-box.acf-product-box .acf-product-box__placeholder-svg,
+.wp-block-acf-product-box .acf-product-box__placeholder-svg,
+.acf-product-box .acf-product-box__placeholder-svg,
+.acf-product-box__placeholder-svg {
+    width: 100%;
+    height: auto;
+    max-width: 280px;
+    display: block;
+    margin: 0 auto;
 }
 
 /* ==========================================================================
@@ -551,19 +563,6 @@ body.flavor-dark .acf-product-box {
 .acf-product-box__btn:focus {
     outline: 2px solid var(--pb-btn-primary-bg, #f97316);
     outline-offset: 2px;
-}
-
-.acf-product-box__btn-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.acf-product-box__btn-icon svg {
-    width: 16px;
-    height: 16px;
-    display: block;
 }
 
 /* Primary button */
