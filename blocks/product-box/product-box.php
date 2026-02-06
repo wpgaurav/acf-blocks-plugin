@@ -159,7 +159,7 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'acf-product-box'
                             'btn-' . $btn_index
                         ];
                         if ($cta_icon !== 'none') {
-                            $btn_classes[] = 'btn-icon-' . esc_attr($cta_icon);
+                            $btn_classes[] = 'md-icon-' . esc_attr($cta_icon);
                         }
                         if ($cta_class) {
                             $btn_classes[] = $cta_class;
