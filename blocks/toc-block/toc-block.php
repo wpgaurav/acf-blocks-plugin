@@ -339,14 +339,27 @@ if ( ! in_array( $title_tag, $allowed_title_tags ) ) {
     ?>
     <style><?php echo acf_blocks_minify_css( $variation_css ); ?></style>
     <?php endif; ?>
-    <?php if ( $title ) : ?>
-        <<?php echo esc_attr( $title_tag ); ?> class="<?php echo esc_attr( $title_classes ); ?>">
-            <?php echo esc_html( $title ); ?>
-        </<?php echo esc_attr( $title_tag ); ?>>
+    <?php if ( $collapsible ) : ?>
+        <details<?php echo ! $collapsed_default ? ' open' : ''; ?> class="acf-toc__details">
+            <summary class="acf-toc__summary">
+                <<?php echo esc_attr( $title_tag ); ?> class="<?php echo esc_attr( $title_classes ); ?>">
+                    <?php echo esc_html( $title ); ?>
+                </<?php echo esc_attr( $title_tag ); ?>>
+            </summary>
+            <div class="acf-toc__content">
+                <?php echo $toc_list; ?>
+            </div>
+        </details>
+    <?php else : ?>
+        <?php if ( $title ) : ?>
+            <<?php echo esc_attr( $title_tag ); ?> class="<?php echo esc_attr( $title_classes ); ?>">
+                <?php echo esc_html( $title ); ?>
+            </<?php echo esc_attr( $title_tag ); ?>>
+        <?php endif; ?>
+        <div class="acf-toc__content">
+            <?php echo $toc_list; ?>
+        </div>
     <?php endif; ?>
-    <div class="acf-toc__content">
-        <?php echo $toc_list; ?>
-    </div>
 </nav>
 
 <?php
