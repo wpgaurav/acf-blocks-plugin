@@ -158,9 +158,6 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'acf-product-box'
                             'acf-product-box__btn--' . esc_attr($cta_style),
                             'btn-' . $btn_index
                         ];
-                        if ($cta_icon !== 'none') {
-                            $btn_classes[] = 'md-icon-' . esc_attr($cta_icon);
-                        }
                         if ($cta_class) {
                             $btn_classes[] = $cta_class;
                         }
@@ -168,7 +165,7 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'acf-product-box'
                         $rel_attr = $cta_rel ? ' rel="' . esc_attr($cta_rel) . '"' : '';
                     ?>
                         <a href="<?php echo esc_url($cta_url); ?>" class="<?php echo esc_attr($class_attr); ?>"<?php echo $rel_attr; ?>>
-                            <span><?php echo esc_html($cta_text); ?></span>
+                            <?php if ($cta_icon !== 'none') : ?><i class="md-icon-<?php echo esc_attr($cta_icon); ?>" aria-hidden="true"></i><?php endif; ?><?php echo esc_html($cta_text); ?>
                         </a>
                     <?php
                         $btn_index++;
