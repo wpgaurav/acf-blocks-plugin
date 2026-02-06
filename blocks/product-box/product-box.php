@@ -165,7 +165,7 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'acf-product-box'
                         $rel_attr = $cta_rel ? ' rel="' . esc_attr($cta_rel) . '"' : '';
                     ?>
                         <a href="<?php echo esc_url($cta_url); ?>" class="<?php echo esc_attr($class_attr); ?>"<?php echo $rel_attr; ?>>
-                            <?php if ($cta_icon !== 'none') : ?><i class="md-icon-<?php echo esc_attr($cta_icon); ?>" aria-hidden="true"></i><?php endif; ?><?php echo esc_html($cta_text); ?>
+                            <?php if ($cta_icon !== 'none') : ?><i class="md-icon-<?php echo esc_attr($cta_icon); ?>" aria-hidden="true"></i> <?php endif; ?><?php echo esc_html($cta_text); ?>
                         </a>
                     <?php
                         $btn_index++;
