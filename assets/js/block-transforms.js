@@ -1,9 +1,11 @@
 /**
  * ACF Blocks - Block Transforms
  *
- * Enables converting core WordPress blocks to ACF Blocks.
- * - core/code → acf/code-block
+ * Enables converting between core WordPress blocks and ACF Blocks.
+ * - core/code ↔ acf/code-block
+ * - core/preformatted → acf/code-block
  * - core/list → acf/checklist OR acf/changelog
+ * - core/video → acf/video
  */
 
 ( function( wp ) {
@@ -119,6 +121,20 @@
                             } );
                         }
                     }
+                ] ),
+                to: ( settings.transforms && settings.transforms.to || [] ).concat( [
+                    {
+                        type: 'block',
+                        blocks: [ 'core/code' ],
+                        transform: function( attributes ) {
+                            var data = attributes.data || {};
+                            var content = data.code_content || '';
+
+                            return createBlock( 'core/code', {
+                                content: content
+                            } );
+                        }
+                    }
                 ] )
             } )
         } );
@@ -229,6 +245,58 @@
         } );
     }
 
+    /**
+     * Add transforms to ACF Video Block
+     */
+    function addVideoBlockTransforms( settings, name ) {
+        if ( name !== 'acf/video' ) {
+            return settings;
+        }
+
+        return Object.assign( {}, settings, {
+            transforms: Object.assign( {}, settings.transforms, {
+                from: ( settings.transforms && settings.transforms.from || [] ).concat( [
+                    {
+                        type: 'block',
+                        blocks: [ 'core/video' ],
+                        transform: function( attributes ) {
+                            var src = attributes.src || '';
+                            var data = {
+                                acf_video_caption: stripHtml( attributes.caption || '' ),
+                                acf_video_autoplay: attributes.autoplay ? 1 : 0,
+                                acf_video_loop: attributes.loop ? 1 : 0,
+                                acf_video_muted: attributes.muted ? 1 : 0,
+                                acf_video_controls: attributes.controls !== false ? 1 : 0,
+                                acf_video_aspect_ratio: '16-9'
+                            };
+
+                            // Detect video type from URL
+                            if ( src.match( /youtube\.com|youtu\.be/i ) ) {
+                                data.acf_video_type = 'youtube';
+                                data.acf_video_url = src;
+                            } else if ( src.match( /vimeo\.com/i ) ) {
+                                data.acf_video_type = 'vimeo';
+                                data.acf_video_url = src;
+                            } else {
+                                data.acf_video_type = 'self-hosted';
+                                data.acf_video_url = src;
+                                if ( attributes.id ) {
+                                    data.acf_video_file = attributes.id;
+                                }
+                            }
+
+                            if ( attributes.poster ) {
+                                data.acf_video_poster = attributes.poster;
+                            }
+
+                            return createBlock( 'acf/video', { data: data } );
+                        }
+                    }
+                ] )
+            } )
+        } );
+    }
+
     // Register the transform filters
     addFilter(
         'blocks.registerBlockType',
@@ -246,6 +314,12 @@
         'blocks.registerBlockType',
         'acf-blocks/changelog-block-transforms',
         addChangelogBlockTransforms
+    );
+
+    addFilter(
+        'blocks.registerBlockType',
+        'acf-blocks/video-block-transforms',
+        addVideoBlockTransforms
     );
 
 } )( window.wp );

@@ -21,22 +21,6 @@
       "name": "default",
       "label": "Default",
       "isDefault": true
-    },
-    {
-      "name": "boxed",
-      "label": "Boxed"
-    },
-    {
-      "name": "dark",
-      "label": "Dark"
-    },
-    {
-      "name": "minimal",
-      "label": "Minimal"
-    },
-    {
-      "name": "numbers",
-      "label": "Numbered"
     }
   ],
   "style": "file:./toc-block.css",

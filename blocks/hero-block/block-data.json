@@ -12,6 +12,25 @@
             "default_value": "Your Headline Here"
         },
         {
+            "key": "acf_hero_headline_tag",
+            "label": "Headline Tag",
+            "name": "acf_hero_headline_tag",
+            "type": "select",
+            "instructions": "Choose the HTML tag for the headline.",
+            "required": 0,
+            "choices": {
+                "h1": "H1 (default)",
+                "h2": "H2",
+                "h3": "H3",
+                "h4": "H4",
+                "h5": "H5",
+                "h6": "H6",
+                "p": "Paragraph (p)",
+                "span": "Span"
+            },
+            "default_value": "h1"
+        },
+        {
             "key": "acf_hero_subheadline",
             "label": "Subheadline",
             "name": "acf_hero_subheadline",
