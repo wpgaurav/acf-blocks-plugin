@@ -24,10 +24,6 @@
     {
       "name": "timeline",
       "label": "Timeline"
-    },
-    {
-      "name": "compact",
-      "label": "Compact"
     }
   ],
   "example": {

@@ -20,18 +20,6 @@
       "name": "default",
       "label": "Default",
       "isDefault": true
-    },
-    {
-      "name": "card",
-      "label": "Card"
-    },
-    {
-      "name": "minimal",
-      "label": "Minimal"
-    },
-    {
-      "name": "bordered",
-      "label": "Bordered"
     }
   ],
   "style": "file:./product-review.css",

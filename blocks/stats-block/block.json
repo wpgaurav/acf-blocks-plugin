@@ -21,26 +21,6 @@
       "name": "default",
       "label": "Default",
       "isDefault": true
-    },
-    {
-      "name": "card",
-      "label": "Card"
-    },
-    {
-      "name": "dark",
-      "label": "Dark"
-    },
-    {
-      "name": "minimal",
-      "label": "Minimal"
-    },
-    {
-      "name": "bordered",
-      "label": "Bordered"
-    },
-    {
-      "name": "gradient",
-      "label": "Gradient"
     }
   ],
   "example": {

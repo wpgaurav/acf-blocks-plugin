@@ -19,22 +19,6 @@
       "name": "default",
       "label": "Default",
       "isDefault": true
-    },
-    {
-      "name": "dark",
-      "label": "Dark"
-    },
-    {
-      "name": "card",
-      "label": "Card"
-    },
-    {
-      "name": "minimal",
-      "label": "Minimal"
-    },
-    {
-      "name": "bordered",
-      "label": "Bordered"
     }
   ],
   "style": "file:./compare-block.css",

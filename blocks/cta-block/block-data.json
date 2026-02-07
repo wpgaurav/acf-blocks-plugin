@@ -12,6 +12,25 @@
             "default_value": "Ready to Get Started?"
         },
         {
+            "key": "acf_cta_heading_tag",
+            "label": "Heading Tag",
+            "name": "acf_cta_heading_tag",
+            "type": "select",
+            "instructions": "Choose the HTML tag for the heading.",
+            "required": 0,
+            "choices": {
+                "h2": "H2 (default)",
+                "h1": "H1",
+                "h3": "H3",
+                "h4": "H4",
+                "h5": "H5",
+                "h6": "H6",
+                "p": "Paragraph (p)",
+                "span": "Span"
+            },
+            "default_value": "h2"
+        },
+        {
             "key": "acf_cta_description",
             "label": "Description",
             "name": "acf_cta_description",

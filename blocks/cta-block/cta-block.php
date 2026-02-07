@@ -43,8 +43,19 @@ $legacy_button_url  = acf_blocks_get_field( 'acf_cta_button_url', $block );
 $legacy_button_style = acf_blocks_get_field( 'acf_cta_button_style', $block );
 $has_legacy_content = $legacy_heading || $legacy_description || $legacy_button_text;
 
+// Heading tag selection (h1-h6, p, span) - defaults to h2
+$heading_tag = acf_blocks_get_field( 'acf_cta_heading_tag', $block ) ?: 'h2';
+$allowed_heading_tags = array( 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span' );
+if ( ! in_array( $heading_tag, $allowed_heading_tags ) ) {
+    $heading_tag = 'h2';
+}
+$heading_level = 2;
+if ( preg_match( '/^h([1-6])$/', $heading_tag, $level_match ) ) {
+    $heading_level = (int) $level_match[1];
+}
+
 $inner_blocks_template = [
-    [ 'core/heading', [ 'level' => 2, 'placeholder' => 'CTA Heading...' ] ],
+    [ 'core/heading', [ 'level' => $heading_level, 'placeholder' => 'CTA Heading...' ] ],
     [ 'core/paragraph', [ 'placeholder' => 'CTA description text...' ] ],
     [ 'core/buttons', [], [
         [ 'core/button', [ 'placeholder' => 'Button text...' ] ]
@@ -57,7 +68,7 @@ $inner_blocks_template = [
         <?php if ( $has_legacy_content && empty( trim( $content ) ) ) : ?>
             <?php // Legacy rendering for blocks created before InnerBlocks migration ?>
             <?php if ( $legacy_heading ) : ?>
-                <h2 class="acf-cta-heading"><?php echo esc_html( $legacy_heading ); ?></h2>
+                <<?php echo esc_attr( $heading_tag ); ?> class="acf-cta-heading"><?php echo esc_html( $legacy_heading ); ?></<?php echo esc_attr( $heading_tag ); ?>>
             <?php endif; ?>
 
             <?php if ( $legacy_description ) : ?>

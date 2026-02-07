@@ -21,22 +21,6 @@
       "name": "default",
       "label": "Default",
       "isDefault": true
-    },
-    {
-      "name": "dark",
-      "label": "Dark"
-    },
-    {
-      "name": "card",
-      "label": "Card"
-    },
-    {
-      "name": "minimal",
-      "label": "Minimal"
-    },
-    {
-      "name": "bubble",
-      "label": "Speech Bubble"
     }
   ],
   "example": {
