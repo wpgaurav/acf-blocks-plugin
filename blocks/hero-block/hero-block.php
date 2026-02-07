@@ -40,8 +40,21 @@ $legacy_cta_url     = acf_blocks_get_field( 'acf_hero_cta_url', $block );
 $legacy_cta_style   = acf_blocks_get_field( 'acf_hero_cta_style', $block );
 $has_legacy_content = $legacy_headline || $legacy_subheadline || $legacy_cta_text;
 
+// Headline tag selection (h1-h6, p, span) - defaults to h1
+$headline_tag = acf_blocks_get_field( 'acf_hero_headline_tag', $block ) ?: 'h1';
+$allowed_headline_tags = array( 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span' );
+if ( ! in_array( $headline_tag, $allowed_headline_tags ) ) {
+    $headline_tag = 'h1';
+}
+
+// Determine InnerBlocks heading level from selected tag (defaults to h1 for non-heading tags)
+$heading_level = 1;
+if ( preg_match( '/^h([1-6])$/', $headline_tag, $level_match ) ) {
+    $heading_level = (int) $level_match[1];
+}
+
 $inner_blocks_template = [
-    [ 'core/heading', [ 'level' => 1, 'placeholder' => 'Hero Headline...' ] ],
+    [ 'core/heading', [ 'level' => $heading_level, 'placeholder' => 'Hero Headline...' ] ],
     [ 'core/paragraph', [ 'placeholder' => 'Hero subheadline text...' ] ],
     [ 'core/buttons', [], [
         [ 'core/button', [ 'placeholder' => 'CTA text...' ] ]
@@ -60,7 +73,7 @@ $inner_blocks_template = [
         <?php if ( $has_legacy_content && empty( trim( $content ) ) ) : ?>
             <?php // Legacy rendering for blocks created before InnerBlocks migration ?>
             <?php if ( $legacy_headline ) : ?>
-                <h1 class="acf-hero-headline"><?php echo esc_html( $legacy_headline ); ?></h1>
+                <<?php echo esc_attr( $headline_tag ); ?> class="acf-hero-headline"><?php echo esc_html( $legacy_headline ); ?></<?php echo esc_attr( $headline_tag ); ?>>
             <?php endif; ?>
 
             <?php if ( $legacy_subheadline ) : ?>

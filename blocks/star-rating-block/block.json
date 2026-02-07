@@ -20,22 +20,6 @@
       "name": "default",
       "label": "Default",
       "isDefault": true
-    },
-    {
-      "name": "dark",
-      "label": "Dark"
-    },
-    {
-      "name": "minimal",
-      "label": "Minimal"
-    },
-    {
-      "name": "compact",
-      "label": "Compact"
-    },
-    {
-      "name": "gradient",
-      "label": "Gradient"
     }
   ],
   "style": "file:./star-rating-block.css",

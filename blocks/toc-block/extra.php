@@ -27,8 +27,10 @@ function acf_toc_add_heading_ids( $content ) {
         return $content;
     }
 
-    // Check if any TOC block is present
-    if ( ! has_block( 'acf/toc', $content ) ) {
+    // Check original post content for TOC block presence
+    // (block comments are already resolved to HTML at this priority)
+    global $post;
+    if ( ! $post || ! has_block( 'acf/toc', $post->post_content ) ) {
         return $content;
     }
 
@@ -79,7 +81,7 @@ function acf_toc_add_heading_ids( $content ) {
 
     return $content;
 }
-add_filter( 'the_content', 'acf_toc_add_heading_ids', 5 );
+add_filter( 'the_content', 'acf_toc_add_heading_ids', 10 );
 
 /**
  * Add scroll-margin-top to headings when TOC is present.
