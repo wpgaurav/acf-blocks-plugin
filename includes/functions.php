@@ -314,6 +314,12 @@ add_action( 'enqueue_block_editor_assets', 'acf_blocks_enqueue_editor_assets' );
  * Uses a very high priority (999999) to load after theme and other plugin styles.
  */
 function acf_blocks_enqueue_editor_styles() {
+    // Only load in admin/editor context — frontend styles are handled
+    // conditionally by register_block_type() via wp_register_style().
+    if ( ! is_admin() ) {
+        return;
+    }
+
     $blocks_dir = ACF_BLOCKS_PLUGIN_DIR . 'blocks/';
     $blocks_url = ACF_BLOCKS_PLUGIN_URL . 'blocks/';
 
