@@ -54,6 +54,10 @@ $placeholder_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300
     </g>
 </svg>';
 
+// Detect no-image style variation
+$className = $block['className'] ?? '';
+$is_no_image = strpos($className, 'is-style-no-image') !== false;
+
 // Block wrapper attributes
 $wrapper_attributes = get_block_wrapper_attributes(['class' => 'acf-product-box']);
 ?>
@@ -66,13 +70,15 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'acf-product-box'
     <?php endif; ?>
 
     <div class="acf-product-box__layout">
-        <div class="acf-product-box__image">
-            <?php if ($img_src) : ?>
-                <img src="<?php echo esc_url($img_src); ?>" alt="<?php echo esc_attr($img_alt); ?>" loading="lazy" decoding="async" />
-            <?php else : ?>
-                <?php echo $placeholder_svg; ?>
-            <?php endif; ?>
-        </div>
+        <?php if (!$is_no_image) : ?>
+            <div class="acf-product-box__image">
+                <?php if ($img_src) : ?>
+                    <img src="<?php echo esc_url($img_src); ?>" alt="<?php echo esc_attr($img_alt); ?>" loading="lazy" decoding="async" />
+                <?php else : ?>
+                    <?php echo $placeholder_svg; ?>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
 
         <div class="acf-product-box__content">
             <?php if ($title) : ?>
