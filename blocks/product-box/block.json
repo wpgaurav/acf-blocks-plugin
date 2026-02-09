@@ -10,6 +10,17 @@
     "renderTemplate": "product-box.php",
     "blockVersion": 3
   },
+  "styles": [
+    {
+      "name": "default",
+      "label": "Default",
+      "isDefault": true
+    },
+    {
+      "name": "no-image",
+      "label": "No Image"
+    }
+  ],
   "supports": {
     "align": ["wide", "full"],
     "mode": true,
