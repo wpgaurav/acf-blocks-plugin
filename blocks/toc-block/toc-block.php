@@ -10,48 +10,6 @@
  */
 
 /**
- * Generate a compact TOC ID from heading text.
- *
- * Limits the slug to a maximum number of words and appends
- * a sequential number to keep IDs short and unique.
- *
- * @param string $text     The heading text.
- * @param int    $position 1-based position of the heading.
- * @param int    $max_words Maximum words to include in the slug.
- * @return string The compact ID.
- */
-if ( ! function_exists( 'acf_toc_generate_compact_id' ) ) {
-    function acf_toc_generate_compact_id( $text, $position, $max_words = 4 ) {
-        $words = preg_split( '/\s+/', trim( $text ) );
-        $truncated = implode( ' ', array_slice( $words, 0, $max_words ) );
-        $slug = sanitize_title( $truncated );
-
-        if ( empty( $slug ) ) {
-            $slug = 'heading';
-        }
-
-        return $slug . '-' . $position;
-    }
-}
-
-/**
- * Truncate text to a maximum number of words, appending ellipsis if needed.
- *
- * @param string $text      The text to truncate.
- * @param int    $max_words Maximum words to keep.
- * @return string The truncated text.
- */
-if ( ! function_exists( 'acf_toc_truncate_text' ) ) {
-    function acf_toc_truncate_text( $text, $max_words = 6 ) {
-        $words = preg_split( '/\s+/', trim( $text ) );
-        if ( count( $words ) <= $max_words ) {
-            return $text;
-        }
-        return implode( ' ', array_slice( $words, 0, $max_words ) ) . "\u{2026}";
-    }
-}
-
-/**
  * Extract headings from post content
  */
 if ( ! function_exists( 'acf_toc_extract_headings' ) ) {
@@ -71,13 +29,13 @@ if ( ! function_exists( 'acf_toc_extract_headings' ) ) {
         preg_match_all( $pattern, $content, $matches, PREG_SET_ORDER );
 
         $headings = array();
+        $id_counts = array();
 
         foreach ( $matches as $match ) {
             $tag        = strtolower( $match[1] );
             $attributes = $match[2];
             $text       = wp_strip_all_tags( $match[3] );
             $level      = (int) substr( $tag, 1 );
-            $position   = count( $headings ) + 1;
 
             // Try to extract existing ID from attributes
             $id = '';
@@ -85,17 +43,27 @@ if ( ! function_exists( 'acf_toc_extract_headings' ) ) {
                 $id = $id_match[1];
             }
 
-            // Generate compact ID from text if no ID exists
+            // Generate ID from text if no ID exists
             if ( empty( $id ) ) {
-                $id = acf_toc_generate_compact_id( $text, $position );
+                $id = sanitize_title( $text );
+                if ( empty( $id ) ) {
+                    $id = 'heading-' . count( $headings );
+                }
+            }
+
+            // Handle duplicate IDs
+            if ( isset( $id_counts[ $id ] ) ) {
+                $id_counts[ $id ]++;
+                $id = $id . '-' . $id_counts[ $id ];
+            } else {
+                $id_counts[ $id ] = 1;
             }
 
             $headings[] = array(
-                'id'        => $id,
-                'text'      => acf_toc_truncate_text( $text ),
-                'full_text' => $text,
-                'level'     => $level,
-                'tag'       => $tag,
+                'id'    => $id,
+                'text'  => $text,
+                'level' => $level,
+                'tag'   => $tag,
             );
         }
 
@@ -213,7 +181,7 @@ if ( ! function_exists( 'acf_toc_generate_schema' ) ) {
             $items[] = array(
                 '@type'    => 'SiteNavigationElement',
                 'position' => $index + 1,
-                'name'     => ! empty( $heading['full_text'] ) ? $heading['full_text'] : $heading['text'],
+                'name'     => $heading['text'],
                 'url'      => $permalink . '#' . $heading['id'],
             );
         }

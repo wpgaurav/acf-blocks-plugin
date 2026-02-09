@@ -36,16 +36,14 @@ function acf_toc_add_heading_ids( $content ) {
 
     // Track existing IDs to avoid duplicates
     $existing_ids = array();
-    $position = 0;
 
     // Find all headings without IDs
     $pattern = '/<(h[1-6])([^>]*)>(.*?)<\/\1>/is';
 
-    $content = preg_replace_callback( $pattern, function( $matches ) use ( &$existing_ids, &$position ) {
+    $content = preg_replace_callback( $pattern, function( $matches ) use ( &$existing_ids ) {
         $tag        = $matches[1];
         $attributes = $matches[2];
         $text       = $matches[3];
-        $position++;
 
         // Check if heading already has an ID
         if ( preg_match( '/\bid=["\']([^"\']+)["\']/i', $attributes, $id_match ) ) {
@@ -53,17 +51,22 @@ function acf_toc_add_heading_ids( $content ) {
             return $matches[0]; // Return unchanged
         }
 
-        // Generate compact ID from heading text (max 4 words + position number)
+        // Generate ID from heading text
         $heading_text = wp_strip_all_tags( $text );
-        if ( function_exists( 'acf_toc_generate_compact_id' ) ) {
-            $id = acf_toc_generate_compact_id( $heading_text, $position );
-        } else {
-            $words = preg_split( '/\s+/', trim( $heading_text ) );
-            $truncated = implode( ' ', array_slice( $words, 0, 4 ) );
-            $slug = sanitize_title( $truncated );
-            $id = ( ! empty( $slug ) ? $slug : 'heading' ) . '-' . $position;
+        $id = sanitize_title( $heading_text );
+
+        // Handle empty IDs
+        if ( empty( $id ) ) {
+            $id = 'heading-' . wp_rand( 1000, 9999 );
         }
 
+        // Handle duplicates
+        $original_id = $id;
+        $counter = 2;
+        while ( isset( $existing_ids[ $id ] ) ) {
+            $id = $original_id . '-' . $counter;
+            $counter++;
+        }
         $existing_ids[ $id ] = true;
 
         // Add ID to the heading
