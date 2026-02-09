@@ -10,6 +10,48 @@
  */
 
 /**
+ * Generate a compact TOC ID from heading text.
+ *
+ * Limits the slug to a maximum number of words and appends
+ * a sequential number to keep IDs short and unique.
+ *
+ * @param string $text     The heading text.
+ * @param int    $position 1-based position of the heading.
+ * @param int    $max_words Maximum words to include in the slug.
+ * @return string The compact ID.
+ */
+if ( ! function_exists( 'acf_toc_generate_compact_id' ) ) {
+    function acf_toc_generate_compact_id( $text, $position, $max_words = 4 ) {
+        $words = preg_split( '/\s+/', trim( $text ) );
+        $truncated = implode( ' ', array_slice( $words, 0, $max_words ) );
+        $slug = sanitize_title( $truncated );
+
+        if ( empty( $slug ) ) {
+            $slug = 'heading';
+        }
+
+        return $slug . '-' . $position;
+    }
+}
+
+/**
+ * Truncate text to a maximum number of words, appending ellipsis if needed.
+ *
+ * @param string $text      The text to truncate.
+ * @param int    $max_words Maximum words to keep.
+ * @return string The truncated text.
+ */
+if ( ! function_exists( 'acf_toc_truncate_text' ) ) {
+    function acf_toc_truncate_text( $text, $max_words = 6 ) {
+        $words = preg_split( '/\s+/', trim( $text ) );
+        if ( count( $words ) <= $max_words ) {
+            return $text;
+        }
+        return implode( ' ', array_slice( $words, 0, $max_words ) ) . "\u{2026}";
+    }
+}
+
+/**
  * Extract headings from post content
  */
 if ( ! function_exists( 'acf_toc_extract_headings' ) ) {
@@ -29,13 +71,13 @@ if ( ! function_exists( 'acf_toc_extract_headings' ) ) {
         preg_match_all( $pattern, $content, $matches, PREG_SET_ORDER );
 
         $headings = array();
-        $id_counts = array();
 
         foreach ( $matches as $match ) {
             $tag        = strtolower( $match[1] );
             $attributes = $match[2];
             $text       = wp_strip_all_tags( $match[3] );
             $level      = (int) substr( $tag, 1 );
+            $position   = count( $headings ) + 1;
 
             // Try to extract existing ID from attributes
             $id = '';
@@ -43,27 +85,17 @@ if ( ! function_exists( 'acf_toc_extract_headings' ) ) {
                 $id = $id_match[1];
             }
 
-            // Generate ID from text if no ID exists
+            // Generate compact ID from text if no ID exists
             if ( empty( $id ) ) {
-                $id = sanitize_title( $text );
-                if ( empty( $id ) ) {
-                    $id = 'heading-' . count( $headings );
-                }
-            }
-
-            // Handle duplicate IDs
-            if ( isset( $id_counts[ $id ] ) ) {
-                $id_counts[ $id ]++;
-                $id = $id . '-' . $id_counts[ $id ];
-            } else {
-                $id_counts[ $id ] = 1;
+                $id = acf_toc_generate_compact_id( $text, $position );
             }
 
             $headings[] = array(
-                'id'    => $id,
-                'text'  => $text,
-                'level' => $level,
-                'tag'   => $tag,
+                'id'        => $id,
+                'text'      => acf_toc_truncate_text( $text ),
+                'full_text' => $text,
+                'level'     => $level,
+                'tag'       => $tag,
             );
         }
 
@@ -181,7 +213,7 @@ if ( ! function_exists( 'acf_toc_generate_schema' ) ) {
             $items[] = array(
                 '@type'    => 'SiteNavigationElement',
                 'position' => $index + 1,
-                'name'     => $heading['text'],
+                'name'     => ! empty( $heading['full_text'] ) ? $heading['full_text'] : $heading['text'],
                 'url'      => $permalink . '#' . $heading['id'],
             );
         }
@@ -343,7 +375,7 @@ if ( $include_schema && ! $is_preview && ! empty( $headings ) ) {
 // Inline CSS for sticky behavior (only when sticky is enabled)
 if ( $sticky && ! defined( 'ACF_TOC_STICKY_CSS_LOADED' ) ) :
     define( 'ACF_TOC_STICKY_CSS_LOADED', true );
-    $sticky_css = ':root{--acf-toc-sticky-offset:calc(var(--header-height,0px) + var(--wp-admin--admin-bar--height,0px) + 20px)}@media(min-width:1400px){.acf-toc--sticky{position:fixed;top:var(--acf-toc-sticky-offset);left:0;max-width:220px;max-height:calc(100vh - var(--acf-toc-sticky-offset) - 20px);overflow-y:auto;scrollbar-width:thin;font-size:0.8125em;line-height:1.4;z-index:100}.acf-toc--sticky .acf-toc__title{font-size:0.875em;margin-bottom:0.5em}.acf-toc--sticky .acf-toc__content{padding-left:0.75em;border-left-width:2px}.acf-toc--sticky .acf-toc__item{padding:0.125em 0}.acf-toc--sticky .acf-toc__link{padding-left:0.375em}.acf-toc--sticky .acf-toc__sublist{padding-left:0.75em;margin-top:0.125em;margin-left:0}.acf-toc--sticky::-webkit-scrollbar{width:3px}.acf-toc--sticky::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,0.15);border-radius:2px}}';
+    $sticky_css = ':root{--acf-toc-sticky-offset:calc(var(--header-height,0px) + var(--wp-admin--admin-bar--height,0px) + 20px)}@media(min-width:1400px){.acf-toc--sticky{position:fixed;top:var(--acf-toc-sticky-offset);left:0;max-width:220px;max-height:calc(100vh - var(--acf-toc-sticky-offset) - 20px);overflow-y:auto;scrollbar-width:thin;font-size:0.8125em;line-height:1.4;z-index:100;padding:0.75rem 1rem;border-radius:0.375rem}.acf-toc--sticky .acf-toc__title{font-size:0.8125rem;margin-bottom:0.5em}.acf-toc--sticky .acf-toc__content{padding-left:0.625em;border-left-width:1px}.acf-toc--sticky .acf-toc__item{padding:0.125em 0}.acf-toc--sticky .acf-toc__link{padding:0.0625em 0.25em}.acf-toc--sticky .acf-toc__sublist{padding-left:0.625em;margin-top:0.125em;margin-left:0}.acf-toc--sticky::-webkit-scrollbar{width:3px}.acf-toc--sticky::-webkit-scrollbar-thumb{background-color:rgba(0,0,0,0.15);border-radius:2px}}';
     echo '<style>' . acf_blocks_minify_css( $sticky_css ) . '</style>';
     // Set custom offset if provided
     if ( $sticky_offset && $sticky_offset != 20 ) {
