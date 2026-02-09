@@ -129,8 +129,10 @@ function acf_blocks_localize_block_data( &$data, &$modified ) {
 /**
  * Check whether a URL belongs to the current site.
  *
- * Compares host names with and without the www. prefix so that
- * example.com and www.example.com are both treated as local.
+ * Treats the following as local:
+ *   - Exact host match (with/without www.)
+ *   - Any subdomain of the site's root domain (e.g. cdn.example.com)
+ *   - Bunny CDN URLs (*.b-cdn.net)
  *
  * @param string $url The URL to check.
  * @return bool True if the URL is local.
@@ -147,7 +149,29 @@ function acf_blocks_is_local_url( $url ) {
     $site_bare = preg_replace( '/^www\./i', '', $site_host );
     $url_bare  = preg_replace( '/^www\./i', '', $url_host );
 
-    return ( $url_bare === $site_bare );
+    // Exact match.
+    if ( $url_bare === $site_bare ) {
+        return true;
+    }
+
+    // Subdomain match — url_host ends with .site_bare (e.g. cdn.example.com).
+    if ( str_ends_with( $url_bare, '.' . $site_bare ) ) {
+        return true;
+    }
+
+    // Bunny CDN (*.b-cdn.net) — treat as local / owned CDN.
+    if ( str_ends_with( $url_host, '.b-cdn.net' ) ) {
+        return true;
+    }
+
+    /**
+     * Filter to let site owners add custom CDN hosts treated as local.
+     *
+     * @param bool   $is_local Whether the URL is considered local.
+     * @param string $url_host The hostname of the URL being checked.
+     * @param string $site_bare The bare (no www.) hostname of the site.
+     */
+    return (bool) apply_filters( 'acf_blocks_is_local_image_url', false, $url_host, $site_bare );
 }
 
 /**
