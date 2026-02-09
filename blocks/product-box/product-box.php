@@ -128,7 +128,7 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'acf-product-box'
                 if (!$pb_features_script) :
                     $pb_features_script = true;
                 ?>
-                <script>document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('.acf-product-box__features-wrap').forEach(function(w){var l=w.querySelector('.acf-product-box__features'),b=w.querySelector('.acf-product-box__features-toggle');if(!l||!b)return;if(l.scrollHeight>400)b.hidden=false;b.addEventListener('click',function(){var e=l.classList.toggle('is-expanded');b.textContent=e?'Show less':'Show more'})})});</script>
+                <script>document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('.acf-product-box__features-wrap').forEach(function(w){var l=w.querySelector('.acf-product-box__features'),b=w.querySelector('.acf-product-box__features-toggle');if(!l||!b)return;if(l.scrollHeight>280)b.hidden=false;b.addEventListener('click',function(){var e=l.classList.toggle('is-expanded');b.textContent=e?'Show less':'Show more'})})});</script>
                 <?php endif; ?>
             <?php endif; ?>
 
