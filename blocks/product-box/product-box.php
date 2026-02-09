@@ -113,13 +113,23 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'acf-product-box'
             <?php endif; ?>
 
             <?php if (!empty($features)) : ?>
-                <ul class="acf-product-box__features">
-                    <?php foreach ($features as $feature) : ?>
-                        <?php if (!empty($feature['pb_feature_text'])) : ?>
-                            <li><?php echo esc_html($feature['pb_feature_text']); ?></li>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
-                </ul>
+                <div class="acf-product-box__features-wrap">
+                    <ul class="acf-product-box__features">
+                        <?php foreach ($features as $feature) : ?>
+                            <?php if (!empty($feature['pb_feature_text'])) : ?>
+                                <li><?php echo esc_html($feature['pb_feature_text']); ?></li>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </ul>
+                    <button type="button" class="acf-product-box__features-toggle" hidden>Show more</button>
+                </div>
+                <?php
+                static $pb_features_script = false;
+                if (!$pb_features_script) :
+                    $pb_features_script = true;
+                ?>
+                <script>document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('.acf-product-box__features-wrap').forEach(function(w){var l=w.querySelector('.acf-product-box__features'),b=w.querySelector('.acf-product-box__features-toggle');if(!l||!b)return;if(l.scrollHeight>400)b.hidden=false;b.addEventListener('click',function(){var e=l.classList.toggle('is-expanded');b.textContent=e?'Show less':'Show more'})})});</script>
+                <?php endif; ?>
             <?php endif; ?>
 
             <?php if ($original_price || $current_price) : ?>
