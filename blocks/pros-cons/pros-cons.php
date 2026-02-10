@@ -107,6 +107,7 @@ $block_id = 'pc-' . uniqid();
 /**
  * Process list HTML to add icons to list items.
  */
+if ( ! function_exists( 'acf_pros_cons_process_list' ) ) {
 function acf_pros_cons_process_list($html, $type = 'positive') {
     if (empty($html)) {
         return '';
@@ -123,4 +124,5 @@ function acf_pros_cons_process_list($html, $type = 'positive') {
     $html = str_replace('</li>', '</span></li>', $html);
 
     return $html;
+}
 }
