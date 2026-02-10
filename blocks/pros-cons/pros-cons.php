@@ -5,6 +5,31 @@
  * @param array $block The block settings and attributes.
  */
 
+/**
+ * Process list HTML to add icons to list items.
+ * Defined before use, wrapped in function_exists to prevent redeclaration
+ * when this template is included multiple times (e.g. REST API saves).
+ */
+if ( ! function_exists( 'acf_pros_cons_process_list' ) ) {
+    function acf_pros_cons_process_list($html, $type = 'positive') {
+        if (empty($html)) {
+            return '';
+        }
+
+        // SVG icons (inline for performance - no extra HTTP requests)
+        $check_icon = '<span class="acf-pros-cons__icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>';
+        $x_icon = '<span class="acf-pros-cons__icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>';
+
+        $icon = ($type === 'positive') ? $check_icon : $x_icon;
+
+        // Add icon to each list item
+        $html = preg_replace('/<li([^>]*)>/', '<li$1>' . $icon . '<span class="acf-pros-cons__item-content">', $html);
+        $html = str_replace('</li>', '</span></li>', $html);
+
+        return $html;
+    }
+}
+
 // Block attributes
 $align = $block['align'] ?? '';
 $anchor = $block['anchor'] ?? '';
@@ -102,27 +127,3 @@ $block_id = 'pc-' . uniqid();
     }
     ?>
 </div>
-
-<?php
-/**
- * Process list HTML to add icons to list items.
- */
-if ( ! function_exists( 'acf_pros_cons_process_list' ) ) {
-function acf_pros_cons_process_list($html, $type = 'positive') {
-    if (empty($html)) {
-        return '';
-    }
-
-    // SVG icons (inline for performance - no extra HTTP requests)
-    $check_icon = '<span class="acf-pros-cons__icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>';
-    $x_icon = '<span class="acf-pros-cons__icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>';
-
-    $icon = ($type === 'positive') ? $check_icon : $x_icon;
-
-    // Add icon to each list item
-    $html = preg_replace('/<li([^>]*)>/', '<li$1>' . $icon . '<span class="acf-pros-cons__item-content">', $html);
-    $html = str_replace('</li>', '</span></li>', $html);
-
-    return $html;
-}
-}
