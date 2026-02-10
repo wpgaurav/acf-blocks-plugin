@@ -21,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @param string $content The post content.
  * @return string Modified content with heading IDs.
  */
+if ( ! function_exists( 'acf_toc_add_heading_ids' ) ) {
 function acf_toc_add_heading_ids( $content ) {
     // Only process on singular pages with content
     if ( is_admin() || empty( $content ) ) {
@@ -82,6 +83,7 @@ function acf_toc_add_heading_ids( $content ) {
     return $content;
 }
 add_filter( 'the_content', 'acf_toc_add_heading_ids', 10 );
+}
 
 /**
  * Add scroll-margin-top to headings when TOC is present.
@@ -89,6 +91,7 @@ add_filter( 'the_content', 'acf_toc_add_heading_ids', 10 );
  * This ensures headings are not hidden behind fixed headers
  * when navigating via TOC links.
  */
+if ( ! function_exists( 'acf_toc_add_scroll_margin_style' ) ) {
 function acf_toc_add_scroll_margin_style() {
     global $post;
 
@@ -107,3 +110,4 @@ function acf_toc_add_scroll_margin_style() {
     <?php
 }
 add_action( 'wp_head', 'acf_toc_add_scroll_margin_style', 99 );
+}

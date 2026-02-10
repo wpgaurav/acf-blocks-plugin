@@ -18,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @param int   $post_id The post ID.
  * @return array Modified arguments.
  */
+if ( ! function_exists( 'acf_blocks_optimize_post_display_query' ) ) {
 function acf_blocks_optimize_post_display_query( $args, $field, $post_id ) {
     // Only apply to our specific field
     if ( ! isset( $field['key'] ) || $field['key'] !== 'field_pd_selected_posts' ) {
@@ -48,6 +49,7 @@ function acf_blocks_optimize_post_display_query( $args, $field, $post_id ) {
     return $args;
 }
 add_filter( 'acf/fields/relationship/query', 'acf_blocks_optimize_post_display_query', 10, 3 );
+}
 
 /**
  * Modify WHERE clause to search only in post_title.
@@ -56,6 +58,7 @@ add_filter( 'acf/fields/relationship/query', 'acf_blocks_optimize_post_display_q
  * @param WP_Query $wp_query The query object.
  * @return string Modified WHERE clause.
  */
+if ( ! function_exists( 'acf_blocks_title_only_search' ) ) {
 function acf_blocks_title_only_search( $where, $wp_query ) {
     global $wpdb;
 
@@ -71,6 +74,7 @@ function acf_blocks_title_only_search( $where, $wp_query ) {
 
     return $where;
 }
+}
 
 /**
  * Optimize relationship field results - only return essential data.
@@ -80,6 +84,7 @@ function acf_blocks_title_only_search( $where, $wp_query ) {
  * @param int|string $post_id Post ID.
  * @return array
  */
+if ( ! function_exists( 'acf_blocks_optimize_post_display_result' ) ) {
 function acf_blocks_optimize_post_display_result( $args, $field, $post_id ) {
     if ( ! isset( $field['key'] ) || $field['key'] !== 'field_pd_selected_posts' ) {
         return $args;
@@ -91,3 +96,4 @@ function acf_blocks_optimize_post_display_result( $args, $field, $post_id ) {
     return $args;
 }
 add_filter( 'acf/fields/relationship/query', 'acf_blocks_optimize_post_display_result', 5, 3 );
+}
