@@ -12,6 +12,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Enqueue admin scripts for the URL Preview block
  */
+if ( ! function_exists( 'acf_url_preview_admin_scripts' ) ) {
 function acf_url_preview_admin_scripts() {
     if ( ! is_admin() ) {
         return;
@@ -53,12 +54,14 @@ function acf_url_preview_admin_scripts() {
     ) );
 }
 add_action( 'admin_enqueue_scripts', 'acf_url_preview_admin_scripts' );
+}
 
 /**
  * Get the admin JavaScript code
  *
  * @return string JavaScript code
  */
+if ( ! function_exists( 'acf_url_preview_get_admin_script' ) ) {
 function acf_url_preview_get_admin_script() {
     return <<<'JS'
 (function($) {
@@ -199,10 +202,12 @@ function acf_url_preview_get_admin_script() {
 })(jQuery);
 JS;
 }
+}
 
 /**
  * AJAX handler for fetching URL metadata
  */
+if ( ! function_exists( 'acf_url_preview_fetch_handler' ) ) {
 function acf_url_preview_fetch_handler() {
     // Verify nonce
     if ( ! check_ajax_referer( 'acf_url_preview_fetch', 'nonce', false ) ) {
@@ -262,6 +267,7 @@ function acf_url_preview_fetch_handler() {
     wp_send_json_success( $data );
 }
 add_action( 'wp_ajax_acf_url_preview_fetch', 'acf_url_preview_fetch_handler' );
+}
 
 /**
  * Parse HTML to extract Open Graph and meta data
@@ -270,6 +276,7 @@ add_action( 'wp_ajax_acf_url_preview_fetch', 'acf_url_preview_fetch_handler' );
  * @param string $url The original URL (for resolving relative URLs)
  * @return array Extracted data
  */
+if ( ! function_exists( 'acf_url_preview_parse_html' ) ) {
 function acf_url_preview_parse_html( $html, $url ) {
     $data = array(
         'title' => '',
@@ -393,6 +400,7 @@ function acf_url_preview_parse_html( $html, $url ) {
 
     return $data;
 }
+}
 
 /**
  * Resolve relative URLs to absolute
@@ -401,6 +409,7 @@ function acf_url_preview_parse_html( $html, $url ) {
  * @param string $base_url The base URL
  * @return string Absolute URL
  */
+if ( ! function_exists( 'acf_url_preview_resolve_url' ) ) {
 function acf_url_preview_resolve_url( $relative_url, $base_url ) {
     $relative_url = trim( $relative_url );
 
@@ -437,6 +446,7 @@ function acf_url_preview_resolve_url( $relative_url, $base_url ) {
 
     return $base . $path . '/' . $relative_url;
 }
+}
 
 /**
  * Get image dimensions from URL (with caching)
@@ -444,6 +454,7 @@ function acf_url_preview_resolve_url( $relative_url, $base_url ) {
  * @param string $url Image URL
  * @return array|false Array with width and height, or false on failure
  */
+if ( ! function_exists( 'acf_url_preview_get_image_dimensions' ) ) {
 function acf_url_preview_get_image_dimensions( $url ) {
     // Quick check using getimagesize with stream context
     $context = stream_context_create( array(
@@ -478,10 +489,12 @@ function acf_url_preview_get_image_dimensions( $url ) {
 
     return false;
 }
+}
 
 /**
  * AJAX handler for importing external image to media library
  */
+if ( ! function_exists( 'acf_url_preview_import_image_handler' ) ) {
 function acf_url_preview_import_image_handler() {
     // Verify nonce
     if ( ! check_ajax_referer( 'acf_url_preview_import', 'nonce', false ) ) {
@@ -575,3 +588,4 @@ function acf_url_preview_import_image_handler() {
     ) );
 }
 add_action( 'wp_ajax_acf_url_preview_import_image', 'acf_url_preview_import_image_handler' );
+}
