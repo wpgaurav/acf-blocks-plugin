@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class ACF_Blocks_License_Manager {
 
 	const LICENSE_SERVER  = 'https://gauravtiwari.org/';
-	const ITEM_ID        = 0; // Set after creating FluentCart product
+	const ITEM_ID        = 1150934;
 	const OPTION_KEY     = 'acf_blocks_license';
 	const LAST_CHECK_KEY = 'acf_blocks_license_last_check';
 	const UPDATE_TRANSIENT = 'acf_blocks_update_info';
