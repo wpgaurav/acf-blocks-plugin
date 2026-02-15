@@ -82,6 +82,72 @@ function acf_blocks_get_repeater( $name, $sub_names, $block = array() ) {
     }
 
     if ( $count < 1 ) {
+        // Fallback: parse nested row format (row-0, row-1, etc.)
+        // ACF 6.7+ may store repeater data as nested arrays in block comments.
+        if ( isset( $data[ $name ] ) && is_array( $data[ $name ] ) ) {
+            $rows = array();
+            foreach ( $data[ $name ] as $row_key => $row_data ) {
+                if ( ! is_array( $row_data ) ) {
+                    continue;
+                }
+                $row = array();
+                foreach ( $fields as $sub_name => $type ) {
+                    $value = $row_data[ $sub_name ] ?? null;
+
+                    switch ( $type ) {
+                        case 'image':
+                            if ( $value && is_numeric( $value ) ) {
+                                $img = wp_get_attachment_image_src( intval( $value ), 'full' );
+                                if ( $img ) {
+                                    $value = array(
+                                        'ID'  => intval( $value ),
+                                        'url' => $img[0],
+                                        'alt' => get_post_meta( intval( $value ), '_wp_attachment_image_alt', true ),
+                                    );
+                                }
+                            }
+                            break;
+
+                        case 'image_url':
+                            if ( $value && is_numeric( $value ) ) {
+                                $img   = wp_get_attachment_image_src( intval( $value ), 'full' );
+                                $value = $img ? $img[0] : '';
+                            }
+                            break;
+
+                        case 'link':
+                            if ( $value && is_string( $value ) ) {
+                                $unserialized = @unserialize( $value );
+                                if ( false !== $unserialized ) {
+                                    $value = $unserialized;
+                                }
+                            }
+                            if ( is_array( $value ) ) {
+                                $value = wp_parse_args( $value, array(
+                                    'title'  => '',
+                                    'url'    => '',
+                                    'target' => '',
+                                ) );
+                            }
+                            break;
+
+                        case 'bool':
+                            $value = (bool) $value;
+                            break;
+
+                        case 'int':
+                        case 'number':
+                            $value = $value !== null ? intval( $value ) : 0;
+                            break;
+                    }
+
+                    $row[ $sub_name ] = $value;
+                }
+                $rows[] = $row;
+            }
+            return $rows;
+        }
+
         return array();
     }
 
