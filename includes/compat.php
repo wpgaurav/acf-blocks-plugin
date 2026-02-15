@@ -16,128 +16,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Reconstruct flat repeater keys into nested row-N format for the Block Editor.
- *
- * When blocks are saved via REST API with flat indexed keys (e.g.,
- * comp_columns_data_0_comp_title), the PHP compat layer handles them fine
- * for frontend rendering. But ACF's JavaScript in the editor expects nested
- * row-N objects. This filter detects flat repeater patterns in ACF block data
- * and rebuilds them into the nested format before ACF's JS receives them.
- *
- * @param array $parsed_block The parsed block data.
- * @return array Modified block data with nested repeater structure.
- */
-function acf_blocks_normalize_block_data_for_editor( $parsed_block ) {
-    if ( ! is_admin() && ! wp_is_rest_request() ) {
-        return $parsed_block;
-    }
-
-    if ( empty( $parsed_block['blockName'] ) || strpos( $parsed_block['blockName'], 'acf/' ) !== 0 ) {
-        return $parsed_block;
-    }
-
-    $data = $parsed_block['attrs']['data'] ?? array();
-    if ( empty( $data ) || ! is_array( $data ) ) {
-        return $parsed_block;
-    }
-
-    $rebuilt = acf_blocks_rebuild_flat_repeaters( $data );
-    if ( $rebuilt !== $data ) {
-        $parsed_block['attrs']['data'] = $rebuilt;
-    }
-
-    return $parsed_block;
-}
-add_filter( 'render_block_data', 'acf_blocks_normalize_block_data_for_editor' );
-
-/**
- * Detect flat repeater keys and rebuild them into nested row-N arrays.
- *
- * Scans for keys where the value is a scalar count and matching indexed
- * sub-keys exist (e.g., field = "3", field_0_sub = "value"). Rebuilds
- * these into field => [ 'row-0' => [ 'sub' => 'value' ] ].
- *
- * Handles nested repeaters recursively.
- *
- * @param array $data Flat block data array.
- * @return array Data with flat repeaters rebuilt as nested row-N arrays.
- */
-function acf_blocks_rebuild_flat_repeaters( $data ) {
-    $repeater_fields = array();
-
-    foreach ( $data as $key => $value ) {
-        // Skip underscore-prefixed meta keys.
-        if ( strpos( $key, '_' ) === 0 ) {
-            continue;
-        }
-
-        // A repeater count is a scalar numeric string with matching indexed keys.
-        if ( ! is_scalar( $value ) || ! is_numeric( $value ) || intval( $value ) < 1 ) {
-            continue;
-        }
-
-        $count = intval( $value );
-
-        // Verify at least one indexed sub-key exists.
-        $has_sub_keys = false;
-        $prefix       = $key . '_0_';
-        foreach ( $data as $sub_key => $sub_val ) {
-            if ( strpos( $sub_key, $prefix ) === 0 ) {
-                $has_sub_keys = true;
-                break;
-            }
-        }
-
-        if ( $has_sub_keys ) {
-            $repeater_fields[ $key ] = $count;
-        }
-    }
-
-    if ( empty( $repeater_fields ) ) {
-        return $data;
-    }
-
-    foreach ( $repeater_fields as $field_name => $count ) {
-        $nested = array();
-
-        for ( $i = 0; $i < $count; $i++ ) {
-            $row_prefix = $field_name . '_' . $i . '_';
-            $row_data   = array();
-            $sub_keys   = array();
-
-            // Collect all sub-keys for this row.
-            foreach ( $data as $key => $value ) {
-                if ( strpos( $key, $row_prefix ) === 0 ) {
-                    $sub_key              = substr( $key, strlen( $row_prefix ) );
-                    $row_data[ $sub_key ] = $value;
-                    $sub_keys[]           = $key;
-                }
-            }
-
-            // Recursively rebuild any nested repeaters within this row.
-            if ( ! empty( $row_data ) ) {
-                $row_data = acf_blocks_rebuild_flat_repeaters( $row_data );
-            }
-
-            $nested[ 'row-' . $i ] = $row_data;
-
-            // Remove consumed flat keys from data.
-            foreach ( $sub_keys as $sk ) {
-                unset( $data[ $sk ] );
-            }
-        }
-
-        // Replace the scalar count with the nested structure.
-        $data[ $field_name ] = $nested;
-
-        // Remove the ACF meta key for this field if present.
-        unset( $data[ '_' . $field_name ] );
-    }
-
-    return $data;
-}
-
-/**
  * Get a field value from an ACF block, with $block['data'] fallback.
  *
  * @param string $name  The field name.
@@ -407,6 +285,252 @@ function acf_blocks_get_nested_repeater( $parent_key, $sub_names, $data ) {
     }
 
     return $rows;
+}
+
+/**
+ * Reconstruct flat repeater keys into nested row-N format for the block editor.
+ *
+ * When content is saved via the REST API, ACF stores nested repeater data as
+ * flat indexed keys (e.g. repeater_0_field, repeater_0_nested_0_subfield).
+ * The PHP compat helpers parse this fine for frontend rendering, but ACF's
+ * JavaScript in the block editor expects nested row-N objects. This filter
+ * detects flat repeater keys in block data and rebuilds the nested structure
+ * so the editor fields populate correctly.
+ *
+ * Works generically for any ACF block — scans all registered field groups
+ * for repeater fields rather than hard-coding block names.
+ *
+ * @since 2.1.4
+ */
+add_filter( 'render_block_data', 'acf_blocks_reconstruct_nested_repeaters' );
+
+/**
+ * Filter callback: convert flat repeater keys to nested row-N format.
+ *
+ * @param array $parsed_block The parsed block data.
+ * @return array Modified block data with reconstructed nested repeaters.
+ */
+function acf_blocks_reconstruct_nested_repeaters( $parsed_block ) {
+    if ( empty( $parsed_block['blockName'] ) || strpos( $parsed_block['blockName'], 'acf/' ) !== 0 ) {
+        return $parsed_block;
+    }
+
+    if ( ! is_admin() && ! ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+        return $parsed_block;
+    }
+
+    $data = $parsed_block['attrs']['data'] ?? array();
+    if ( empty( $data ) || ! is_array( $data ) ) {
+        return $parsed_block;
+    }
+
+    $repeaters = acf_blocks_find_repeater_fields( $parsed_block['blockName'] );
+    if ( empty( $repeaters ) ) {
+        return $parsed_block;
+    }
+
+    $changed = false;
+
+    foreach ( $repeaters as $repeater ) {
+        $field_name = $repeater['name'];
+
+        if ( ! isset( $data[ $field_name ] ) || is_array( $data[ $field_name ] ) ) {
+            continue;
+        }
+
+        $count = intval( $data[ $field_name ] );
+        if ( $count < 1 ) {
+            continue;
+        }
+
+        $sub_fields = $repeater['sub_fields'] ?? array();
+        if ( empty( $sub_fields ) ) {
+            continue;
+        }
+
+        $nested = acf_blocks_rebuild_repeater_rows( $field_name, $count, $sub_fields, $data );
+        if ( ! empty( $nested ) ) {
+            $data[ $field_name ] = $nested;
+            $changed = true;
+        }
+    }
+
+    if ( $changed ) {
+        $parsed_block['attrs']['data'] = $data;
+    }
+
+    return $parsed_block;
+}
+
+/**
+ * Rebuild flat repeater rows into nested row-N format.
+ *
+ * @param string $prefix     The repeater field name prefix.
+ * @param int    $count      Number of rows.
+ * @param array  $sub_fields Sub-field definitions from the field group.
+ * @param array  $data       The flat block data.
+ * @return array Nested row-N structure.
+ */
+function acf_blocks_rebuild_repeater_rows( $prefix, $count, $sub_fields, $data ) {
+    $nested = array();
+
+    for ( $i = 0; $i < $count; $i++ ) {
+        $row = array();
+
+        foreach ( $sub_fields as $sub_field ) {
+            $sub_name = $sub_field['name'];
+            $flat_key = $prefix . '_' . $i . '_' . $sub_name;
+
+            if ( $sub_field['type'] === 'repeater' && isset( $sub_field['sub_fields'] ) ) {
+                $sub_count_key = $flat_key;
+                $sub_count = isset( $data[ $sub_count_key ] ) && ! is_array( $data[ $sub_count_key ] )
+                    ? intval( $data[ $sub_count_key ] )
+                    : 0;
+
+                if ( $sub_count < 1 ) {
+                    $sub_count = 0;
+                    $first_sub = $sub_field['sub_fields'][0]['name'] ?? '';
+                    if ( $first_sub ) {
+                        while ( isset( $data[ $flat_key . '_' . $sub_count . '_' . $first_sub ] ) ) {
+                            $sub_count++;
+                        }
+                    }
+                }
+
+                if ( $sub_count > 0 ) {
+                    $row[ $sub_name ] = acf_blocks_rebuild_repeater_rows(
+                        $flat_key,
+                        $sub_count,
+                        $sub_field['sub_fields'],
+                        $data
+                    );
+                } else {
+                    $row[ $sub_name ] = array();
+                }
+            } else {
+                $row[ $sub_name ] = $data[ $flat_key ] ?? '';
+            }
+        }
+
+        $nested[ 'row-' . $i ] = $row;
+    }
+
+    return $nested;
+}
+
+/**
+ * Find repeater fields (with sub_fields) for a given ACF block name.
+ *
+ * Scans registered ACF field groups and returns repeater definitions
+ * that contain nested repeaters. Results are cached per request.
+ *
+ * @param string $block_name The block name (e.g. "acf/compare").
+ * @return array Array of repeater field definitions with nested repeaters.
+ */
+function acf_blocks_find_repeater_fields( $block_name ) {
+    static $cache = array();
+
+    if ( isset( $cache[ $block_name ] ) ) {
+        return $cache[ $block_name ];
+    }
+
+    $cache[ $block_name ] = array();
+
+    if ( ! function_exists( 'acf_get_field_groups' ) || ! function_exists( 'acf_get_fields' ) ) {
+        return acf_blocks_find_repeater_fields_from_json( $block_name );
+    }
+
+    $groups = acf_get_field_groups( array(
+        'block' => $block_name,
+    ) );
+
+    foreach ( $groups as $group ) {
+        $fields = acf_get_fields( $group['key'] );
+        if ( ! is_array( $fields ) ) {
+            continue;
+        }
+        foreach ( $fields as $field ) {
+            if ( $field['type'] === 'repeater' && acf_blocks_has_nested_repeater( $field ) ) {
+                $cache[ $block_name ][] = $field;
+            }
+        }
+    }
+
+    return $cache[ $block_name ];
+}
+
+/**
+ * Fallback: find repeater fields from block-data.json files.
+ *
+ * @param string $block_name The block name (e.g. "acf/compare").
+ * @return array Array of repeater field definitions.
+ */
+function acf_blocks_find_repeater_fields_from_json( $block_name ) {
+    $slug = str_replace( 'acf/', '', $block_name );
+    $blocks_dir = ACF_BLOCKS_PLUGIN_DIR . 'blocks/';
+
+    $dirs = glob( $blocks_dir . '*', GLOB_ONLYDIR );
+    foreach ( $dirs as $dir ) {
+        $block_json = $dir . '/block.json';
+        if ( ! file_exists( $block_json ) ) {
+            continue;
+        }
+        $meta = json_decode( file_get_contents( $block_json ), true );
+        $name = $meta['name'] ?? '';
+        if ( $name !== $block_name ) {
+            continue;
+        }
+
+        $data_file = $dir . '/block-data.json';
+        if ( ! file_exists( $data_file ) ) {
+            return array();
+        }
+        $group = json_decode( file_get_contents( $data_file ), true );
+        $fields = $group['fields'] ?? array();
+        $repeaters = array();
+        foreach ( $fields as $field ) {
+            if ( ( $field['type'] ?? '' ) === 'repeater' && acf_blocks_json_has_nested_repeater( $field ) ) {
+                $repeaters[] = $field;
+            }
+        }
+        return $repeaters;
+    }
+
+    return array();
+}
+
+/**
+ * Check if an ACF field definition (from acf_get_fields) has a nested repeater.
+ *
+ * @param array $field ACF field array.
+ * @return bool
+ */
+function acf_blocks_has_nested_repeater( $field ) {
+    if ( empty( $field['sub_fields'] ) || ! is_array( $field['sub_fields'] ) ) {
+        return false;
+    }
+    foreach ( $field['sub_fields'] as $sub ) {
+        if ( $sub['type'] === 'repeater' ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Check if a JSON field definition has a nested repeater.
+ *
+ * @param array $field Field definition from block-data.json.
+ * @return bool
+ */
+function acf_blocks_json_has_nested_repeater( $field ) {
+    $sub_fields = $field['sub_fields'] ?? array();
+    foreach ( $sub_fields as $sub ) {
+        if ( ( $sub['type'] ?? '' ) === 'repeater' ) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
