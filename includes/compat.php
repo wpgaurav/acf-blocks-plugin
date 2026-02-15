@@ -16,6 +16,128 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Reconstruct flat repeater keys into nested row-N format for the Block Editor.
+ *
+ * When blocks are saved via REST API with flat indexed keys (e.g.,
+ * comp_columns_data_0_comp_title), the PHP compat layer handles them fine
+ * for frontend rendering. But ACF's JavaScript in the editor expects nested
+ * row-N objects. This filter detects flat repeater patterns in ACF block data
+ * and rebuilds them into the nested format before ACF's JS receives them.
+ *
+ * @param array $parsed_block The parsed block data.
+ * @return array Modified block data with nested repeater structure.
+ */
+function acf_blocks_normalize_block_data_for_editor( $parsed_block ) {
+    if ( ! is_admin() && ! wp_is_rest_request() ) {
+        return $parsed_block;
+    }
+
+    if ( empty( $parsed_block['blockName'] ) || strpos( $parsed_block['blockName'], 'acf/' ) !== 0 ) {
+        return $parsed_block;
+    }
+
+    $data = $parsed_block['attrs']['data'] ?? array();
+    if ( empty( $data ) || ! is_array( $data ) ) {
+        return $parsed_block;
+    }
+
+    $rebuilt = acf_blocks_rebuild_flat_repeaters( $data );
+    if ( $rebuilt !== $data ) {
+        $parsed_block['attrs']['data'] = $rebuilt;
+    }
+
+    return $parsed_block;
+}
+add_filter( 'render_block_data', 'acf_blocks_normalize_block_data_for_editor' );
+
+/**
+ * Detect flat repeater keys and rebuild them into nested row-N arrays.
+ *
+ * Scans for keys where the value is a scalar count and matching indexed
+ * sub-keys exist (e.g., field = "3", field_0_sub = "value"). Rebuilds
+ * these into field => [ 'row-0' => [ 'sub' => 'value' ] ].
+ *
+ * Handles nested repeaters recursively.
+ *
+ * @param array $data Flat block data array.
+ * @return array Data with flat repeaters rebuilt as nested row-N arrays.
+ */
+function acf_blocks_rebuild_flat_repeaters( $data ) {
+    $repeater_fields = array();
+
+    foreach ( $data as $key => $value ) {
+        // Skip underscore-prefixed meta keys.
+        if ( strpos( $key, '_' ) === 0 ) {
+            continue;
+        }
+
+        // A repeater count is a scalar numeric string with matching indexed keys.
+        if ( ! is_scalar( $value ) || ! is_numeric( $value ) || intval( $value ) < 1 ) {
+            continue;
+        }
+
+        $count = intval( $value );
+
+        // Verify at least one indexed sub-key exists.
+        $has_sub_keys = false;
+        $prefix       = $key . '_0_';
+        foreach ( $data as $sub_key => $sub_val ) {
+            if ( strpos( $sub_key, $prefix ) === 0 ) {
+                $has_sub_keys = true;
+                break;
+            }
+        }
+
+        if ( $has_sub_keys ) {
+            $repeater_fields[ $key ] = $count;
+        }
+    }
+
+    if ( empty( $repeater_fields ) ) {
+        return $data;
+    }
+
+    foreach ( $repeater_fields as $field_name => $count ) {
+        $nested = array();
+
+        for ( $i = 0; $i < $count; $i++ ) {
+            $row_prefix = $field_name . '_' . $i . '_';
+            $row_data   = array();
+            $sub_keys   = array();
+
+            // Collect all sub-keys for this row.
+            foreach ( $data as $key => $value ) {
+                if ( strpos( $key, $row_prefix ) === 0 ) {
+                    $sub_key              = substr( $key, strlen( $row_prefix ) );
+                    $row_data[ $sub_key ] = $value;
+                    $sub_keys[]           = $key;
+                }
+            }
+
+            // Recursively rebuild any nested repeaters within this row.
+            if ( ! empty( $row_data ) ) {
+                $row_data = acf_blocks_rebuild_flat_repeaters( $row_data );
+            }
+
+            $nested[ 'row-' . $i ] = $row_data;
+
+            // Remove consumed flat keys from data.
+            foreach ( $sub_keys as $sk ) {
+                unset( $data[ $sk ] );
+            }
+        }
+
+        // Replace the scalar count with the nested structure.
+        $data[ $field_name ] = $nested;
+
+        // Remove the ACF meta key for this field if present.
+        unset( $data[ '_' . $field_name ] );
+    }
+
+    return $data;
+}
+
+/**
  * Get a field value from an ACF block, with $block['data'] fallback.
  *
  * @param string $name  The field name.
