@@ -71,7 +71,7 @@ function acf_blocks_get_repeater( $name, $sub_names, $block = array() ) {
     }
 
     // Determine row count.
-    $count = isset( $data[ $name ] ) ? intval( $data[ $name ] ) : 0;
+    $count = isset( $data[ $name ] ) && ! is_array( $data[ $name ] ) ? intval( $data[ $name ] ) : 0;
     if ( $count < 1 ) {
         // Try counting by scanning keys.
         $count = 0;
