@@ -236,12 +236,43 @@ function acf_blocks_get_nested_repeater( $parent_key, $sub_names, $data ) {
     }
 
     $field_names_list = array_keys( $fields );
-    $count = isset( $data[ $parent_key ] ) ? intval( $data[ $parent_key ] ) : 0;
+    $count = isset( $data[ $parent_key ] ) && ! is_array( $data[ $parent_key ] ) ? intval( $data[ $parent_key ] ) : 0;
     if ( $count < 1 ) {
         $count = 0;
         while ( isset( $data[ $parent_key . '_' . $count . '_' . $field_names_list[0] ] ) ) {
             $count++;
         }
+    }
+
+    if ( $count < 1 ) {
+        // Fallback: parse nested row format.
+        $nested = isset( $data[ $parent_key ] ) && is_array( $data[ $parent_key ] )
+            ? $data[ $parent_key ]
+            : null;
+
+        // If flat key doesn't exist, resolve through nested data structure.
+        // E.g. "repeater_0_sub_repeater" navigates to
+        // $data['repeater']['row-0']['sub_repeater'].
+        if ( null === $nested ) {
+            $nested = acf_blocks_resolve_nested_key( $parent_key, $data );
+        }
+
+        if ( is_array( $nested ) ) {
+            $rows = array();
+            foreach ( $nested as $row_key => $row_data ) {
+                if ( ! is_array( $row_data ) ) {
+                    continue;
+                }
+                $row = array();
+                foreach ( $fields as $sub_name => $type ) {
+                    $row[ $sub_name ] = $row_data[ $sub_name ] ?? null;
+                }
+                $rows[] = $row;
+            }
+            return $rows;
+        }
+
+        return array();
     }
 
     $rows = array();
@@ -254,4 +285,67 @@ function acf_blocks_get_nested_repeater( $parent_key, $sub_names, $data ) {
     }
 
     return $rows;
+}
+
+/**
+ * Resolve a flat ACF key through nested block data.
+ *
+ * Flat keys like "repeater_0_sub_repeater" are navigated through
+ * nested data where numeric indices map to "row-N" keys.
+ *
+ * @param string $flat_key The flat key to resolve.
+ * @param array  $data     The nested data array.
+ * @return mixed The resolved value or null.
+ */
+function acf_blocks_resolve_nested_key( $flat_key, $data ) {
+    $parts = explode( '_', $flat_key );
+    return acf_blocks_resolve_nested_parts( $parts, 0, $data );
+}
+
+/**
+ * Recursively navigate nested data matching flat key parts.
+ *
+ * Tries progressively longer key segments (longest first) at each level
+ * to handle field names containing underscores.
+ *
+ * @param array $parts Key segments split by underscore.
+ * @param int   $start Starting index in parts array.
+ * @param mixed $data  Current data node.
+ * @return mixed Resolved value or null.
+ */
+function acf_blocks_resolve_nested_parts( $parts, $start, $data ) {
+    if ( $start >= count( $parts ) ) {
+        return $data;
+    }
+
+    if ( ! is_array( $data ) ) {
+        return null;
+    }
+
+    $len = count( $parts );
+
+    // Try key segments from longest to shortest for best match.
+    for ( $end = $len; $end > $start; $end-- ) {
+        $segment = implode( '_', array_slice( $parts, $start, $end - $start ) );
+
+        if ( array_key_exists( $segment, $data ) ) {
+            $result = acf_blocks_resolve_nested_parts( $parts, $end, $data[ $segment ] );
+            if ( null !== $result ) {
+                return $result;
+            }
+        }
+
+        // Numeric segment maps to "row-N" in nested format.
+        if ( $end === $start + 1 && is_numeric( $segment ) ) {
+            $row_key = 'row-' . $segment;
+            if ( array_key_exists( $row_key, $data ) ) {
+                $result = acf_blocks_resolve_nested_parts( $parts, $end, $data[ $row_key ] );
+                if ( null !== $result ) {
+                    return $result;
+                }
+            }
+        }
+    }
+
+    return null;
 }
