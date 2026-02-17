@@ -356,9 +356,10 @@ class ACF_Blocks_License_Manager {
 	}
 
 	private function api_request( $action, $params = array() ) {
-		$url = add_query_arg( array_merge( array( 'fluent-cart' => $action ), $params ), self::LICENSE_SERVER );
+		$url = add_query_arg( 'fluent-cart', $action, self::LICENSE_SERVER );
+		$params['current_version'] = defined( 'ACF_BLOCKS_VERSION' ) ? ACF_BLOCKS_VERSION : '1.0.0';
 
-		$response = wp_remote_get( $url, array( 'timeout' => 15, 'sslverify' => true ) );
+		$response = wp_remote_post( $url, array( 'timeout' => 15, 'sslverify' => false, 'body' => $params ) );
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error( 'api_error', __( 'Could not connect to the license server.', 'acf-blocks' ) );
 		}
