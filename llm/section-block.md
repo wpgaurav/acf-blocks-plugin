@@ -1,41 +1,70 @@
-# Section Block — LLM Instructions
+# ACF Section Block — LLM Prompt
 
-Use `<!-- wp:acf/section-block -->` with a JSON `data` attribute. Fields use the `acf_section_`, `acf_layout_`, `acf_spacing_`, `acf_bg_`, `acf_text_`, `acf_responsive_`, and `acf_custom_` prefixes. This is an InnerBlocks block — all content goes between the tags.
+Create a container/wrapper block that wraps inner WordPress blocks with customizable HTML tag, classes, background, and styling. Acts as a flexible layout container.
 
-## Field Reference
+## Block Info
 
-| Field Key | Type | Required | Notes |
+- **Block Name:** `acf/section-block`
+- **Description:** A customizable container block that wraps inner blocks.
+- **Styles:** None
+
+## Fields
+
+| Field Key | Name | Type | Notes |
 |---|---|---|---|
-| `acf_section_html_tag` | select | No | Default `"section"`. One of: `div`, `section`, `article`, `aside`, `header`, `footer`, `main`, `custom` |
-| `acf_section_custom_tag` | text | No | Custom HTML tag. Only when `html_tag` is `"custom"` |
-| `acf_section_id` | text | No | Element ID (without `#`) |
-| `acf_section_custom_class` | text | No | Custom CSS classes |
-| `acf_layout_class` | text | No | Layout classes, e.g. `"container d-flex justify-content-between"` |
-| `acf_spacing_class` | text | No | Spacing classes, e.g. `"py-5 mt-4"` |
-| `acf_bg_class` | text | No | Background classes, e.g. `"bg-dark"` |
-| `acf_text_class` | text | No | Text classes, e.g. `"text-center"` |
-| `acf_responsive_class` | text | No | Responsive classes, e.g. `"d-none d-md-block"` |
-| `acf_bg_color` | color string | No | Background color (supports opacity) |
-| `acf_bg_image` | image (URL) | No | Background image. Return format is `url` |
-| `acf_bg_overlay` | color string | No | Overlay color (supports opacity) |
-| `acf_bg_video` | file (URL) | No | Background video (mp4). Return format is `url` |
-| `acf_custom_css` | text | No | Custom CSS rules |
+| `field_acf_section_html_tag` | HTML Tag | select | div, section, article, aside, header, footer, main, custom |
+| `field_acf_section_custom_tag` | Custom Tag | text | Custom HTML tag (when "custom" selected) |
+| `field_acf_section_id` | Section ID | text | HTML id attribute |
+| `field_acf_section_custom_class` | Custom Class | text | Additional CSS classes |
+| `field_acf_layout_class` | Layout Class | text | CSS layout utilities (flex, grid, etc.) |
+| `field_acf_spacing_class` | Spacing Class | text | Padding/margin utility classes |
+| `field_acf_bg_class` | Background Class | text | Background utility classes |
+| `field_acf_text_class` | Text Class | text | Typography utility classes |
+| `field_acf_responsive_class` | Responsive Class | text | Responsive/breakpoint classes |
+| `field_acf_bg_color` | Background Color | color_picker | Solid background color |
+| `field_acf_bg_image` | Background Image | image | Background image |
+| `field_acf_bg_overlay` | Background Overlay | color_picker | Overlay color on top of bg image |
+| `field_acf_bg_video` | Background Video | file | Background video file |
+| `field_acf_custom_css` | Custom CSS | textarea | Scoped custom CSS rules |
 
-## Notes
+## Field Rules
 
-- This is a layout wrapper — all content is InnerBlocks
-- Class fields accept space-separated CSS class names (e.g. Bootstrap/utility classes)
-- Background image, overlay, and video can be combined for layered effects
+- All keys use `field_` prefix
+- This block uses InnerBlocks — content goes inside as nested WordPress blocks
+- Multiple class fields allow separation of concerns (layout, spacing, background, text, responsive)
+- Background supports: solid color, image with overlay, or video
+- Custom CSS is scoped to the block instance
+- HTML tag field enables semantic markup (section, article, aside, etc.)
+- Class fields accept space-separated CSS class names (Bootstrap/utility classes)
 
-## Example
+## Instructions
+
+1. Choose the appropriate HTML tag for semantic meaning
+2. Set an ID if the section needs an anchor link target
+3. Add utility classes for layout, spacing, and styling
+4. Set background (color, image, or video) if needed
+5. Place inner WordPress blocks inside the section
+6. Output the block as a WordPress block comment with inner content
+
+## Example — Section with background color
 
 ```html
-<!-- wp:acf/section-block {"name":"acf/section-block","data":{"acf_section_html_tag":"section","acf_section_id":"features","acf_section_custom_class":"features-section","acf_spacing_class":"py-5","acf_text_class":"text-center","acf_bg_color":"#f8f9fa"}} -->
-<!-- wp:heading -->
-<h2>Our Features</h2>
+<!-- wp:acf/section-block {"name":"acf/section-block","data":{"field_acf_section_html_tag":"section","field_acf_section_id":"features","field_acf_section_custom_class":"features-section","field_acf_spacing_class":"py-16 px-4","field_acf_bg_color":"#f8fafc","field_acf_text_class":"text-center"},"mode":"preview"} -->
+<!-- wp:heading {"textAlign":"center","level":2} -->
+<h2 class="has-text-align-center">Our Features</h2>
 <!-- /wp:heading -->
+<!-- wp:paragraph {"align":"center"} -->
+<p class="has-text-align-center">Everything you need to build amazing websites.</p>
+<!-- /wp:paragraph -->
+<!-- /wp:acf/section-block -->
+```
+
+## Example — Article wrapper with layout classes
+
+```html
+<!-- wp:acf/section-block {"name":"acf/section-block","data":{"field_acf_section_html_tag":"article","field_acf_layout_class":"max-w-3xl mx-auto","field_acf_spacing_class":"py-8 px-4"},"mode":"preview"} -->
 <!-- wp:paragraph -->
-<p>Everything you need to build great websites.</p>
+<p>Article content goes here using standard WordPress blocks.</p>
 <!-- /wp:paragraph -->
 <!-- /wp:acf/section-block -->
 ```
