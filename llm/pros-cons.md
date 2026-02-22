@@ -5,8 +5,19 @@ Create a two-column pros and cons comparison block with customizable colors and 
 ## Block Info
 
 - **Block Name:** `acf/pros-cons`
-- **Description:** Display a two-column pros and cons comparison block.
+- **Description:** Minimalist two-column pros and cons comparison with border-bottom separators, flush columns with distinct background colors.
 - **Styles:** None
+
+## Design Notes
+
+- Columns are flush (no gap) with `border-radius: 10px` and `overflow: hidden`
+- Each column has a distinct background color (green-tinted for pros, red-tinted for cons)
+- List items separated by `border-bottom` lines, not margin
+- Titles are uppercase, `0.8125rem`, with letter-spacing
+- Icons are 14px SVG checkmarks/crosses
+- Font size is `0.875rem` (14px)
+- Dark mode: separator borders use `rgba(255,255,255,0.08)`
+- Block outputs `data-acf-block="pros-cons"` (used by TOC filtering)
 
 ## Fields
 
@@ -17,14 +28,14 @@ Create a two-column pros and cons comparison block with customizable colors and 
 | `field_pc_pros_list` | Pros List | wysiwyg | HTML list of pros (use `<ul><li>` format) |
 | `field_pc_cons_title` | Cons Title | text | Heading for cons column (default: "Cons") |
 | `field_pc_cons_list` | Cons List | wysiwyg | HTML list of cons (use `<ul><li>` format) |
-| `field_pc_pos_bg_color` | Pros Background | color_picker | Background color for pros section |
-| `field_pc_pos_border_color` | Pros Border | color_picker | Border color for pros section |
-| `field_pc_pos_title_color` | Pros Title Color | color_picker | Title text color for pros |
-| `field_pc_pos_icon_color` | Pros Icon Color | color_picker | Checkmark icon color |
-| `field_pc_neg_bg_color` | Cons Background | color_picker | Background color for cons section |
-| `field_pc_neg_border_color` | Cons Border | color_picker | Border color for cons section |
-| `field_pc_neg_title_color` | Cons Title Color | color_picker | Title text color for cons |
-| `field_pc_neg_icon_color` | Cons Icon Color | color_picker | Cross icon color |
+| `field_pc_pos_bg_color` | Pros Background | color_picker | Default: `#f0fdf4` |
+| `field_pc_pos_border_color` | Pros Border | color_picker | Default: `#16a34a` |
+| `field_pc_pos_title_color` | Pros Title Color | color_picker | Default: `#166534` |
+| `field_pc_pos_icon_color` | Pros Icon Color | color_picker | Default: `#16a34a` |
+| `field_pc_neg_bg_color` | Cons Background | color_picker | Default: `#fef2f2` |
+| `field_pc_neg_border_color` | Cons Border | color_picker | Default: `#dc2626` |
+| `field_pc_neg_title_color` | Cons Title Color | color_picker | Default: `#991b1b` |
+| `field_pc_neg_icon_color` | Cons Icon Color | color_picker | Default: `#dc2626` |
 
 ## Field Rules
 
@@ -33,7 +44,7 @@ Create a two-column pros and cons comparison block with customizable colors and 
 - **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Color fields are all optional; defaults use green for pros and red for cons
 - `field_pc_show_first` controls column ordering (which side appears on the left)
-- Inline SVG icons are used for checkmarks (pros) and crosses (cons)
+- Inline SVG icons (14px) are auto-injected for checkmarks (pros) and crosses (cons)
 
 ## Instructions
 

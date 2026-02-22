@@ -8,6 +8,22 @@ Convert a product URL to an ACF Product Box block. Fetch the page to extract pro
 - **Description:** Amazon-style product listing with image, pricing, features, ratings, and multiple CTA buttons.
 - **Styles:** Default, No Image (`is-style-no-image`)
 
+## Layout
+
+Two-row design:
+
+1. **Top row (grid):** Image (left, 320px) + Title, rating, features (right)
+2. **Bottom row (full-width):** Pricing, price note, description, CTA buttons — separated from top by a subtle `border-top`
+
+The bottom section only renders if pricing, description, or buttons exist.
+
+## Image Sizing
+
+- **ACF image field (ID):** Served as 550×550 cropped (`product-box-image` size), fallback to `medium`
+- **Same-domain URL:** Attachment ID looked up via `attachment_url_to_postid()`, served as 550×550
+- **External URL:** Passed through unchanged (no size manipulation)
+- Subdomain matching supported (e.g. `cdn.example.com` matches `example.com`)
+
 ## Extraction Rules
 
 1. **Title**: Clean product name from page title/h1 (remove brand clutter, ASIN, excessive keywords)
@@ -74,6 +90,7 @@ All buttons get `field_pb_cta_rel`: `"nofollow noopener sponsored"`
 - `field_pb_cta_icon`: `"none"`, `"cart"`, `"external"`, or `"check"`
 - `field_pb_cta_class`: CSS icon class (e.g. `"md-icon-download"`, `"md-icon-external"`). When using custom class, set `field_pb_cta_icon` to `"none"`
 - Optional fields can be omitted entirely
+- Block outputs `data-acf-block="product-box"` attribute (used by TOC filtering)
 
 ## Instructions
 

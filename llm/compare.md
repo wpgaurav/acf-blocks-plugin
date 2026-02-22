@@ -5,48 +5,63 @@ Create a multi-column comparison block for comparing products, plans, or feature
 ## Block Info
 
 - **Block Name:** `acf/compare`
-- **Description:** A customizable compare card block.
+- **Description:** Minimalist side-by-side comparison with styled column cards, feature lists, and a shared CTA button.
 - **Styles:** Default
+
+## Design Notes
+
+- Container has `border: 1px solid rgba(0,0,0,0.08)`, `border-radius: 12px`, `padding: 1.5rem`
+- Columns have subtle `#fafafa` background, low-opacity borders, `border-radius: 10px`
+- Feature list items separated by `border-bottom` with CSS `✓` checkmarks
+- Column hover adds subtle shadow lift
+- CTA button centered below all columns, defaults to brand red
+- 2-4 columns with responsive breakpoints (stacks on mobile)
+- Dark mode: full support via CSS custom properties
+- Block outputs `data-acf-block="compare"` (used by TOC filtering)
 
 ## Fields
 
 | Field Key | Name | Type | Notes |
 |---|---|---|---|
-| `field_comp_columns` | Number of Columns | number | How many items to compare |
-| `field_comp_columns_data` | Column Data | repeater | One entry per column |
-| — `field_comp_title` | Column Title | text | Product/plan name |
+| `field_comp_columns` | Number of Columns | number | 2-4 columns |
+| `field_comp_columns_data` | Columns | repeater | One entry per column |
+| — `field_comp_title` | Title | text | Product/plan name |
 | — `field_comp_title_bg` | Title Background | color_picker | Header background color |
 | — `field_comp_title_color` | Title Text Color | color_picker | Header text color |
-| — `field_comp_text` | Description | textarea | Column description text |
-| — `field_comp_repeater_list` | Feature List | repeater (nested) | List of features/specs |
-| —— `field_comp_list_item` | List Item | text | Individual feature text |
-| — `field_comp_list_class` | List CSS Class | text | Optional class for styling |
-| — `field_comp_column_style` | Column Inline Style | text | Optional inline CSS |
+| — `field_comp_text` | Subtitle | text | Short description (e.g. "Best for performance") |
+| — `field_comp_list_content` | Features List | wysiwyg | HTML list of features (use `<ul><li>` format) |
+| — `field_comp_column_style` | Custom CSS | text | Optional inline CSS for this column |
 | `field_comp_cta_text` | CTA Button Text | text | Shared call-to-action text |
 | `field_comp_cta_url` | CTA Button URL | url | Shared CTA link |
 | `field_comp_cta_url_rel_tag` | CTA Rel Attribute | text | e.g. "nofollow sponsored" |
+| `field_comp_cta_bg` | CTA Button Color | color_picker | Background color for CTA button |
 
 ## Field Rules
 
 - All keys use `field_` prefix
 - **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
-- Two-level nested repeaters: `field_comp_columns_data` → `field_comp_repeater_list`
+- Feature lists use WYSIWYG field (`field_comp_list_content`) — write as HTML `<ul><li>` lists
 - Each column can have its own header color scheme
 - CTA button is shared across all columns (appears at bottom)
-- Use checkmarks (✓) and crosses (✗) in list items for feature comparison
 - `field_comp_columns` should match the number of `row-N` entries
+- **Backward compat:** Old blocks using nested repeater (`field_comp_repeater_list`) still render correctly
 
 ## Instructions
 
 1. Set the number of columns (typically 2–4)
-2. Fill in each column with title, description, and feature list
+2. Fill in each column with title, subtitle, and feature list (as WYSIWYG HTML)
 3. Use color to highlight the recommended/best option
-4. Use ✓/✗ or descriptive text for feature comparisons
-5. Add CTA button if linking to a purchase/signup page
-6. Output the block as a WordPress block comment
+4. Add CTA button if linking to a purchase/signup page
+5. Output the block as a WordPress block comment
 
-## Example — 3-column plan comparison
+## Example — 3-column product comparison
 
 ```html
-<!-- wp:acf/compare {"name":"acf/compare","data":{"field_comp_columns":"3","field_comp_columns_data":{"row-0":{"field_comp_title":"Basic","field_comp_title_bg":"#f3f4f6","field_comp_title_color":"#111827","field_comp_text":"For personal blogs and small sites","field_comp_repeater_list":{"row-0":{"field_comp_list_item":"1 Website"},"row-1":{"field_comp_list_item":"10 GB Storage"},"row-2":{"field_comp_list_item":"Free SSL"},"row-3":{"field_comp_list_item":"✗ CDN Included"},"row-4":{"field_comp_list_item":"✗ Priority Support"}},"field_comp_list_class":"","field_comp_column_style":""},"row-1":{"field_comp_title":"Pro","field_comp_title_bg":"#2563eb","field_comp_title_color":"#ffffff","field_comp_text":"Most popular for growing businesses","field_comp_repeater_list":{"row-0":{"field_comp_list_item":"Unlimited Websites"},"row-1":{"field_comp_list_item":"50 GB Storage"},"row-2":{"field_comp_list_item":"Free SSL"},"row-3":{"field_comp_list_item":"✓ CDN Included"},"row-4":{"field_comp_list_item":"✓ Priority Support"}},"field_comp_list_class":"","field_comp_column_style":""},"row-2":{"field_comp_title":"Enterprise","field_comp_title_bg":"#f3f4f6","field_comp_title_color":"#111827","field_comp_text":"For high-traffic sites and agencies","field_comp_repeater_list":{"row-0":{"field_comp_list_item":"Unlimited Websites"},"row-1":{"field_comp_list_item":"200 GB Storage"},"row-2":{"field_comp_list_item":"Free SSL + Wildcard"},"row-3":{"field_comp_list_item":"✓ CDN + WAF"},"row-4":{"field_comp_list_item":"✓ Dedicated Support"}},"field_comp_list_class":"","field_comp_column_style":""}},"field_comp_cta_text":"Get Started","field_comp_cta_url":"https://example.com/pricing","field_comp_cta_url_rel_tag":"nofollow"}} /-->
+<!-- wp:acf/compare {"name":"acf/compare","data":{"field_comp_columns":"3","field_comp_columns_data":{"row-0":{"field_comp_title":"GenerateBlocks","field_comp_title_bg":"#7c3aed","field_comp_title_color":"#ffffff","field_comp_text":"Best for performance","field_comp_list_content":"<ul>\n<li>Lightweight, block-native</li>\n<li>From $39/year</li>\n<li>Minimal DOM output</li>\n<li>Full site editing</li>\n<li>Global styles system</li>\n<li>Best for speed-focused sites</li>\n</ul>","field_comp_column_style":""},"row-1":{"field_comp_title":"Elementor","field_comp_title_bg":"#f3f4f6","field_comp_title_color":"#111827","field_comp_text":"Most popular overall","field_comp_list_content":"<ul>\n<li>Visual drag-and-drop</li>\n<li>From $59/year</li>\n<li>100+ widgets</li>\n<li>Theme builder + popups</li>\n<li>Massive template library</li>\n<li>Best for design-heavy sites</li>\n</ul>","field_comp_column_style":""},"row-2":{"field_comp_title":"Beaver Builder","field_comp_title_bg":"#f3f4f6","field_comp_title_color":"#111827","field_comp_text":"Best for agencies","field_comp_list_content":"<ul>\n<li>Clean, reliable output</li>\n<li>From $99/year</li>\n<li>White-label support</li>\n<li>Developer-friendly</li>\n<li>Stable update history</li>\n<li>Best for client projects</li>\n</ul>","field_comp_column_style":""}},"field_comp_cta_text":"Try GenerateBlocks","field_comp_cta_url":"https://example.com/go/generateblocks/","field_comp_cta_url_rel_tag":"nofollow sponsored","field_comp_cta_bg":"#b91c1c"}} /-->
+```
+
+## Example — 2-column plan comparison
+
+```html
+<!-- wp:acf/compare {"name":"acf/compare","data":{"field_comp_columns":"2","field_comp_columns_data":{"row-0":{"field_comp_title":"Free","field_comp_title_bg":"#f3f4f6","field_comp_title_color":"#111827","field_comp_text":"For personal projects","field_comp_list_content":"<ul>\n<li>1 Website</li>\n<li>10 GB Storage</li>\n<li>Free SSL</li>\n<li>Community support</li>\n</ul>","field_comp_column_style":""},"row-1":{"field_comp_title":"Pro","field_comp_title_bg":"#2563eb","field_comp_title_color":"#ffffff","field_comp_text":"For growing businesses","field_comp_list_content":"<ul>\n<li>Unlimited websites</li>\n<li>50 GB Storage</li>\n<li>Free SSL + CDN</li>\n<li>Priority support</li>\n</ul>","field_comp_column_style":""}},"field_comp_cta_text":"Get Started","field_comp_cta_url":"https://example.com/pricing","field_comp_cta_url_rel_tag":"nofollow"}} /-->
 ```
