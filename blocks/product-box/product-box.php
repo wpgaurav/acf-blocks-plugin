@@ -32,15 +32,10 @@ $features = acf_blocks_get_repeater('pb_features', ['pb_feature_text'], $block);
 // Get buttons repeater
 $buttons = acf_blocks_get_repeater('pb_buttons', ['pb_cta_text', 'pb_cta_url', 'pb_cta_style', 'pb_cta_icon', 'pb_cta_class', 'pb_cta_rel'], $block);
 
-// Determine image source - direct URL takes priority
-$img_src = '';
-$img_alt = $title ?: 'Product image';
-if ($image_url) {
-    $img_src = $image_url;
-} elseif ($image) {
-    $img_src = $image['url'];
-    $img_alt = $image['alt'] ?: $img_alt;
-}
+// Resolve image source using the smart sizing helper
+$resolved_image = acf_product_box_resolve_image( $image, $image_url, $title ?: 'Product image' );
+$img_src = $resolved_image['src'];
+$img_alt = $resolved_image['alt'];
 
 // Placeholder SVG for products without images
 $placeholder_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" class="acf-product-box__placeholder-svg">
@@ -121,63 +116,68 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'acf-product-box'
                     <?php endforeach; ?>
                 </ul>
             <?php endif; ?>
-
-            <?php if ($original_price || $current_price) : ?>
-                <div class="acf-product-box__pricing">
-                    <?php if ($original_price) : ?>
-                        <span class="acf-product-box__original-price"><?php echo esc_html($original_price); ?></span>
-                    <?php endif; ?>
-                    <?php if ($discount_percent) : ?>
-                        <span class="acf-product-box__discount"><?php echo esc_html($discount_percent); ?></span>
-                    <?php endif; ?>
-                    <?php if ($current_price) : ?>
-                        <span class="acf-product-box__current-price"><?php echo esc_html($current_price); ?></span>
-                    <?php endif; ?>
-                </div>
-                <?php if ($price_note) : ?>
-                    <div class="acf-product-box__price-note"><?php echo esc_html($price_note); ?></div>
-                <?php endif; ?>
-            <?php endif; ?>
-
-            <?php if ($description) : ?>
-                <div class="acf-product-box__description" style="font-size:1rem">
-                    <?php echo wp_kses_post($description); ?>
-                </div>
-            <?php endif; ?>
-
-            <?php if (!empty($buttons)) : ?>
-                <div class="acf-product-box__buttons">
-                    <?php
-                    $btn_index = 1;
-                    foreach ($buttons as $button) :
-                        $cta_text  = $button['pb_cta_text'] ?? '';
-                        $cta_url   = $button['pb_cta_url'] ?? '';
-                        $cta_style = $button['pb_cta_style'] ?? 'primary';
-                        $cta_icon  = $button['pb_cta_icon'] ?? 'none';
-                        $cta_class = $button['pb_cta_class'] ?? '';
-                        $cta_rel   = $button['pb_cta_rel'] ?? '';
-
-                        if (!$cta_text || !$cta_url) continue;
-
-                        $btn_classes = [
-                            'acf-product-box__btn',
-                            'acf-product-box__btn--' . esc_attr($cta_style),
-                            'btn-' . $btn_index
-                        ];
-                        if ($cta_class) {
-                            $btn_classes[] = $cta_class;
-                        }
-                        $class_attr = implode(' ', $btn_classes);
-                        $rel_attr = $cta_rel ? ' rel="' . esc_attr($cta_rel) . '"' : '';
-                    ?>
-                        <a href="<?php echo esc_url($cta_url); ?>" class="<?php echo esc_attr($class_attr); ?>"<?php echo $rel_attr; ?>>
-                            <?php if ($cta_icon !== 'none') : ?><i class="md-icon-<?php echo esc_attr($cta_icon); ?>" aria-hidden="true"></i> <?php endif; ?><?php echo esc_html($cta_text); ?>
-                        </a>
-                    <?php
-                        $btn_index++;
-                    endforeach; ?>
-                </div>
-            <?php endif; ?>
         </div>
     </div>
+
+    <?php if ($original_price || $current_price || $description || !empty($buttons)) : ?>
+    <div class="acf-product-box__bottom">
+        <?php if ($original_price || $current_price) : ?>
+            <div class="acf-product-box__pricing">
+                <?php if ($original_price) : ?>
+                    <span class="acf-product-box__original-price"><?php echo esc_html($original_price); ?></span>
+                <?php endif; ?>
+                <?php if ($discount_percent) : ?>
+                    <span class="acf-product-box__discount"><?php echo esc_html($discount_percent); ?></span>
+                <?php endif; ?>
+                <?php if ($current_price) : ?>
+                    <span class="acf-product-box__current-price"><?php echo esc_html($current_price); ?></span>
+                <?php endif; ?>
+            </div>
+            <?php if ($price_note) : ?>
+                <div class="acf-product-box__price-note"><?php echo esc_html($price_note); ?></div>
+            <?php endif; ?>
+        <?php endif; ?>
+
+        <?php if ($description) : ?>
+            <div class="acf-product-box__description">
+                <?php echo wp_kses_post($description); ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($buttons)) : ?>
+            <div class="acf-product-box__buttons">
+                <?php
+                $btn_index = 1;
+                foreach ($buttons as $button) :
+                    $cta_text  = $button['pb_cta_text'] ?? '';
+                    $cta_url   = $button['pb_cta_url'] ?? '';
+                    $cta_style = $button['pb_cta_style'] ?? 'primary';
+                    $cta_icon  = $button['pb_cta_icon'] ?? 'none';
+                    $cta_class = $button['pb_cta_class'] ?? '';
+                    $cta_rel   = $button['pb_cta_rel'] ?? '';
+
+                    if (!$cta_text || !$cta_url) continue;
+
+                    $btn_classes = [
+                        'acf-product-box__btn',
+                        'acf-product-box__btn--' . esc_attr($cta_style),
+                        'btn-' . $btn_index
+                    ];
+                    if ($cta_class) {
+                        $btn_classes[] = $cta_class;
+                    }
+                    $class_attr = implode(' ', $btn_classes);
+                    $rel_attr = $cta_rel ? ' rel="' . esc_attr($cta_rel) . '"' : '';
+                ?>
+                    <a href="<?php echo esc_url($cta_url); ?>" class="<?php echo esc_attr($class_attr); ?>"<?php echo $rel_attr; ?>>
+                        <?php if ($cta_icon !== 'none') : ?><i class="md-icon-<?php echo esc_attr($cta_icon); ?>" aria-hidden="true"></i> <?php endif; ?><?php echo esc_html($cta_text); ?>
+                    </a>
+                <?php
+                    $btn_index++;
+                endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
 </div>
+

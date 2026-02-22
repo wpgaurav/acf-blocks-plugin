@@ -7,24 +7,27 @@
             "label": "Number of Columns",
             "name": "comp_columns",
             "type": "number",
-            "default_value": 2,
-            "instructions": "Specify the number of columns (e.g., 2, 3, 4)."
+            "default_value": 3,
+            "min": 2,
+            "max": 4,
+            "instructions": "Number of columns (2-4)."
         },
         {
             "key": "field_comp_columns_data",
-            "label": "Columns Data",
+            "label": "Columns",
             "name": "comp_columns_data",
             "type": "repeater",
+            "layout": "block",
             "sub_fields": [
                 {
                     "key": "field_comp_title",
-                    "label": "Column Title",
+                    "label": "Title",
                     "name": "comp_title",
                     "type": "text"
                 },
                 {
                     "key": "field_comp_title_bg",
-                    "label": "Title Background Color",
+                    "label": "Title Background",
                     "name": "comp_title_bg",
                     "type": "color_picker"
                 },
@@ -36,62 +39,56 @@
                 },
                 {
                     "key": "field_comp_text",
-                    "label": "Column Text",
+                    "label": "Subtitle",
                     "name": "comp_text",
-                    "type": "textarea"
-                },
-                {
-                    "key": "field_comp_repeater_list",
-                    "label": "List Items",
-                    "name": "comp_repeater_list",
-                    "type": "repeater",
-                    "sub_fields": [
-                        {
-                            "key": "field_comp_list_item",
-                            "label": "List Item",
-                            "name": "comp_list_item",
-                            "type": "text"
-                        }
-                    ],
-                    "instructions": "Add list items here."
-                },
-                {
-                    "key": "field_comp_list_class",
-                    "label": "List CSS Class",
-                    "name": "comp_list_class",
                     "type": "text",
-                    "instructions": "Specify a class for the list (optional)."
+                    "instructions": "Short description below the title (e.g. 'Best for performance')."
+                },
+                {
+                    "key": "field_comp_list_content",
+                    "label": "Features List",
+                    "name": "comp_list_content",
+                    "type": "wysiwyg",
+                    "toolbar": "basic",
+                    "media_upload": 0,
+                    "tabs": "visual",
+                    "instructions": "Use a bullet list. Each item becomes a feature with a checkmark."
                 },
                 {
                     "key": "field_comp_column_style",
-                    "label": "Column Custom Style",
+                    "label": "Custom CSS",
                     "name": "comp_column_style",
                     "type": "text",
-                    "instructions": "Enter CSS properties manually, e.g., 'border:1px solid #333; border-radius:10px;'."
+                    "instructions": "Optional inline CSS for this column."
                 }
             ],
-            "instructions": "Add columns and configure their settings."
+            "instructions": "Add columns with title, subtitle, and feature list."
         },
         {
             "key": "field_comp_cta_text",
             "label": "CTA Button Text",
             "name": "comp_cta_text",
-            "type": "text",
-            "instructions": "Enter the CTA button text."
+            "type": "text"
         },
         {
             "key": "field_comp_cta_url",
             "label": "CTA Button URL",
             "name": "comp_cta_url",
-            "type": "url",
-            "instructions": "Enter the CTA button URL."
+            "type": "url"
         },
         {
             "key": "field_comp_cta_url_rel_tag",
-            "label": "CTA Button Rel Attribute",
+            "label": "CTA Rel Attribute",
             "name": "comp_cta_url_rel_tag",
             "type": "text",
-            "instructions": "Enter the rel attribute (e.g., nofollow, noreferrer)."
+            "instructions": "e.g. nofollow, noopener, sponsored"
+        },
+        {
+            "key": "field_comp_cta_bg",
+            "label": "CTA Button Color",
+            "name": "comp_cta_bg",
+            "type": "color_picker",
+            "instructions": "Background color for the CTA button."
         }
     ],
     "location": [
@@ -106,6 +103,5 @@
     "style": "default",
     "label_placement": "top",
     "instruction_placement": "label",
-    "hide_on_screen": [],
     "active": true
 }
