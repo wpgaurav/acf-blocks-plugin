@@ -15,17 +15,88 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for changelog generation
 
       - name: Get version from tag
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
+      - name: Get previous tag
+        id: prev_tag
+        run: |
+          PREV_TAG=$(git tag --sort=-creatordate | sed -n '2p')
+          echo "PREV_TAG=${PREV_TAG}" >> $GITHUB_OUTPUT
+          echo "Previous tag: ${PREV_TAG}"
+
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          PREV_TAG="${{ steps.prev_tag.outputs.PREV_TAG }}"
+
+          # Start building release notes
+          cat > release_notes.md << 'HEADER'
+          ## What's Changed
+          HEADER
+
+          # Try CHANGELOG.md first for curated notes
+          if [ -f "CHANGELOG.md" ]; then
+            CHANGELOG_SECTION=$(awk "/^## \[${VERSION}\]/{found=1; next} /^## \[/{found=0} found" CHANGELOG.md)
+            if [ -n "$CHANGELOG_SECTION" ]; then
+              echo "" >> release_notes.md
+              echo "$CHANGELOG_SECTION" >> release_notes.md
+              echo "" >> release_notes.md
+            fi
+          fi
+
+          # Generate commit log between tags
+          if [ -n "$PREV_TAG" ]; then
+            echo "### Commits" >> release_notes.md
+            echo "" >> release_notes.md
+            git log ${PREV_TAG}..HEAD --pretty=format:"- %s (\`%h\`)" --no-merges >> release_notes.md
+            echo "" >> release_notes.md
+            echo "" >> release_notes.md
+
+            # Stats
+            COMMIT_COUNT=$(git rev-list ${PREV_TAG}..HEAD --count --no-merges)
+            FILES_CHANGED=$(git diff ${PREV_TAG}..HEAD --stat | tail -1)
+            echo "### Stats" >> release_notes.md
+            echo "" >> release_notes.md
+            echo "- **Commits:** ${COMMIT_COUNT}" >> release_notes.md
+            echo "- **Changes:** ${FILES_CHANGED}" >> release_notes.md
+            echo "" >> release_notes.md
+          fi
+
+          # Plugin info
+          BLOCK_COUNT=$(find blocks -maxdepth 1 -type d | tail -n +2 | wc -l | tr -d ' ')
+          PHP_VERSION=$(grep "Requires PHP" acf-blocks.php | grep -oP '[\d.]+')
+          WP_VERSION=$(grep "Requires at least" acf-blocks.php | grep -oP '[\d.]+')
+
+          echo "### Plugin Info" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "- **Blocks included:** ${BLOCK_COUNT}" >> release_notes.md
+          echo "- **Requires WordPress:** ${WP_VERSION}+" >> release_notes.md
+          echo "- **Requires PHP:** ${PHP_VERSION}+" >> release_notes.md
+          echo "- **Requires:** ACF Pro 6.0+ or Secure Custom Fields" >> release_notes.md
+          echo "" >> release_notes.md
+
+          # Install instructions
+          cat >> release_notes.md << 'INSTALL'
+          ### Installation
+
+          1. Download `acf-blocks-plugin-*.zip` from the assets below
+          2. Go to **Plugins → Add New → Upload Plugin** in WordPress admin
+          3. Upload the zip file and activate
+          INSTALL
+
+          echo "Release notes generated:"
+          cat release_notes.md
+
       - name: Create plugin zip
         run: |
-          # Create a temporary directory for the plugin
           mkdir -p build/acf-blocks-plugin
 
-          # Copy all files except hidden files and build directory
           rsync -av \
             --exclude='.*' \
             --exclude='build' \
@@ -34,36 +105,18 @@ jobs:
             --exclude='package-lock.json' \
             --exclude='composer.lock' \
             --exclude='landing.html' \
+            --exclude='release_notes.md' \
             ./ build/acf-blocks-plugin/
 
-          # Create zip file
           cd build
           zip -r acf-blocks-plugin-${{ steps.get_version.outputs.VERSION }}.zip acf-blocks-plugin
-
-          # Move zip to workspace root
           mv acf-blocks-plugin-${{ steps.get_version.outputs.VERSION }}.zip ../
 
-      - name: Extract changelog
-        id: changelog
-        run: |
-          # Try to get version-specific notes from README or use default
-          if [ -f "CHANGELOG.md" ]; then
-            # Extract changelog for this version if exists
-            NOTES=$(sed -n "/## \[${{ steps.get_version.outputs.VERSION }}\]/,/## \[/p" CHANGELOG.md | sed '$d' || echo "")
-          fi
-
-          if [ -z "$NOTES" ]; then
-            NOTES="Release version ${{ steps.get_version.outputs.VERSION }}"
-          fi
-
-          # Write to file to handle multiline
-          echo "$NOTES" > release_notes.txt
-
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: ACF Blocks v${{ steps.get_version.outputs.VERSION }}
-          body_path: release_notes.txt
+          body_path: release_notes.md
           draft: false
           prerelease: false
           files: acf-blocks-plugin-${{ steps.get_version.outputs.VERSION }}.zip
