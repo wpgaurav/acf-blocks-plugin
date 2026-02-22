@@ -2,36 +2,26 @@
 /**
  * Stats Block Template.
  *
+ * Renders animated counter stats. The count-up animation is handled
+ * by stats-counter.js (registered via block.json viewScript), which
+ * uses IntersectionObserver with zero theme/framework dependencies.
+ *
  * @param array       $block      Block settings and attributes.
  * @param string      $content    The block inner HTML (empty).
  * @param bool        $is_preview True during AJAX preview.
  * @param int|string  $post_id    The post ID.
  */
 
-// Global array for footer scripts.
-global $stats_unique_ids;
-if ( ! isset( $stats_unique_ids ) ) {
-    $stats_unique_ids = array();
-    if ( ! function_exists( 'output_stats_footer_scripts' ) ) {
-        function output_stats_footer_scripts() {
-            global $stats_unique_ids;
-            if ( ! empty( $stats_unique_ids ) ) {
-                foreach ( $stats_unique_ids as $id ) {
-                    echo '<script>MD.statsCounter("' . esc_js( $id ) . '");</script>' . "\n";
-                }
-            }
-        }
-    }
-    add_action( 'wp_footer', 'output_stats_footer_scripts', 999 );
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
 }
 
-$unique_id = 'stats_' . uniqid();
-$stats_unique_ids[] = $unique_id;
+$className   = $block['className'] ?? '';
+$anchor      = $block['anchor'] ?? '';
+$anchor_attr = $anchor ? ' id="' . esc_attr( $anchor ) . '"' : '';
 
-$className = $block['className'] ?? '';
-
-$stats_items = acf_blocks_get_repeater( 'acf_stats_items', [ 'acf_stat_number', 'acf_stat_label', 'acf_stat_prefix', 'acf_stat_suffix', 'acf_stat_icon' ], $block );
-$layout      = acf_blocks_get_field( 'acf_stats_layout', $block );
+$stats_items      = acf_blocks_get_repeater( 'acf_stats_items', [ 'acf_stat_number', 'acf_stat_label', 'acf_stat_prefix', 'acf_stat_suffix', 'acf_stat_icon' ], $block );
+$layout           = acf_blocks_get_field( 'acf_stats_layout', $block );
 $enable_animation = acf_blocks_get_field( 'acf_stats_enable_animation', $block );
 
 $custom_class = acf_blocks_get_field( 'acf_stats_class', $block );
@@ -41,14 +31,14 @@ if ( $className ) {
     $custom_class .= ' ' . esc_attr( $className );
 }
 
-$inline_style = acf_blocks_get_field( 'acf_stats_inline', $block );
+$inline_style      = acf_blocks_get_field( 'acf_stats_inline', $block );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
 
-$layout_class = $layout ? ' acf-stats-' . esc_attr( $layout ) : ' acf-stats-horizontal';
+$layout_class    = $layout ? ' acf-stats-' . esc_attr( $layout ) : ' acf-stats-horizontal';
 $animation_class = $enable_animation ? ' acf-has-animation' : '';
 ?>
 
-<div id="<?php echo esc_attr( $unique_id ); ?>" class="acf-stats-block<?php echo $layout_class . $animation_class . $custom_class; ?>"<?php echo $inline_style_attr; ?>>
+<div<?php echo $anchor_attr; ?> class="acf-stats-block<?php echo $layout_class . $animation_class . $custom_class; ?>"<?php echo $inline_style_attr; ?>>
     <?php
     if ( $stats_items && is_array( $stats_items ) && count( $stats_items ) > 0 ) :
         foreach ( $stats_items as $index => $stat ) :

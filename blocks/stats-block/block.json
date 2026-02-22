@@ -54,5 +54,6 @@
     }
   },
   "style": "file:./stats.css",
-  "editorStyle": "file:./stats.css"
+  "editorStyle": "file:./stats.css",
+  "viewScript": "file:./stats-counter.js"
 }
