@@ -29,6 +29,10 @@ Create an email capture form block with support for form actions and webhook sub
 | `field_hidden_fields` | Hidden Fields | repeater | Hidden form inputs |
 | — `field_hidden_field_name` | Field Name | text | HTML name attribute |
 | — `field_hidden_field_value` | Field Value | text | Hidden input value |
+| — `field_hidden_field_attributes` | Attributes | group | HTML attributes for the hidden field |
+| —— `field_hidden_attr_id` | ID | text | HTML id attribute |
+| —— `field_hidden_attr_class` | Class | text | CSS class |
+| —— `field_hidden_attr_inline_css` | Inline CSS | text | Inline styles |
 | `field_button_text` | Button Text | text | Submit button label |
 | `field_button_attributes` | Button Attrs | group | Button HTML attributes |
 | — `field_button_attr_id` | ID | text | HTML id attribute |
