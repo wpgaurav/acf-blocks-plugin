@@ -23,18 +23,24 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return mixed The field value or null.
  */
 function acf_blocks_get_field( $name, $block = array() ) {
-    // Try native get_field first (works in older ACF versions).
+    // Check block data first — more reliable than get_field() with ACF 6.7+.
+    // Review CPTs store data with field_ prefix (e.g. field_pc_pros_list)
+    // while post CPTs use bare names (e.g. pc_pros_list).
+    $data = $block['data'] ?? array();
+    if ( isset( $data[ $name ] ) && $data[ $name ] !== '' && $data[ $name ] !== null ) {
+        return $data[ $name ];
+    }
+    if ( isset( $data[ 'field_' . $name ] ) && $data[ 'field_' . $name ] !== '' && $data[ 'field_' . $name ] !== null ) {
+        return $data[ 'field_' . $name ];
+    }
+
+    // Fallback: try native get_field (works in older ACF versions).
     $value = get_field( $name );
     if ( $value !== false && $value !== null && $value !== '' ) {
         return $value;
     }
 
-    // Fallback: read directly from block data.
-    $data = $block['data'] ?? array();
-    // Try bare field name first, then field_ prefixed key.
-    // Review CPTs store data with field_ prefix (e.g. field_pc_pros_list)
-    // while post CPTs use bare names (e.g. pc_pros_list).
-    return $data[ $name ] ?? $data[ 'field_' . $name ] ?? null;
+    return null;
 }
 
 /**
@@ -49,51 +55,28 @@ function acf_blocks_get_field( $name, $block = array() ) {
  * @return array Array of rows, each row is an associative array.
  */
 function acf_blocks_get_repeater( $name, $sub_names, $block = array() ) {
-    // Try native get_field first.
-    $value = get_field( $name );
-    if ( ! empty( $value ) && is_array( $value ) ) {
-        return $value;
-    }
-
-    // Fallback: parse from flat block data.
+    // Parse from block data first — more reliable than get_field() with ACF 6.7+.
     $data = $block['data'] ?? array();
-    if ( empty( $data ) ) {
-        return array();
-    }
 
     // Normalize sub_names to associative array with types.
     $fields = array();
     foreach ( $sub_names as $key => $val ) {
         if ( is_int( $key ) ) {
-            // Simple string: field name with default 'text' type.
             $fields[ $val ] = 'text';
         } else {
-            // Associative: name => type.
             $fields[ $key ] = $val;
         }
     }
 
-    // Determine row count.
-    $count = isset( $data[ $name ] ) && ! is_array( $data[ $name ] ) ? intval( $data[ $name ] ) : 0;
-    if ( $count < 1 ) {
-        // Try counting by scanning keys.
-        $count = 0;
-        $field_names_list = array_keys( $fields );
-        while ( isset( $data[ $name . '_' . $count . '_' . $field_names_list[0] ] ) ) {
-            $count++;
-        }
-    }
-
-    if ( $count < 1 ) {
-        // Fallback: parse nested row format (row-0, row-1, etc.)
-        // ACF 6.7+ may store repeater data as nested arrays in block comments.
-        // Try bare name first, then field_ prefix (review CPTs use field_ prefix).
+    if ( ! empty( $data ) ) {
+        // First try nested row format (row-0, row-1, etc.) — bare name or field_ prefix.
         $repeater_data = null;
         if ( isset( $data[ $name ] ) && is_array( $data[ $name ] ) ) {
             $repeater_data = $data[ $name ];
         } elseif ( isset( $data[ 'field_' . $name ] ) && is_array( $data[ 'field_' . $name ] ) ) {
             $repeater_data = $data[ 'field_' . $name ];
         }
+
         if ( is_array( $repeater_data ) ) {
             $rows = array();
             foreach ( $repeater_data as $row_key => $row_data ) {
@@ -104,125 +87,103 @@ function acf_blocks_get_repeater( $name, $sub_names, $block = array() ) {
                 foreach ( $fields as $sub_name => $type ) {
                     // Try bare sub-field name, then field_ prefixed.
                     $value = $row_data[ $sub_name ] ?? $row_data[ 'field_' . $sub_name ] ?? null;
+                    $row[ $sub_name ] = acf_blocks_cast_field_value( $value, $type );
+                }
+                $rows[] = $row;
+            }
+            if ( ! empty( $rows ) ) {
+                return $rows;
+            }
+        }
 
-                    switch ( $type ) {
-                        case 'image':
-                            if ( $value && is_numeric( $value ) ) {
-                                $img = wp_get_attachment_image_src( intval( $value ), 'full' );
-                                if ( $img ) {
-                                    $value = array(
-                                        'ID'  => intval( $value ),
-                                        'url' => $img[0],
-                                        'alt' => get_post_meta( intval( $value ), '_wp_attachment_image_alt', true ),
-                                    );
-                                }
-                            }
-                            break;
-
-                        case 'image_url':
-                            if ( $value && is_numeric( $value ) ) {
-                                $img   = wp_get_attachment_image_src( intval( $value ), 'full' );
-                                $value = $img ? $img[0] : '';
-                            }
-                            break;
-
-                        case 'link':
-                            if ( $value && is_string( $value ) ) {
-                                $unserialized = @unserialize( $value );
-                                if ( false !== $unserialized ) {
-                                    $value = $unserialized;
-                                }
-                            }
-                            if ( is_array( $value ) ) {
-                                $value = wp_parse_args( $value, array(
-                                    'title'  => '',
-                                    'url'    => '',
-                                    'target' => '',
-                                ) );
-                            }
-                            break;
-
-                        case 'bool':
-                            $value = (bool) $value;
-                            break;
-
-                        case 'int':
-                        case 'number':
-                            $value = $value !== null ? intval( $value ) : 0;
-                            break;
-                    }
-
-                    $row[ $sub_name ] = $value;
+        // Then try flat indexed format (repeater_0_field, repeater_1_field).
+        $count = isset( $data[ $name ] ) && ! is_array( $data[ $name ] ) ? intval( $data[ $name ] ) : 0;
+        if ( $count < 1 ) {
+            $field_names_list = array_keys( $fields );
+            while ( isset( $data[ $name . '_' . $count . '_' . $field_names_list[0] ] ) ) {
+                $count++;
+            }
+        }
+        if ( $count > 0 ) {
+            $rows = array();
+            for ( $i = 0; $i < $count; $i++ ) {
+                $row = array();
+                foreach ( $fields as $sub_name => $type ) {
+                    $key   = $name . '_' . $i . '_' . $sub_name;
+                    $value = $data[ $key ] ?? null;
+                    $row[ $sub_name ] = acf_blocks_cast_field_value( $value, $type );
                 }
                 $rows[] = $row;
             }
             return $rows;
         }
-
-        return array();
     }
 
-    $rows = array();
-    for ( $i = 0; $i < $count; $i++ ) {
-        $row = array();
-        foreach ( $fields as $sub_name => $type ) {
-            $key   = $name . '_' . $i . '_' . $sub_name;
-            $value = $data[ $key ] ?? null;
+    // Last resort: try native get_field.
+    $value = get_field( $name );
+    if ( ! empty( $value ) && is_array( $value ) ) {
+        return $value;
+    }
 
-            switch ( $type ) {
-                case 'image':
-                    if ( $value && is_numeric( $value ) ) {
-                        $img = wp_get_attachment_image_src( intval( $value ), 'full' );
-                        if ( $img ) {
-                            $value = array(
-                                'ID'  => intval( $value ),
-                                'url' => $img[0],
-                                'alt' => get_post_meta( intval( $value ), '_wp_attachment_image_alt', true ),
-                            );
-                        }
-                    }
-                    break;
+    return array();
+}
 
-                case 'image_url':
-                    // Image field with return_format = url.
-                    if ( $value && is_numeric( $value ) ) {
-                        $img = wp_get_attachment_image_src( intval( $value ), 'full' );
-                        $value = $img ? $img[0] : '';
-                    }
-                    break;
-
-                case 'link':
-                    if ( $value && is_string( $value ) ) {
-                        $unserialized = @unserialize( $value );
-                        if ( false !== $unserialized ) {
-                            $value = $unserialized;
-                        }
-                    }
-                    if ( is_array( $value ) ) {
-                        $value = wp_parse_args( $value, array(
-                            'title'  => '',
-                            'url'    => '',
-                            'target' => '',
-                        ) );
-                    }
-                    break;
-
-                case 'bool':
-                    $value = (bool) $value;
-                    break;
-
-                case 'int':
-                case 'number':
-                    $value = $value !== null ? intval( $value ) : 0;
-                    break;
+/**
+ * Cast a field value to the appropriate type for repeater sub-fields.
+ *
+ * @param mixed  $value The raw value.
+ * @param string $type  The field type: text, image, image_url, link, bool, int/number.
+ * @return mixed The cast value.
+ */
+function acf_blocks_cast_field_value( $value, $type ) {
+    switch ( $type ) {
+        case 'image':
+            if ( $value && is_numeric( $value ) ) {
+                $img = wp_get_attachment_image_src( intval( $value ), 'full' );
+                if ( $img ) {
+                    $value = array(
+                        'ID'  => intval( $value ),
+                        'url' => $img[0],
+                        'alt' => get_post_meta( intval( $value ), '_wp_attachment_image_alt', true ),
+                    );
+                }
             }
+            break;
 
-            $row[ $sub_name ] = $value;
-        }
-        $rows[] = $row;
+        case 'image_url':
+            if ( $value && is_numeric( $value ) ) {
+                $img   = wp_get_attachment_image_src( intval( $value ), 'full' );
+                $value = $img ? $img[0] : '';
+            }
+            break;
+
+        case 'link':
+            if ( $value && is_string( $value ) ) {
+                $unserialized = @unserialize( $value );
+                if ( false !== $unserialized ) {
+                    $value = $unserialized;
+                }
+            }
+            if ( is_array( $value ) ) {
+                $value = wp_parse_args( $value, array(
+                    'title'  => '',
+                    'url'    => '',
+                    'target' => '',
+                ) );
+            }
+            break;
+
+        case 'bool':
+            $value = (bool) $value;
+            break;
+
+        case 'int':
+        case 'number':
+            $value = $value !== null ? intval( $value ) : 0;
+            break;
     }
 
-    return $rows;
+    return $value;
 }
 
 /**
