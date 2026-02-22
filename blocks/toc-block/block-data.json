@@ -53,6 +53,15 @@
       "instructions": "Select which heading levels to include in the table of contents."
     },
     {
+      "key": "field_toc_include_acf_headings",
+      "label": "Include ACF Block Headings",
+      "name": "toc_include_acf_block_headings",
+      "type": "true_false",
+      "default_value": 0,
+      "ui": 1,
+      "instructions": "When enabled, headings inside ACF blocks (product boxes, pros/cons, etc.) will be included in the table of contents. Off by default."
+    },
+    {
       "key": "field_toc_list_type",
       "label": "List Type",
       "name": "toc_list_type",

@@ -17,8 +17,8 @@ if ( ! function_exists( 'acf_pros_cons_process_list' ) ) {
         }
 
         // SVG icons (inline for performance - no extra HTTP requests)
-        $check_icon = '<span class="acf-pros-cons__icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>';
-        $x_icon = '<span class="acf-pros-cons__icon" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>';
+        $check_icon = '<span class="acf-pros-cons__icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>';
+        $x_icon = '<span class="acf-pros-cons__icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>';
 
         $icon = ($type === 'positive') ? $check_icon : $x_icon;
 
@@ -45,12 +45,12 @@ $pros_list = acf_blocks_get_field('pc_pros_list', $block);
 // Color fields with defaults
 $neg_bg = acf_blocks_get_field('pc_neg_bg_color', $block) ?: '#fef2f2';
 $neg_border = acf_blocks_get_field('pc_neg_border_color', $block) ?: '#dc2626';
-$neg_title_color = acf_blocks_get_field('pc_neg_title_color', $block) ?: '#dc2626';
+$neg_title_color = acf_blocks_get_field('pc_neg_title_color', $block) ?: '#991b1b';
 $neg_icon_color = acf_blocks_get_field('pc_neg_icon_color', $block) ?: '#dc2626';
 
 $pos_bg = acf_blocks_get_field('pc_pos_bg_color', $block) ?: '#f0fdf4';
 $pos_border = acf_blocks_get_field('pc_pos_border_color', $block) ?: '#16a34a';
-$pos_title_color = acf_blocks_get_field('pc_pos_title_color', $block) ?: '#16a34a';
+$pos_title_color = acf_blocks_get_field('pc_pos_title_color', $block) ?: '#166534';
 $pos_icon_color = acf_blocks_get_field('pc_pos_icon_color', $block) ?: '#16a34a';
 
 // Build wrapper classes
@@ -71,13 +71,12 @@ $anchor_attr = $anchor ? ' id="' . esc_attr($anchor) . '"' : '';
 $block_id = 'pc-' . uniqid();
 ?>
 
-<div <?php echo $anchor_attr; ?> class="<?php echo esc_attr(implode(' ', $wrapper_classes)); ?>" data-pc-id="<?php echo esc_attr($block_id); ?>">
+<div <?php echo $anchor_attr; ?> class="<?php echo esc_attr(implode(' ', $wrapper_classes)); ?>" data-pc-id="<?php echo esc_attr($block_id); ?>" data-acf-block="pros-cons">
     <?php
     ob_start();
     ?>
     [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__negative {
         background-color: <?php echo esc_attr($neg_bg); ?>;
-        border-left-color: <?php echo esc_attr($neg_border); ?>;
     }
     [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__negative .acf-pros-cons__title {
         color: <?php echo esc_attr($neg_title_color); ?>;
@@ -88,7 +87,6 @@ $block_id = 'pc-' . uniqid();
     }
     [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__positive {
         background-color: <?php echo esc_attr($pos_bg); ?>;
-        border-left-color: <?php echo esc_attr($pos_border); ?>;
     }
     [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__positive .acf-pros-cons__title {
         color: <?php echo esc_attr($pos_title_color); ?>;
