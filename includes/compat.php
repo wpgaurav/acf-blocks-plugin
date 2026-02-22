@@ -31,7 +31,10 @@ function acf_blocks_get_field( $name, $block = array() ) {
 
     // Fallback: read directly from block data.
     $data = $block['data'] ?? array();
-    return $data[ $name ] ?? null;
+    // Try bare field name first, then field_ prefixed key.
+    // Review CPTs store data with field_ prefix (e.g. field_pc_pros_list)
+    // while post CPTs use bare names (e.g. pc_pros_list).
+    return $data[ $name ] ?? $data[ 'field_' . $name ] ?? null;
 }
 
 /**
@@ -84,15 +87,23 @@ function acf_blocks_get_repeater( $name, $sub_names, $block = array() ) {
     if ( $count < 1 ) {
         // Fallback: parse nested row format (row-0, row-1, etc.)
         // ACF 6.7+ may store repeater data as nested arrays in block comments.
+        // Try bare name first, then field_ prefix (review CPTs use field_ prefix).
+        $repeater_data = null;
         if ( isset( $data[ $name ] ) && is_array( $data[ $name ] ) ) {
+            $repeater_data = $data[ $name ];
+        } elseif ( isset( $data[ 'field_' . $name ] ) && is_array( $data[ 'field_' . $name ] ) ) {
+            $repeater_data = $data[ 'field_' . $name ];
+        }
+        if ( is_array( $repeater_data ) ) {
             $rows = array();
-            foreach ( $data[ $name ] as $row_key => $row_data ) {
+            foreach ( $repeater_data as $row_key => $row_data ) {
                 if ( ! is_array( $row_data ) ) {
                     continue;
                 }
                 $row = array();
                 foreach ( $fields as $sub_name => $type ) {
-                    $value = $row_data[ $sub_name ] ?? null;
+                    // Try bare sub-field name, then field_ prefixed.
+                    $value = $row_data[ $sub_name ] ?? $row_data[ 'field_' . $sub_name ] ?? null;
 
                     switch ( $type ) {
                         case 'image':
