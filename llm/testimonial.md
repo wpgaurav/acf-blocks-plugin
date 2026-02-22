@@ -24,6 +24,7 @@ Create a testimonial/quote block with author image, name, title, and optional st
 ## Field Rules
 
 - Field keys use `acf_` prefix (NOT `field_`)
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - This block supports InnerBlocks — quote content goes as nested WordPress blocks
 - ACF quote field serves as legacy fallback when InnerBlocks are empty
 - Rating is optional; omit or set to 0 to hide stars

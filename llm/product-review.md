@@ -43,6 +43,7 @@ Create a product review block in ACF block comment markup for the given product.
 ## Field Rules
 
 - All field keys use the `field_` prefix (e.g. `field_pr_product_name`, NOT `pr_product_name`)
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Repeaters use nested `row-N` objects: `{"row-0":{"field_pr_feature_name":"...","field_pr_feature_rating":"..."}}`
 - Ratings support decimals: overall rating step 0.1, feature rating step 0.5
 - Image field stores WordPress media library ID; image URL field stores direct URL

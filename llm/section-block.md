@@ -30,6 +30,7 @@ Create a container/wrapper block that wraps inner WordPress blocks with customiz
 ## Field Rules
 
 - All keys use `field_` prefix
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - This block uses InnerBlocks — content goes inside as nested WordPress blocks
 - Multiple class fields allow separation of concerns (layout, spacing, background, text, responsive)
 - Background supports: solid color, image with overlay, or video

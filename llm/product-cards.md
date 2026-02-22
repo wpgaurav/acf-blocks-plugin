@@ -28,6 +28,7 @@ Create a product card block with title header, image, description, and dual call
 ## Field Rules
 
 - All keys use `field_` prefix
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Image field returns URL format (not array)
 - Card has two CTA zones: a primary button and a secondary text link
 - Title serves as a colored header/badge at the top of the card

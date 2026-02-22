@@ -33,6 +33,7 @@ Create a changelog/release notes block to display version history and updates.
 ## Field Rules
 
 - All keys use `field_` prefix
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Nested repeaters: `field_changelog_entries` → `field_changelog_items` (two levels deep)
 - Date format in block data: YYYYMMDD
 - Entries should be ordered newest-first

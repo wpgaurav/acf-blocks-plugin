@@ -28,6 +28,7 @@ Create a team member profile block with photo, name, title, bio, contact info, a
 ## Field Rules
 
 - Field keys use `acf_` prefix (NOT `field_`)
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Repeaters use nested `row-N` objects
 - Photo supports both media library upload and direct URL
 - This block supports InnerBlocks for modern WordPress; ACF fields are legacy fallback

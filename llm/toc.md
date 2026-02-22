@@ -32,6 +32,7 @@ Create an SEO-optimized table of contents block that auto-generates from page he
 ## Field Rules
 
 - All keys use `field_` prefix
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Heading levels field is a checkbox (multi-select) — pass as array or comma-separated
 - TOC auto-generates from page headings at render time; no manual entries needed
 - Collapsible state uses CSS toggle (no JavaScript required for basic function)

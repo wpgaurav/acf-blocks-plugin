@@ -29,6 +29,7 @@ Create a multi-column comparison block for comparing products, plans, or feature
 ## Field Rules
 
 - All keys use `field_` prefix
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Two-level nested repeaters: `field_comp_columns_data` → `field_comp_repeater_list`
 - Each column can have its own header color scheme
 - CTA button is shared across all columns (appears at bottom)

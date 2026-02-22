@@ -25,6 +25,7 @@ Create an interactive checklist block with checkable items, progress tracking, a
 ## Field Rules
 
 - All keys use `field_` prefix
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Repeaters use nested `row-N` objects
 - Interactive mode persists checkbox state in localStorage
 - Progress bar shows completion percentage based on checked items

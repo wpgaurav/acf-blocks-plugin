@@ -23,6 +23,7 @@ Create an image gallery block with multiple layout options and optional lightbox
 ## Field Rules
 
 - Field keys use `acf_` prefix (NOT `field_`)
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Gallery field stores an array of WordPress media library image IDs
 - First 4 images load eagerly; remaining images lazy-load
 - Layout options: `grid` (uniform), `masonry` (varied heights), `carousel` (scrollable)

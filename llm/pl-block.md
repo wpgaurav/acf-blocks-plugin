@@ -31,6 +31,7 @@ Create a product listing block with rank, icon, product name, description, prici
 ## Field Rules
 
 - All keys use `field_` prefix
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Repeaters use nested `row-N` objects
 - Rank is typically a number but accepts any text
 - Description supports WYSIWYG/HTML content

@@ -26,6 +26,7 @@ Display selected WordPress posts in various layouts. Choose from text links, thu
 ## Field Rules
 
 - All keys use `field_` prefix
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - `field_pd_selected_posts` stores an array of WordPress post IDs
 - Columns field only applies when layout is `grid`
 - Show excerpt and show author only appear in thumbnail/grid layouts

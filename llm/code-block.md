@@ -27,6 +27,7 @@ Create a syntax-highlighted code snippet block with copy functionality, line hig
 ## Field Rules
 
 - All keys use `field_` prefix
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Code content should be properly escaped in JSON (double quotes as `\"`, newlines as `\n`)
 - Highlight lines format: comma-separated numbers or ranges (e.g. `"1,3-5,8"`)
 - Long code snippets automatically get an expand/collapse toggle

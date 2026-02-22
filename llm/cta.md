@@ -26,6 +26,7 @@ Create a call-to-action (CTA) block with heading, description, and button. This 
 ## Field Rules
 
 - Field keys use `acf_` prefix (NOT `field_` — this block uses a different convention)
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - This block supports InnerBlocks for modern usage; ACF fields serve as legacy fallback
 - Button style determines appearance: `primary` (filled), `secondary` (outline), `outline` (text-only)
 - Color pickers are optional — omit for default theme colors

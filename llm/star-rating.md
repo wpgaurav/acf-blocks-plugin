@@ -25,6 +25,7 @@ Create an interactive star rating widget that collects visitor ratings and displ
 ## Field Rules
 
 - All keys use `field_` prefix
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Initial count and rating seed the aggregate display before any visitor ratings
 - Rating submission persists in localStorage to prevent duplicate votes
 - Schema type determines the JSON-LD `@type` value

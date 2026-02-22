@@ -33,6 +33,7 @@ Create a feature grid to showcase features, services, or benefits with icons, ti
 ## Field Rules
 
 - Field keys use `acf_` prefix (NOT `field_` — this block uses a different convention)
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Repeaters use nested `row-N` objects
 - Link fields use ACF link format: `{"url":"...","title":"...","target":"..."}`
 - Icon field accepts icon class names or emoji characters

@@ -26,6 +26,7 @@ Create a statistics counter block with animated numbers to showcase metrics and 
 ## Field Rules
 
 - Field keys use `acf_` prefix (NOT `field_`)
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Repeaters use nested `row-N` objects
 - Animation triggers when the block scrolls into view
 - Prefix/suffix combine with number: `$` + `10` + `M` → `$10M`

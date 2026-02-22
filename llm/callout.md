@@ -31,6 +31,7 @@ Create a styled callout/notice box using the ACF Callout block. This block uses 
 ## Field Rules
 
 - All keys use `field_` prefix
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - This block uses **InnerBlocks** — content goes as nested WordPress blocks, not in ACF fields
 - Color fields are optional; the style variation handles default colors
 - Label field is optional; useful for categorizing callouts (Tip, Warning, Note, etc.)

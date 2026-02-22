@@ -43,6 +43,7 @@ Create an email capture form block with support for form actions and webhook sub
 ## Field Rules
 
 - All keys use `field_` prefix
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Group fields use nested objects (NOT row-N format)
 - Hidden fields use repeater format with `row-N` objects
 - Form type determines which URL field is used (form_action or webhook)

@@ -21,6 +21,7 @@ Create a coupon code display block with copy-to-clipboard functionality and an a
 ## Field Rules
 
 - All keys use `field_` prefix
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Copy button triggers clipboard API with visual feedback
 - Coupon code is displayed in a highlighted, copyable format
 - Activate button links to the merchant page where the coupon applies

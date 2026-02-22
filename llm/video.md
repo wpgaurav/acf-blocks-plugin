@@ -29,6 +29,7 @@ Create a responsive video block supporting YouTube, Vimeo, and self-hosted video
 ## Field Rules
 
 - Field keys use `acf_` prefix (NOT `field_`)
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Video type determines which URL/file field is used
 - YouTube/Vimeo use a facade pattern for performance (loads iframe on click)
 - Autoplay requires muted to work in most browsers

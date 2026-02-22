@@ -23,6 +23,7 @@ Create an accordion/FAQ block using the ACF Accordion block format. Each accordi
 
 - All keys use `field_` prefix
 - Repeaters use nested `row-N` objects
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values. Literal newlines break WordPress's block parser silently.
 - FAQ schema outputs `FAQPage` JSON-LD when enabled — ideal for FAQ sections
 - Content field supports HTML markup (WYSIWYG)
 - Uses native `<details>/<summary>` HTML elements for accessibility

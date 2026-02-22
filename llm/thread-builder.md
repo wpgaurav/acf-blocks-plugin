@@ -32,6 +32,7 @@ Create a social media-style conversation thread display (X/Twitter style) with m
 ## Field Rules
 
 - All keys use `field_` prefix
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Repeaters use nested `row-N` objects
 - Content supports @mentions and #hashtags (auto-linked in rendering)
 - Connector lines visually link consecutive posts in the thread

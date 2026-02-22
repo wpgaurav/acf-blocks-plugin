@@ -51,6 +51,7 @@ Create a rich URL preview card that displays fetched Open Graph data with option
 ## Field Rules
 
 - All keys use `field_` prefix
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Repeaters use nested `row-N` objects for custom fields
 - Image source toggle determines which image field is used (external URL vs media library)
 - Layout determines card orientation (vertical = stacked, horizontal = side-by-side)

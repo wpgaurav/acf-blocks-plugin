@@ -32,6 +32,7 @@ Create a tabbed content block for organizing information into switchable section
 ## Field Rules
 
 - Field keys use `acf_` prefix (NOT `field_`)
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Repeaters use nested `row-N` objects
 - Tab content supports full WYSIWYG HTML
 - Tabs include ARIA attributes for keyboard accessibility

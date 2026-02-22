@@ -30,6 +30,7 @@ Create a two-column pros and cons comparison block with customizable colors and 
 
 - All keys use `field_` prefix
 - Pros/cons content uses WYSIWYG fields — write as HTML `<ul><li>` lists
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Color fields are all optional; defaults use green for pros and red for cons
 - `field_pc_show_first` controls column ordering (which side appears on the left)
 - Inline SVG icons are used for checkmarks (pros) and crosses (cons)

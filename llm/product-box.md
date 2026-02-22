@@ -68,6 +68,7 @@ All buttons get `field_pb_cta_rel`: `"nofollow noopener sponsored"`
 ## Field Rules
 
 - All keys use `field_` prefix (`field_pb_title`, NOT `pb_title`)
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - Repeaters use nested `row-N` objects: `{"row-0":{"field_pb_feature_text":"..."}}`
 - `field_pb_image`: empty string `""` when using `field_pb_image_url` directly
 - `field_pb_cta_icon`: `"none"`, `"cart"`, `"external"`, or `"check"`

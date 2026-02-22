@@ -21,6 +21,7 @@ Create an opinion/quote box block with author metadata. Uses InnerBlocks for the
 ## Field Rules
 
 - All keys use `field_` prefix
+- **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
 - This block uses InnerBlocks for the quote/opinion content
 - Avatar supports both media library upload and direct URL
 - Designation is displayed below the name (e.g. "CEO, Company Name")
