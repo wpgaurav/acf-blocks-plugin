@@ -24,8 +24,9 @@ $img_alt = 'Team member';
 if ( $photo_url ) {
     $img_src = $photo_url;
 } elseif ( $photo ) {
-    $img_src = $photo['url'];
-    $img_alt = $photo['alt'] ?: $img_alt;
+    $resolved = acf_blocks_resolve_image( $photo, 'Team member', 'medium' );
+    $img_src = $resolved['src'];
+    $img_alt = $resolved['alt'];
 }
 
 $custom_class = acf_blocks_get_field( 'acf_team_member_class', $block );

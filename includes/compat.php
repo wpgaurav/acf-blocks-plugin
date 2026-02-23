@@ -187,6 +187,71 @@ function acf_blocks_cast_field_value( $value, $type ) {
 }
 
 /**
+ * Resolve an ACF image field value to a URL and alt text.
+ *
+ * The compat layer reads raw values from $block['data'], which stores image
+ * fields as numeric attachment IDs. Native ACF returns an array with 'ID',
+ * 'url', 'alt', 'sizes'. This helper handles both cases plus direct URLs.
+ *
+ * @param mixed  $image     ACF image value (array, numeric ID, or URL string).
+ * @param string $fallback_alt Fallback alt text if none found.
+ * @param string $size      WordPress image size to retrieve. Default 'medium'.
+ * @return array{src: string, alt: string}
+ */
+function acf_blocks_resolve_image( $image, $fallback_alt = '', $size = 'medium' ) {
+    $result = [ 'src' => '', 'alt' => $fallback_alt ];
+
+    if ( empty( $image ) ) {
+        return $result;
+    }
+
+    // Case 1: ACF array format (native get_field with return_format=array)
+    if ( is_array( $image ) && ! empty( $image['url'] ) ) {
+        $result['src'] = $image['url'];
+        if ( ! empty( $image['alt'] ) ) {
+            $result['alt'] = $image['alt'];
+        }
+        // Try requested size if available
+        if ( ! empty( $image['sizes'][ $size ] ) ) {
+            $result['src'] = $image['sizes'][ $size ];
+        } elseif ( ! empty( $image['ID'] ) ) {
+            $sized = wp_get_attachment_image_src( (int) $image['ID'], $size );
+            if ( $sized ) {
+                $result['src'] = $sized[0];
+            }
+        }
+        return $result;
+    }
+
+    // Case 2: Raw numeric attachment ID (compat layer reads from $block['data'])
+    if ( is_numeric( $image ) ) {
+        $attachment_id = (int) $image;
+        $sized = wp_get_attachment_image_src( $attachment_id, $size );
+        if ( $sized ) {
+            $result['src'] = $sized[0];
+        } else {
+            $full = wp_get_attachment_url( $attachment_id );
+            if ( $full ) {
+                $result['src'] = $full;
+            }
+        }
+        $img_alt = get_post_meta( $attachment_id, '_wp_attachment_image_alt', true );
+        if ( $img_alt ) {
+            $result['alt'] = $img_alt;
+        }
+        return $result;
+    }
+
+    // Case 3: Direct URL string
+    if ( is_string( $image ) && filter_var( $image, FILTER_VALIDATE_URL ) ) {
+        $result['src'] = $image;
+        return $result;
+    }
+
+    return $result;
+}
+
+/**
  * Get a nested repeater from flat block data.
  *
  * Used when a repeater contains another repeater as a sub-field.

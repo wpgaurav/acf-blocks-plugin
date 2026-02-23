@@ -15,6 +15,7 @@ Create a product card block with title header, image, description, and dual call
 | `field_pc_block_title` | Card Title | text | Header/badge title |
 | `field_pc_block_title_color` | Title Text Color | color_picker | Header text color |
 | `field_pc_block_title_bg_color` | Title Background | color_picker | Header background color |
+| `field_pc_block_title_tag` | Title Heading Level | select | `p` (default), `h2`, `h3`, `h4`, `h5`, `h6` |
 | `field_pc_block_product_image` | Product Image | image (url) | Product image |
 | `field_pc_block_description` | Description | textarea | Product description text |
 | `field_pc_block_root_class` | Root Class | text | Custom CSS class for the card |
@@ -32,6 +33,7 @@ Create a product card block with title header, image, description, and dual call
 - Image field returns URL format (not array)
 - Card has two CTA zones: a primary button and a secondary text link
 - Title serves as a colored header/badge at the top of the card
+- `field_pc_block_title_tag`: defaults to `"p"` if omitted. Set to `"h2"` through `"h6"` for heading tags
 - Color pickers customize the title header appearance
 
 ## Instructions

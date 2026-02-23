@@ -2,21 +2,49 @@
   "apiVersion": 3,
   "name": "acf/pl-block",
   "title": "Product List Block",
-  "description": "A product block with rank, icon, name, description, pricing, coupons, and offer buttons.",
+  "description": "Ranked product listing with icon, pricing tiers, coupon codes, and CTA buttons. Designed for best-of lists and product roundups.",
   "category": "acf-blocks",
   "icon": "products",
-  "keywords": ["product", "offer", "pricing", "coupon"],
+  "keywords": [
+    "product",
+    "list",
+    "rank",
+    "pricing",
+    "coupon",
+    "deal"
+  ],
   "acf": {
     "renderTemplate": "pl-block.php",
     "blockVersion": 3
   },
   "supports": {
-    "align": true,
+    "align": [
+      "wide",
+      "full"
+    ],
     "mode": true,
     "anchor": true,
-    "multiple": true,
-    "jsx": true
+    "multiple": true
   },
   "style": "file:./pl-block.css",
-  "editorStyle": "file:./pl-block.css"
+  "editorStyle": "file:./pl-block.css",
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "pl_block_rank": "1",
+        "pl_block_product_name": "ScalaHosting",
+        "pl_block_description": "<p>Managed VPS hosting with SPanel control panel. Best for WordPress users who want dedicated resources.</p>",
+        "pl_block_pricing_0_pl_block_pricing_title": "Mini",
+        "pl_block_pricing_0_pl_block_pricing_amount": "$14.95/mo",
+        "pl_block_pricing_1_pl_block_pricing_title": "Start",
+        "pl_block_pricing_1_pl_block_pricing_amount": "$26.95/mo",
+        "pl_block_coupons_0_pl_block_coupon_code": "STARTER50",
+        "pl_block_coupons_0_pl_block_coupon_offer": "50% off first 3 months",
+        "pl_block_buttons_0_pl_block_button_text": "Visit ScalaHosting",
+        "pl_block_buttons_0_pl_block_button_url": "#",
+        "pl_block_buttons_0_pl_block_button_style": "primary"
+      }
+    }
+  }
 }

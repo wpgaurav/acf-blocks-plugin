@@ -13,6 +13,8 @@
 $title = acf_blocks_get_field('pc_block_title', $block);
 $title_color = acf_blocks_get_field('pc_block_title_color', $block) ?: '#FFFFFF';
 $title_bg_color = acf_blocks_get_field('pc_block_title_bg_color', $block) ?: '#007bff';
+$title_tag_raw = acf_blocks_get_field('pc_block_title_tag', $block);
+$title_tag = in_array($title_tag_raw, ['p', 'h2', 'h3', 'h4', 'h5', 'h6'], true) ? $title_tag_raw : 'p';
 $image = acf_blocks_get_field('pc_block_product_image', $block);
 $description = acf_blocks_get_field('pc_block_description', $block);
 $root_class = acf_blocks_get_field('pc_block_root_class', $block);
@@ -34,7 +36,7 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => implode(' ', $wra
 
 <div <?php echo $wrapper_attributes; ?>>
     <div class="acf-product-cards__header" style="background-color: <?php echo esc_attr($title_bg_color); ?>; color: <?php echo esc_attr($title_color); ?>;">
-        <?php echo esc_html($title); ?>
+        <<?php echo $title_tag; ?> class="acf-product-cards__title"><?php echo esc_html($title); ?></<?php echo $title_tag; ?>>
     </div>
     <?php if ($image): ?>
         <div class="acf-product-cards__image">

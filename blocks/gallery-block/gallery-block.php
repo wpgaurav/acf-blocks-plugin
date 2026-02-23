@@ -30,17 +30,27 @@ $lightbox_class = $lightbox ? ' acf-gallery-has-lightbox' : '';
     <?php
     if ( $images && is_array( $images ) && count( $images ) > 0 ) :
         foreach ( $images as $index => $image ) :
-            $image_url = $image['url'];
-            $image_alt = $image['alt'] ? $image['alt'] : 'Gallery image ' . ( $index + 1 );
-            $image_caption = $image['caption'];
-            // Use medium_large size for grid display, full for lightbox
-            $display_url = isset( $image['sizes']['medium_large'] ) ? $image['sizes']['medium_large'] : $image_url;
+            // Resolve image — handles both ACF arrays and raw numeric IDs from compat layer
+            $resolved = acf_blocks_resolve_image( $image, 'Gallery image ' . ( $index + 1 ), 'medium_large' );
+            $image_url = $resolved['src'];
+            $image_alt = $resolved['alt'];
+            $image_caption = is_array( $image ) ? ( $image['caption'] ?? '' ) : '';
+            // Full-size URL for lightbox
+            if ( is_array( $image ) && ! empty( $image['url'] ) ) {
+                $full_url = $image['url'];
+            } elseif ( is_numeric( $image ) ) {
+                $full_url = wp_get_attachment_url( (int) $image ) ?: $image_url;
+            } else {
+                $full_url = $image_url;
+            }
+            // Display URL is the sized version, lightbox uses full
+            $display_url = $image_url;
             // Eager load first 4 images, lazy load the rest
             $loading_attr = $index < 4 ? 'eager' : 'lazy';
             ?>
             <div class="acf-gallery-item">
                 <?php if ( $lightbox ) : ?>
-                    <a href="<?php echo esc_url( $image_url ); ?>"
+                    <a href="<?php echo esc_url( $full_url ); ?>"
                        class="acf-gallery-link"
                        data-lightbox="gallery"
                        data-title="<?php echo esc_attr( $image_alt ); ?>">

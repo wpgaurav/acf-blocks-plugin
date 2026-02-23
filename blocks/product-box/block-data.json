@@ -57,6 +57,23 @@
             "required": 0
         },
         {
+            "key": "field_pb_title_tag",
+            "label": "Title Heading Level",
+            "name": "pb_title_tag",
+            "type": "select",
+            "instructions": "Choose the HTML tag for the title. Defaults to paragraph.",
+            "required": 0,
+            "choices": {
+                "p": "Paragraph (default)",
+                "h2": "H2",
+                "h3": "H3",
+                "h4": "H4",
+                "h5": "H5",
+                "h6": "H6"
+            },
+            "default_value": "p"
+        },
+        {
             "key": "field_pb_rating",
             "label": "Rating",
             "name": "pb_rating",

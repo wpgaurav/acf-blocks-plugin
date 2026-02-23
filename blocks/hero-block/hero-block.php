@@ -15,15 +15,15 @@
 $image       = acf_blocks_get_field( 'acf_hero_image', $block );
 $image_url   = acf_blocks_get_field( 'acf_hero_image_url', $block );
 
-// Determine image source - direct URL takes priority
+// Determine image source - direct URL takes priority, then resolve uploaded image
 $img_src = '';
-$img_alt = '';
+$img_alt = 'Hero image';
 if ( $image_url ) {
     $img_src = $image_url;
-    $img_alt = 'Hero image';
 } elseif ( $image ) {
-    $img_src = $image['url'];
-    $img_alt = $image['alt'] ?: 'Hero image';
+    $resolved = acf_blocks_resolve_image( $image, 'Hero image', 'large' );
+    $img_src = $resolved['src'];
+    $img_alt = $resolved['alt'];
 }
 
 $custom_class = acf_blocks_get_field( 'acf_hero_class', $block );

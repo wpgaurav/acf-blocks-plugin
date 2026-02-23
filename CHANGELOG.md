@@ -2,6 +2,22 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.2.3] - 2026-02-23
+
+### Fixed
+- **Critical:** Images uploaded via media library showed placeholder SVG instead of actual image in product-box, hero, team-member, testimonial, opinion-box, gallery, and url-preview blocks. The ACF compat layer returns raw attachment IDs from `$block['data']`, but templates expected ACF-formatted arrays. Added shared `acf_blocks_resolve_image()` helper in compat layer that handles arrays, numeric IDs, and URL strings.
+- **Product List Block:** Fixed broken repeater sub-field names (`pl_price_label` instead of `pl_block_pricing_title`) that caused pricing, coupons, and buttons to never render.
+- **Product List Block:** Fixed unsanitized description output (XSS risk) — now uses `wp_kses_post()`.
+
+### Added
+- **Title Heading Level:** Added configurable heading tag (p/h2-h6, default p) to product-box, product-cards, product-review, and pl-block.
+- **Product List Block:** Complete overhaul — modern card design with CSS custom properties, container queries, dark mode, rank badge, pricing chips, dashed-border coupon codes, 3-tier button system (primary/secondary/text), accessibility support.
+- **Product List Block:** New fields — image URL (external images), product URL (linked name), button style selector, image width override.
+- **Shared Image Helper:** `acf_blocks_resolve_image()` in compat layer resolves ACF image values (array, numeric ID, URL) to `{src, alt}` with size support.
+
+### Changed
+- Product-cards title now wrapped in configurable HTML tag instead of bare text in header div.
+
 ## [2.1.8] - 2026-02-22
 
 ### Fixed

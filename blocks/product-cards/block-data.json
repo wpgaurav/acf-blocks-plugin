@@ -25,6 +25,23 @@
         "default_value": "#007bff"
       },
       {
+        "key": "field_pc_block_title_tag",
+        "label": "Title Heading Level",
+        "name": "pc_block_title_tag",
+        "type": "select",
+        "instructions": "Choose the HTML tag for the title. Defaults to paragraph.",
+        "required": 0,
+        "choices": {
+          "p": "Paragraph (default)",
+          "h2": "H2",
+          "h3": "H3",
+          "h4": "H4",
+          "h5": "H5",
+          "h6": "H6"
+        },
+        "default_value": "p"
+      },
+      {
         "key": "field_pc_block_product_image",
         "label": "Product Image",
         "name": "pc_block_product_image",

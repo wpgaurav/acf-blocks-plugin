@@ -64,6 +64,7 @@ All buttons get `field_pb_cta_rel`: `"nofollow noopener sponsored"`
 | `field_pb_badge_color` | Badge Color | color_picker | Default: `#22c55e` |
 | `field_pb_title` | Product Title | text | Clean product name |
 | `field_pb_title_url` | Title Link | url | Product page URL |
+| `field_pb_title_tag` | Title Heading Level | select | `p` (default), `h2`, `h3`, `h4`, `h5`, `h6` |
 | `field_pb_rating` | Rating | number | 0–5, step 0.5 |
 | `field_pb_rating_count` | Rating Count | text | e.g. "1,234 ratings" |
 | `field_pb_features` | Features | repeater | Product bullet features |
@@ -90,6 +91,7 @@ All buttons get `field_pb_cta_rel`: `"nofollow noopener sponsored"`
 - `field_pb_cta_icon`: `"none"`, `"cart"`, `"external"`, or `"check"`
 - `field_pb_cta_class`: CSS icon class (e.g. `"md-icon-download"`, `"md-icon-external"`). When using custom class, set `field_pb_cta_icon` to `"none"`
 - Optional fields can be omitted entirely
+- `field_pb_title_tag`: defaults to `"p"` if omitted. Set to `"h2"` through `"h6"` for heading tags
 - Block outputs `data-acf-block="product-box"` attribute (used by TOC filtering)
 
 ## Instructions

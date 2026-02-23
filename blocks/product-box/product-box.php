@@ -18,6 +18,8 @@ $badge_text       = acf_blocks_get_field('pb_badge_text', $block);
 $badge_color      = acf_blocks_get_field('pb_badge_color', $block) ?: '#22c55e';
 $title            = acf_blocks_get_field('pb_title', $block);
 $title_url        = acf_blocks_get_field('pb_title_url', $block);
+$title_tag_raw    = acf_blocks_get_field('pb_title_tag', $block);
+$title_tag        = in_array($title_tag_raw, ['p', 'h2', 'h3', 'h4', 'h5', 'h6'], true) ? $title_tag_raw : 'p';
 $rating           = acf_blocks_get_field('pb_rating', $block);
 $rating_count     = acf_blocks_get_field('pb_rating_count', $block);
 $original_price   = acf_blocks_get_field('pb_original_price', $block);
@@ -77,13 +79,13 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'acf-product-box'
 
         <div class="acf-product-box__content">
             <?php if ($title) : ?>
-                <h3 class="acf-product-box__title">
+                <<?php echo $title_tag; ?> class="acf-product-box__title">
                     <?php if ($title_url) : ?>
                         <a href="<?php echo esc_url($title_url); ?>"><?php echo esc_html($title); ?></a>
                     <?php else : ?>
                         <?php echo esc_html($title); ?>
                     <?php endif; ?>
-                </h3>
+                </<?php echo $title_tag; ?>>
             <?php endif; ?>
 
             <?php if ($rating && $rating > 0) : ?>

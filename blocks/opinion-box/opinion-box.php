@@ -10,8 +10,9 @@ $img_alt = $name ?: 'Author';
 if ( $avatar_url ) {
     $img_src = $avatar_url;
 } elseif ( $avatar ) {
-    $img_src = $avatar['url'];
-    $img_alt = $avatar['alt'] ?: $img_alt;
+    $resolved = acf_blocks_resolve_image( $avatar, $img_alt, 'thumbnail' );
+    $img_src = $resolved['src'];
+    $img_alt = $resolved['alt'];
 }
 ?>
 

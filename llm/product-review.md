@@ -14,6 +14,7 @@ Create a product review block in ACF block comment markup for the given product.
 |---|---|---|---|
 | `field_pr_product_name` | Product Name | text | Required |
 | `field_pr_show_title` | Show Title | true_false | `"1"` to display title |
+| `field_pr_title_tag` | Title Heading Level | select | `p` (default), `h2`, `h3`, `h4`, `h5`, `h6` |
 | `field_pr_product_image` | Product Image | image (ID) | Media library image ID |
 | `field_pr_product_image_url` | Image URL | url | Direct URL (takes priority over uploaded image) |
 | `field_pr_overall_rating` | Overall Rating | number | 1–5, step 0.1 |
@@ -47,6 +48,7 @@ Create a product review block in ACF block comment markup for the given product.
 - Repeaters use nested `row-N` objects: `{"row-0":{"field_pr_feature_name":"...","field_pr_feature_rating":"..."}}`
 - Ratings support decimals: overall rating step 0.1, feature rating step 0.5
 - Image field stores WordPress media library ID; image URL field stores direct URL
+- `field_pr_title_tag`: defaults to `"p"` if omitted. Set to `"h2"` through `"h6"` for heading tags. Only visible when Show Title is enabled.
 - Date fields use YYYYMMDD format in the block comment data
 
 ## Instructions

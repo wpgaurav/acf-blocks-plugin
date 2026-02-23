@@ -66,18 +66,37 @@ function acf_product_box_resolve_image( $image, $image_url, $alt = 'Product imag
         return $result;
     }
 
-    // Case 2: ACF image field (returns array with 'ID', 'url', 'alt', 'sizes')
-    if ( $image && ! empty( $image['ID'] ) ) {
-        $attachment_id = $image['ID'];
+    // Case 2: ACF image field (array with 'ID') or raw attachment ID from compat layer
+    $attachment_id = 0;
+    if ( $image && is_array( $image ) && ! empty( $image['ID'] ) ) {
+        $attachment_id = (int) $image['ID'];
         $result['alt'] = ! empty( $image['alt'] ) ? $image['alt'] : $alt;
+    } elseif ( $image && is_numeric( $image ) ) {
+        // Compat layer returns raw attachment ID from $block['data']
+        $attachment_id = (int) $image;
+        $img_alt = get_post_meta( $attachment_id, '_wp_attachment_image_alt', true );
+        if ( $img_alt ) {
+            $result['alt'] = $img_alt;
+        }
+    }
 
-        // Try product-box-image size first, then medium
+    if ( $attachment_id > 0 ) {
+        // Try product-box-image size first, then medium, then full URL
         $sized = wp_get_attachment_image_src( $attachment_id, 'product-box-image' );
         if ( $sized ) {
             $result['src'] = $sized[0];
         } else {
             $medium = wp_get_attachment_image_src( $attachment_id, 'medium' );
-            $result['src'] = $medium ? $medium[0] : $image['url'];
+            if ( $medium ) {
+                $result['src'] = $medium[0];
+            } elseif ( is_array( $image ) && ! empty( $image['url'] ) ) {
+                $result['src'] = $image['url'];
+            } else {
+                $full = wp_get_attachment_url( $attachment_id );
+                if ( $full ) {
+                    $result['src'] = $full;
+                }
+            }
         }
         return $result;
     }

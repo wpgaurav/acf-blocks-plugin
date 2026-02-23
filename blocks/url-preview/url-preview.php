@@ -39,18 +39,11 @@ $image_url = '';
 if ( 'local' === $image_source && $local_image ) {
     // For horizontal layout, default to thumbnail size for minimal display
     $size_to_use = ( 'horizontal' === $card_layout ) ? 'thumbnail' : $local_image_size;
+    $resolved = acf_blocks_resolve_image( $local_image, '', $size_to_use );
+    $image_url = $resolved['src'];
 
-    if ( 'full' === $size_to_use ) {
-        $image_url = $local_image['url'];
-    } elseif ( isset( $local_image['sizes'][ $size_to_use ] ) ) {
-        $image_url = $local_image['sizes'][ $size_to_use ];
-    } else {
-        // Fallback to full URL if size not available
-        $image_url = $local_image['url'];
-    }
-
-    if ( empty( $image_alt ) && ! empty( $local_image['alt'] ) ) {
-        $image_alt = $local_image['alt'];
+    if ( empty( $image_alt ) && ! empty( $resolved['alt'] ) ) {
+        $image_alt = $resolved['alt'];
     }
 } elseif ( 'external' === $image_source && $external_image ) {
     // For external images, always use the full URL

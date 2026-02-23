@@ -24,8 +24,9 @@ $img_alt = $author_name ?: 'Author';
 if ( $author_image_url ) {
     $img_src = $author_image_url;
 } elseif ( $author_image ) {
-    $img_src = $author_image['url'];
-    $img_alt = $author_image['alt'] ?: $img_alt;
+    $resolved = acf_blocks_resolve_image( $author_image, $img_alt, 'thumbnail' );
+    $img_src = $resolved['src'];
+    $img_alt = $resolved['alt'];
 }
 
 $custom_class = acf_blocks_get_field( 'acf_testimonial_class', $block );

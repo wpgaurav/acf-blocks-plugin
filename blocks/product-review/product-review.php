@@ -63,6 +63,8 @@ if (!function_exists('acf_render_star_svg')) {
 // Get ACF fields
 $product_name = acf_blocks_get_field('product_name', $block);
 $show_title = acf_blocks_get_field('show_title', $block);
+$title_tag_raw = acf_blocks_get_field('title_tag', $block);
+$title_tag = in_array($title_tag_raw, ['p', 'h2', 'h3', 'h4', 'h5', 'h6'], true) ? $title_tag_raw : 'p';
 $image_id = acf_blocks_get_field('product_image', $block);
 $image_direct_url = acf_blocks_get_field('product_image_url', $block);
 $overall_rating = acf_blocks_get_field('overall_rating', $block);
@@ -100,7 +102,7 @@ if ( $image_direct_url ) {
 
 <div class="<?php echo esc_attr(implode(' ', $classes)); ?>"<?php echo $anchor_attr; ?> data-pr-id="<?php echo esc_attr($block_id); ?>">
     <?php if ($product_name && $show_title) : ?>
-        <h3 class="acf-product-review-title"><?php echo esc_html($product_name); ?></h3>
+        <<?php echo $title_tag; ?> class="acf-product-review-title"><?php echo esc_html($product_name); ?></<?php echo $title_tag; ?>>
     <?php endif; ?>
 
     <?php if ($image_url) : ?>
