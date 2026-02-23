@@ -2,6 +2,12 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.2.4] - 2026-02-23
+
+### Added
+- **Check for Updates button:** License page now shows an Updates card with a "Check for Updates" button (when license is active) that queries the license server and reports whether a new version is available. Mirrors the GT Link Manager implementation.
+- Force update check runs automatically after license activation.
+
 ## [2.2.3] - 2026-02-23
 
 ### Fixed

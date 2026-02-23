@@ -19,6 +19,7 @@ class ACF_Blocks_License_Manager {
 	const OPTION_KEY     = 'acf_blocks_license';
 	const LAST_CHECK_KEY = 'acf_blocks_license_last_check';
 	const UPDATE_TRANSIENT = 'acf_blocks_update_info';
+	const CHECK_RESULT     = 'acf_blocks_update_check_result';
 
 	/** @var string */
 	private $plugin_file;
@@ -34,6 +35,7 @@ class ACF_Blocks_License_Manager {
 	public function hook() {
 		add_action( 'admin_menu', array( $this, 'add_submenu_page' ), 99 );
 		add_action( 'admin_init', array( $this, 'handle_license_actions' ) );
+		add_action( 'admin_init', array( $this, 'maybe_check_for_updates' ) );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 
 		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_for_update' ) );
@@ -76,7 +78,8 @@ class ACF_Blocks_License_Manager {
 			if ( is_wp_error( $result ) ) {
 				add_settings_error( 'acf_blocks_license', 'activation_error', $result->get_error_message(), 'error' );
 			} else {
-				add_settings_error( 'acf_blocks_license', 'activated', __( 'License activated successfully.', 'acf-blocks' ), 'success' );
+				add_settings_error( 'acf_blocks_license', 'activated', __( 'License activated successfully. Checking for updates...', 'acf-blocks' ), 'success' );
+				$this->force_update_check();
 			}
 		} elseif ( 'deactivate' === $action ) {
 			$result = $this->deactivate_license();
@@ -248,6 +251,56 @@ class ACF_Blocks_License_Manager {
 		delete_transient( self::UPDATE_TRANSIENT );
 	}
 
+	private function force_update_check() {
+		delete_transient( self::UPDATE_TRANSIENT );
+		delete_site_transient( 'update_plugins' );
+		wp_update_plugins();
+	}
+
+	public function maybe_check_for_updates() {
+		if ( ! is_admin() || ! current_user_can( 'update_plugins' ) ) {
+			return;
+		}
+
+		$current_page = isset( $_GET['page'] ) ? sanitize_key( (string) wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( 'acf-blocks-license' !== $current_page ) {
+			return;
+		}
+
+		$check_update = isset( $_GET['acf_blocks_check_update'] ) ? sanitize_text_field( (string) wp_unslash( $_GET['acf_blocks_check_update'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( '' === $check_update ) {
+			return;
+		}
+
+		$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( (string) wp_unslash( $_GET['_wpnonce'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( ! wp_verify_nonce( $nonce, 'acf_blocks_check_update' ) ) {
+			return;
+		}
+
+		delete_transient( self::UPDATE_TRANSIENT );
+		delete_site_transient( 'update_plugins' );
+
+		wp_update_plugins();
+
+		$update_data = get_site_transient( 'update_plugins' );
+		$result      = array(
+			'checked_at' => time(),
+			'available'  => false,
+			'version'    => '',
+		);
+
+		if ( isset( $update_data->response[ $this->plugin_basename ] ) ) {
+			$plugin_update       = $update_data->response[ $this->plugin_basename ];
+			$result['available'] = true;
+			$result['version']   = $plugin_update->new_version ?? '';
+		}
+
+		set_transient( self::CHECK_RESULT, $result, 2 * MINUTE_IN_SECONDS );
+
+		wp_safe_redirect( admin_url( 'options-general.php?page=acf-blocks-license&acf_blocks_update_checked=1' ) );
+		exit;
+	}
+
 	public function plugin_action_links( $links ) {
 		array_unshift( $links, sprintf(
 			'<a href="%s">%s</a>',
@@ -282,15 +335,40 @@ class ACF_Blocks_License_Manager {
 	}
 
 	public function render_license_page() {
-		$license = $this->get_license_data();
-		$status  = $license['status'] ?? 'inactive';
-		$key     = $license['license_key'] ?? '';
-		$expires = $license['expiration_date'] ?? '';
+		$license       = $this->get_license_data();
+		$status        = $license['status'] ?? 'inactive';
+		$key           = $license['license_key'] ?? '';
+		$expires       = $license['expiration_date'] ?? '';
+		$update_result = get_transient( self::CHECK_RESULT );
 
 		settings_errors( 'acf_blocks_license' );
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'ACF Blocks License', 'acf-blocks' ); ?></h1>
+
+			<div class="card" style="max-width: 600px; margin-top: 20px;">
+				<h2 style="margin-top: 0;"><?php esc_html_e( 'Updates', 'acf-blocks' ); ?></h2>
+
+				<?php if ( 'valid' === $status ) : ?>
+					<p><?php esc_html_e( 'Check for plugin updates from the license server.', 'acf-blocks' ); ?></p>
+					<p><a class="button" href="<?php echo esc_url( wp_nonce_url( admin_url( 'options-general.php?page=acf-blocks-license&acf_blocks_check_update=1' ), 'acf_blocks_check_update' ) ); ?>"><?php esc_html_e( 'Check for Updates', 'acf-blocks' ); ?></a></p>
+
+					<?php if ( ! empty( $update_result ) && is_array( $update_result ) ) : ?>
+						<?php if ( ! empty( $update_result['available'] ) ) : ?>
+							<div style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 10px 12px; border-radius: 6px; margin-top: 8px;">
+								<?php printf( esc_html__( 'Update found. Latest version: %s', 'acf-blocks' ), esc_html( $update_result['version'] ?: __( 'Unknown', 'acf-blocks' ) ) ); ?>
+							</div>
+						<?php else : ?>
+							<div style="background: #f8fafc; border: 1px solid #e2e8f0; color: #627d98; padding: 10px 12px; border-radius: 6px; margin-top: 8px;">
+								<?php esc_html_e( 'No updates found. You are on the latest version.', 'acf-blocks' ); ?>
+							</div>
+						<?php endif; ?>
+					<?php endif; ?>
+				<?php else : ?>
+					<p><?php esc_html_e( 'Activate your license key below to enable update checks.', 'acf-blocks' ); ?></p>
+				<?php endif; ?>
+			</div>
+
 			<div class="card" style="max-width: 600px; margin-top: 20px;">
 				<h2 style="margin-top: 0;"><?php esc_html_e( 'License Status', 'acf-blocks' ); ?></h2>
 
