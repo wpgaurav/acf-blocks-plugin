@@ -163,18 +163,39 @@ $block_id = isset( $block['id'] ) ? $block['id'] : wp_unique_id( 'video-' );
                 <?php endif; ?>
             <?php endif; ?>
 
-        <?php elseif ( $video_type === 'self-hosted' && $video_file ) : ?>
+        <?php
+        elseif ( $video_type === 'self-hosted' ) :
+            // URL field overrides the media-library file upload.
+            $self_src  = '';
+            $self_type = '';
+            if ( $video_url ) {
+                $self_src  = $video_url;
+                // Derive MIME type from URL extension.
+                $ext = strtolower( pathinfo( wp_parse_url( $video_url, PHP_URL_PATH ) ?: '', PATHINFO_EXTENSION ) );
+                $mime_map  = array( 'mp4' => 'video/mp4', 'webm' => 'video/webm', 'ogg' => 'video/ogg', 'ogv' => 'video/ogg', 'mov' => 'video/mp4' );
+                $self_type = isset( $mime_map[ $ext ] ) ? $mime_map[ $ext ] : 'video/mp4';
+            } elseif ( $video_file ) {
+                $self_src  = $video_file['url'];
+                $self_type = $video_file['mime_type'];
+            }
+            if ( $self_src ) :
+                $preload = ( $video_poster && ! $autoplay ) ? 'none' : 'metadata';
+        ?>
             <video
                 <?php echo $controls ? 'controls' : ''; ?>
                 <?php echo $autoplay ? 'autoplay' : ''; ?>
                 <?php echo $loop ? 'loop' : ''; ?>
                 <?php echo $muted ? 'muted' : ''; ?>
                 <?php echo $video_poster ? 'poster="' . esc_url( $video_poster['url'] ) . '"' : ''; ?>
-                preload="metadata"
-                playsinline>
-                <source src="<?php echo esc_url( $video_file['url'] ); ?>" type="<?php echo esc_attr( $video_file['mime_type'] ); ?>">
+                preload="<?php echo esc_attr( $preload ); ?>"
+                playsinline
+                <?php if ( ! $autoplay && ! $is_preview ) : ?>data-lazy-src="<?php echo esc_url( $self_src ); ?>" data-lazy-type="<?php echo esc_attr( $self_type ); ?>"<?php else : ?>src="<?php echo esc_url( $self_src ); ?>"<?php endif; ?>>
+                <?php if ( $autoplay || $is_preview ) : ?>
+                <source src="<?php echo esc_url( $self_src ); ?>" type="<?php echo esc_attr( $self_type ); ?>">
+                <?php endif; ?>
                 <?php esc_html_e( 'Your browser does not support the video tag.', 'acf-blocks' ); ?>
             </video>
+        <?php endif; ?>
 
         <?php else : ?>
             <?php if ( $is_preview ) : ?>
@@ -191,10 +212,10 @@ $block_id = isset( $block['id'] ) ? $block['id'] : wp_unique_id( 'video-' );
 </div>
 
 <?php
-// Add facade script once per page
-static $acf_video_facade_script_added = false;
-if ( ! $acf_video_facade_script_added && ! $is_preview && ! $autoplay ) :
-    $acf_video_facade_script_added = true;
+// Add facade + lazy-load script once per page.
+static $acf_video_script_added = false;
+if ( ! $acf_video_script_added && ! $is_preview ) :
+    $acf_video_script_added = true;
 ?>
 <script>
 (function() {
@@ -232,10 +253,47 @@ if ( ! $acf_video_facade_script_added && ! $is_preview && ! $autoplay ) :
         });
     }
 
+    /* Lazy-load self-hosted <video> elements: defer network request until near viewport. */
+    function initLazyVideos() {
+        var videos = document.querySelectorAll('video[data-lazy-src]');
+        if (!videos.length) return;
+
+        if ('IntersectionObserver' in window) {
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (!entry.isIntersecting) return;
+                    var v = entry.target;
+                    var src = v.dataset.lazySrc;
+                    var type = v.dataset.lazyType || 'video/mp4';
+                    var source = document.createElement('source');
+                    source.src = src;
+                    source.type = type;
+                    v.appendChild(source);
+                    v.removeAttribute('data-lazy-src');
+                    v.removeAttribute('data-lazy-type');
+                    observer.unobserve(v);
+                });
+            }, { rootMargin: '200px' });
+
+            videos.forEach(function(v) { observer.observe(v); });
+        } else {
+            /* Fallback for browsers without IntersectionObserver. */
+            videos.forEach(function(v) {
+                var source = document.createElement('source');
+                source.src = v.dataset.lazySrc;
+                source.type = v.dataset.lazyType || 'video/mp4';
+                v.appendChild(source);
+                v.removeAttribute('data-lazy-src');
+                v.removeAttribute('data-lazy-type');
+            });
+        }
+    }
+
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initVideoFacades);
+        document.addEventListener('DOMContentLoaded', function() { initVideoFacades(); initLazyVideos(); });
     } else {
         initVideoFacades();
+        initLazyVideos();
     }
 })();
 </script>

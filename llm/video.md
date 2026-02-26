@@ -13,8 +13,8 @@ Create a responsive video block supporting YouTube, Vimeo, and self-hosted video
 | Field Key | Name | Type | Notes |
 |---|---|---|---|
 | `acf_video_type` | Video Type | select | Required. `youtube`, `vimeo`, `self-hosted` |
-| `acf_video_url` | Video URL | url | YouTube or Vimeo URL (when type is youtube/vimeo) |
-| `acf_video_file` | Video File | file | Self-hosted video (when type is self-hosted) |
+| `acf_video_url` | Video URL | url | YouTube/Vimeo URL, or direct video URL for self-hosted (CDN, etc.). Overrides file upload when set. |
+| `acf_video_file` | Video File | file | Self-hosted video from media library (ignored if Video URL is provided) |
 | `acf_video_poster` | Poster Image | image | Thumbnail/poster image (self-hosted only) |
 | `acf_video_title` | Title | text | Optional video title |
 | `acf_video_caption` | Caption | text | Optional caption below video |
@@ -35,6 +35,9 @@ Create a responsive video block supporting YouTube, Vimeo, and self-hosted video
 - Autoplay requires muted to work in most browsers
 - Aspect ratio controls the responsive container dimensions
 - Self-hosted videos support poster images for thumbnails
+- For self-hosted: `acf_video_url` (direct/CDN URL) takes priority over `acf_video_file` (media library upload)
+- Self-hosted videos are lazy-loaded via IntersectionObserver (deferred until near viewport)
+- When a poster image is set and autoplay is off, `preload` is set to `none` for faster page loads
 
 ## Instructions
 
@@ -55,6 +58,12 @@ Create a responsive video block supporting YouTube, Vimeo, and self-hosted video
 
 ```html
 <!-- wp:acf/video {"name":"acf/video","data":{"acf_video_type":"vimeo","acf_video_url":"https://vimeo.com/123456789","acf_video_title":"Product Demo","acf_video_aspect_ratio":"16-9","acf_video_controls":"1"}} /-->
+```
+
+## Example — Self-hosted video from CDN URL
+
+```html
+<!-- wp:acf/video {"name":"acf/video","data":{"acf_video_type":"self-hosted","acf_video_url":"https://cdn.example.com/videos/demo.mp4","acf_video_title":"Product Walkthrough","acf_video_aspect_ratio":"16-9","acf_video_autoplay":"0","acf_video_loop":"0","acf_video_muted":"0","acf_video_controls":"1"}} /-->
 ```
 
 ## Example — Background video (autoplay, looped, muted, no controls)
