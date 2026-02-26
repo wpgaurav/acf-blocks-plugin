@@ -12,6 +12,32 @@ $video_type      = acf_blocks_get_field( 'acf_video_type', $block );
 $video_url       = acf_blocks_get_field( 'acf_video_url', $block );
 $video_file      = acf_blocks_get_field( 'acf_video_file', $block );
 $video_poster    = acf_blocks_get_field( 'acf_video_poster', $block );
+
+// Resolve file field: compat layer may return numeric attachment ID instead of array.
+if ( $video_file && is_numeric( $video_file ) ) {
+	$attachment_id = intval( $video_file );
+	$file_url      = wp_get_attachment_url( $attachment_id );
+	$file_mime     = get_post_mime_type( $attachment_id );
+	if ( $file_url ) {
+		$video_file = array(
+			'ID'        => $attachment_id,
+			'url'       => $file_url,
+			'mime_type' => $file_mime ?: 'video/mp4',
+		);
+	} else {
+		$video_file = null;
+	}
+}
+
+// Resolve poster image: compat layer may return numeric attachment ID instead of array.
+if ( $video_poster && is_numeric( $video_poster ) ) {
+	$resolved_poster = acf_blocks_resolve_image( $video_poster, '', 'full' );
+	if ( $resolved_poster['src'] ) {
+		$video_poster = array( 'url' => $resolved_poster['src'] );
+	} else {
+		$video_poster = null;
+	}
+}
 $video_title     = acf_blocks_get_field( 'acf_video_title', $block );
 $video_caption   = acf_blocks_get_field( 'acf_video_caption', $block );
 $aspect_ratio    = acf_blocks_get_field( 'acf_video_aspect_ratio', $block );
@@ -139,7 +165,7 @@ $block_id = isset( $block['id'] ) ? $block['id'] : wp_unique_id( 'video-' );
 
         <?php elseif ( $video_type === 'self-hosted' && $video_file ) : ?>
             <video
-                <?php echo $controls !== false ? 'controls' : ''; ?>
+                <?php echo $controls ? 'controls' : ''; ?>
                 <?php echo $autoplay ? 'autoplay' : ''; ?>
                 <?php echo $loop ? 'loop' : ''; ?>
                 <?php echo $muted ? 'muted' : ''; ?>
