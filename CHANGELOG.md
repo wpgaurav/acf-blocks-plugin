@@ -2,6 +2,14 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.2.6] - 2026-02-26
+
+### Changed
+- **Compare Block:** Minimalistic card redesign — removed outer card wrapper, columns are now clean individual cards with 16px radius, hairline borders, and subtle hover. Pill-shaped CTA button with dark neutral default instead of red. Lighter feature-list separators.
+- **Product List Block:** Minimalistic card redesign — near-zero resting shadow, hover changes border instead of dramatic shadow lift. Neutral gray pricing/coupon backgrounds instead of blue/green tints. Pill-shaped rank badge and CTA buttons. Dark neutral default button instead of blue.
+- **Hero Block:** Minimalistic card redesign — now renders as a proper card with 16px radius, border, and background. Image gets a gradient scrim overlay for text readability. Pill-shaped CTA buttons. Better typography with tighter letter-spacing and improved line-heights. Responsive padding adjustments.
+- All three blocks share a consistent design language: 16px outer radius, pill buttons (100px radius), dark neutral default colors, subtle border-color hover transitions, and full dark mode support.
+
 ## [2.2.5] - 2026-02-26
 
 ### Fixed
