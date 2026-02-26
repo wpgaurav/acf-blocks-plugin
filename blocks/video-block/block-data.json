@@ -21,7 +21,7 @@
             "label": "Video URL",
             "name": "acf_video_url",
             "type": "url",
-            "instructions": "Enter the YouTube or Vimeo video URL.",
+            "instructions": "Enter the video URL. For self-hosted, a direct URL (e.g. CDN) overrides the uploaded file.",
             "required": 0,
             "conditional_logic": [
                 [
@@ -37,6 +37,13 @@
                         "operator": "==",
                         "value": "vimeo"
                     }
+                ],
+                [
+                    {
+                        "field": "acf_video_type",
+                        "operator": "==",
+                        "value": "self-hosted"
+                    }
                 ]
             ]
         },
@@ -45,7 +52,7 @@
             "label": "Video File",
             "name": "acf_video_file",
             "type": "file",
-            "instructions": "Upload a video file (MP4, WebM, etc.).",
+            "instructions": "Upload a video file (MP4, WebM, etc.). Ignored if a Video URL is provided.",
             "required": 0,
             "return_format": "array",
             "mime_types": "mp4,webm,ogg",

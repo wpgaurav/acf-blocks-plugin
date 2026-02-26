@@ -2,6 +2,19 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.2.5] - 2026-02-26
+
+### Fixed
+- **Critical:** Self-hosted videos never played — ACF compat layer returned raw numeric attachment IDs from `$block['data']`, but the template expected arrays with `url` and `mime_type` keys. Now resolves IDs via `wp_get_attachment_url()` / `get_post_mime_type()`, which also enables CDN URL rewriting.
+- **Critical:** Poster image for self-hosted videos had the same numeric ID issue. Now resolved via `acf_blocks_resolve_image()`.
+- **Controls toggle ignored:** Strict comparison `$controls !== false` was always truthy for ACF's `0` value. Changed to truthy check.
+- **Video cropping:** Changed `object-fit` from `cover` to `contain` for self-hosted `<video>` elements to prevent content cropping.
+
+### Added
+- **Self-hosted video URL support:** The Video URL field now appears for self-hosted type, allowing direct/CDN URLs that override the media library file upload.
+- **Lazy-load self-hosted videos:** Non-autoplay self-hosted videos defer network requests until near the viewport via IntersectionObserver (200px root margin).
+- **Smarter preload:** Self-hosted videos with a poster image and no autoplay use `preload="none"` instead of `preload="metadata"` for faster page loads.
+
 ## [2.2.4] - 2026-02-23
 
 ### Added
