@@ -2,7 +2,7 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
-## [2.2.6] - 2026-02-27
+## [2.2.7] - 2026-02-27
 
 - **Fixed:** priceCurrency fix.
 
