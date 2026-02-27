@@ -276,7 +276,8 @@ if ( $image_direct_url ) {
     if ($offer_url || $offer_price) {
         $json_data['offers'] = [
             '@type' => 'Offer',
-            'availability' => 'https://schema.org/' . $product_availability
+            'availability' => 'https://schema.org/' . $product_availability,
+            'priceCurrency' => $offer_currency,
         ];
 
         if ($offer_url) {
@@ -285,7 +286,6 @@ if ( $image_direct_url ) {
 
         if ($offer_price) {
             $json_data['offers']['price'] = $offer_price;
-            $json_data['offers']['priceCurrency'] = $offer_currency;
         }
 
         // Add priceValidUntil (recommended by Google for Offer schema)
