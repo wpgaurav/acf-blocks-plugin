@@ -16,6 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function acf_product_box_register_image_size() {
     add_image_size( 'product-box-image', 550, 550, true );
+    add_image_size( 'product-box-wide', 800, 450, true ); // 16:9 for top-image variation
 }
 add_action( 'after_setup_theme', 'acf_product_box_register_image_size' );
 
@@ -30,9 +31,10 @@ add_action( 'after_setup_theme', 'acf_product_box_register_image_size' );
  * @param array|false  $image     ACF image array (or false).
  * @param string       $image_url Direct image URL (or empty).
  * @param string       $alt       Fallback alt text.
+ * @param string       $size      WordPress image size to use.
  * @return array{src: string, alt: string}
  */
-function acf_product_box_resolve_image( $image, $image_url, $alt = 'Product image' ) {
+function acf_product_box_resolve_image( $image, $image_url, $alt = 'Product image', $size = 'product-box-image' ) {
     $result = [ 'src' => '', 'alt' => $alt ];
 
     // Case 1: Direct URL provided
@@ -47,7 +49,7 @@ function acf_product_box_resolve_image( $image, $image_url, $alt = 'Product imag
         if ( $url_host && $site_host && ( $url_host === $site_host || str_ends_with( $url_host, '.' . $site_host ) ) ) {
             $attachment_id = attachment_url_to_postid( $image_url );
             if ( $attachment_id ) {
-                $sized = wp_get_attachment_image_src( $attachment_id, 'product-box-image' );
+                $sized = wp_get_attachment_image_src( $attachment_id, $size );
                 if ( $sized ) {
                     $result['src'] = $sized[0];
                 } else {
@@ -81,8 +83,8 @@ function acf_product_box_resolve_image( $image, $image_url, $alt = 'Product imag
     }
 
     if ( $attachment_id > 0 ) {
-        // Try product-box-image size first, then medium, then full URL
-        $sized = wp_get_attachment_image_src( $attachment_id, 'product-box-image' );
+        // Try requested size first, then medium, then full URL
+        $sized = wp_get_attachment_image_src( $attachment_id, $size );
         if ( $sized ) {
             $result['src'] = $sized[0];
         } else {

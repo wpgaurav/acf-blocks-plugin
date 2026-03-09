@@ -34,8 +34,14 @@ $features = acf_blocks_get_repeater('pb_features', ['pb_feature_text'], $block);
 // Get buttons repeater
 $buttons = acf_blocks_get_repeater('pb_buttons', ['pb_cta_text', 'pb_cta_url', 'pb_cta_style', 'pb_cta_icon', 'pb_cta_class', 'pb_cta_rel'], $block);
 
+// Detect style variations
+$className = $block['className'] ?? '';
+$is_no_image = strpos($className, 'is-style-no-image') !== false;
+$is_top_image = strpos($className, 'is-style-top-image') !== false;
+
 // Resolve image source using the smart sizing helper
-$resolved_image = acf_product_box_resolve_image( $image, $image_url, $title ?: 'Product image' );
+$image_size = $is_top_image ? 'product-box-wide' : 'product-box-image';
+$resolved_image = acf_product_box_resolve_image( $image, $image_url, $title ?: 'Product image', $image_size );
 $img_src = $resolved_image['src'];
 $img_alt = $resolved_image['alt'];
 
@@ -51,10 +57,6 @@ $placeholder_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300
     </g>
 </svg>';
 
-// Detect no-image style variation
-$className = $block['className'] ?? '';
-$is_no_image = strpos($className, 'is-style-no-image') !== false;
-
 // Block wrapper attributes
 $wrapper_attributes = get_block_wrapper_attributes(['class' => 'acf-product-box']);
 ?>
@@ -66,8 +68,18 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'acf-product-box'
         </div>
     <?php endif; ?>
 
+    <?php if ($is_top_image) : ?>
+        <div class="acf-product-box__hero-image">
+            <?php if ($img_src) : ?>
+                <img src="<?php echo esc_url($img_src); ?>" alt="<?php echo esc_attr($img_alt); ?>" loading="lazy" decoding="async" />
+            <?php else : ?>
+                <?php echo $placeholder_svg; ?>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+
     <div class="acf-product-box__layout">
-        <?php if (!$is_no_image) : ?>
+        <?php if (!$is_no_image && !$is_top_image) : ?>
             <div class="acf-product-box__image">
                 <?php if ($img_src) : ?>
                     <img src="<?php echo esc_url($img_src); ?>" alt="<?php echo esc_attr($img_alt); ?>" loading="lazy" decoding="async" />

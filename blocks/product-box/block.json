@@ -17,6 +17,10 @@
       "isDefault": true
     },
     {
+      "name": "top-image",
+      "label": "Top Image"
+    },
+    {
       "name": "no-image",
       "label": "No Image"
     }

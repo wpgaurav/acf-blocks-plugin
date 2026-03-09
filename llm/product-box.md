@@ -6,7 +6,7 @@ Convert a product URL to an ACF Product Box block. Fetch the page to extract pro
 
 - **Block Name:** `acf/product-box`
 - **Description:** Amazon-style product listing with image, pricing, features, ratings, and multiple CTA buttons.
-- **Styles:** Default, No Image (`is-style-no-image`)
+- **Styles:** Default, Top Image (`is-style-top-image`), No Image (`is-style-no-image`)
 
 ## Layout
 
@@ -19,8 +19,9 @@ The bottom section only renders if pricing, description, or buttons exist.
 
 ## Image Sizing
 
-- **ACF image field (ID):** Served as 550×550 cropped (`product-box-image` size), fallback to `medium`
-- **Same-domain URL:** Attachment ID looked up via `attachment_url_to_postid()`, served as 550×550
+- **Default style:** Served as 550×550 cropped (`product-box-image` size), fallback to `medium`
+- **Top Image style:** Served as 800×450 cropped (`product-box-wide` size, 16:9 ratio), fallback to `medium`
+- **Same-domain URL:** Attachment ID looked up via `attachment_url_to_postid()`, served at appropriate size
 - **External URL:** Passed through unchanged (no size manipulation)
 - Subdomain matching supported (e.g. `cdn.example.com` matches `example.com`)
 
@@ -106,6 +107,12 @@ All buttons get `field_pb_cta_rel`: `"nofollow noopener sponsored"`
 
 ```html
 <!-- wp:acf/product-box {"name":"acf/product-box","data":{"field_pb_image":"","field_pb_image_url":"https://example.com/image.jpg","field_pb_badge_text":"SAVE 15%","field_pb_badge_color":"#22c55e","field_pb_title":"Product Title","field_pb_title_url":"https://example.com","field_pb_rating":"4.5","field_pb_rating_count":"1,234 ratings","field_pb_features":{"row-0":{"field_pb_feature_text":"Feature one"},"row-1":{"field_pb_feature_text":"Feature two"}},"field_pb_original_price":"$99.99","field_pb_discount_percent":"-15%","field_pb_current_price":"$84.99","field_pb_price_note":"Free shipping","field_pb_description":"Short description.","field_pb_buttons":{"row-0":{"field_pb_cta_text":"Check Price on Amazon","field_pb_cta_url":"https://www.amazon.com/dp/ASIN/?tag=gtorg0f-20","field_pb_cta_style":"amazon","field_pb_cta_icon":"cart","field_pb_cta_class":"","field_pb_cta_rel":"nofollow noopener sponsored"},"row-1":{"field_pb_cta_text":"Check on Amazon.in","field_pb_cta_url":"https://www.amazon.in/s?k=Product+Name&tag=gaurtiwa-21","field_pb_cta_style":"primary","field_pb_cta_icon":"none","field_pb_cta_class":"md-icon-external","field_pb_cta_rel":"nofollow noopener sponsored"}}},"mode":"preview"} /-->
+```
+
+## Example — Top Image variation
+
+```html
+<!-- wp:acf/product-box {"name":"acf/product-box","data":{"field_pb_image":"","field_pb_image_url":"https://example.com/wide-image.jpg","field_pb_badge_text":"BEST SELLER","field_pb_badge_color":"#22c55e","field_pb_title":"Product Title","field_pb_title_url":"https://example.com","field_pb_rating":"4.5","field_pb_rating_count":"2,500 ratings","field_pb_features":{"row-0":{"field_pb_feature_text":"Feature one"},"row-1":{"field_pb_feature_text":"Feature two"}},"field_pb_original_price":"$149.99","field_pb_discount_percent":"-20%","field_pb_current_price":"$119.99","field_pb_description":"Short description.","field_pb_buttons":{"row-0":{"field_pb_cta_text":"Check Price on Amazon","field_pb_cta_url":"https://www.amazon.com/dp/ASIN/?tag=gtorg0f-20","field_pb_cta_style":"amazon","field_pb_cta_icon":"cart","field_pb_cta_class":"","field_pb_cta_rel":"nofollow noopener sponsored"}}},"className":"is-style-top-image","mode":"preview"} /-->
 ```
 
 ## Example — No Image variation
