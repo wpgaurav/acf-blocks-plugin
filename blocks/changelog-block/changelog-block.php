@@ -40,10 +40,21 @@ $anchor_attr = $anchor ? ' id="' . esc_attr($anchor) . '"' : '';
         $css = ob_get_clean();
         echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
     endif; ?>
-    <?php foreach ($entries as $entry) :
+    <?php
+    $data = $block['data'] ?? [];
+    foreach ($entries as $entry_index => $entry) :
         $version = esc_html($entry['changelog_version'] ?? '');
         $date = esc_html($entry['changelog_date'] ?? '');
         $items = $entry['changelog_items'] ?? [];
+
+        // Nested repeater may be a count (flat format) — parse sub-items from block data.
+        if ( ! empty( $data ) && ( ! is_array( $items ) || empty( $items ) ) ) {
+            $items = acf_blocks_get_nested_repeater(
+                'changelog_entries_' . $entry_index . '_changelog_items',
+                [ 'changelog_type', 'changelog_text' ],
+                $data
+            );
+        }
     ?>
     <div class="acf-changelog-entry">
         <div class="acf-changelog-header">

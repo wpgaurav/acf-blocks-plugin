@@ -29,6 +29,15 @@ if (!$selected_posts) {
     return;
 }
 
+// Normalize to WP_Post objects — compat layer may return raw post IDs.
+$selected_posts = array_filter( array_map( function( $item ) {
+    return $item instanceof WP_Post ? $item : get_post( $item );
+}, (array) $selected_posts ) );
+
+if ( empty( $selected_posts ) ) {
+    return;
+}
+
 // CSS classes based on layout
 $container_classes = [
     'acf-post-display',

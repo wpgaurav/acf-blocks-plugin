@@ -57,14 +57,14 @@ $form_css   = isset( $form_attrs['inline_css'] ) ? $form_attrs['inline_css'] : '
 		>
 			<?php if ( $display_name ) : ?>
 				<div class="acf-form-group">
-					<label for="acf-email-form-name"><?php esc_html_e( 'Name', 'gauravtiwari' ); ?></label>
+					<label for="acf-email-form-name"><?php esc_html_e( 'Name', 'acf-blocks' ); ?></label>
 					<input 
 						type="text" 
 						name="email_form_name" 
 						id="acf-email-form-name"
 						class="<?php echo $default_name_class . ( ! empty( $name_field_attrs['class'] ) ? ' ' . esc_attr( $name_field_attrs['class'] ) : '' ); ?>"
 						<?php echo ( $name_required ? 'required' : '' ); ?>
-						placeholder="<?php esc_attr_e( 'Your Name', 'gauravtiwari' ); ?>"
+						placeholder="<?php esc_attr_e( 'Your Name', 'acf-blocks' ); ?>"
 						<?php 
 						if ( $name_field_attrs ) {
 							echo ! empty( $name_field_attrs['id'] ) ? ' id="' . esc_attr( $name_field_attrs['id'] ) . '"' : '';
@@ -76,14 +76,14 @@ $form_css   = isset( $form_attrs['inline_css'] ) ? $form_attrs['inline_css'] : '
 			<?php endif; ?>
 			
 			<div class="acf-form-group">
-				<label for="acf-email-form-email"><?php esc_html_e( 'Email', 'gauravtiwari' ); ?></label>
+				<label for="acf-email-form-email"><?php esc_html_e( 'Email', 'acf-blocks' ); ?></label>
 				<input 
 					type="email" 
 					name="email_form_email" 
 					id="acf-email-form-email"
 					class="<?php echo $default_email_class . ( ! empty( $email_field_attrs['class'] ) ? ' ' . esc_attr( $email_field_attrs['class'] ) : '' ); ?>"
 					required
-					placeholder="<?php esc_attr_e( 'Your Email', 'gauravtiwari' ); ?>"
+					placeholder="<?php esc_attr_e( 'Your Email', 'acf-blocks' ); ?>"
 					<?php 
 					if ( $email_field_attrs ) {
 						echo ! empty( $email_field_attrs['id'] ) ? ' id="' . esc_attr( $email_field_attrs['id'] ) . '"' : '';
