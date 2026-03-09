@@ -32,7 +32,7 @@ $comp_data = acf_blocks_get_repeater('comp_columns_data', [
 
 // Also try old field name for backward compat
 if ( empty( $comp_data ) ) {
-    $comp_data = acf_blocks_get_repeater('comp_columns_data', [
+    $old_data = acf_blocks_get_repeater('comp_columns_data', [
         'comp_title',
         'comp_title_bg',
         'comp_title_color',
@@ -40,6 +40,16 @@ if ( empty( $comp_data ) ) {
         'comp_list_class',
         'comp_column_style',
     ], $block);
+    // Map old comp_list_class field to comp_list_content
+    if ( ! empty( $old_data ) ) {
+        foreach ( $old_data as &$row ) {
+            if ( ! empty( $row['comp_list_class'] ) && empty( $row['comp_list_content'] ) ) {
+                $row['comp_list_content'] = $row['comp_list_class'];
+            }
+        }
+        unset( $row );
+        $comp_data = $old_data;
+    }
 }
 
 $block_id    = 'cmp-' . ( $block['id'] ?? uniqid() );
@@ -59,6 +69,7 @@ if ( ! empty( $className ) ) {
 <div<?php echo $anchor_attr; ?> class="<?php echo esc_attr( implode( ' ', $wrapper_classes ) ); ?>" data-acf-block="compare" data-cmp-id="<?php echo esc_attr( $block_id ); ?>">
     <?php if ( ! empty( $comp_data ) ) : ?>
     <div class="acf-compare__grid">
+
         <?php foreach ( $comp_data as $col_index => $col ) :
             $title        = $col['comp_title'] ?? '';
             $title_bg     = $col['comp_title_bg'] ?? '';
@@ -84,13 +95,13 @@ if ( ! empty( $className ) ) {
             }
         ?>
             <div class="acf-compare__column"<?php echo $col_style ? ' style="' . esc_attr( $col_style ) . '"' : ''; ?>>
-                <?php if ( $title ) : ?>
-                    <div class="acf-compare__title"<?php
-                        $title_styles = '';
-                        if ( $title_bg ) $title_styles .= 'background:' . esc_attr( $title_bg ) . ';';
-                        if ( $title_color ) $title_styles .= 'color:' . esc_attr( $title_color ) . ';';
-                        echo $title_styles ? ' style="' . $title_styles . '"' : '';
-                    ?>><?php echo esc_html( $title ); ?></div>
+                <?php if ( $title ) :
+                    $title_styles = '';
+                    if ( $title_bg ) $title_styles .= 'background:' . esc_attr( $title_bg ) . ';';
+                    if ( $title_color ) $title_styles .= 'color:' . esc_attr( $title_color ) . ';';
+                    $title_style_attr = $title_styles ? ' style="' . $title_styles . '"' : '';
+                ?>
+                    <div class="acf-compare__title"<?php echo $title_style_attr; ?>><?php echo esc_html( $title ); ?></div>
                 <?php endif; ?>
 
                 <?php if ( $text ) : ?>
@@ -105,14 +116,16 @@ if ( ! empty( $className ) ) {
             </div>
         <?php endforeach; ?>
     </div>
+    <?php elseif ( $is_preview ) : ?>
+        <p><em><?php esc_html_e( 'No columns added. Please add comparison columns.', 'acf-blocks' ); ?></em></p>
     <?php endif; ?>
 
-    <?php if ( $cta_text && $cta_url ) : ?>
+    <?php if ( $cta_text && $cta_url ) :
+        $cta_rel_attr = $cta_rel ? ' rel="' . esc_attr( $cta_rel ) . '"' : '';
+        $cta_style_attr = $cta_bg ? ' style="background-color:' . esc_attr( $cta_bg ) . ';border-color:' . esc_attr( $cta_bg ) . ';"' : '';
+    ?>
         <div class="acf-compare__cta">
-            <a href="<?php echo esc_url( $cta_url ); ?>" class="acf-compare__btn"<?php
-                echo $cta_rel ? ' rel="' . esc_attr( $cta_rel ) . '"' : '';
-                echo $cta_bg ? ' style="background-color:' . esc_attr( $cta_bg ) . ';border-color:' . esc_attr( $cta_bg ) . ';"' : '';
-            ?>><?php echo esc_html( $cta_text ); ?></a>
+            <a href="<?php echo esc_url( $cta_url ); ?>" class="acf-compare__btn"<?php echo $cta_rel_attr . $cta_style_attr; ?>><?php echo esc_html( $cta_text ); ?></a>
         </div>
     <?php endif; ?>
 </div>

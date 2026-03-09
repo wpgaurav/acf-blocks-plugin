@@ -11,7 +11,7 @@ $className = $block['className'] ?? '';
 $anchor = $block['anchor'] ?? '';
 
 // Generate block ID
-$block_id = $anchor ?: 'callout-' . $block['id'];
+$block_id = $anchor ?: 'callout-' . ( $block['id'] ?? uniqid() );
 
 // Detect style variation
 $style_variation = '';
@@ -62,6 +62,12 @@ if (!empty($iconImage)) {
 if (!empty($labelText)) {
     $classes[] = 'has-label';
 }
+
+// InnerBlocks template for initial block content
+$inner_blocks_template = [
+    [ 'core/heading', [ 'level' => 3, 'placeholder' => 'Callout heading...' ] ],
+    [ 'core/paragraph', [ 'placeholder' => 'Callout content...' ] ],
+];
 
 ?>
 
@@ -238,7 +244,7 @@ if (!empty($labelText)) {
     <?php endif; ?>
 
     <div class="acf-callout-content">
-        <InnerBlocks templateLock="false" />
+        <InnerBlocks template="<?php echo esc_attr( wp_json_encode( $inner_blocks_template ) ); ?>" templateLock="false" />
     </div>
 
     <?php if (!empty($labelText) && $labelPosition === 'bottom') : ?>

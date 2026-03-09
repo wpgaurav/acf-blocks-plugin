@@ -2,6 +2,14 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.2.9] - 2026-03-09
+
+### Fixed
+- **Callout block:** Block appeared blank when inserted — no InnerBlocks template was provided. Added default heading + paragraph template matching the CTA/Hero pattern. Also added `uniqid()` fallback for block ID.
+- **Compare block:** Backward-compat code fetched old `comp_list_class` sub-field but template always read `comp_list_content`, silently dropping feature lists from older blocks. Old field values are now mapped to `comp_list_content`.
+- **Compare block:** Added empty-state preview message when no columns are configured (consistent with accordion/tabs blocks).
+- **Compare block:** Cleaned up inline PHP for title styles and CTA button attributes for better readability.
+
 ## [2.2.8] - 2026-03-09
 
 ### Added
