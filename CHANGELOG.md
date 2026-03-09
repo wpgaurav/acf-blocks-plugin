@@ -2,6 +2,21 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.2.8] - 2026-03-09
+
+### Added
+- **Product Box — Top Image variation:** New `is-style-top-image` block style shows image above content cropped to 16:9 aspect ratio. New `product-box-wide` (800x450) image size registered for this variation.
+
+### Fixed
+- **Critical:** Section block custom CSS never rendered on frontend — `md_store_block_css()` stored CSS in a static variable but `md_output_stored_block_css()` read from a global, so the footer `<style>` tag was always empty. Fixed by using a shared global variable.
+- **Critical:** Post Display block crashed (fatal error) when ACF compat layer returned raw post IDs instead of WP_Post objects. Now normalizes entries via `get_post()` before rendering.
+- **Changelog block:** Nested repeater items (type/description) failed to parse in flat data format with ACF 6.7+. Now falls back to `acf_blocks_get_nested_repeater()` when items aren't already arrays.
+- **Email Form block:** Wrong text domain `'gauravtiwari'` replaced with `'acf-blocks'` for translatable strings.
+- **Product Review block:** Removed dead `$halfSvg` variable with broken `uniqid()` gradient IDs.
+
+### Improved
+- **Product Box design refresh:** Refined color palette (slate scale), softer shadows, larger border-radius, badge shadow, smoother hover transitions, and better dark mode Amazon button contrast.
+
 ## [2.2.7] - 2026-02-27
 
 - **Fixed:** priceCurrency fix.
