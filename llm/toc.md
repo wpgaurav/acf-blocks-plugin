@@ -10,13 +10,15 @@ Create an SEO-optimized table of contents block that auto-generates from page he
 
 ## Design Notes
 
-- Container has `border: 1px solid rgba(0,0,0,0.08)`, `border-radius: 10px`, `padding: 1.25rem 1.5rem`
-- Title is uppercase, `0.8125em`, at `0.5` opacity, separated from list by a thin bottom border
-- Links use `opacity: 0.65`, transitioning to `1` on hover
-- Active link gets `font-weight: 600` and full opacity
-- Font size is `0.875em`
-- Collapsible uses `<details>/<summary>` with SVG chevron via CSS mask
-- Dark mode: border adjusts to `rgba(255,255,255,0.1)`
+- Container has subtle background `rgba(0,0,0,0.02)`, `border: 1px solid rgba(0,0,0,0.06)`, `border-radius: 12px`, `padding: 1.25rem 1.5rem`
+- Title is uppercase, `0.8125em`, at `0.6` opacity, separated from list by a thin bottom border
+- Links use `opacity: 0.6`, with `border-radius: 6px` and `padding: 0.25em 0.5em`
+- Links on hover get `opacity: 1` and subtle background highlight `rgba(0,0,0,0.04)`
+- Active link gets `font-weight: 600`, full opacity, and background `rgba(0,0,0,0.05)`
+- Nested sublists have a left border guide line `border-left: 1px solid rgba(0,0,0,0.06)`
+- Font size is `0.875em`, line-height `1.6`
+- Collapsible uses `<details>/<summary>` with SVG chevron via CSS mask; summary has hover background
+- Dark mode: background `rgba(255,255,255,0.03)`, border `rgba(255,255,255,0.08)`, hover/active backgrounds adjust accordingly
 - Headings inside ACF blocks (`data-acf-block` wrappers) are excluded from TOC by default
 
 ## Fields
