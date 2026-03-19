@@ -45,20 +45,19 @@ $resolved_image = acf_product_box_resolve_image( $image, $image_url, $title ?: '
 $img_src = $resolved_image['src'];
 $img_alt = $resolved_image['alt'];
 
-// Placeholder SVG for products without images
-$placeholder_svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" class="acf-product-box__placeholder-svg">
-    <rect fill="#f3f4f6" width="400" height="300"/>
-    <g opacity="0.4">
-        <rect x="40" y="30" width="320" height="180" rx="8" fill="#e5e7eb"/>
-        <rect x="60" y="230" width="180" height="16" rx="4" fill="#e5e7eb"/>
-        <rect x="60" y="258" width="120" height="12" rx="3" fill="#e5e7eb"/>
-        <circle cx="200" cy="120" r="40" fill="#d1d5db"/>
-        <path d="M185 110 L200 130 L215 110 L210 110 L210 100 L190 100 L190 110 Z" fill="#9ca3af" transform="rotate(180 200 115)"/>
-    </g>
-</svg>';
+// Fallback to no-image layout when no image is available
+if ( ! $img_src && ! $is_no_image ) {
+    $is_no_image = true;
+    $is_top_image = false;
+    $className .= ' is-style-no-image';
+}
 
 // Block wrapper attributes
-$wrapper_attributes = get_block_wrapper_attributes(['class' => 'acf-product-box']);
+$wrapper_classes = 'acf-product-box';
+if ( $is_no_image && strpos($block['className'] ?? '', 'is-style-no-image') === false ) {
+    $wrapper_classes .= ' is-style-no-image';
+}
+$wrapper_attributes = get_block_wrapper_attributes(['class' => $wrapper_classes]);
 ?>
 
 <div <?php echo $wrapper_attributes; ?> data-acf-block="product-box">
@@ -68,24 +67,16 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'acf-product-box'
         </div>
     <?php endif; ?>
 
-    <?php if ($is_top_image) : ?>
+    <?php if ($is_top_image && $img_src) : ?>
         <div class="acf-product-box__hero-image">
-            <?php if ($img_src) : ?>
-                <img src="<?php echo esc_url($img_src); ?>" alt="<?php echo esc_attr($img_alt); ?>" loading="lazy" decoding="async" />
-            <?php else : ?>
-                <?php echo $placeholder_svg; ?>
-            <?php endif; ?>
+            <img src="<?php echo esc_url($img_src); ?>" alt="<?php echo esc_attr($img_alt); ?>" loading="lazy" decoding="async" />
         </div>
     <?php endif; ?>
 
     <div class="acf-product-box__layout">
-        <?php if (!$is_no_image && !$is_top_image) : ?>
+        <?php if (!$is_no_image && !$is_top_image && $img_src) : ?>
             <div class="acf-product-box__image">
-                <?php if ($img_src) : ?>
-                    <img src="<?php echo esc_url($img_src); ?>" alt="<?php echo esc_attr($img_alt); ?>" loading="lazy" decoding="async" />
-                <?php else : ?>
-                    <?php echo $placeholder_svg; ?>
-                <?php endif; ?>
+                <img src="<?php echo esc_url($img_src); ?>" alt="<?php echo esc_attr($img_alt); ?>" loading="lazy" decoding="async" />
             </div>
         <?php endif; ?>
 
