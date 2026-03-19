@@ -40,6 +40,14 @@ if ( ! function_exists( 'acf_star_rating_handle_submission' ) ) {
             wp_send_json_error( array( 'message' => __( 'Content not found.', 'acf-blocks' ) ), 404 );
         }
 
+        // Rate limiting: one vote per IP per block per day
+        $ip = sanitize_text_field( $_SERVER['REMOTE_ADDR'] ?? '' );
+        $rate_key = 'acf_sr_' . md5( $ip . $post_id . $block_id );
+        if ( get_transient( $rate_key ) ) {
+            wp_send_json_error( array( 'message' => __( 'You have already submitted a rating.', 'acf-blocks' ) ), 429 );
+        }
+        set_transient( $rate_key, 1, DAY_IN_SECONDS );
+
         $meta_key   = '_acf_star_rating_' . $block_id;
         $aggregates = get_post_meta( $post_id, $meta_key, true );
 

@@ -119,9 +119,9 @@ $block_id = 'pc-' . uniqid();
 
     // Output in correct order
     if ($show_first === 'positive') {
-        echo $positive_html . $negative_html;
+        echo wp_kses_post($positive_html . $negative_html);
     } else {
-        echo $negative_html . $positive_html;
+        echo wp_kses_post($negative_html . $positive_html);
     }
     ?>
 </div>

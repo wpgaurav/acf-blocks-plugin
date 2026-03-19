@@ -35,7 +35,7 @@ function md_output_stored_block_css() {
     if (!empty($md_stored_block_css) && is_array($md_stored_block_css)) {
         echo "\n<style id=\"md-blocks-custom-css\">\n";
         foreach ($md_stored_block_css as $css) {
-            echo $css . "\n";
+            echo wp_strip_all_tags($css) . "\n";
         }
         echo "</style>\n";
     }

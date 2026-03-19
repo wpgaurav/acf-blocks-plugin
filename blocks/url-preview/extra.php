@@ -284,11 +284,14 @@ function acf_url_preview_parse_html( $html, $url ) {
         'image' => '',
     );
 
-    // Suppress libxml errors
+    // Suppress libxml errors and disable external entity loading
     libxml_use_internal_errors( true );
+    $previous_value = libxml_disable_entity_loader( true );
 
     $doc = new DOMDocument();
-    $doc->loadHTML( '<?xml encoding="UTF-8">' . $html, LIBXML_NOERROR | LIBXML_NOWARNING );
+    $doc->loadHTML( '<?xml encoding="UTF-8">' . $html, LIBXML_NOERROR | LIBXML_NOWARNING | LIBXML_NONET );
+
+    libxml_disable_entity_loader( $previous_value );
 
     $xpath = new DOMXPath( $doc );
 

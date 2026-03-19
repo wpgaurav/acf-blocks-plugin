@@ -159,8 +159,8 @@ function acf_blocks_cast_field_value( $value, $type ) {
 
         case 'link':
             if ( $value && is_string( $value ) ) {
-                $unserialized = @unserialize( $value );
-                if ( false !== $unserialized ) {
+                $unserialized = maybe_unserialize( $value );
+                if ( is_array( $unserialized ) ) {
                     $value = $unserialized;
                 }
             }
