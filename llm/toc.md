@@ -10,13 +10,18 @@ Create an SEO-optimized table of contents block that auto-generates from page he
 
 ## Design Notes
 
-- Container has `border: 1px solid rgba(0,0,0,0.08)`, `border-radius: 10px`, `padding: 1.25rem 1.5rem`
-- Title is uppercase, `0.8125em`, at `0.5` opacity, separated from list by a thin bottom border
-- Links use `opacity: 0.65`, transitioning to `1` on hover
-- Active link gets `font-weight: 600` and full opacity
-- Font size is `0.875em`
-- Collapsible uses `<details>/<summary>` with SVG chevron via CSS mask
-- Dark mode: border adjusts to `rgba(255,255,255,0.1)`
+- Inherits font-family from the active theme via `font: inherit`
+- All colors derived from `currentColor` via `color-mix()` — automatically adapts to any theme (light or dark, any palette)
+- Container: `background: color-mix(in srgb, currentColor 3%, transparent)`, `border: 1px solid color-mix(in srgb, currentColor 8%, transparent)`, `border-radius: 12px`, `padding: 1rem 1.25rem`
+- Title is uppercase, `0.8125em`, at `0.6` opacity, separated from list by a thin bottom border
+- Links use `opacity: 0.6`, with `border-radius: 6px` and `padding: 0.2em 0.4em`
+- Links on hover get `opacity: 1` and subtle `currentColor`-based background highlight
+- Active link gets `font-weight: 600`, full opacity, and `currentColor`-based background
+- Ordered lists (`ol`) show CSS counters (e.g. "1. ", "2. ") via `::before` pseudo-elements with `tabular-nums`
+- Nested sublists have a left border guide line derived from `currentColor`; nested `ol` sublists get independent counters
+- Font size is `0.875em`, line-height `1.5`
+- Collapsible uses `<details>/<summary>` with SVG chevron via CSS mask; summary has hover background
+- No separate dark mode rules needed — `color-mix(in srgb, currentColor, transparent)` adapts automatically
 - Headings inside ACF blocks (`data-acf-block` wrappers) are excluded from TOC by default
 
 ## Fields
