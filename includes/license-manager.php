@@ -437,7 +437,7 @@ class ACF_Blocks_License_Manager {
 		$url = add_query_arg( 'fluent-cart', $action, self::LICENSE_SERVER );
 		$params['current_version'] = defined( 'ACF_BLOCKS_VERSION' ) ? ACF_BLOCKS_VERSION : '1.0.0';
 
-		$response = wp_remote_post( $url, array( 'timeout' => 15, 'sslverify' => false, 'body' => $params ) );
+		$response = wp_remote_post( $url, array( 'timeout' => 15, 'body' => $params ) );
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error( 'api_error', __( 'Could not connect to the license server.', 'acf-blocks' ) );
 		}

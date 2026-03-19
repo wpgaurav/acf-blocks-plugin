@@ -115,7 +115,7 @@ $block_id = 'acf-thread-builder-' . $block['id'];
                                     esc_html($content)
                                 );
                                 
-                                echo wpautop($processed_content); 
+                                echo wp_kses_post(wpautop($processed_content));
                                 ?>
                             </div>
                         <?php endif; ?>

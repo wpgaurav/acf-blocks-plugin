@@ -131,7 +131,7 @@ if ( empty( $title ) && empty( $image_url ) && empty( $description ) ) {
 
     <div class="acf-url-preview__content">
         <?php if ( $title ) : ?>
-        <h3 class="acf-url-preview__title"><?php echo esc_html( $title ); ?></h3>
+        <p class="acf-url-preview__title"><?php echo esc_html( $title ); ?></p>
         <?php endif; ?>
 
         <?php if ( $description ) : ?>
