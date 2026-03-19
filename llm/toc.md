@@ -10,15 +10,17 @@ Create an SEO-optimized table of contents block that auto-generates from page he
 
 ## Design Notes
 
-- Container has subtle background `rgba(0,0,0,0.02)`, `border: 1px solid rgba(0,0,0,0.06)`, `border-radius: 12px`, `padding: 1.25rem 1.5rem`
+- Inherits font-family from the active theme via `font: inherit`
+- All colors derived from `currentColor` via `color-mix()` — automatically adapts to any theme (light or dark, any palette)
+- Container: `background: color-mix(in srgb, currentColor 3%, transparent)`, `border: 1px solid color-mix(in srgb, currentColor 8%, transparent)`, `border-radius: 12px`, `padding: 1.25rem 1.5rem`
 - Title is uppercase, `0.8125em`, at `0.6` opacity, separated from list by a thin bottom border
 - Links use `opacity: 0.6`, with `border-radius: 6px` and `padding: 0.25em 0.5em`
-- Links on hover get `opacity: 1` and subtle background highlight `rgba(0,0,0,0.04)`
-- Active link gets `font-weight: 600`, full opacity, and background `rgba(0,0,0,0.05)`
-- Nested sublists have a left border guide line `border-left: 1px solid rgba(0,0,0,0.06)`
+- Links on hover get `opacity: 1` and subtle `currentColor`-based background highlight
+- Active link gets `font-weight: 600`, full opacity, and `currentColor`-based background
+- Nested sublists have a left border guide line derived from `currentColor`
 - Font size is `0.875em`, line-height `1.6`
 - Collapsible uses `<details>/<summary>` with SVG chevron via CSS mask; summary has hover background
-- Dark mode: background `rgba(255,255,255,0.03)`, border `rgba(255,255,255,0.08)`, hover/active backgrounds adjust accordingly
+- No separate dark mode rules needed — `color-mix(in srgb, currentColor, transparent)` adapts automatically
 - Headings inside ACF blocks (`data-acf-block` wrappers) are excluded from TOC by default
 
 ## Fields
