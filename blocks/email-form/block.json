@@ -16,5 +16,6 @@
     "jsx": true
   },
   "style": "file:./email-form.css",
-  "editorStyle": "file:./email-form.css"
+  "editorStyle": "file:./email-form.css",
+  "viewScript": "file:./email-form.js"
 }

@@ -3,7 +3,7 @@
  * Plugin Name: ACF Blocks
  * Plugin URI: https://github.com/wpgaurav/acf-blocks-plugin
  * Description: A collection of ACF Pro blocks for the WordPress block editor with automatic field group registration.
- * Version: 2.3.2
+ * Version: 2.4.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Gaurav Tiwari
