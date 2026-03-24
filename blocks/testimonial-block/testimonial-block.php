@@ -21,6 +21,7 @@ $rating      = acf_blocks_get_field( 'acf_testimonial_rating', $block );
 // Determine image source - direct URL takes priority
 $img_src = '';
 $img_alt = $author_name ?: 'Author';
+$resolved = [ 'srcset' => '', 'sizes' => '' ];
 if ( $author_image_url ) {
     $img_src = $author_image_url;
 } elseif ( $author_image ) {
@@ -59,7 +60,7 @@ $inner_blocks_template = [
     <div class="acf-testimonial-author">
         <?php if ( $img_src ) : ?>
             <div class="acf-testimonial-author-image">
-                <img src="<?php echo esc_url( $img_src ); ?>" alt="<?php echo esc_attr( $img_alt ); ?>" loading="lazy" decoding="async" />
+                <img src="<?php echo esc_url( $img_src ); ?>" alt="<?php echo esc_attr( $img_alt ); ?>"<?php if ( ! empty( $resolved['srcset'] ) ) : ?> srcset="<?php echo esc_attr( $resolved['srcset'] ); ?>" sizes="<?php echo esc_attr( $resolved['sizes'] ); ?>"<?php endif; ?> loading="lazy" decoding="async" />
             </div>
         <?php endif; ?>
 

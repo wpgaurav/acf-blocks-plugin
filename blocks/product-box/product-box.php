@@ -44,6 +44,8 @@ $image_size = $is_top_image ? 'product-box-wide' : 'product-box-image';
 $resolved_image = acf_product_box_resolve_image( $image, $image_url, $title ?: 'Product image', $image_size );
 $img_src = $resolved_image['src'];
 $img_alt = $resolved_image['alt'];
+$img_srcset = $resolved_image['srcset'] ?? '';
+$img_sizes = $resolved_image['sizes'] ?? '';
 
 // Fallback to no-image layout when no image is available
 if ( ! $img_src && ! $is_no_image ) {
@@ -69,14 +71,14 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => $wrapper_classes]
 
     <?php if ($is_top_image && $img_src) : ?>
         <div class="acf-product-box__hero-image">
-            <img src="<?php echo esc_url($img_src); ?>" alt="<?php echo esc_attr($img_alt); ?>" loading="lazy" decoding="async" />
+            <img src="<?php echo esc_url($img_src); ?>" alt="<?php echo esc_attr($img_alt); ?>"<?php if ( $img_srcset ) : ?> srcset="<?php echo esc_attr($img_srcset); ?>" sizes="<?php echo esc_attr($img_sizes); ?>"<?php endif; ?> loading="lazy" decoding="async" />
         </div>
     <?php endif; ?>
 
     <div class="acf-product-box__layout">
         <?php if (!$is_no_image && !$is_top_image && $img_src) : ?>
             <div class="acf-product-box__image">
-                <img src="<?php echo esc_url($img_src); ?>" alt="<?php echo esc_attr($img_alt); ?>" loading="lazy" decoding="async" />
+                <img src="<?php echo esc_url($img_src); ?>" alt="<?php echo esc_attr($img_alt); ?>"<?php if ( $img_srcset ) : ?> srcset="<?php echo esc_attr($img_srcset); ?>" sizes="<?php echo esc_attr($img_sizes); ?>"<?php endif; ?> loading="lazy" decoding="async" />
             </div>
         <?php endif; ?>
 

@@ -18,6 +18,7 @@ $image_url   = acf_blocks_get_field( 'acf_hero_image_url', $block );
 // Determine image source - direct URL takes priority, then resolve uploaded image
 $img_src = '';
 $img_alt = 'Hero image';
+$resolved = [ 'srcset' => '', 'sizes' => '' ];
 if ( $image_url ) {
     $img_src = $image_url;
 } elseif ( $image ) {
@@ -65,7 +66,7 @@ $inner_blocks_template = [
 <div class="acf-hero-block<?php echo $custom_class; ?>"<?php echo $inline_style_attr; ?>>
     <?php if ( $img_src ) : ?>
         <div class="acf-hero-image">
-            <img src="<?php echo esc_url( $img_src ); ?>" alt="<?php echo esc_attr( $img_alt ); ?>" fetchpriority="high" decoding="async" />
+            <img src="<?php echo esc_url( $img_src ); ?>" alt="<?php echo esc_attr( $img_alt ); ?>"<?php if ( ! empty( $resolved['srcset'] ) ) : ?> srcset="<?php echo esc_attr( $resolved['srcset'] ); ?>" sizes="<?php echo esc_attr( $resolved['sizes'] ); ?>"<?php endif; ?> fetchpriority="high" decoding="async" />
         </div>
     <?php endif; ?>
 

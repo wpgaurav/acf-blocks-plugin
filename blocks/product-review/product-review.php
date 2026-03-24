@@ -90,10 +90,15 @@ $review_date_modified = acf_blocks_get_field('review_date_modified', $block) ?: 
 
 // Determine image URL - direct URL takes priority
 $image_url = '';
+$image_srcset = '';
+$image_sizes = '';
 if ( $image_direct_url ) {
     $image_url = $image_direct_url;
 } elseif ( $image_id ) {
-    $image_url = wp_get_attachment_image_url($image_id, 'full');
+    $resolved_img = acf_blocks_resolve_image( $image_id, $product_name ?: 'Product', 'full' );
+    $image_url = $resolved_img['src'];
+    $image_srcset = $resolved_img['srcset'];
+    $image_sizes = $resolved_img['sizes'];
 }
 ?>
 
@@ -103,7 +108,7 @@ if ( $image_direct_url ) {
     <?php endif; ?>
 
     <?php if ($image_url) : ?>
-        <img class="acf-product-review-image" src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($product_name); ?>" loading="lazy" decoding="async" />
+        <img class="acf-product-review-image" src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($product_name); ?>"<?php if ( $image_srcset ) : ?> srcset="<?php echo esc_attr($image_srcset); ?>" sizes="<?php echo esc_attr($image_sizes); ?>"<?php endif; ?> loading="lazy" decoding="async" />
     <?php endif; ?>
 
     <?php if ($overall_rating) : ?>

@@ -199,7 +199,7 @@ function acf_blocks_cast_field_value( $value, $type ) {
  * @return array{src: string, alt: string}
  */
 function acf_blocks_resolve_image( $image, $fallback_alt = '', $size = 'medium' ) {
-    $result = [ 'src' => '', 'alt' => $fallback_alt ];
+    $result = [ 'src' => '', 'alt' => $fallback_alt, 'srcset' => '', 'sizes' => '' ];
 
     if ( empty( $image ) ) {
         return $result;
@@ -211,14 +211,19 @@ function acf_blocks_resolve_image( $image, $fallback_alt = '', $size = 'medium' 
         if ( ! empty( $image['alt'] ) ) {
             $result['alt'] = $image['alt'];
         }
+        $attachment_id = ! empty( $image['ID'] ) ? (int) $image['ID'] : 0;
         // Try requested size if available
         if ( ! empty( $image['sizes'][ $size ] ) ) {
             $result['src'] = $image['sizes'][ $size ];
-        } elseif ( ! empty( $image['ID'] ) ) {
-            $sized = wp_get_attachment_image_src( (int) $image['ID'], $size );
+        } elseif ( $attachment_id ) {
+            $sized = wp_get_attachment_image_src( $attachment_id, $size );
             if ( $sized ) {
                 $result['src'] = $sized[0];
             }
+        }
+        // Generate srcset/sizes from attachment ID
+        if ( $attachment_id ) {
+            $result = acf_blocks_attach_srcset( $result, $attachment_id, $size );
         }
         return $result;
     }
@@ -239,6 +244,8 @@ function acf_blocks_resolve_image( $image, $fallback_alt = '', $size = 'medium' 
         if ( $img_alt ) {
             $result['alt'] = $img_alt;
         }
+        // Generate srcset/sizes from attachment ID
+        $result = acf_blocks_attach_srcset( $result, $attachment_id, $size );
         return $result;
     }
 
@@ -246,6 +253,34 @@ function acf_blocks_resolve_image( $image, $fallback_alt = '', $size = 'medium' 
     if ( is_string( $image ) && filter_var( $image, FILTER_VALIDATE_URL ) ) {
         $result['src'] = $image;
         return $result;
+    }
+
+    return $result;
+}
+
+/**
+ * Attach srcset and sizes attributes to an image result array.
+ *
+ * Uses WordPress core functions to generate responsive image attributes
+ * from an attachment ID and requested size.
+ *
+ * @param array  $result        Image result array with 'src', 'alt' keys.
+ * @param int    $attachment_id WordPress attachment ID.
+ * @param string $size          WordPress image size name.
+ * @return array Modified result with 'srcset' and 'sizes' populated.
+ */
+function acf_blocks_attach_srcset( $result, $attachment_id, $size ) {
+    if ( $attachment_id < 1 ) {
+        return $result;
+    }
+
+    $srcset = wp_get_attachment_image_srcset( $attachment_id, $size );
+    if ( $srcset ) {
+        $result['srcset'] = $srcset;
+        $sizes = wp_get_attachment_image_sizes( $attachment_id, $size );
+        if ( $sizes ) {
+            $result['sizes'] = $sizes;
+        }
     }
 
     return $result;

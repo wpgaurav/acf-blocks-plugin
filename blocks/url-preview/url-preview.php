@@ -36,11 +36,15 @@ $custom_inline = acf_blocks_get_field( 'custom_inline', $block );
 
 // Determine image URL
 $image_url = '';
+$image_srcset = '';
+$image_sizes = '';
 if ( 'local' === $image_source && $local_image ) {
     // For horizontal layout, default to thumbnail size for minimal display
     $size_to_use = ( 'horizontal' === $card_layout ) ? 'thumbnail' : $local_image_size;
     $resolved = acf_blocks_resolve_image( $local_image, '', $size_to_use );
     $image_url = $resolved['src'];
+    $image_srcset = $resolved['srcset'];
+    $image_sizes = $resolved['sizes'];
 
     if ( empty( $image_alt ) && ! empty( $resolved['alt'] ) ) {
         $image_alt = $resolved['alt'];
@@ -123,6 +127,7 @@ if ( empty( $title ) && empty( $image_url ) && empty( $description ) ) {
         <img
             src="<?php echo esc_url( $image_url ); ?>"
             alt="<?php echo esc_attr( $image_alt ?: $title ); ?>"
+            <?php if ( ! empty( $image_srcset ) ) : ?>srcset="<?php echo esc_attr( $image_srcset ); ?>" sizes="<?php echo esc_attr( $image_sizes ); ?>"<?php endif; ?>
             loading="lazy"
             decoding="async"
         />

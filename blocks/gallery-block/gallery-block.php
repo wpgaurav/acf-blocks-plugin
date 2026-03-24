@@ -54,13 +54,13 @@ $lightbox_class = $lightbox ? ' acf-gallery-has-lightbox' : '';
                        class="acf-gallery-link"
                        data-lightbox="gallery"
                        data-title="<?php echo esc_attr( $image_alt ); ?>">
-                        <img src="<?php echo esc_url( $display_url ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>" loading="<?php echo esc_attr( $loading_attr ); ?>" decoding="async" />
+                        <img src="<?php echo esc_url( $display_url ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>"<?php if ( ! empty( $resolved['srcset'] ) ) : ?> srcset="<?php echo esc_attr( $resolved['srcset'] ); ?>" sizes="<?php echo esc_attr( $resolved['sizes'] ); ?>"<?php endif; ?> loading="<?php echo esc_attr( $loading_attr ); ?>" decoding="async" />
                         <div class="acf-gallery-overlay">
                             <span class="acf-gallery-icon">🔍</span>
                         </div>
                     </a>
                 <?php else : ?>
-                    <img src="<?php echo esc_url( $display_url ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>" loading="<?php echo esc_attr( $loading_attr ); ?>" decoding="async" />
+                    <img src="<?php echo esc_url( $display_url ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>"<?php if ( ! empty( $resolved['srcset'] ) ) : ?> srcset="<?php echo esc_attr( $resolved['srcset'] ); ?>" sizes="<?php echo esc_attr( $resolved['sizes'] ); ?>"<?php endif; ?> loading="<?php echo esc_attr( $loading_attr ); ?>" decoding="async" />
                 <?php endif; ?>
 
                 <?php if ( $image_caption ) : ?>
