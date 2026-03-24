@@ -31,11 +31,16 @@ $buttons = acf_blocks_get_repeater('pl_block_buttons', ['pl_block_button_text', 
 // Resolve image source — direct URL takes priority over uploaded image
 $img_src = '';
 $img_alt = $product_name ?: 'Product';
+$img_srcset = '';
+$img_sizes = '';
 if ($image_url) {
     $img_src = $image_url;
-} elseif ($icon && is_array($icon)) {
-    $img_src = $icon['url'] ?? '';
-    $img_alt = !empty($icon['alt']) ? $icon['alt'] : $img_alt;
+} elseif ($icon) {
+    $resolved_img = acf_blocks_resolve_image( $icon, $img_alt, 'medium' );
+    $img_src = $resolved_img['src'];
+    $img_alt = $resolved_img['alt'];
+    $img_srcset = $resolved_img['srcset'];
+    $img_sizes = $resolved_img['sizes'];
 }
 
 // Block wrapper attributes
@@ -50,7 +55,7 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => 'acf-pl-block']);
 
         <?php if ($img_src) : ?>
             <div class="acf-pl-block__icon">
-                <img src="<?php echo esc_url($img_src); ?>" alt="<?php echo esc_attr($img_alt); ?>" loading="lazy" decoding="async" style="width:<?php echo esc_attr($width_style); ?>;height:auto;" />
+                <img src="<?php echo esc_url($img_src); ?>" alt="<?php echo esc_attr($img_alt); ?>"<?php if ( $img_srcset ) : ?> srcset="<?php echo esc_attr($img_srcset); ?>" sizes="<?php echo esc_attr($img_sizes); ?>"<?php endif; ?> loading="lazy" decoding="async" style="width:<?php echo esc_attr($width_style); ?>;height:auto;" />
             </div>
         <?php endif; ?>
 

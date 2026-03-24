@@ -21,6 +21,7 @@ $social_links = acf_blocks_get_repeater( 'acf_team_member_social_links', [ 'acf_
 // Determine image source - direct URL takes priority
 $img_src = '';
 $img_alt = 'Team member';
+$resolved = [ 'srcset' => '', 'sizes' => '' ];
 if ( $photo_url ) {
     $img_src = $photo_url;
 } elseif ( $photo ) {
@@ -51,7 +52,7 @@ $inner_blocks_template = [
 <div class="acf-team-member-block<?php echo $custom_class; ?>"<?php echo $inline_style_attr; ?>>
     <?php if ( $img_src ) : ?>
         <div class="acf-team-member-photo">
-            <img src="<?php echo esc_url( $img_src ); ?>" alt="<?php echo esc_attr( $img_alt ); ?>" loading="lazy" decoding="async" />
+            <img src="<?php echo esc_url( $img_src ); ?>" alt="<?php echo esc_attr( $img_alt ); ?>"<?php if ( ! empty( $resolved['srcset'] ) ) : ?> srcset="<?php echo esc_attr( $resolved['srcset'] ); ?>" sizes="<?php echo esc_attr( $resolved['sizes'] ); ?>"<?php endif; ?> loading="lazy" decoding="async" />
         </div>
     <?php endif; ?>
 

@@ -35,7 +35,7 @@ add_action( 'after_setup_theme', 'acf_product_box_register_image_size' );
  * @return array{src: string, alt: string}
  */
 function acf_product_box_resolve_image( $image, $image_url, $alt = 'Product image', $size = 'product-box-image' ) {
-    $result = [ 'src' => '', 'alt' => $alt ];
+    $result = [ 'src' => '', 'alt' => $alt, 'srcset' => '', 'sizes' => '' ];
 
     // Case 1: Direct URL provided
     if ( $image_url ) {
@@ -62,6 +62,7 @@ function acf_product_box_resolve_image( $image, $image_url, $alt = 'Product imag
                 if ( $img_alt ) {
                     $result['alt'] = $img_alt;
                 }
+                $result = acf_blocks_attach_srcset( $result, $attachment_id, $size );
             }
         }
         // External URL: use as-is (no size manipulation)
@@ -100,6 +101,7 @@ function acf_product_box_resolve_image( $image, $image_url, $alt = 'Product imag
                 }
             }
         }
+        $result = acf_blocks_attach_srcset( $result, $attachment_id, $size );
         return $result;
     }
 

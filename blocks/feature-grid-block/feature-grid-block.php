@@ -291,10 +291,22 @@ echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
                 <div class="acf-feature-item">
                     <?php if (!empty($feature['acf_feature_icon']) || !empty($feature['acf_feature_image'])) : ?>
                         <div class="acf-feature-icon-wrapper">
-                            <?php if (!empty($feature['acf_feature_image'])) : ?>
+                            <?php if (!empty($feature['acf_feature_image'])) :
+                                $feat_img = $feature['acf_feature_image'];
+                                $feat_srcset = '';
+                                $feat_sizes = '';
+                                if ( ! empty( $feat_img['ID'] ) ) {
+                                    $feat_srcset_val = wp_get_attachment_image_srcset( (int) $feat_img['ID'], 'medium' );
+                                    if ( $feat_srcset_val ) {
+                                        $feat_srcset = $feat_srcset_val;
+                                        $feat_sizes = wp_get_attachment_image_sizes( (int) $feat_img['ID'], 'medium' ) ?: '';
+                                    }
+                                }
+                            ?>
                                 <div class="acf-feature-image">
-                                    <img src="<?php echo esc_url($feature['acf_feature_image']['url']); ?>"
-                                         alt="<?php echo esc_attr($feature['acf_feature_image']['alt']); ?>"
+                                    <img src="<?php echo esc_url($feat_img['url']); ?>"
+                                         alt="<?php echo esc_attr($feat_img['alt']); ?>"
+                                         <?php if ( $feat_srcset ) : ?>srcset="<?php echo esc_attr($feat_srcset); ?>" sizes="<?php echo esc_attr($feat_sizes); ?>"<?php endif; ?>
                                          loading="lazy" decoding="async" />
                                 </div>
                             <?php elseif (!empty($feature['acf_feature_icon'])) : ?>

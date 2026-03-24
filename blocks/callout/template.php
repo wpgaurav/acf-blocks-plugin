@@ -28,7 +28,11 @@ if (strpos($className, 'is-style-dark') !== false) {
 }
 
 // Get ACF fields for styling
-$iconImage = acf_blocks_get_field('callout_iconImage', $block);
+$iconImageRaw = acf_blocks_get_field('callout_iconImage', $block);
+$iconResolved = acf_blocks_resolve_image( $iconImageRaw, '', 'medium' );
+$iconImage = $iconResolved['src'];
+$iconSrcset = $iconResolved['srcset'];
+$iconSizes = $iconResolved['sizes'];
 $labelText = acf_blocks_get_field('callout_label', $block);
 $labelPosition = acf_blocks_get_field('callout_label_position', $block) ?: 'top';
 $bgColor = acf_blocks_get_field('callout_bgColor', $block);
@@ -235,7 +239,7 @@ $inner_blocks_template = [
     <?php endif; ?>
     <?php if (!empty($iconImage) && $labelPosition === 'top') : ?>
         <div class="acf-callout-icon-image">
-            <img src="<?php echo esc_url($iconImage); ?>" alt="" loading="lazy" />
+            <img src="<?php echo esc_url($iconImage); ?>" alt=""<?php if ( $iconSrcset ) : ?> srcset="<?php echo esc_attr($iconSrcset); ?>" sizes="<?php echo esc_attr($iconSizes); ?>"<?php endif; ?> loading="lazy" />
         </div>
     <?php endif; ?>
 

@@ -15,7 +15,11 @@ $title_color = acf_blocks_get_field('pc_block_title_color', $block) ?: '#FFFFFF'
 $title_bg_color = acf_blocks_get_field('pc_block_title_bg_color', $block) ?: '#007bff';
 $title_tag_raw = acf_blocks_get_field('pc_block_title_tag', $block);
 $title_tag = in_array($title_tag_raw, ['p', 'h2', 'h3', 'h4', 'h5', 'h6'], true) ? $title_tag_raw : 'p';
-$image = acf_blocks_get_field('pc_block_product_image', $block);
+$image_raw = acf_blocks_get_field('pc_block_product_image', $block);
+$resolved_img = acf_blocks_resolve_image( $image_raw, $title ?: 'Product', 'medium' );
+$image = $resolved_img['src'];
+$image_srcset = $resolved_img['srcset'];
+$image_sizes = $resolved_img['sizes'];
 $description = acf_blocks_get_field('pc_block_description', $block);
 $root_class = acf_blocks_get_field('pc_block_root_class', $block);
 $button_text = acf_blocks_get_field('pc_block_button_text', $block);
@@ -40,7 +44,7 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => implode(' ', $wra
     </div>
     <?php if ($image): ?>
         <div class="acf-product-cards__image">
-            <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($title); ?>" loading="lazy" decoding="async" />
+            <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($title); ?>"<?php if ( $image_srcset ) : ?> srcset="<?php echo esc_attr($image_srcset); ?>" sizes="<?php echo esc_attr($image_sizes); ?>"<?php endif; ?> loading="lazy" decoding="async" />
         </div>
     <?php endif; ?>
     <div class="acf-product-cards__content">

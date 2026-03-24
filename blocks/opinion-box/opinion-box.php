@@ -7,6 +7,7 @@ $name = acf_blocks_get_field('ob_name', $block);
 // Determine image source - direct URL takes priority
 $img_src = '';
 $img_alt = $name ?: 'Author';
+$resolved = [ 'srcset' => '', 'sizes' => '' ];
 if ( $avatar_url ) {
     $img_src = $avatar_url;
 } elseif ( $avatar ) {
@@ -24,7 +25,7 @@ if ( $avatar_url ) {
     <div class="acf-opinion-box-meta">
         <?php if($img_src): ?>
             <div class="acf-opinion-box-avatar">
-                <img src="<?php echo esc_url($img_src); ?>" alt="<?php echo esc_attr($img_alt); ?>" class="acf-opinion-box-avatar-image" loading="lazy" />
+                <img src="<?php echo esc_url($img_src); ?>" alt="<?php echo esc_attr($img_alt); ?>"<?php if ( ! empty( $resolved['srcset'] ) ) : ?> srcset="<?php echo esc_attr( $resolved['srcset'] ); ?>" sizes="<?php echo esc_attr( $resolved['sizes'] ); ?>"<?php endif; ?> class="acf-opinion-box-avatar-image" loading="lazy" />
             </div>
         <?php endif; ?>
 
