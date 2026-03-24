@@ -252,6 +252,19 @@ function acf_blocks_resolve_image( $image, $fallback_alt = '', $size = 'medium' 
     // Case 3: Direct URL string
     if ( is_string( $image ) && filter_var( $image, FILTER_VALIDATE_URL ) ) {
         $result['src'] = $image;
+        // Try to find an attachment ID for same-domain URLs (e.g. localized images).
+        $attachment_id = acf_blocks_url_to_attachment_id( $image );
+        if ( $attachment_id ) {
+            $sized = wp_get_attachment_image_src( $attachment_id, $size );
+            if ( $sized ) {
+                $result['src'] = $sized[0];
+            }
+            $img_alt = get_post_meta( $attachment_id, '_wp_attachment_image_alt', true );
+            if ( $img_alt && empty( $fallback_alt ) ) {
+                $result['alt'] = $img_alt;
+            }
+            $result = acf_blocks_attach_srcset( $result, $attachment_id, $size );
+        }
         return $result;
     }
 
@@ -284,6 +297,35 @@ function acf_blocks_attach_srcset( $result, $attachment_id, $size ) {
     }
 
     return $result;
+}
+
+/**
+ * Try to find a WordPress attachment ID from a same-domain image URL.
+ *
+ * Uses attachment_url_to_postid() which looks up the _wp_attached_file meta.
+ * Only runs the lookup for URLs that belong to the current site to avoid
+ * unnecessary database queries for external images.
+ *
+ * @param string $url The image URL to look up.
+ * @return int Attachment ID, or 0 if not found or external URL.
+ */
+function acf_blocks_url_to_attachment_id( $url ) {
+    $site_host = wp_parse_url( home_url(), PHP_URL_HOST );
+    $url_host  = wp_parse_url( $url, PHP_URL_HOST );
+
+    if ( ! $url_host || ! $site_host ) {
+        return 0;
+    }
+
+    // Only look up same-domain or subdomain URLs.
+    $site_bare = preg_replace( '/^www\./i', '', $site_host );
+    $url_bare  = preg_replace( '/^www\./i', '', $url_host );
+
+    if ( $url_bare !== $site_bare && ! str_ends_with( $url_bare, '.' . $site_bare ) ) {
+        return 0;
+    }
+
+    return (int) attachment_url_to_postid( $url );
 }
 
 /**

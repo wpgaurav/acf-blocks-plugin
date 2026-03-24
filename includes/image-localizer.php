@@ -207,6 +207,8 @@ function acf_blocks_download_external_image( $url ) {
 
     // Already downloaded — return cached path.
     if ( file_exists( $target_path ) ) {
+        // Ensure a WP attachment exists for srcset support.
+        acf_blocks_ensure_localised_attachment( $target_path, $target_url, $filename );
         return $target_url;
     }
 
@@ -246,7 +248,88 @@ function acf_blocks_download_external_image( $url ) {
         return false;
     }
 
+    // Register as a WP attachment so WordPress generates image sizes for srcset.
+    acf_blocks_ensure_localised_attachment( $target_path, $target_url, $filename );
+
     return $target_url;
+}
+
+/**
+ * Ensure a localized image file has a corresponding WordPress attachment.
+ *
+ * Creates an attachment post and generates image metadata (thumbnails)
+ * if one does not already exist. This enables srcset/sizes support for
+ * images downloaded by the localizer.
+ *
+ * @param string $file_path Absolute path to the image file.
+ * @param string $file_url  Public URL of the image file.
+ * @param string $filename  The filename (e.g. "md5hash.jpg").
+ * @return int Attachment ID, or 0 on failure.
+ */
+function acf_blocks_ensure_localised_attachment( $file_path, $file_url, $filename ) {
+    // Check if an attachment already exists for this file.
+    $existing_id = acf_blocks_get_attachment_id_by_file( $file_path );
+    if ( $existing_id ) {
+        return $existing_id;
+    }
+
+    // Determine MIME type.
+    $mime_type = wp_check_filetype( $filename )['type'];
+    if ( ! $mime_type ) {
+        return 0;
+    }
+
+    // Build the relative path WordPress expects for _wp_attached_file meta.
+    $upload_dir = wp_upload_dir();
+    $relative_path = str_replace( trailingslashit( $upload_dir['basedir'] ), '', $file_path );
+
+    $attachment_data = array(
+        'post_title'     => sanitize_file_name( pathinfo( $filename, PATHINFO_FILENAME ) ),
+        'post_mime_type' => $mime_type,
+        'post_status'    => 'inherit',
+    );
+
+    $attachment_id = wp_insert_attachment( $attachment_data, $file_path );
+
+    if ( ! $attachment_id || is_wp_error( $attachment_id ) ) {
+        return 0;
+    }
+
+    // Set the correct relative path so attachment_url_to_postid() can find it.
+    update_post_meta( $attachment_id, '_wp_attached_file', $relative_path );
+
+    // Generate image sizes and metadata.
+    if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
+        require_once ABSPATH . 'wp-admin/includes/image.php';
+    }
+
+    $metadata = wp_generate_attachment_metadata( $attachment_id, $file_path );
+    if ( ! empty( $metadata ) ) {
+        wp_update_attachment_metadata( $attachment_id, $metadata );
+    }
+
+    return $attachment_id;
+}
+
+/**
+ * Find an existing attachment ID by its file path.
+ *
+ * @param string $file_path Absolute path to the image file.
+ * @return int Attachment ID, or 0 if not found.
+ */
+function acf_blocks_get_attachment_id_by_file( $file_path ) {
+    $upload_dir = wp_upload_dir();
+    $relative_path = str_replace( trailingslashit( $upload_dir['basedir'] ), '', $file_path );
+
+    global $wpdb;
+    $attachment_id = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' AND meta_value = %s LIMIT 1",
+            $relative_path
+        )
+    );
+
+    return $attachment_id ? (int) $attachment_id : 0;
 }
 
 /**
