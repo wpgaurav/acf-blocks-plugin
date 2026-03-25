@@ -100,8 +100,10 @@ function acf_blocks_get_repeater( $name, $sub_names, $block = array() ) {
         $count = isset( $data[ $name ] ) && ! is_array( $data[ $name ] ) ? intval( $data[ $name ] ) : 0;
         if ( $count < 1 ) {
             $field_names_list = array_keys( $fields );
-            while ( isset( $data[ $name . '_' . $count . '_' . $field_names_list[0] ] ) ) {
-                $count++;
+            if ( ! empty( $field_names_list ) ) {
+                while ( isset( $data[ $name . '_' . $count . '_' . $field_names_list[0] ] ) ) {
+                    $count++;
+                }
             }
         }
         if ( $count > 0 ) {
@@ -351,7 +353,7 @@ function acf_blocks_get_nested_repeater( $parent_key, $sub_names, $data ) {
 
     $field_names_list = array_keys( $fields );
     $count = isset( $data[ $parent_key ] ) && ! is_array( $data[ $parent_key ] ) ? intval( $data[ $parent_key ] ) : 0;
-    if ( $count < 1 ) {
+    if ( $count < 1 && ! empty( $field_names_list ) ) {
         $count = 0;
         while ( isset( $data[ $parent_key . '_' . $count . '_' . $field_names_list[0] ] ) ) {
             $count++;

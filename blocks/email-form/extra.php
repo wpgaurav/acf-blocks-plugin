@@ -38,6 +38,16 @@ if ( ! function_exists( 'acf_email_form_proxy_handler' ) ) {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	function acf_email_form_proxy_handler( $request ) {
+		// Rate limit: max 5 submissions per IP per minute to prevent abuse.
+		$ip        = sanitize_text_field( $_SERVER['REMOTE_ADDR'] ?? '' );
+		$rate_key  = 'acf_ef_' . md5( $ip );
+		$rate_data = get_transient( $rate_key );
+		$count     = $rate_data ? (int) $rate_data : 0;
+		if ( $count >= 5 ) {
+			return new WP_Error( 'rate_limited', __( 'Too many submissions. Please try again later.', 'acf-blocks' ), array( 'status' => 429 ) );
+		}
+		set_transient( $rate_key, $count + 1, MINUTE_IN_SECONDS );
+
 		$params      = $request->get_json_params();
 		$webhook_url = isset( $params['webhookUrl'] ) ? esc_url_raw( $params['webhookUrl'] ) : '';
 		$auth_header = isset( $params['webhookAuthHeaders'] ) ? sanitize_text_field( $params['webhookAuthHeaders'] ) : '';

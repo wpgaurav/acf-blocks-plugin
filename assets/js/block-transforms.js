@@ -16,9 +16,9 @@
      * Extract text content from HTML string
      */
     function stripHtml( html ) {
-        const tmp = document.createElement( 'div' );
-        tmp.innerHTML = html;
-        return tmp.textContent || tmp.innerText || '';
+        const parser = new DOMParser();
+        const doc = parser.parseFromString( html, 'text/html' );
+        return doc.body.textContent || '';
     }
 
     /**
