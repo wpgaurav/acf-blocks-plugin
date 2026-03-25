@@ -98,7 +98,7 @@ $block_id = isset( $block['id'] ) ? $block['id'] : wp_unique_id( 'video-' );
                 ?>
                 <?php if ( $is_preview || $autoplay ) : ?>
                     <iframe
-                        src="https://www.youtube.com/embed/<?php echo esc_attr( $youtube_id ); ?>?<?php echo ltrim( $params_string, '&' ); ?>"
+                        src="https://www.youtube.com/embed/<?php echo esc_attr( $youtube_id ); ?>?<?php echo esc_attr( ltrim( $params_string, '&' ) ); ?>"
                         frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen
@@ -138,7 +138,7 @@ $block_id = isset( $block['id'] ) ? $block['id'] : wp_unique_id( 'video-' );
                 ?>
                 <?php if ( $is_preview || $autoplay ) : ?>
                     <iframe
-                        src="https://player.vimeo.com/video/<?php echo esc_attr( $vimeo_id ); ?>?<?php echo ltrim( $params_string, '&' ); ?>"
+                        src="https://player.vimeo.com/video/<?php echo esc_attr( $vimeo_id ); ?>?<?php echo esc_attr( ltrim( $params_string, '&' ) ); ?>"
                         frameborder="0"
                         allow="autoplay; fullscreen; picture-in-picture"
                         allowfullscreen

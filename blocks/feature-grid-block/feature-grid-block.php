@@ -339,7 +339,7 @@ echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
                             $btn_class = 'acf-feature-button acf-button-' . esc_attr($btn_style);
                         ?>
                             <a href="<?php echo esc_url($btn['url']); ?>"
-                               class="<?php echo $btn_class; ?>"
+                               class="<?php echo esc_attr($btn_class); ?>"
                                <?php echo !empty($btn['target']) ? 'target="' . esc_attr($btn['target']) . '"' : ''; ?>>
                                 <?php echo esc_html($btn['title'] ?: 'Learn More'); ?>
                             </a>
@@ -366,7 +366,7 @@ echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
     ?>
         <div class="acf-feature-grid-footer">
             <a href="<?php echo esc_url($cta_button['url']); ?>"
-               class="<?php echo $cta_class; ?>"
+               class="<?php echo esc_attr($cta_class); ?>"
                <?php echo !empty($cta_button['target']) ? 'target="' . esc_attr($cta_button['target']) . '"' : ''; ?>>
                 <?php echo esc_html($cta_button['title'] ?: 'Get Started'); ?>
             </a>
