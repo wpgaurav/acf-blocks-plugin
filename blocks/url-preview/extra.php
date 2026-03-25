@@ -514,6 +514,61 @@ function acf_url_preview_get_image_dimensions( $url ) {
 }
 
 /**
+ * Generate a readable image filename from the source URL.
+ *
+ * Produces names like: example-com-getting-started.jpg
+ * Falls back to: example-com.jpg (if no path)
+ *
+ * @param string $url       The source URL (page or image URL).
+ * @param string $extension File extension without dot.
+ * @return string Sanitized filename.
+ */
+if ( ! function_exists( 'acf_url_preview_generate_image_filename' ) ) {
+function acf_url_preview_generate_image_filename( $url, $extension ) {
+    $parsed = wp_parse_url( $url );
+    $host   = isset( $parsed['host'] ) ? $parsed['host'] : 'image';
+    $path   = isset( $parsed['path'] ) ? $parsed['path'] : '';
+
+    // Convert domain: example.com → example-com
+    $domain_part = str_replace( '.', '-', preg_replace( '/^www\./', '', $host ) );
+
+    // Extract slug words from path (strip file extension, query, etc.)
+    $slug_part = '';
+    if ( ! empty( $path ) && '/' !== $path ) {
+        // Remove file extension from path (e.g. /image.jpg → /image)
+        $path = preg_replace( '/\.[a-zA-Z0-9]{2,5}$/', '', $path );
+        // Split on slashes and hyphens, keep non-empty segments
+        $segments = preg_split( '/[\\/\\-_]+/', trim( $path, '/' ), -1, PREG_SPLIT_NO_EMPTY );
+        // Filter out purely numeric or very short segments (IDs, etc.)
+        $words = array();
+        foreach ( $segments as $seg ) {
+            $seg = strtolower( $seg );
+            if ( strlen( $seg ) > 1 && ! is_numeric( $seg ) ) {
+                $words[] = $seg;
+            }
+            if ( count( $words ) >= 2 ) {
+                break;
+            }
+        }
+        if ( ! empty( $words ) ) {
+            $slug_part = implode( '-', $words );
+        }
+    }
+
+    // Assemble: domain-com-first-two-words.ext
+    $name = $domain_part;
+    if ( ! empty( $slug_part ) ) {
+        $name .= '-' . $slug_part;
+    }
+
+    // Sanitize the filename
+    $name = sanitize_file_name( $name . '.' . $extension );
+
+    return $name;
+}
+}
+
+/**
  * AJAX handler for importing external image to media library
  */
 if ( ! function_exists( 'acf_url_preview_import_image_handler' ) ) {
@@ -577,12 +632,14 @@ function acf_url_preview_import_image_handler() {
         wp_send_json_error( __( 'URL does not point to a valid image', 'acf-blocks' ) );
     }
 
-    // Generate filename
+    // Generate a readable filename from the source page URL.
+    // Format: domain-com-first-two-words-of-slug.ext
     $extension = str_replace( 'image/', '', $mime_type );
     if ( $extension === 'jpeg' ) {
         $extension = 'jpg';
     }
-    $filename = 'url-preview-' . time() . '-' . wp_generate_password( 6, false ) . '.' . $extension;
+
+    $filename = acf_url_preview_generate_image_filename( $image_url, $extension );
 
     $file = array(
         'name' => $filename,
