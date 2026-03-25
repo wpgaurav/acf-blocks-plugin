@@ -201,16 +201,25 @@ function acf_blocks_download_external_image( $url ) {
         $extension = 'jpg';
     }
 
-    $filename    = md5( $url ) . '.' . $extension;
+    // Build a readable filename: domain-com-slug-words.ext
+    // Keep the old MD5 name for backwards-compat lookups.
+    $md5_filename      = md5( $url ) . '.' . $extension;
+    $readable_filename = acf_blocks_readable_image_filename( $url, $extension );
+
+    // Check if already downloaded under either name (old MD5 or new readable).
+    foreach ( array( $readable_filename, $md5_filename ) as $candidate ) {
+        $candidate_path = $dir_info['dir'] . $candidate;
+        $candidate_url  = $dir_info['url'] . $candidate;
+
+        if ( file_exists( $candidate_path ) ) {
+            acf_blocks_ensure_localised_attachment( $candidate_path, $candidate_url, $candidate );
+            return $candidate_url;
+        }
+    }
+
+    $filename    = $readable_filename;
     $target_path = $dir_info['dir'] . $filename;
     $target_url  = $dir_info['url'] . $filename;
-
-    // Already downloaded — return cached path.
-    if ( file_exists( $target_path ) ) {
-        // Ensure a WP attachment exists for srcset support.
-        acf_blocks_ensure_localised_attachment( $target_path, $target_url, $filename );
-        return $target_url;
-    }
 
     // WordPress download helper.
     if ( ! function_exists( 'download_url' ) ) {
@@ -330,6 +339,57 @@ function acf_blocks_get_attachment_id_by_file( $file_path ) {
     );
 
     return $attachment_id ? (int) $attachment_id : 0;
+}
+
+/**
+ * Generate a readable image filename from a URL.
+ *
+ * Produces names like: example-com-getting-started.jpg
+ * A short hash suffix is appended to avoid collisions between
+ * different images on the same domain/path.
+ *
+ * @param string $url       The source image URL.
+ * @param string $extension File extension without dot.
+ * @return string Sanitized filename.
+ */
+function acf_blocks_readable_image_filename( $url, $extension ) {
+    $parsed = wp_parse_url( $url );
+    $host   = isset( $parsed['host'] ) ? $parsed['host'] : 'image';
+    $path   = isset( $parsed['path'] ) ? $parsed['path'] : '';
+
+    // Convert domain: example.com → example-com
+    $domain_part = str_replace( '.', '-', preg_replace( '/^www\./', '', $host ) );
+
+    // Extract slug words from path.
+    $slug_part = '';
+    if ( ! empty( $path ) && '/' !== $path ) {
+        // Remove file extension from path.
+        $clean_path = preg_replace( '/\.[a-zA-Z0-9]{2,5}$/', '', $path );
+        $segments   = preg_split( '/[\\/\\-_]+/', trim( $clean_path, '/' ), -1, PREG_SPLIT_NO_EMPTY );
+        $words      = array();
+        foreach ( $segments as $seg ) {
+            $seg = strtolower( $seg );
+            if ( strlen( $seg ) > 1 && ! is_numeric( $seg ) ) {
+                $words[] = $seg;
+            }
+            if ( count( $words ) >= 2 ) {
+                break;
+            }
+        }
+        if ( ! empty( $words ) ) {
+            $slug_part = implode( '-', $words );
+        }
+    }
+
+    $name = $domain_part;
+    if ( ! empty( $slug_part ) ) {
+        $name .= '-' . $slug_part;
+    }
+
+    // Append a short hash to ensure uniqueness per URL.
+    $name .= '-' . substr( md5( $url ), 0, 6 );
+
+    return sanitize_file_name( $name . '.' . $extension );
 }
 
 /**
