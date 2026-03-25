@@ -78,7 +78,7 @@ ob_start();
             border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
             border: 1px solid #e0e0e0;
-            padding: 2rem;
+            padding: max(2rem,32px);
         }
         #<?php echo esc_attr($block_id); ?> .acf-feature-item:hover {
             transform: translateY(-5px);
@@ -140,20 +140,20 @@ ob_start();
         }
         <?php elseif ($style_variation === 'minimal') : ?>
         #<?php echo esc_attr($block_id); ?> {
-            padding: 2rem 0;
+            padding: max(2rem,32px) 0;
         }
         #<?php echo esc_attr($block_id); ?> .acf-feature-item {
-            padding: 1rem 0;
+            padding: max(1rem,16px) 0;
             border-bottom: 1px solid #e0e0e0;
         }
         #<?php echo esc_attr($block_id); ?> .acf-feature-item:hover {
             background: transparent;
         }
         #<?php echo esc_attr($block_id); ?> .acf-feature-icon {
-            font-size: 2rem;
+            font-size: max(2rem,32px);
         }
         #<?php echo esc_attr($block_id); ?> .acf-feature-title {
-            font-size: 1.25rem;
+            font-size: max(1.25rem,20px);
         }
         #<?php echo esc_attr($block_id); ?> .acf-button-primary {
             background: transparent;
@@ -181,7 +181,7 @@ ob_start();
             border: 3px solid #1a1a1a;
             border-radius: 0;
             background: #fff;
-            padding: 2rem;
+            padding: max(2rem,32px);
         }
         #<?php echo esc_attr($block_id); ?> .acf-feature-item:hover {
             box-shadow: 6px 6px 0 #1a1a1a;
@@ -213,7 +213,7 @@ ob_start();
         #<?php echo esc_attr($block_id); ?> .acf-feature-item {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 16px;
-            padding: 2rem;
+            padding: max(2rem,32px);
             color: #fff;
         }
         #<?php echo esc_attr($block_id); ?> .acf-feature-item:hover {

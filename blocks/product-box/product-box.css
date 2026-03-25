@@ -31,7 +31,7 @@
 :is(.acf-product-box,.wp-block-acf-product-box) .acf-product-box__content,.acf-product-box__content{display:flex;flex-direction:column;gap:10px;overflow-wrap:anywhere}
 
 /* --- Title --- */
-:is(.acf-product-box,.wp-block-acf-product-box) .acf-product-box__title,.acf-product-box__title{margin:0 0 2px 0;padding:0;font-size:1.15rem;font-weight:700;line-height:1.4;color:var(--pb-text);border:none;background:0 0;text-wrap:balance}
+:is(.acf-product-box,.wp-block-acf-product-box) .acf-product-box__title,.acf-product-box__title{margin:0 0 2px 0;padding:0;font-size:max(1.15rem,18.4px);font-weight:700;line-height:1.4;color:var(--pb-text);border:none;background:0 0;text-wrap:balance}
 :is(.acf-product-box,.wp-block-acf-product-box) .acf-product-box__title a,.acf-product-box__title a{color:var(--pb-title-link);text-decoration:none;transition:color .2s ease;border:none;background:0 0;box-shadow:none}
 :is(.acf-product-box,.wp-block-acf-product-box) .acf-product-box__title a:is(:focus,:hover),.acf-product-box__title a:is(:focus,:hover){color:var(--pb-title-link-hover);text-decoration:underline}
 
@@ -47,7 +47,7 @@
 
 /* --- Features List --- */
 :is(.acf-product-box,.wp-block-acf-product-box) .acf-product-box__features,.acf-product-box__features{list-style:none!important;margin:6px 0!important;padding:0!important;display:flex;flex-direction:column;gap:5px}
-:is(.acf-product-box,.wp-block-acf-product-box) .acf-product-box__features li,.acf-product-box__features li{position:relative;padding-left:18px!important;font-size:.925rem;line-height:1.5;color:var(--pb-text);margin:0!important;list-style:none!important}
+:is(.acf-product-box,.wp-block-acf-product-box) .acf-product-box__features li,.acf-product-box__features li{position:relative;padding-left:18px!important;font-size:.max(925rem,14800px);line-height:1.5;color:var(--pb-text);margin:0!important;list-style:none!important}
 :is(.acf-product-box,.wp-block-acf-product-box) .acf-product-box__features li::before,.acf-product-box__features li::before{content:''!important;position:absolute!important;left:0!important;top:8px!important;width:6px!important;height:6px!important;background:var(--pb-feature-bullet)!important;border-radius:50%!important}
 
 /* --- Bottom Section (pricing + buttons) --- */
@@ -57,11 +57,11 @@
 :is(.acf-product-box,.wp-block-acf-product-box) .acf-product-box__pricing,.acf-product-box__pricing{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0;padding:0}
 :is(.acf-product-box,.wp-block-acf-product-box) .acf-product-box__original-price,.acf-product-box__original-price{font-size:14px;color:var(--pb-price-original);text-decoration:line-through;margin:0;padding:0}
 :is(.acf-product-box,.wp-block-acf-product-box) .acf-product-box__discount,.acf-product-box__discount{display:inline-flex;align-items:center;padding:2px 8px;font-size:11px;font-weight:700;color:var(--pb-discount-text);background:var(--pb-discount-bg);border-radius:4px;margin:0;line-height:1.4}
-:is(.acf-product-box,.wp-block-acf-product-box) .acf-product-box__current-price,.acf-product-box__current-price{font-size:1.6rem;font-weight:800;color:var(--pb-price-current);letter-spacing:-.5px;margin:0;padding:0;line-height:1.2}
+:is(.acf-product-box,.wp-block-acf-product-box) .acf-product-box__current-price,.acf-product-box__current-price{font-size:max(1.6rem,25.6px);font-weight:800;color:var(--pb-price-current);letter-spacing:-.5px;margin:0;padding:0;line-height:1.2}
 :is(.acf-product-box,.wp-block-acf-product-box) .acf-product-box__price-note,.acf-product-box__price-note{font-size:13px;color:var(--pb-text-muted);margin-top:-4px;margin-bottom:0;padding:0}
 
 /* --- Description --- */
-:is(.acf-product-box,.wp-block-acf-product-box) .acf-product-box__description,.acf-product-box__description{font-size:.925rem;line-height:1.6;color:var(--pb-text-muted)}
+:is(.acf-product-box,.wp-block-acf-product-box) .acf-product-box__description,.acf-product-box__description{font-size:.max(925rem,14800px);line-height:1.6;color:var(--pb-text-muted)}
 .acf-product-box__description p{margin:0 0 8px 0;padding:0}
 .acf-product-box__description p:last-child{margin-bottom:0}
 
@@ -108,7 +108,7 @@
 
 @container product-box (max-width:539px){
 .acf-product-box__badge{top:8px!important;right:8px!important;padding:4px 8px;font-size:10px}
-.acf-product-box__current-price{font-size:1.4rem}
+.acf-product-box__current-price{font-size:max(1.4rem,22.4px)}
 .acf-product-box__btn{padding:10px 16px;font-size:13px;width:100%}
 .acf-product-box__buttons{flex-direction:column}
 }

@@ -123,7 +123,7 @@ if (strpos($className, 'is-style-dark') !== false) {
             transition: all 0.3s ease;
         }
         #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-content {
-            padding: 1.5rem;
+            padding: max(1.5rem,24px);
         }
         #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button {
             border-radius: 50px;
@@ -146,8 +146,8 @@ if (strpos($className, 'is-style-dark') !== false) {
             border-radius: 0;
             box-shadow: none;
             border-bottom: 1px solid #e0e0e0;
-            padding-bottom: 1rem;
-            margin-bottom: 1rem;
+            padding-bottom: max(1rem,16px);
+            margin-bottom: max(1rem,16px);
         }
         #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item:hover {
             box-shadow: none;

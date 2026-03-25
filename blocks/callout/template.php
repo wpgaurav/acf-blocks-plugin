@@ -132,8 +132,8 @@ $inner_blocks_template = [
         }
         #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-list li {
             position: relative;
-            padding-left: 2rem;
-            margin-bottom: 0.75rem;
+            padding-left: max(2rem,32px);
+            margin-bottom: max(0.75rem,12px);
         }
         #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-list li::before {
             content: "→";
@@ -173,8 +173,8 @@ $inner_blocks_template = [
         }
         #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-list li {
             position: relative;
-            padding-left: 2rem;
-            margin-bottom: 0.75rem;
+            padding-left: max(2rem,32px);
+            margin-bottom: max(0.75rem,12px);
         }
         #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-list li::before {
             content: "→";
@@ -214,8 +214,8 @@ $inner_blocks_template = [
         }
         #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-list li {
             position: relative;
-            padding-left: 2rem;
-            margin-bottom: 0.75rem;
+            padding-left: max(2rem,32px);
+            margin-bottom: max(0.75rem,12px);
         }
         #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-list li::before {
             content: "→";
