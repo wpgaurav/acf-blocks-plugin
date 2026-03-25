@@ -100,8 +100,10 @@ function acf_blocks_get_repeater( $name, $sub_names, $block = array() ) {
         $count = isset( $data[ $name ] ) && ! is_array( $data[ $name ] ) ? intval( $data[ $name ] ) : 0;
         if ( $count < 1 ) {
             $field_names_list = array_keys( $fields );
-            while ( isset( $data[ $name . '_' . $count . '_' . $field_names_list[0] ] ) ) {
-                $count++;
+            if ( ! empty( $field_names_list ) ) {
+                while ( isset( $data[ $name . '_' . $count . '_' . $field_names_list[0] ] ) ) {
+                    $count++;
+                }
             }
         }
         if ( $count > 0 ) {
@@ -351,7 +353,7 @@ function acf_blocks_get_nested_repeater( $parent_key, $sub_names, $data ) {
 
     $field_names_list = array_keys( $fields );
     $count = isset( $data[ $parent_key ] ) && ! is_array( $data[ $parent_key ] ) ? intval( $data[ $parent_key ] ) : 0;
-    if ( $count < 1 ) {
+    if ( $count < 1 && ! empty( $field_names_list ) ) {
         $count = 0;
         while ( isset( $data[ $parent_key . '_' . $count . '_' . $field_names_list[0] ] ) ) {
             $count++;
@@ -580,22 +582,17 @@ function acf_blocks_find_repeater_fields( $block_name ) {
  * @return array Array of repeater field definitions.
  */
 function acf_blocks_find_repeater_fields_from_json( $block_name ) {
-    $slug = str_replace( 'acf/', '', $block_name );
-    $blocks_dir = ACF_BLOCKS_PLUGIN_DIR . 'blocks/';
+    // Use the cached block metadata to avoid redundant glob/JSON reads.
+    $blocks = function_exists( 'acf_blocks_get_block_metadata_cache' )
+        ? acf_blocks_get_block_metadata_cache()
+        : array();
 
-    $dirs = glob( $blocks_dir . '*', GLOB_ONLYDIR );
-    foreach ( $dirs as $dir ) {
-        $block_json = $dir . '/block.json';
-        if ( ! file_exists( $block_json ) ) {
-            continue;
-        }
-        $meta = json_decode( file_get_contents( $block_json ), true );
-        $name = $meta['name'] ?? '';
-        if ( $name !== $block_name ) {
+    foreach ( $blocks as $block_info ) {
+        if ( ( $block_info['metadata']['name'] ?? '' ) !== $block_name ) {
             continue;
         }
 
-        $data_file = $dir . '/block-data.json';
+        $data_file = $block_info['folder'] . 'block-data.json';
         if ( ! file_exists( $data_file ) ) {
             return array();
         }

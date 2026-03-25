@@ -12,7 +12,8 @@ $columns = acf_blocks_get_field('pd_columns', $block) ?: 2;
 $show_excerpt = acf_blocks_get_field('pd_show_excerpt', $block) ?: false;
 $show_date = acf_blocks_get_field('pd_show_date', $block) ?: false;
 $show_author = acf_blocks_get_field('pd_show_author', $block) ?: false;
-$title_tag = acf_blocks_get_field('pd_title_tag', $block) ?: 'h3';
+$title_tag_raw = acf_blocks_get_field('pd_title_tag', $block);
+$title_tag = in_array($title_tag_raw, ['p', 'h2', 'h3', 'h4', 'h5', 'h6'], true) ? $title_tag_raw : 'h3';
 $custom_class = acf_blocks_get_field('pd_custom_class', $block) ?: '';
 $show_read_more = acf_blocks_get_field('pd_show_read_more', $block);
 $read_more_text = acf_blocks_get_field('pd_read_more_text', $block) ?: 'Read More';
@@ -209,7 +210,7 @@ if (strpos($className, 'is-style-dark') !== false) {
 
                     <?php if ($show_date): ?>
                         <span class="acf-post-display-date">
-                            <?php echo get_the_date('', $post->ID); ?>
+                            <?php echo esc_html(get_the_date('', $post->ID)); ?>
                         </span>
                     <?php endif; ?>
 
@@ -246,7 +247,7 @@ if (strpos($className, 'is-style-dark') !== false) {
                             <div class="acf-post-display-meta">
                                 <?php if ($show_date): ?>
                                     <span class="acf-post-display-date">
-                                        <?php echo get_the_date('', $post->ID); ?>
+                                        <?php echo esc_html(get_the_date('', $post->ID)); ?>
                                     </span>
                                 <?php endif; ?>
 
@@ -298,7 +299,7 @@ if (strpos($className, 'is-style-dark') !== false) {
                             <div class="acf-post-display-meta">
                                 <?php if ($show_date): ?>
                                     <span class="acf-post-display-date">
-                                        <?php echo get_the_date('', $post->ID); ?>
+                                        <?php echo esc_html(get_the_date('', $post->ID)); ?>
                                     </span>
                                 <?php endif; ?>
 

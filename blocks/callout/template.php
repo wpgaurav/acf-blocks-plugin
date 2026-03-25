@@ -239,7 +239,7 @@ $inner_blocks_template = [
     <?php endif; ?>
     <?php if (!empty($iconImage) && $labelPosition === 'top') : ?>
         <div class="acf-callout-icon-image">
-            <img src="<?php echo esc_url($iconImage); ?>" alt=""<?php if ( $iconSrcset ) : ?> srcset="<?php echo esc_attr($iconSrcset); ?>" sizes="<?php echo esc_attr($iconSizes); ?>"<?php endif; ?> loading="lazy" />
+            <img src="<?php echo esc_url($iconImage); ?>" alt=""<?php if ( $iconSrcset ) : ?> srcset="<?php echo esc_attr($iconSrcset); ?>" sizes="<?php echo esc_attr($iconSizes); ?>"<?php endif; ?> loading="lazy" decoding="async" />
         </div>
     <?php endif; ?>
 

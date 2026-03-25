@@ -225,6 +225,21 @@ function acf_url_preview_fetch_handler() {
         wp_send_json_error( __( 'Invalid URL', 'acf-blocks' ) );
     }
 
+    // Only allow http/https schemes to prevent SSRF.
+    $scheme = wp_parse_url( $url, PHP_URL_SCHEME );
+    if ( ! in_array( $scheme, array( 'http', 'https' ), true ) ) {
+        wp_send_json_error( __( 'Only HTTP and HTTPS URLs are allowed.', 'acf-blocks' ) );
+    }
+
+    // Block requests to private/internal IP ranges to prevent SSRF.
+    $host = wp_parse_url( $url, PHP_URL_HOST );
+    if ( $host ) {
+        $ip = gethostbyname( $host );
+        if ( $ip && $ip !== $host && filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) === false ) {
+            wp_send_json_error( __( 'URLs pointing to private or reserved IP ranges are not allowed.', 'acf-blocks' ) );
+        }
+    }
+
     // Check for cached result (1-week cache)
     $cache_key = 'acf_url_preview_' . md5( $url );
     $cached = get_transient( $cache_key );

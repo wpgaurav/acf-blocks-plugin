@@ -12,6 +12,59 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Get cached block metadata from all block folders.
+ *
+ * Scans the blocks directory once per request and caches the results,
+ * avoiding redundant glob() calls and block.json reads across the
+ * multiple hooks that need this data.
+ *
+ * @return array[] Array of block info arrays with keys: folder, folder_name, metadata.
+ */
+function acf_blocks_get_block_metadata_cache() {
+    static $cache = null;
+
+    if ( null !== $cache ) {
+        return $cache;
+    }
+
+    $cache      = array();
+    $blocks_dir = ACF_BLOCKS_PLUGIN_DIR . 'blocks/';
+
+    if ( ! is_dir( $blocks_dir ) ) {
+        return $cache;
+    }
+
+    $block_folders = glob( $blocks_dir . '*', GLOB_ONLYDIR );
+
+    if ( ! $block_folders ) {
+        return $cache;
+    }
+
+    foreach ( $block_folders as $block_folder ) {
+        $block_folder = trailingslashit( $block_folder );
+        $block_json   = $block_folder . 'block.json';
+
+        if ( ! file_exists( $block_json ) || ! is_readable( $block_json ) ) {
+            continue;
+        }
+
+        $metadata = json_decode( file_get_contents( $block_json ), true );
+
+        if ( empty( $metadata['name'] ) ) {
+            continue;
+        }
+
+        $cache[] = array(
+            'folder'      => $block_folder,
+            'folder_name' => basename( rtrim( $block_folder, '/' ) ),
+            'metadata'    => $metadata,
+        );
+    }
+
+    return $cache;
+}
+
+/**
  * Register custom block category for ACF Blocks.
  *
  * @param array $categories Existing block categories.
@@ -38,35 +91,12 @@ add_filter( 'block_categories_all', 'acf_blocks_register_category', 10, 1 );
  * and frontend when should_load_separate_assets() is true.
  */
 function acf_blocks_register_styles() {
-    $blocks_dir = ACF_BLOCKS_PLUGIN_DIR . 'blocks/';
     $blocks_url = ACF_BLOCKS_PLUGIN_URL . 'blocks/';
 
-    if ( ! is_dir( $blocks_dir ) ) {
-        return;
-    }
-
-    $block_folders = glob( $blocks_dir . '*', GLOB_ONLYDIR );
-
-    if ( ! $block_folders ) {
-        return;
-    }
-
-    foreach ( $block_folders as $block_folder ) {
-        $block_folder = trailingslashit( $block_folder );
-        $block_json   = $block_folder . 'block.json';
-
-        if ( ! file_exists( $block_json ) || ! is_readable( $block_json ) ) {
-            continue;
-        }
-
-        $metadata = json_decode( file_get_contents( $block_json ), true );
-
-        if ( empty( $metadata['name'] ) ) {
-            continue;
-        }
-
-        // Get the folder name for building the CSS path
-        $folder_name = basename( rtrim( $block_folder, '/' ) );
+    foreach ( acf_blocks_get_block_metadata_cache() as $block_info ) {
+        $metadata    = $block_info['metadata'];
+        $block_folder = $block_info['folder'];
+        $folder_name = $block_info['folder_name'];
 
         // Check for style property in block.json
         if ( ! empty( $metadata['style'] ) && is_string( $metadata['style'] ) ) {
@@ -102,57 +132,40 @@ function acf_blocks_load_blocks() {
         return;
     }
 
-    $blocks_dir = ACF_BLOCKS_PLUGIN_DIR . 'blocks/';
-
-    if ( ! is_dir( $blocks_dir ) ) {
-        return;
-    }
-
-    $block_folders = glob( $blocks_dir . '*', GLOB_ONLYDIR );
-
-    if ( ! $block_folders ) {
-        return;
-    }
-
-    foreach ( $block_folders as $block_folder ) {
-        $block_folder = trailingslashit( $block_folder );
-        $block_json   = $block_folder . 'block.json';
+    foreach ( acf_blocks_get_block_metadata_cache() as $block_info ) {
+        $block_folder = $block_info['folder'];
+        $metadata     = $block_info['metadata'];
         $extra_php    = $block_folder . 'extra.php';
+        $args         = array();
 
-        if ( file_exists( $block_json ) && is_readable( $block_json ) ) {
-            // Read block.json to get the block name for style handle
-            $metadata = json_decode( file_get_contents( $block_json ), true );
-            $args     = array();
-
-            // If we pre-registered a style, use the handle instead of file path
-            if ( ! empty( $metadata['name'] ) && ! empty( $metadata['style'] ) ) {
-                $handle = str_replace( '/', '-', $metadata['name'] ) . '-style';
-                if ( wp_style_is( $handle, 'registered' ) ) {
-                    $args['style'] = $handle;
-                }
+        // If we pre-registered a style, use the handle instead of file path
+        if ( ! empty( $metadata['style'] ) ) {
+            $handle = str_replace( '/', '-', $metadata['name'] ) . '-style';
+            if ( wp_style_is( $handle, 'registered' ) ) {
+                $args['style'] = $handle;
             }
+        }
 
-            // Register via block.json metadata with style override
-            $result = register_block_type( $block_folder, $args );
+        // Register via block.json metadata with style override
+        $result = register_block_type( $block_folder, $args );
 
-            if ( is_wp_error( $result ) ) {
-                if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                    error_log( sprintf(
-                        '[ACF Blocks] Failed to register block in "%s": %s',
-                        $block_folder,
-                        $result->get_error_message()
-                    ) );
-                }
-                continue;
+        if ( is_wp_error( $result ) ) {
+            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+                error_log( sprintf(
+                    '[ACF Blocks] Failed to register block in "%s": %s',
+                    $block_folder,
+                    $result->get_error_message()
+                ) );
             }
+            continue;
+        }
 
-            // Register ACF field groups from JSON files
-            acf_blocks_register_field_groups( $block_folder );
+        // Register ACF field groups from JSON files
+        acf_blocks_register_field_groups( $block_folder );
 
-            // Load extra.php if present
-            if ( file_exists( $extra_php ) && is_readable( $extra_php ) ) {
-                require_once $extra_php;
-            }
+        // Load extra.php if present
+        if ( file_exists( $extra_php ) && is_readable( $extra_php ) ) {
+            require_once $extra_php;
         }
     }
 }
@@ -320,34 +333,12 @@ function acf_blocks_enqueue_editor_styles() {
         return;
     }
 
-    $blocks_dir = ACF_BLOCKS_PLUGIN_DIR . 'blocks/';
     $blocks_url = ACF_BLOCKS_PLUGIN_URL . 'blocks/';
 
-    if ( ! is_dir( $blocks_dir ) ) {
-        return;
-    }
-
-    $block_folders = glob( $blocks_dir . '*', GLOB_ONLYDIR );
-
-    if ( ! $block_folders ) {
-        return;
-    }
-
-    foreach ( $block_folders as $block_folder ) {
-        $block_folder = trailingslashit( $block_folder );
-        $block_json   = $block_folder . 'block.json';
-
-        if ( ! file_exists( $block_json ) || ! is_readable( $block_json ) ) {
-            continue;
-        }
-
-        $metadata = json_decode( file_get_contents( $block_json ), true );
-
-        if ( empty( $metadata['name'] ) ) {
-            continue;
-        }
-
-        $folder_name = basename( rtrim( $block_folder, '/' ) );
+    foreach ( acf_blocks_get_block_metadata_cache() as $block_info ) {
+        $metadata     = $block_info['metadata'];
+        $block_folder = $block_info['folder'];
+        $folder_name  = $block_info['folder_name'];
 
         // Check for style property in block.json
         if ( ! empty( $metadata['style'] ) && is_string( $metadata['style'] ) ) {
@@ -399,36 +390,12 @@ add_action( 'enqueue_block_assets', 'acf_blocks_enqueue_editor_styles', 999999 )
  * any blocks are inserted, providing consistent preview styling.
  */
 function acf_blocks_add_editor_styles() {
-    $blocks_dir = ACF_BLOCKS_PLUGIN_DIR . 'blocks/';
     $blocks_url = ACF_BLOCKS_PLUGIN_URL . 'blocks/';
 
-    if ( ! is_dir( $blocks_dir ) ) {
-        return;
-    }
-
-    $block_folders = glob( $blocks_dir . '*', GLOB_ONLYDIR );
-
-    if ( ! $block_folders ) {
-        return;
-    }
-
-    $style_urls = array();
-
-    foreach ( $block_folders as $block_folder ) {
-        $block_folder = trailingslashit( $block_folder );
-        $block_json   = $block_folder . 'block.json';
-
-        if ( ! file_exists( $block_json ) || ! is_readable( $block_json ) ) {
-            continue;
-        }
-
-        $metadata = json_decode( file_get_contents( $block_json ), true );
-
-        if ( empty( $metadata['name'] ) ) {
-            continue;
-        }
-
-        $folder_name = basename( rtrim( $block_folder, '/' ) );
+    foreach ( acf_blocks_get_block_metadata_cache() as $block_info ) {
+        $metadata     = $block_info['metadata'];
+        $block_folder = $block_info['folder'];
+        $folder_name  = $block_info['folder_name'];
 
         // Check for style property in block.json
         if ( ! empty( $metadata['style'] ) && is_string( $metadata['style'] ) ) {
@@ -438,15 +405,10 @@ function acf_blocks_add_editor_styles() {
                 $css_url  = $blocks_url . $folder_name . '/' . $css_file;
 
                 if ( file_exists( $css_path ) ) {
-                    $style_urls[] = $css_url;
+                    add_editor_style( $css_url );
                 }
             }
         }
-    }
-
-    // Add all styles to the editor
-    foreach ( $style_urls as $url ) {
-        add_editor_style( $url );
     }
 }
 add_action( 'after_setup_theme', 'acf_blocks_add_editor_styles', 999 );
@@ -461,33 +423,11 @@ add_action( 'after_setup_theme', 'acf_blocks_add_editor_styles', 999 );
  * @return array Modified editor settings.
  */
 function acf_blocks_inject_editor_styles( $editor_settings ) {
-    $blocks_dir = ACF_BLOCKS_PLUGIN_DIR . 'blocks/';
-
-    if ( ! is_dir( $blocks_dir ) ) {
-        return $editor_settings;
-    }
-
-    $block_folders = glob( $blocks_dir . '*', GLOB_ONLYDIR );
-
-    if ( ! $block_folders ) {
-        return $editor_settings;
-    }
-
     $combined_css = '';
 
-    foreach ( $block_folders as $block_folder ) {
-        $block_folder = trailingslashit( $block_folder );
-        $block_json   = $block_folder . 'block.json';
-
-        if ( ! file_exists( $block_json ) || ! is_readable( $block_json ) ) {
-            continue;
-        }
-
-        $metadata = json_decode( file_get_contents( $block_json ), true );
-
-        if ( empty( $metadata['name'] ) ) {
-            continue;
-        }
+    foreach ( acf_blocks_get_block_metadata_cache() as $block_info ) {
+        $metadata     = $block_info['metadata'];
+        $block_folder = $block_info['folder'];
 
         // Check for style property in block.json
         if ( ! empty( $metadata['style'] ) && is_string( $metadata['style'] ) ) {
