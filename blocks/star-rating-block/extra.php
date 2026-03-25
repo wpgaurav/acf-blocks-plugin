@@ -40,8 +40,24 @@ if ( ! function_exists( 'acf_star_rating_handle_submission' ) ) {
             wp_send_json_error( array( 'message' => __( 'Content not found.', 'acf-blocks' ) ), 404 );
         }
 
-        // Rate limiting: one vote per IP per block per day
-        $ip = sanitize_text_field( $_SERVER['REMOTE_ADDR'] ?? '' );
+        // Rate limiting: one vote per IP per block per day.
+        // Check forwarded headers for clients behind proxies/CDNs,
+        // falling back to REMOTE_ADDR. Only trust the leftmost (client) IP.
+        $ip = '';
+        $forwarded_headers = array( 'HTTP_CF_CONNECTING_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP' );
+        foreach ( $forwarded_headers as $header ) {
+            if ( ! empty( $_SERVER[ $header ] ) ) {
+                $parts = explode( ',', $_SERVER[ $header ] );
+                $candidate = trim( $parts[0] );
+                if ( filter_var( $candidate, FILTER_VALIDATE_IP ) ) {
+                    $ip = $candidate;
+                    break;
+                }
+            }
+        }
+        if ( empty( $ip ) ) {
+            $ip = sanitize_text_field( $_SERVER['REMOTE_ADDR'] ?? '' );
+        }
         $rate_key = 'acf_sr_' . md5( $ip . $post_id . $block_id );
         if ( get_transient( $rate_key ) ) {
             wp_send_json_error( array( 'message' => __( 'You have already submitted a rating.', 'acf-blocks' ) ), 429 );
