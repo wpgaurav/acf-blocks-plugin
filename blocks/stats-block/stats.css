@@ -4,7 +4,7 @@
 .acf-stats-block{--st-bg:#ffffff;--st-border:#e2e8f0;--st-text:#1e293b;--st-text-muted:#64748b;--st-number:var(--wp--preset--color--primary,#4f46e5);--st-icon:var(--wp--preset--color--primary,#4f46e5);--st-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);--st-shadow-hover:0 8px 24px -4px rgba(0,0,0,0.1),0 4px 8px -4px rgba(0,0,0,0.06);--st-divider:#e2e8f0}
 
 /* --- Dark Mode --- */
-:is(.dark,.flavor-dark,.is-dark-theme,[data-theme=dark]) .acf-stats-block{--st-bg:#1e293b;--st-border:#334155;--st-text:#f1f5f9;--st-text-muted:#94a3b8;--st-number:#818cf8;--st-icon:#818cf8;--st-shadow:0 1px 3px rgba(0,0,0,0.2),0 1px 2px rgba(0,0,0,0.15);--st-shadow-hover:0 8px 24px -4px rgba(0,0,0,0.35),0 4px 8px -4px rgba(0,0,0,0.2);--st-divider:#334155}
+:is(.dark,.is-dark-theme,[data-theme=dark]) .acf-stats-block{--st-bg:#1e293b;--st-border:#334155;--st-text:#f1f5f9;--st-text-muted:#94a3b8;--st-number:#818cf8;--st-icon:#818cf8;--st-shadow:0 1px 3px rgba(0,0,0,0.2),0 1px 2px rgba(0,0,0,0.15);--st-shadow-hover:0 8px 24px -4px rgba(0,0,0,0.35),0 4px 8px -4px rgba(0,0,0,0.2);--st-divider:#334155}
 
 /* --- Block Container --- */
 .acf-stats-block{padding:max(2rem,32px) 0;display:flex;gap:max(1.5rem,24px);margin-top:max(0.5rem,8px);margin-bottom:max(0.5rem,8px);color:var(--st-text)}
