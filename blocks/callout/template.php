@@ -115,6 +115,14 @@ $inner_blocks_template = [
         #<?php echo esc_attr($block_id); ?>.acf-callout [class*="rating"] {
             color: #d4a600;
         }
+        :is(.dark,.flavor-dark,.is-dark-theme,[data-theme=dark]) #<?php echo esc_attr($block_id); ?>.acf-callout {
+            background-color: #2a2520;
+            border-color: #3d3020;
+            color: #e0d8c8;
+        }
+        :is(.dark,.flavor-dark,.is-dark-theme,[data-theme=dark]) #<?php echo esc_attr($block_id); ?>.acf-callout .acf-callout-label {
+            color: #d4a600;
+        }
     <?php $css = ob_get_clean(); echo '<style>' . acf_blocks_minify_css( $css ) . '</style>'; ?>
     <?php elseif ($style_variation === 'dashed-light'): ?>
     <?php ob_start(); ?>
@@ -152,6 +160,17 @@ $inner_blocks_template = [
         #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-button__link:hover {
             transform: translateY(2px);
             box-shadow: 0 2px 0 #ccb42a;
+        }
+        :is(.dark,.flavor-dark,.is-dark-theme,[data-theme=dark]) #<?php echo esc_attr($block_id); ?>.acf-callout {
+            background-color: #1e1e1e;
+            border-color: #555;
+            color: #e0e0e0;
+        }
+        :is(.dark,.flavor-dark,.is-dark-theme,[data-theme=dark]) #<?php echo esc_attr($block_id); ?>.acf-callout .acf-callout-label {
+            color: #8bc34a;
+        }
+        :is(.dark,.flavor-dark,.is-dark-theme,[data-theme=dark]) #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-list li::before {
+            color: #8bc34a;
         }
     <?php $css = ob_get_clean(); echo '<style>' . acf_blocks_minify_css( $css ) . '</style>'; ?>
     <?php elseif ($style_variation === 'dashed-dark'): ?>
@@ -234,6 +253,17 @@ $inner_blocks_template = [
         #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-button__link:hover {
             transform: translateY(2px);
             box-shadow: 0 2px 0 #ccb42a;
+        }
+        :is(.dark,.flavor-dark,.is-dark-theme,[data-theme=dark]) #<?php echo esc_attr($block_id); ?>.acf-callout {
+            background-color: #1a2e1a;
+            border-color: #2d6e2d;
+            color: #c8e8c8;
+        }
+        :is(.dark,.flavor-dark,.is-dark-theme,[data-theme=dark]) #<?php echo esc_attr($block_id); ?>.acf-callout .acf-callout-label {
+            color: #4caf50;
+        }
+        :is(.dark,.flavor-dark,.is-dark-theme,[data-theme=dark]) #<?php echo esc_attr($block_id); ?>.acf-callout .wp-block-list li::before {
+            color: #4caf50;
         }
     <?php $css = ob_get_clean(); echo '<style>' . acf_blocks_minify_css( $css ) . '</style>'; ?>
     <?php endif; ?>
