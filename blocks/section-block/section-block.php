@@ -106,11 +106,19 @@ $needs_wrapper = $has_overlay || $has_video;
     <?php endif; ?>
 
     <div class="acf-section-content">
-        <InnerBlocks templateLock="false" />
+        <?php if ( $is_preview ) : ?>
+            <InnerBlocks templateLock="false" />
+        <?php else : ?>
+            <?php echo $content; ?>
+        <?php endif; ?>
     </div>
 </<?php echo esc_attr($tag); ?>>
 <?php else: ?>
 <<?php echo esc_attr($tag); ?><?php echo $id_attr . $class_attr . $style_attr; ?>>
-    <InnerBlocks templateLock="false" />
+    <?php if ( $is_preview ) : ?>
+        <InnerBlocks templateLock="false" />
+    <?php else : ?>
+        <?php echo $content; ?>
+    <?php endif; ?>
 </<?php echo esc_attr($tag); ?>>
 <?php endif; ?>
