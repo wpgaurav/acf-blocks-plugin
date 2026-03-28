@@ -226,6 +226,11 @@ function acf_blocks_download_external_image( $url ) {
         require_once ABSPATH . 'wp-admin/includes/file.php';
     }
 
+    // Block requests to private/internal IPs (SSRF protection).
+    if ( function_exists( 'wp_http_validate_url' ) && ! wp_http_validate_url( $url ) ) {
+        return false;
+    }
+
     $tmp_file = download_url( $url, 15 );
 
     if ( is_wp_error( $tmp_file ) ) {
@@ -236,21 +241,25 @@ function acf_blocks_download_external_image( $url ) {
     $image_type = wp_get_image_mime( $tmp_file );
 
     if ( ! $image_type ) {
-        // Allow SVGs which wp_get_image_mime does not recognise.
+        // Allow SVGs only when the MIME type also confirms SVG content.
         $finfo = function_exists( 'mime_content_type' ) ? mime_content_type( $tmp_file ) : '';
 
-        if ( $extension !== 'svg' || strpos( $finfo, 'svg' ) === false ) {
-            @unlink( $tmp_file );
+        if ( $extension !== 'svg' || false === strpos( $finfo, 'svg' ) ) {
+            if ( file_exists( $tmp_file ) ) {
+                unlink( $tmp_file );
+            }
             return false;
         }
     }
 
     // Move temp file to target directory.
-    $moved = @rename( $tmp_file, $target_path );
+    $moved = rename( $tmp_file, $target_path );
 
     if ( ! $moved ) {
-        $moved = @copy( $tmp_file, $target_path );
-        @unlink( $tmp_file );
+        $moved = copy( $tmp_file, $target_path );
+        if ( file_exists( $tmp_file ) ) {
+            unlink( $tmp_file );
+        }
     }
 
     if ( ! $moved ) {

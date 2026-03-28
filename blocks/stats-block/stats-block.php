@@ -52,10 +52,8 @@ $animation_class = $enable_animation ? ' acf-has-animation' : '';
                 <?php if ( $icon ) : ?>
                     <div class="acf-stat-icon">
                         <?php
-                        $icon_markup = function_exists( 'md_get_icon_markup' )
-                            ? md_get_icon_markup( $icon )
-                            : esc_html( $icon );
-                        echo $icon_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                        $icon_markup = acf_blocks_get_icon_markup( $icon );
+                        echo wp_kses_post( $icon_markup );
                         ?>
                     </div>
                 <?php endif; ?>

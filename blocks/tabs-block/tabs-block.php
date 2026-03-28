@@ -44,12 +44,8 @@ $unique_id   = 'acf-tabs-' . ( $block['id'] ?? uniqid() );
                     <?php if ( ! empty( $tab['acf_tab_icon'] ) ) : ?>
                         <span class="acf-tab-icon">
                             <?php
-                            $icon_markup = function_exists( 'acf_blocks_get_icon_markup' )
-                                ? acf_blocks_get_icon_markup( $tab['acf_tab_icon'] )
-                                : ( function_exists( 'md_get_icon_markup' )
-                                    ? md_get_icon_markup( $tab['acf_tab_icon'] )
-                                    : esc_html( $tab['acf_tab_icon'] ) );
-                            echo $icon_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                            $icon_markup = acf_blocks_get_icon_markup( $tab['acf_tab_icon'] );
+                            echo wp_kses_post( $icon_markup );
                             ?>
                         </span>
                     <?php endif; ?>
