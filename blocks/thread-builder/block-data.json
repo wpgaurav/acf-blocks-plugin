@@ -515,7 +515,7 @@
                 {
                     "param": "block",
                     "operator": "==",
-                    "value": "acf\/thread-builder"
+                    "value": "acf/thread-builder"
                 }
             ]
         ],

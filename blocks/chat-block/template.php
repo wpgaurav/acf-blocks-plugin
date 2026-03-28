@@ -64,9 +64,9 @@ if ( empty( $messages ) ) {
 
     <div class="acf-chat-body">
         <?php foreach ( $messages as $msg ) :
-            $name    = $msg->chat_speaker_name ?? '';
-            $color   = $msg->chat_speaker_color ?? '#6366f1';
-            $content = $msg->chat_message_content ?? '';
+            $name    = $msg['chat_speaker_name'] ?? '';
+            $color   = $msg['chat_speaker_color'] ?? '#6366f1';
+            $content = $msg['chat_message_content'] ?? '';
 
             if ( empty( $name ) || empty( $content ) ) {
                 continue;

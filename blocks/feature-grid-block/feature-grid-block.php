@@ -312,10 +312,8 @@ echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
                             <?php elseif (!empty($feature['acf_feature_icon'])) : ?>
                                 <div class="acf-feature-icon">
                                     <?php
-                                    $icon_markup = function_exists('md_get_icon_markup')
-                                        ? md_get_icon_markup($feature['acf_feature_icon'])
-                                        : esc_html($feature['acf_feature_icon']);
-                                    echo $icon_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                                    $icon_markup = acf_blocks_get_icon_markup( $feature['acf_feature_icon'] );
+                                    echo wp_kses_post( $icon_markup );
                                     ?>
                                 </div>
                             <?php endif; ?>

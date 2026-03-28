@@ -250,30 +250,6 @@ function acf_blocks_get_icon_markup( $icon ) {
     return esc_html( $icon );
 }
 
-// Make the function available globally for backward compatibility
-if ( ! function_exists( 'md_get_icon_markup' ) ) {
-    function md_get_icon_markup( $icon ) {
-        return acf_blocks_get_icon_markup( $icon );
-    }
-}
-
-/**
- * Get the plugin's blocks directory path.
- *
- * @return string Blocks directory path.
- */
-function acf_blocks_get_blocks_dir() {
-    return ACF_BLOCKS_PLUGIN_DIR . 'blocks/';
-}
-
-/**
- * Get the plugin's blocks directory URL.
- *
- * @return string Blocks directory URL.
- */
-function acf_blocks_get_blocks_url() {
-    return ACF_BLOCKS_PLUGIN_URL . 'blocks/';
-}
 
 /**
  * Minify CSS string for inline output.
