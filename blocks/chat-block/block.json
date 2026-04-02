@@ -38,13 +38,18 @@
       "mode": "preview",
       "data": {
         "chat_header_title": "Chat Session",
-        "chat_messages_0_chat_speaker_name": "Alice",
-        "chat_messages_0_chat_speaker_color": "#6366f1",
-        "chat_messages_0_chat_message_content": "Hey, have you seen the latest update?",
-        "chat_messages_1_chat_speaker_name": "Bob",
-        "chat_messages_1_chat_speaker_color": "#10b981",
-        "chat_messages_1_chat_message_content": "Yes! It looks great. The new design is much cleaner.",
-        "chat_messages": 2
+        "chat_messages": [
+          {
+            "chat_speaker_name": "Alice",
+            "chat_speaker_color": "#6366f1",
+            "chat_message_content": "Hey, have you seen the latest update?"
+          },
+          {
+            "chat_speaker_name": "Bob",
+            "chat_speaker_color": "#10b981",
+            "chat_message_content": "Yes! It looks great. The new design is much cleaner."
+          }
+        ]
       }
     }
   }
