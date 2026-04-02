@@ -2,7 +2,10 @@
 /**
  * Chat Block Template.
  *
- * @param array $block The block settings and attributes.
+ * @param array      $block      The block settings and attributes.
+ * @param string     $content    The block inner HTML (empty).
+ * @param bool       $is_preview True during AJAX preview.
+ * @param int|string $post_id    The post ID.
  */
 
 $align     = $block['align'] ?? '';
@@ -10,14 +13,6 @@ $className = $block['className'] ?? '';
 $anchor    = $block['anchor'] ?? '';
 
 $block_id = $anchor ?: 'chat-' . ( $block['id'] ?? uniqid() );
-
-// Detect style variation
-$style_variation = 'default';
-if ( strpos( $className, 'is-style-terminal' ) !== false ) {
-    $style_variation = 'terminal';
-} elseif ( strpos( $className, 'is-style-minimal' ) !== false ) {
-    $style_variation = 'minimal';
-}
 
 // Header fields
 $header_title      = acf_blocks_get_field( 'chat_header_title', $block );
@@ -45,24 +40,24 @@ if ( empty( $header_title ) ) {
 
 // Don't render if no messages
 if ( empty( $messages ) ) {
-    if ( ! empty( $block['data']['is_preview'] ) ) {
+    if ( $is_preview ) {
         echo '<p style="padding:20px;text-align:center;color:#999;">Add messages to preview the chat block.</p>';
     }
     return;
 }
 ?>
 
-<div id="<?php echo esc_attr( $block_id ); ?>" class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>">
+<div id="<?php echo esc_attr( $block_id ); ?>" class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" role="log" aria-label="<?php echo esc_attr( $header_title ?: __( 'Chat conversation', 'acf-blocks' ) ); ?>">
     <?php if ( ! empty( $header_title ) ) : ?>
         <div class="acf-chat-header">
             <?php if ( $show_indicator ) : ?>
-                <span class="acf-chat-indicator" style="background-color: <?php echo esc_attr( $indicator_color ); ?>;"></span>
+                <span class="acf-chat-indicator" style="background-color: <?php echo esc_attr( $indicator_color ); ?>;" aria-hidden="true"></span>
             <?php endif; ?>
             <span class="acf-chat-header-title"><?php echo esc_html( $header_title ); ?></span>
         </div>
     <?php endif; ?>
 
-    <div class="acf-chat-body">
+    <div class="acf-chat-body" role="list">
         <?php foreach ( $messages as $msg ) :
             $name    = $msg['chat_speaker_name'] ?? '';
             $color   = $msg['chat_speaker_color'] ?? '#6366f1';
@@ -72,7 +67,7 @@ if ( empty( $messages ) ) {
                 continue;
             }
         ?>
-            <div class="acf-chat-message">
+            <div class="acf-chat-message" role="listitem">
                 <div class="acf-chat-speaker" style="color: <?php echo esc_attr( $color ); ?>;">
                     <?php echo esc_html( strtoupper( $name ) ); ?>
                 </div>
