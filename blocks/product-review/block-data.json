@@ -288,6 +288,143 @@
                     "Discontinued": "Discontinued"
                 },
                 "default_value": "InStock"
+            },
+            {
+                "key": "field_pr_product_type",
+                "label": "Product Type",
+                "name": "product_type",
+                "type": "select",
+                "instructions": "Schema @type. Use SoftwareApplication for apps/SaaS (no offers fields required by Google).",
+                "choices": {
+                    "Product": "Product (physical or generic)",
+                    "SoftwareApplication": "Software / SaaS / App"
+                },
+                "default_value": "Product"
+            },
+            {
+                "key": "field_pr_return_policy",
+                "label": "Return Policy",
+                "name": "return_policy",
+                "type": "select",
+                "instructions": "Merchant return policy for the offers schema. Required by Google for Product type.",
+                "choices": {
+                    "MerchantReturnNotPermitted": "No Returns (digital goods)",
+                    "MerchantReturnFiniteReturnWindow": "Finite Return Window",
+                    "MerchantReturnUnlimitedWindow": "Unlimited Returns"
+                },
+                "default_value": "MerchantReturnNotPermitted",
+                "conditional_logic": [
+                    [
+                        {
+                            "field": "field_pr_product_type",
+                            "operator": "==",
+                            "value": "Product"
+                        }
+                    ]
+                ]
+            },
+            {
+                "key": "field_pr_return_days",
+                "label": "Return Window (days)",
+                "name": "return_days",
+                "type": "number",
+                "instructions": "Number of days for the return window.",
+                "default_value": 30,
+                "min": 1,
+                "max": 365,
+                "conditional_logic": [
+                    [
+                        {
+                            "field": "field_pr_return_policy",
+                            "operator": "==",
+                            "value": "MerchantReturnFiniteReturnWindow"
+                        }
+                    ]
+                ]
+            },
+            {
+                "key": "field_pr_shipping_type",
+                "label": "Delivery Type",
+                "name": "shipping_type",
+                "type": "select",
+                "instructions": "Digital = instant delivery with $0 shipping. Physical = standard shipping.",
+                "choices": {
+                    "digital": "Digital / Instant Download",
+                    "physical": "Physical Shipping"
+                },
+                "default_value": "digital",
+                "conditional_logic": [
+                    [
+                        {
+                            "field": "field_pr_product_type",
+                            "operator": "==",
+                            "value": "Product"
+                        }
+                    ]
+                ]
+            },
+            {
+                "key": "field_pr_shipping_country",
+                "label": "Shipping Country",
+                "name": "shipping_country",
+                "type": "text",
+                "instructions": "ISO 3166-1 alpha-2 country code (e.g., US, GB, IN). Used for shipping destination and return policy.",
+                "default_value": "US",
+                "conditional_logic": [
+                    [
+                        {
+                            "field": "field_pr_product_type",
+                            "operator": "==",
+                            "value": "Product"
+                        }
+                    ]
+                ]
+            },
+            {
+                "key": "field_pr_app_category",
+                "label": "Application Category",
+                "name": "app_category",
+                "type": "select",
+                "instructions": "Category for SoftwareApplication schema.",
+                "choices": {
+                    "WebApplication": "Web Application",
+                    "MobileApplication": "Mobile App",
+                    "DesktopApplication": "Desktop App",
+                    "BusinessApplication": "Business App",
+                    "DeveloperApplication": "Developer Tool",
+                    "EducationalApplication": "Education App",
+                    "MultimediaApplication": "Multimedia App",
+                    "SecurityApplication": "Security App",
+                    "BrowserApplication": "Browser",
+                    "UtilitiesApplication": "Utility"
+                },
+                "default_value": "WebApplication",
+                "conditional_logic": [
+                    [
+                        {
+                            "field": "field_pr_product_type",
+                            "operator": "==",
+                            "value": "SoftwareApplication"
+                        }
+                    ]
+                ]
+            },
+            {
+                "key": "field_pr_app_os",
+                "label": "Operating System",
+                "name": "app_os",
+                "type": "text",
+                "instructions": "e.g., Windows, macOS, Linux, Android, iOS, Web",
+                "default_value": "Web",
+                "conditional_logic": [
+                    [
+                        {
+                            "field": "field_pr_product_type",
+                            "operator": "==",
+                            "value": "SoftwareApplication"
+                        }
+                    ]
+                ]
             }
         ],
         "location": [

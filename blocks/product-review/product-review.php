@@ -87,6 +87,13 @@ $product_sku = acf_blocks_get_field('product_sku', $block) ?: '';
 $product_availability = acf_blocks_get_field('product_availability', $block) ?: 'InStock';
 $price_valid_until = acf_blocks_get_field('price_valid_until', $block) ?: '';
 $review_date_modified = acf_blocks_get_field('review_date_modified', $block) ?: '';
+$product_type = acf_blocks_get_field('product_type', $block) ?: 'Product';
+$return_policy = acf_blocks_get_field('return_policy', $block) ?: 'MerchantReturnNotPermitted';
+$return_days = acf_blocks_get_field('return_days', $block) ?: 30;
+$shipping_type = acf_blocks_get_field('shipping_type', $block) ?: 'digital';
+$shipping_country = acf_blocks_get_field('shipping_country', $block) ?: 'US';
+$app_category = acf_blocks_get_field('app_category', $block) ?: 'WebApplication';
+$app_os = acf_blocks_get_field('app_os', $block) ?: 'Web';
 
 // Determine image URL - direct URL takes priority
 $image_url = '';
@@ -181,15 +188,23 @@ if ( $image_direct_url ) {
 
     <?php if ($enable_json && $product_name) : ?>
     <?php
-    // Build comprehensive Google Product schema
+    // Build schema — supports both Product and SoftwareApplication types
+    $schema_type = in_array($product_type, ['Product', 'SoftwareApplication'], true) ? $product_type : 'Product';
+
     $json_data = [
         '@context' => 'https://schema.org/',
-        '@type' => 'Product',
+        '@type' => $schema_type,
         'name' => $product_name,
     ];
 
+    // Image with fallback to post featured image
     if ($image_url) {
         $json_data['image'] = $image_url;
+    } else {
+        $featured_image_url = get_the_post_thumbnail_url(get_the_ID(), 'full');
+        if ($featured_image_url) {
+            $json_data['image'] = $featured_image_url;
+        }
     }
 
     if ($summary) {
@@ -207,6 +222,14 @@ if ( $image_direct_url ) {
         $json_data['sku'] = $product_sku;
     }
 
+    // SoftwareApplication-specific fields
+    if ($schema_type === 'SoftwareApplication') {
+        $json_data['applicationCategory'] = $app_category;
+        if ($app_os) {
+            $json_data['operatingSystem'] = $app_os;
+        }
+    }
+
     // Review data
     $json_data['review'] = [
         '@type' => 'Review',
@@ -219,12 +242,10 @@ if ( $image_direct_url ) {
         'datePublished' => get_the_date('c'),
     ];
 
-    // Add dateModified if set (signals freshness to Google)
     if ($review_date_modified) {
         $json_data['review']['dateModified'] = $review_date_modified;
     }
 
-    // Add reviewBody (full review text for rich snippets)
     if ($summary) {
         $json_data['review']['reviewBody'] = wp_strip_all_tags($summary);
     }
@@ -274,25 +295,67 @@ if ( $image_direct_url ) {
         }
     }
 
-    // Offer data
-    if ($offer_url || $offer_price) {
-        $json_data['offers'] = [
-            '@type' => 'Offer',
-            'availability' => 'https://schema.org/' . $product_availability,
-            'priceCurrency' => $offer_currency,
+    // Offers — always include to satisfy Google's required fields
+    $json_data['offers'] = [
+        '@type' => 'Offer',
+        'availability' => 'https://schema.org/' . $product_availability,
+        'priceCurrency' => $offer_currency,
+        'price' => $offer_price !== '' ? $offer_price : '0',
+        'priceValidUntil' => $price_valid_until ?: date('Y') . '-12-31',
+    ];
+
+    if ($offer_url) {
+        $json_data['offers']['url'] = $offer_url;
+    }
+
+    // hasMerchantReturnPolicy — required for Product, good practice for SoftwareApplication
+    $return_policy_data = [
+        '@type' => 'MerchantReturnPolicy',
+        'applicableCountry' => $shipping_country,
+        'returnPolicyCategory' => 'https://schema.org/' . $return_policy,
+    ];
+    if ($return_policy === 'MerchantReturnFiniteReturnWindow' && $return_days) {
+        $return_policy_data['merchantReturnDays'] = (int) $return_days;
+    }
+    $json_data['offers']['hasMerchantReturnPolicy'] = $return_policy_data;
+
+    // shippingDetails — digital products get instant/$0 delivery, physical gets basic structure
+    if ($shipping_type === 'digital') {
+        $json_data['offers']['shippingDetails'] = [
+            '@type' => 'OfferShippingDetails',
+            'shippingRate' => [
+                '@type' => 'MonetaryAmount',
+                'value' => '0',
+                'currency' => $offer_currency,
+            ],
+            'shippingDestination' => [
+                '@type' => 'DefinedRegion',
+                'addressCountry' => $shipping_country,
+            ],
+            'deliveryTime' => [
+                '@type' => 'ShippingDeliveryTime',
+                'handlingTime' => [
+                    '@type' => 'QuantitativeValue',
+                    'minValue' => '0',
+                    'maxValue' => '0',
+                    'unitCode' => 'DAY',
+                ],
+                'transitTime' => [
+                    '@type' => 'QuantitativeValue',
+                    'minValue' => '0',
+                    'maxValue' => '0',
+                    'unitCode' => 'DAY',
+                ],
+            ],
         ];
-
-        if ($offer_url) {
-            $json_data['offers']['url'] = $offer_url;
-        }
-
-        if ($offer_price) {
-            $json_data['offers']['price'] = $offer_price;
-        }
-
-        // Add priceValidUntil (recommended by Google for Offer schema)
-        // Default to December 31st of current year if not set
-        $json_data['offers']['priceValidUntil'] = $price_valid_until ?: date('Y') . '-12-31';
+    } else {
+        $json_data['offers']['shippingDetails'] = [
+            '@type' => 'OfferShippingDetails',
+            'shippingDestination' => [
+                '@type' => 'DefinedRegion',
+                'addressCountry' => $shipping_country,
+            ],
+        ];
     }
     ?>
     <script type="application/ld+json">

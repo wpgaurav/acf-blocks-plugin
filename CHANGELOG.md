@@ -2,6 +2,19 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.5.9] - 2026-04-03
+
+### Fixed
+- **Product Review block:** Fixed 4 Google Search Console structured data errors: missing `price`, `hasMerchantReturnPolicy`, `shippingDetails` in offers, and missing `image` fallback.
+
+### Added
+- **Product Review block:** New **Product Type** field — choose between `Product` (physical/generic) and `SoftwareApplication` (apps/SaaS) schema types. SoftwareApplication includes `applicationCategory` and `operatingSystem` fields.
+- **Product Review block:** New **Return Policy** field with options: No Returns (digital), Finite Return Window (with configurable days), Unlimited Returns. Maps to `hasMerchantReturnPolicy` in offers schema.
+- **Product Review block:** New **Delivery Type** field — Digital (instant/$0 shipping) or Physical. Digital products get zero-cost instant delivery in `shippingDetails`.
+- **Product Review block:** New **Shipping Country** field (ISO country code) used for both shipping destination and return policy region.
+- **Product Review block:** Image now falls back to post featured image when no product image is set, preventing GSC "Missing field image" errors.
+- **Product Review block:** Offers schema is now always generated (price defaults to `"0"` when empty) to prevent GSC missing field warnings.
+
 ## [2.2.9] - 2026-03-09
 
 ### Fixed
