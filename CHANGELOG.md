@@ -2,6 +2,17 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.6.0] - 2026-04-11
+
+### Changed
+- **All blocks:** Every ACF field is now optional. Removed `required: 1` flags and `min: 1` constraints on repeaters/relationships so any block can be inserted without being forced to fill specific fields.
+
+### Removed
+- **Chat block:** Completely removed the `acf/chat-block` and its directory (`blocks/chat-block/`).
+
+### Improved
+- **LLM prompt library (`llm/`):** Added `llm/README.md` as an index covering all 29 blocks grouped by category, universal rules (single-line JSON, field-key prefix, repeater format, InnerBlocks vs ACF data), and a block-comment anatomy reference. Removed stale "Required" annotations from nine per-block docs now that no fields are required.
+
 ## [2.5.9] - 2026-04-03
 
 ### Fixed

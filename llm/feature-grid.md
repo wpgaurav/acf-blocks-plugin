@@ -18,7 +18,7 @@ Create a feature grid to showcase features, services, or benefits with icons, ti
 | `acf_feature_grid_items` | Feature Items | repeater | List of features |
 | — `acf_feature_icon` | Icon | text | Icon class or emoji |
 | — `acf_feature_image` | Image | image | Optional feature image |
-| — `acf_feature_title` | Title | text | Required. Feature title |
+| — `acf_feature_title` | Title | text | Feature title |
 | — `acf_feature_description` | Description | textarea | Feature description |
 | — `acf_feature_link` | Link | link | Optional link for the feature card |
 | — `acf_feature_button` | Button | link | Optional button for the feature |

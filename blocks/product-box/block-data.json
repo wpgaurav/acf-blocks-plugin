@@ -111,7 +111,7 @@
                     "name": "pb_feature_text",
                     "type": "text",
                     "instructions": "",
-                    "required": 1
+                    "required": 0
                 }
             ]
         },
@@ -177,7 +177,7 @@
                     "name": "pb_cta_text",
                     "type": "text",
                     "instructions": "",
-                    "required": 1,
+                    "required": 0,
                     "default_value": "Buy Now"
                 },
                 {
@@ -186,7 +186,7 @@
                     "name": "pb_cta_url",
                     "type": "url",
                     "instructions": "",
-                    "required": 1
+                    "required": 0
                 },
                 {
                     "key": "field_pb_cta_style",

@@ -25,19 +25,19 @@ Single-card design with four sections:
 | `field_pl_block_icon` | Icon/Logo | image (array) | Empty string `""` when using URL |
 | `field_pl_block_image_url` | Image URL | url | Direct URL (takes priority over uploaded image) |
 | `field_pl_block_image_width` | Image Width | text | CSS width for icon (e.g. "48px", "80px"). Default: 64px |
-| `field_pl_block_product_name` | Product Name | text | Required. Product/service name |
+| `field_pl_block_product_name` | Product Name | text | Product/service name |
 | `field_pl_block_product_url` | Product URL | url | Optional. Links the product name |
 | `field_pl_block_title_tag` | Title Heading Level | select | `p` (default), `h2`, `h3`, `h4`, `h5`, `h6` |
 | `field_pl_block_description` | Description | wysiwyg | Product description with HTML support |
 | `field_pl_block_pricing` | Pricing | repeater | Pricing tiers/plans |
-| — `field_pl_block_pricing_title` | Plan Name | text | Required. e.g. "Starter", "Pro" |
-| — `field_pl_block_pricing_amount` | Price | text | Required. e.g. "$9.99/mo" |
+| — `field_pl_block_pricing_title` | Plan Name | text | e.g. "Starter", "Pro" |
+| — `field_pl_block_pricing_amount` | Price | text | e.g. "$9.99/mo" |
 | `field_pl_block_coupons` | Coupons | repeater | Available coupon codes |
-| — `field_pl_block_coupon_code` | Code | text | Required. Coupon code |
+| — `field_pl_block_coupon_code` | Code | text | Coupon code |
 | — `field_pl_block_coupon_offer` | Offer Details | text | What the coupon provides |
 | `field_pl_block_buttons` | Buttons | repeater | Action buttons (max 4) |
-| — `field_pl_block_button_text` | Button Text | text | Required. Button label |
-| — `field_pl_block_button_url` | Button URL | url | Required. Button link |
+| — `field_pl_block_button_text` | Button Text | text | Button label |
+| — `field_pl_block_button_url` | Button URL | url | Button link |
 | — `field_pl_block_button_style` | Button Style | select | primary (filled), secondary (outline), text (link) |
 | — `field_pl_block_button_rel` | Rel Attribute | text | e.g. "nofollow sponsored" |
 | — `field_pl_block_button_class` | CSS Class | text | Optional button class |

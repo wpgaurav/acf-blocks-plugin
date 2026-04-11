@@ -12,7 +12,7 @@ Display selected WordPress posts in various layouts. Choose from text links, thu
 
 | Field Key | Name | Type | Notes |
 |---|---|---|---|
-| `field_pd_selected_posts` | Selected Posts | relationship | Required. WordPress post IDs |
+| `field_pd_selected_posts` | Selected Posts | relationship | Array of WordPress post IDs |
 | `field_pd_layout` | Layout | select | `text_links`, `thumbnail`, `grid` |
 | `field_pd_columns` | Columns | select | 2 or 3 (grid layout only) |
 | `field_pd_show_excerpt` | Show Excerpt | true_false | Display post excerpt |

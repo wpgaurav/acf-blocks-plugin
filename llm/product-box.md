@@ -69,15 +69,15 @@ All buttons get `field_pb_cta_rel`: `"nofollow noopener sponsored"`
 | `field_pb_rating` | Rating | number | 0–5, step 0.5 |
 | `field_pb_rating_count` | Rating Count | text | e.g. "1,234 ratings" |
 | `field_pb_features` | Features | repeater | Product bullet features |
-| — `field_pb_feature_text` | Feature | text | Required sub-field |
+| — `field_pb_feature_text` | Feature | text | Feature bullet text |
 | `field_pb_original_price` | Original Price | text | e.g. "$99.99" |
 | `field_pb_discount_percent` | Discount | text | e.g. "-15%" |
 | `field_pb_current_price` | Current Price | text | e.g. "$84.99" |
 | `field_pb_price_note` | Price Note | text | e.g. "Free shipping" |
 | `field_pb_description` | Description | wysiwyg | Short product description |
 | `field_pb_buttons` | CTA Buttons | repeater | Max 4 buttons |
-| — `field_pb_cta_text` | Button Text | text | Required |
-| — `field_pb_cta_url` | Button URL | url | Required |
+| — `field_pb_cta_text` | Button Text | text | Button label |
+| — `field_pb_cta_url` | Button URL | url | Destination URL |
 | — `field_pb_cta_style` | Button Style | select | primary, secondary, amazon, custom |
 | — `field_pb_cta_icon` | Button Icon | select | none, cart, amazon, external, check |
 | — `field_pb_cta_class` | CSS Class | text | e.g. "md-icon-external", "md-icon-download" |
