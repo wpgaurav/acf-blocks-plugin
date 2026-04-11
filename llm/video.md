@@ -12,7 +12,7 @@ Create a responsive video block supporting YouTube, Vimeo, and self-hosted video
 
 | Field Key | Name | Type | Notes |
 |---|---|---|---|
-| `acf_video_type` | Video Type | select | Required. `youtube`, `vimeo`, `self-hosted` |
+| `acf_video_type` | Video Type | select | `youtube`, `vimeo`, `self-hosted` (default: `youtube`) |
 | `acf_video_url` | Video URL | url | YouTube/Vimeo URL, or direct video URL for self-hosted (CDN, etc.). Overrides file upload when set. |
 | `acf_video_file` | Video File | file | Self-hosted video from media library (ignored if Video URL is provided) |
 | `acf_video_poster` | Poster Image | image | Thumbnail/poster image (self-hosted only) |

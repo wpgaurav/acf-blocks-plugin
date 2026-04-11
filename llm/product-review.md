@@ -12,7 +12,7 @@ Create a product review block in ACF block comment markup for the given product.
 
 | Field Key | Name | Type | Notes |
 |---|---|---|---|
-| `field_pr_product_name` | Product Name | text | Required |
+| `field_pr_product_name` | Product Name | text | Product display name |
 | `field_pr_show_title` | Show Title | true_false | `"1"` to display title |
 | `field_pr_title_tag` | Title Heading Level | select | `p` (default), `h2`, `h3`, `h4`, `h5`, `h6` |
 | `field_pr_product_image` | Product Image | image (ID) | Media library image ID |

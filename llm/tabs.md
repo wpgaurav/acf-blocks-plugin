@@ -13,7 +13,7 @@ Create a tabbed content block for organizing information into switchable section
 | Field Key | Name | Type | Notes |
 |---|---|---|---|
 | `acf_tabs_items` | Tab Items | repeater | List of tabs |
-| — `acf_tab_title` | Tab Title | text | Required. Tab label |
+| — `acf_tab_title` | Tab Title | text | Tab label |
 | — `acf_tab_icon` | Tab Icon | text | Optional icon class or emoji |
 | — `acf_tab_content` | Tab Content | wysiwyg | Content shown when tab is active |
 | `acf_tabs_style` | Style | select | `default`, `pills`, `underline`, `boxed` |

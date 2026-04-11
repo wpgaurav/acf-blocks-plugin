@@ -14,7 +14,7 @@ Create an interactive checklist block with checkable items, progress tracking, a
 |---|---|---|---|
 | `field_checklist_title` | Title | text | Optional heading for the checklist |
 | `field_checklist_items` | Checklist Items | repeater | List of checklist items |
-| — `field_checklist_item_text` | Item Text | text | Required. The checklist item label |
+| — `field_checklist_item_text` | Item Text | text | The checklist item label |
 | — `field_checklist_item_checked` | Pre-checked | true_false | `"1"` if item starts checked |
 | `field_checklist_interactive` | Interactive | true_false | `"1"` to allow users to check/uncheck items |
 | `field_checklist_show_progress` | Show Progress | true_false | `"1"` to display progress bar |

@@ -13,7 +13,7 @@ Create a statistics counter block with animated numbers to showcase metrics and 
 | Field Key | Name | Type | Notes |
 |---|---|---|---|
 | `acf_stats_items` | Stats Items | repeater | List of stat counters |
-| — `acf_stat_number` | Number | number | Required. The statistic value |
+| — `acf_stat_number` | Number | number | The statistic value |
 | — `acf_stat_label` | Label | text | Description below the number |
 | — `acf_stat_prefix` | Prefix | text | Text before number (e.g. "$", "#") |
 | — `acf_stat_suffix` | Suffix | text | Text after number (e.g. "%", "+", "k") |
