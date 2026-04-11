@@ -23,7 +23,7 @@
                 "name": "checklist_items",
                 "type": "repeater",
                 "instructions": "Add items to your checklist",
-                "min": 1,
+                "min": 0,
                 "max": 50,
                 "layout": "block",
                 "button_label": "Add Item",
@@ -33,7 +33,7 @@
                         "label": "Item Text",
                         "name": "checklist_item_text",
                         "type": "text",
-                        "required": 1
+                        "required": 0
                     },
                     {
                         "key": "field_checklist_item_checked",

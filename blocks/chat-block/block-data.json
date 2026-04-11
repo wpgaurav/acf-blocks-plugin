@@ -60,8 +60,8 @@
                 "name": "chat_messages",
                 "type": "repeater",
                 "instructions": "Add chat messages to the conversation",
-                "required": 1,
-                "min": 1,
+                "required": 0,
+                "min": 0,
                 "max": 0,
                 "layout": "block",
                 "button_label": "Add Message",
@@ -72,7 +72,7 @@
                         "name": "chat_speaker_name",
                         "type": "text",
                         "instructions": "Name of the person speaking",
-                        "required": 1,
+                        "required": 0,
                         "wrapper": {
                             "width": "50"
                         }
@@ -95,7 +95,7 @@
                         "name": "chat_message_content",
                         "type": "wysiwyg",
                         "instructions": "",
-                        "required": 1,
+                        "required": 0,
                         "tabs": "all",
                         "toolbar": "full",
                         "media_upload": 1

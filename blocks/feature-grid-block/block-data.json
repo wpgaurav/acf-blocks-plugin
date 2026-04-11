@@ -93,7 +93,7 @@
                     "name": "acf_feature_title",
                     "type": "text",
                     "instructions": "Enter the feature title.",
-                    "required": 1
+                    "required": 0
                 },
                 {
                     "key": "acf_feature_description",

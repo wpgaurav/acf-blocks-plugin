@@ -14,7 +14,7 @@
                 "label": "Product Name",
                 "name": "product_name",
                 "type": "text",
-                "required": 1,
+                "required": 0,
                 "default_value": "Product Name"
             },
             {

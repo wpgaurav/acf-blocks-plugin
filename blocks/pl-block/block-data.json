@@ -46,7 +46,7 @@
                 "name": "pl_block_product_name",
                 "type": "text",
                 "instructions": "Enter the product or service name.",
-                "required": 1,
+                "required": 0,
                 "default_value": "Product Name"
             },
             {
@@ -103,7 +103,7 @@
                         "label": "Plan",
                         "name": "pl_block_pricing_title",
                         "type": "text",
-                        "required": 1,
+                        "required": 0,
                         "placeholder": "e.g. Starter"
                     },
                     {
@@ -111,7 +111,7 @@
                         "label": "Price",
                         "name": "pl_block_pricing_amount",
                         "type": "text",
-                        "required": 1,
+                        "required": 0,
                         "placeholder": "$9.99/mo"
                     }
                 ]
@@ -133,7 +133,7 @@
                         "label": "Code",
                         "name": "pl_block_coupon_code",
                         "type": "text",
-                        "required": 1,
+                        "required": 0,
                         "placeholder": "SAVE50"
                     },
                     {
@@ -163,7 +163,7 @@
                         "label": "Button Text",
                         "name": "pl_block_button_text",
                         "type": "text",
-                        "required": 1,
+                        "required": 0,
                         "default_value": "Get Offer"
                     },
                     {
@@ -171,7 +171,7 @@
                         "label": "Button URL",
                         "name": "pl_block_button_url",
                         "type": "url",
-                        "required": 1
+                        "required": 0
                     },
                     {
                         "key": "field_pl_block_button_style",

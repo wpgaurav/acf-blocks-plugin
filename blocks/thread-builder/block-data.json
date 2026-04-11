@@ -198,7 +198,7 @@
                     "id": ""
                 },
                 "layout": "block",
-                "min": 1,
+                "min": 0,
                 "button_label": "Add Post",
                 "max": 0,
                 "rows_per_page": 20,

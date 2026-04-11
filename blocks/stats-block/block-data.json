@@ -19,7 +19,7 @@
                     "name": "acf_stat_number",
                     "type": "number",
                     "instructions": "Enter the number to display.",
-                    "required": 1
+                    "required": 0
                 },
                 {
                     "key": "acf_stat_label",
