@@ -13,7 +13,7 @@ $show_excerpt = acf_blocks_get_field('pd_show_excerpt', $block) ?: false;
 $show_date = acf_blocks_get_field('pd_show_date', $block) ?: false;
 $show_author = acf_blocks_get_field('pd_show_author', $block) ?: false;
 $title_tag_raw = acf_blocks_get_field('pd_title_tag', $block);
-$title_tag = in_array($title_tag_raw, ['p', 'h2', 'h3', 'h4', 'h5', 'h6'], true) ? $title_tag_raw : 'h3';
+$title_tag = acf_blocks_validate_heading_tag( $title_tag_raw, 'h3' );
 $custom_class = acf_blocks_get_field('pd_custom_class', $block) ?: '';
 $show_read_more = acf_blocks_get_field('pd_show_read_more', $block);
 $read_more_text = acf_blocks_get_field('pd_read_more_text', $block) ?: 'Read More';
@@ -152,6 +152,8 @@ if (strpos($className, 'is-style-dark') !== false) {
     ?>
     <?php elseif ($style_variation === 'minimal'): ?>
     <?php
+    static $acf_post_display_css_minimal = false;
+    if ( ! $acf_post_display_css_minimal ) {
     ob_start();
     ?>
         #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item {
@@ -185,9 +187,13 @@ if (strpos($className, 'is-style-dark') !== false) {
     <?php
     $css = ob_get_clean();
     echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    $acf_post_display_css_minimal = true;
+    }
     ?>
     <?php elseif ($style_variation === 'bordered'): ?>
     <?php
+    static $acf_post_display_css_bordered = false;
+    if ( ! $acf_post_display_css_bordered ) {
     ob_start();
     ?>
         #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item {
@@ -211,6 +217,8 @@ if (strpos($className, 'is-style-dark') !== false) {
     <?php
     $css = ob_get_clean();
     echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    $acf_post_display_css_bordered = true;
+    }
     ?>
     <?php endif; ?>
     <?php if ($layout === 'text_links'): ?>

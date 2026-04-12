@@ -135,16 +135,35 @@ function acf_blocks_load_blocks() {
     foreach ( acf_blocks_get_block_metadata_cache() as $block_info ) {
         $block_folder = $block_info['folder'];
         $metadata     = $block_info['metadata'];
+        $block_name   = $metadata['name'];
         $extra_php    = $block_folder . 'extra.php';
         $args         = array();
 
         // If we pre-registered a style, use the handle instead of file path
         if ( ! empty( $metadata['style'] ) ) {
-            $handle = str_replace( '/', '-', $metadata['name'] ) . '-style';
+            $handle = str_replace( '/', '-', $block_name ) . '-style';
             if ( wp_style_is( $handle, 'registered' ) ) {
                 $args['style'] = $handle;
             }
         }
+
+        /**
+         * Filter the template path for an ACF block before registration.
+         *
+         * Allows themes and plugins to override the block template directory.
+         *
+         * @param string $block_folder Absolute path to the block folder.
+         * @param string $block_name   The block name (e.g. "acf/post-display").
+         */
+        $block_folder = apply_filters( 'acf_blocks_template_path', $block_folder, $block_name );
+
+        /**
+         * Filter the block registration args before a block is registered.
+         *
+         * @param array  $args       The args array passed to register_block_type().
+         * @param string $block_name The block name (e.g. "acf/post-display").
+         */
+        $args = apply_filters( 'acf_blocks_register_args', $args, $block_name );
 
         // Register via block.json metadata with style override
         $result = register_block_type( $block_folder, $args );
@@ -437,3 +456,16 @@ function acf_blocks_inject_editor_styles( $editor_settings ) {
     return $editor_settings;
 }
 add_filter( 'block_editor_settings_all', 'acf_blocks_inject_editor_styles', 999999 );
+
+/**
+ * Validate a heading tag against an allowed list.
+ *
+ * Used by block templates to sanitize user-selected title tags.
+ *
+ * @param string $tag     The tag value to validate.
+ * @param string $default Fallback tag if validation fails. Default 'p'.
+ * @return string A safe heading tag.
+ */
+function acf_blocks_validate_heading_tag( $tag, $default = 'p' ) {
+    return in_array( $tag, array( 'p', 'h2', 'h3', 'h4', 'h5', 'h6' ), true ) ? $tag : $default;
+}

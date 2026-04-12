@@ -36,7 +36,9 @@ if ( ! empty( $highlight_lines ) ) {
     foreach ( $parts as $part ) {
         $part = trim( $part );
         if ( strpos( $part, '-' ) !== false ) {
-            list( $start, $end ) = explode( '-', $part );
+            $range_parts = explode( '-', $part );
+            $start = $range_parts[0] ?? '';
+            $end   = $range_parts[1] ?? '';
             for ( $i = intval( $start ); $i <= intval( $end ); $i++ ) {
                 $highlight_array[] = $i;
             }
@@ -47,7 +49,7 @@ if ( ! empty( $highlight_lines ) ) {
 }
 
 // Generate unique ID for expand functionality
-$block_id = 'code-block-' . uniqid();
+$block_id = 'code-block-' . wp_unique_id();
 
 // Language display names
 $language_names = array(

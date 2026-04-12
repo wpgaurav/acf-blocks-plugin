@@ -422,13 +422,13 @@ function acf_blocks_get_local_image_dir() {
         // Protect the directory from PHP execution.
         $htaccess = $dir . '.htaccess';
         if ( ! file_exists( $htaccess ) ) {
-            @file_put_contents( $htaccess, "Options -Indexes\n<Files *.php>\ndeny from all\n</Files>\n" );
+            file_put_contents( $htaccess, "Options -Indexes\n<Files *.php>\ndeny from all\n</Files>\n" );
         }
 
         // Blank index for directory listing protection.
         $index = $dir . 'index.php';
         if ( ! file_exists( $index ) ) {
-            @file_put_contents( $index, "<?php\n// Silence is golden.\n" );
+            file_put_contents( $index, "<?php\n// Silence is golden.\n" );
         }
     }
 

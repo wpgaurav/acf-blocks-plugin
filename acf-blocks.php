@@ -64,7 +64,11 @@ function acf_blocks_init() {
 }
 add_action( 'plugins_loaded', 'acf_blocks_init' );
 
-// License Manager (loads independently of ACF requirement)
+// License Manager loads independently of the ACF requirement so that users
+// can still manage their license (activate, deactivate, receive update
+// notifications) even when ACF Pro / SCF is not yet installed or active.
+// All block-registration code is gated behind acf_blocks_check_requirements()
+// inside acf_blocks_init(), so nothing block-related runs without ACF.
 require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/license-manager.php';
 $acf_blocks_license = new ACF_Blocks_License_Manager( __FILE__ );
 $acf_blocks_license->hook();

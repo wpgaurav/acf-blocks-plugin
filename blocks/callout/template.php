@@ -11,7 +11,7 @@ $className = $block['className'] ?? '';
 $anchor = $block['anchor'] ?? '';
 
 // Generate block ID
-$block_id = $anchor ?: 'callout-' . ( $block['id'] ?? uniqid() );
+$block_id = $anchor ?: 'callout-' . ( $block['id'] ?? wp_unique_id() );
 
 // Detect style variation
 $style_variation = '';

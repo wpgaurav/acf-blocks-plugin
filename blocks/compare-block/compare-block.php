@@ -52,7 +52,7 @@ if ( empty( $comp_data ) ) {
     }
 }
 
-$block_id    = 'cmp-' . ( $block['id'] ?? uniqid() );
+$block_id    = 'cmp-' . ( $block['id'] ?? wp_unique_id() );
 $className   = $block['className'] ?? '';
 $anchor      = $block['anchor'] ?? '';
 $anchor_attr = $anchor ? ' id="' . esc_attr( $anchor ) . '"' : '';

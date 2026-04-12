@@ -36,7 +36,7 @@ $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
 $inline_style = acf_blocks_get_field( 'acf_testimonial_inline', $block );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
 
-$unique_id = 'acf-testimonial-' . ( $block['id'] ?? uniqid() );
+$unique_id = 'acf-testimonial-' . ( $block['id'] ?? wp_unique_id() );
 
 // Check for legacy ACF field content (backward compatibility)
 $legacy_quote = acf_blocks_get_field( 'acf_testimonial_quote', $block );
