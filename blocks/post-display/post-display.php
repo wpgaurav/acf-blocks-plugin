@@ -39,6 +39,12 @@ if ( empty( $selected_posts ) ) {
     return;
 }
 
+// Prime the user cache for all post authors in a single query to avoid N+1.
+$author_ids = array_unique( wp_list_pluck( $selected_posts, 'post_author' ) );
+if ( ! empty( $author_ids ) ) {
+    cache_users( $author_ids );
+}
+
 // CSS classes based on layout
 $container_classes = [
     'acf-post-display',
@@ -75,6 +81,8 @@ if (strpos($className, 'is-style-dark') !== false) {
 <div id="<?php echo esc_attr($block_id); ?>" class="<?php echo esc_attr($container_class); ?>">
     <?php if ($style_variation === 'dark'): ?>
     <?php
+    static $acf_post_display_css_dark = false;
+    if ( ! $acf_post_display_css_dark ) {
     ob_start();
     ?>
         #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item {
@@ -107,9 +115,13 @@ if (strpos($className, 'is-style-dark') !== false) {
     <?php
     $css = ob_get_clean();
     echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    $acf_post_display_css_dark = true;
+    }
     ?>
     <?php elseif ($style_variation === 'card'): ?>
     <?php
+    static $acf_post_display_css_card = false;
+    if ( ! $acf_post_display_css_card ) {
     ob_start();
     ?>
         #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item {
@@ -135,6 +147,8 @@ if (strpos($className, 'is-style-dark') !== false) {
     <?php
     $css = ob_get_clean();
     echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    $acf_post_display_css_card = true;
+    }
     ?>
     <?php elseif ($style_variation === 'minimal'): ?>
     <?php

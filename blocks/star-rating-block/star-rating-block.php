@@ -84,7 +84,7 @@ if ( ! $acf_star_rating_localized ) {
     <?php endif; ?>
 
     <div class="acf-star-rating__aggregate">
-        <div class="acf-star-rating__stars"><?php echo acf_star_rating_render_stars( $average ); ?></div>
+        <div class="acf-star-rating__stars" aria-label="<?php echo esc_attr( sprintf( __( 'Rating: %s out of 5', 'acf-blocks' ), $average_display ) ); ?>"><?php echo acf_star_rating_render_stars( $average ); ?></div>
         <div class="acf-star-rating__average" aria-live="polite"><?php echo esc_html( $average_display ); ?></div>
         <div class="acf-star-rating__count"><?php echo esc_html( $count_display ); ?></div>
     </div>

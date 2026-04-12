@@ -96,16 +96,16 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => $wrapper_classes]
             <?php endif; ?>
 
             <?php if ($rating && $rating > 0) : ?>
-                <div class="acf-product-box__rating">
+                <div class="acf-product-box__rating" aria-label="<?php echo esc_attr( sprintf( __( 'Rating: %s out of 5', 'acf-blocks' ), number_format( (float) $rating, 1 ) ) ); ?>">
                     <span class="acf-product-box__stars">
                         <?php
                         for ($i = 1; $i <= 5; $i++) {
                             if ($rating >= $i) {
-                                echo '<span class="star star--full">★</span>';
+                                echo '<span class="star star--full" aria-hidden="true">★</span>';
                             } elseif ($rating >= ($i - 0.5)) {
-                                echo '<span class="star star--half">★</span>';
+                                echo '<span class="star star--half" aria-hidden="true">★</span>';
                             } else {
-                                echo '<span class="star star--empty">★</span>';
+                                echo '<span class="star star--empty" aria-hidden="true">★</span>';
                             }
                         }
                         ?>
