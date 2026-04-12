@@ -78,7 +78,9 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => $wrapper_classes]
     <div class="acf-product-box__layout">
         <?php if (!$is_no_image && !$is_top_image && $img_src) : ?>
             <div class="acf-product-box__image">
+                <?php if ($title_url) : ?><a href="<?php echo esc_url($title_url); ?>" tabindex="-1" aria-hidden="true"><?php endif; ?>
                 <img src="<?php echo esc_url($img_src); ?>" alt="<?php echo esc_attr($img_alt); ?>"<?php if ( $img_srcset ) : ?> srcset="<?php echo esc_attr($img_srcset); ?>" sizes="<?php echo esc_attr($img_sizes); ?>"<?php endif; ?> loading="lazy" decoding="async" />
+                <?php if ($title_url) : ?></a><?php endif; ?>
             </div>
         <?php endif; ?>
 
@@ -115,7 +117,7 @@ $wrapper_attributes = get_block_wrapper_attributes(['class' => $wrapper_classes]
             <?php endif; ?>
 
             <?php if (!empty($features)) : ?>
-                <ul class="acf-product-box__features">
+                <ul class="acf-product-box__features<?php echo count($features) >= 6 ? ' has-many' : ''; ?>">
                     <?php foreach ($features as $feature) : ?>
                         <?php if (!empty($feature['pb_feature_text'])) : ?>
                             <li><?php echo esc_html($feature['pb_feature_text']); ?></li>
