@@ -13,7 +13,7 @@ $show_excerpt = acf_blocks_get_field('pd_show_excerpt', $block) ?: false;
 $show_date = acf_blocks_get_field('pd_show_date', $block) ?: false;
 $show_author = acf_blocks_get_field('pd_show_author', $block) ?: false;
 $title_tag_raw = acf_blocks_get_field('pd_title_tag', $block);
-$title_tag = in_array($title_tag_raw, ['p', 'h2', 'h3', 'h4', 'h5', 'h6'], true) ? $title_tag_raw : 'h3';
+$title_tag = acf_blocks_validate_heading_tag( $title_tag_raw, 'h3' );
 $custom_class = acf_blocks_get_field('pd_custom_class', $block) ?: '';
 $show_read_more = acf_blocks_get_field('pd_show_read_more', $block);
 $read_more_text = acf_blocks_get_field('pd_read_more_text', $block) ?: 'Read More';
@@ -37,6 +37,12 @@ $selected_posts = array_filter( array_map( function( $item ) {
 
 if ( empty( $selected_posts ) ) {
     return;
+}
+
+// Prime the user cache for all post authors in a single query to avoid N+1.
+$author_ids = array_unique( wp_list_pluck( $selected_posts, 'post_author' ) );
+if ( ! empty( $author_ids ) ) {
+    cache_users( $author_ids );
 }
 
 // CSS classes based on layout
@@ -75,72 +81,75 @@ if (strpos($className, 'is-style-dark') !== false) {
 <div id="<?php echo esc_attr($block_id); ?>" class="<?php echo esc_attr($container_class); ?>">
     <?php if ($style_variation === 'dark'): ?>
     <?php
-    ob_start();
-    ?>
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item {
+    static $acf_post_display_css_dark = false;
+    if ( ! $acf_post_display_css_dark ) {
+    $css = '
+        .acf-post-display.is-style-dark .acf-post-display-item {
             background-color: #1a1a2e;
             border-color: #374151;
             color: #ffffff;
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-title a {
+        .acf-post-display.is-style-dark .acf-post-display-title a {
             color: #ffffff;
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-title a:hover {
+        .acf-post-display.is-style-dark .acf-post-display-title a:hover {
             color: #ffd700;
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-meta {
+        .acf-post-display.is-style-dark .acf-post-display-meta {
             color: #9ca3af;
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-excerpt {
+        .acf-post-display.is-style-dark .acf-post-display-excerpt {
             color: #d1d5db;
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button {
+        .acf-post-display.is-style-dark .acf-post-display-read-more-button {
             background-color: #ffd700;
             color: #1a1a2e;
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button:hover {
+        .acf-post-display.is-style-dark .acf-post-display-read-more-button:hover {
             background-color: #ffed4a;
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display.acf-post-display-layout-text_links .acf-post-display-link {
+        .acf-post-display.is-style-dark.acf-post-display-layout-text_links .acf-post-display-link {
             color: #ffd700;
-        }
-    <?php
-    $css = ob_get_clean();
+        }';
     echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    $acf_post_display_css_dark = true;
+    }
     ?>
     <?php elseif ($style_variation === 'card'): ?>
     <?php
-    ob_start();
-    ?>
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item {
+    static $acf_post_display_css_card = false;
+    if ( ! $acf_post_display_css_card ) {
+    $css = '
+        .acf-post-display.is-style-card .acf-post-display-item {
             border: none;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item:hover {
+        .acf-post-display.is-style-card .acf-post-display-item:hover {
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
             transform: translateY(-2px);
             transition: all 0.3s ease;
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-content {
+        .acf-post-display.is-style-card .acf-post-display-content {
             padding: max(1.5rem,24px);
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button {
+        .acf-post-display.is-style-card .acf-post-display-read-more-button {
             border-radius: 50px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button:hover {
+        .acf-post-display.is-style-card .acf-post-display-read-more-button:hover {
             background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-        }
-    <?php
-    $css = ob_get_clean();
+        }';
     echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    $acf_post_display_css_card = true;
+    }
     ?>
     <?php elseif ($style_variation === 'minimal'): ?>
     <?php
-    ob_start();
-    ?>
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item {
+    static $acf_post_display_css_minimal = false;
+    if ( ! $acf_post_display_css_minimal ) {
+    $css = '
+        .acf-post-display.is-style-minimal .acf-post-display-item {
             background: transparent;
             border: none;
             border-radius: 0;
@@ -149,54 +158,55 @@ if (strpos($className, 'is-style-dark') !== false) {
             padding-bottom: max(1rem,16px);
             margin-bottom: max(1rem,16px);
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item:hover {
+        .acf-post-display.is-style-minimal .acf-post-display-item:hover {
             box-shadow: none;
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-content {
+        .acf-post-display.is-style-minimal .acf-post-display-content {
             padding: 0;
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-thumb {
+        .acf-post-display.is-style-minimal .acf-post-display-thumb {
             border-bottom: none;
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button {
+        .acf-post-display.is-style-minimal .acf-post-display-read-more-button {
             background: transparent;
             color: #0073aa;
             padding: 0;
             text-decoration: underline;
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button:hover {
+        .acf-post-display.is-style-minimal .acf-post-display-read-more-button:hover {
             background: transparent;
             color: #005a87;
-        }
-    <?php
-    $css = ob_get_clean();
+        }';
     echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    $acf_post_display_css_minimal = true;
+    }
     ?>
     <?php elseif ($style_variation === 'bordered'): ?>
     <?php
-    ob_start();
-    ?>
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item {
+    static $acf_post_display_css_bordered = false;
+    if ( ! $acf_post_display_css_bordered ) {
+    $css = '
+        .acf-post-display.is-style-bordered .acf-post-display-item {
             border: 3px solid #1a1a1a;
             border-radius: 0;
             background: #ffffff;
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-item:hover {
+        .acf-post-display.is-style-bordered .acf-post-display-item:hover {
             box-shadow: 4px 4px 0 #1a1a1a;
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-title a {
+        .acf-post-display.is-style-bordered .acf-post-display-title a {
             color: #1a1a1a;
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button {
+        .acf-post-display.is-style-bordered .acf-post-display-read-more-button {
             background: #1a1a1a;
             border-radius: 0;
         }
-        #<?php echo esc_attr($block_id); ?>.acf-post-display .acf-post-display-read-more-button:hover {
+        .acf-post-display.is-style-bordered .acf-post-display-read-more-button:hover {
             background: #333333;
-        }
-    <?php
-    $css = ob_get_clean();
+        }';
     echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
+    $acf_post_display_css_bordered = true;
+    }
     ?>
     <?php endif; ?>
     <?php if ($layout === 'text_links'): ?>

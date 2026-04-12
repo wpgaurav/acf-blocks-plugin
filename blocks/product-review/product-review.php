@@ -20,7 +20,7 @@ if (!empty($className)) {
 }
 
 // Generate unique ID for scoped styles
-$block_id = 'pr-' . uniqid();
+$block_id = 'pr-' . wp_unique_id();
 $anchor_attr = !empty($anchor) ? ' id="' . esc_attr($anchor) . '"' : '';
 
 /**
@@ -36,18 +36,18 @@ if (!function_exists('acf_render_star_svg')) {
         $emptyColor = '#e0e0e0';
 
         // Full star SVG
-        $fullSvg = '<svg width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="' . $color . '" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+        $fullSvg = '<svg width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="' . $color . '" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
 
         // Empty star SVG
-        $emptySvg = '<svg width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="' . $emptyColor . '" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+        $emptySvg = '<svg width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="' . $emptyColor . '" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
 
         for ($i = 0; $i < $fullStars; $i++) {
             $output .= $fullSvg;
         }
         if ($hasHalf) {
             // Unique gradient ID for half star
-            $gradId = 'half-grad-' . uniqid();
-            $output .= '<svg width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="' . $gradId . '"><stop offset="50%" stop-color="' . $color . '"/><stop offset="50%" stop-color="' . $emptyColor . '"/></linearGradient></defs><path fill="url(#' . $gradId . ')" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+            $gradId = 'half-grad-' . wp_unique_id();
+            $output .= '<svg width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="' . esc_attr( $gradId ) . '"><stop offset="50%" stop-color="' . $color . '"/><stop offset="50%" stop-color="' . $emptyColor . '"/></linearGradient></defs><path fill="url(#' . esc_attr( $gradId ) . ')" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
         }
         for ($i = 0; $i < $emptyStars; $i++) {
             $output .= $emptySvg;
@@ -61,7 +61,7 @@ if (!function_exists('acf_render_star_svg')) {
 $product_name = acf_blocks_get_field('product_name', $block);
 $show_title = acf_blocks_get_field('show_title', $block);
 $title_tag_raw = acf_blocks_get_field('title_tag', $block);
-$title_tag = in_array($title_tag_raw, ['p', 'h2', 'h3', 'h4', 'h5', 'h6'], true) ? $title_tag_raw : 'p';
+$title_tag = acf_blocks_validate_heading_tag( $title_tag_raw, 'p' );
 $image_id = acf_blocks_get_field('product_image', $block);
 $image_direct_url = acf_blocks_get_field('product_image_url', $block);
 $overall_rating = acf_blocks_get_field('overall_rating', $block);
@@ -119,7 +119,7 @@ if ( $image_direct_url ) {
     <?php endif; ?>
 
     <?php if ($overall_rating) : ?>
-        <div class="acf-product-review-overall-rating">
+        <div class="acf-product-review-overall-rating" aria-label="<?php echo esc_attr( sprintf( __( 'Rating: %s out of 5', 'acf-blocks' ), number_format( $overall_rating, 1 ) ) ); ?>">
             <div class="acf-product-review-rating-stars">
                 <?php echo acf_render_star_svg($overall_rating, 24); ?>
             </div>
@@ -136,7 +136,7 @@ if ( $image_direct_url ) {
                 <?php foreach ($features as $feature) : ?>
                     <li>
                         <span class="acf-product-review-feature-name"><?php echo esc_html($feature['feature_name']); ?></span>
-                        <span class="acf-product-review-feature-rating">
+                        <span class="acf-product-review-feature-rating" aria-label="<?php echo esc_attr( sprintf( __( 'Rating: %s out of 5', 'acf-blocks' ), number_format( $feature['feature_rating'], 1 ) ) ); ?>">
                             <?php echo acf_render_star_svg($feature['feature_rating'], 16); ?>
                         </span>
                     </li>

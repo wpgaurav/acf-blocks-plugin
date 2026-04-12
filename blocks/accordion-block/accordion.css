@@ -1,1 +1,13 @@
-.acf-accordion{overflow:hidden;margin-top:max(0.5rem,8px);margin-bottom:max(0.5rem,8px)}.acf-accordion-item{margin-bottom:0.25em}.acf-accordion-item:last-child{margin-bottom:0}.acf-accordion-item summary:focus{outline:2px solid currentColor;outline-offset:2px}
+/* === Accordion Block === */
+
+/* --- CSS Variables (Light) --- */
+.acf-accordion{--acc-bg:transparent;--acc-border:color-mix(in srgb,currentColor 12%,transparent);--acc-text:inherit;--acc-summary-bg:color-mix(in srgb,currentColor 4%,transparent);--acc-summary-hover:color-mix(in srgb,currentColor 8%,transparent);--acc-icon-color:currentColor;--acc-content-bg:transparent;--acc-focus:currentColor}
+
+/* --- Dark Mode (class-based) --- */
+:is(.dark,.is-dark-theme,[data-theme=dark]) .acf-accordion{--acc-bg:transparent;--acc-border:rgba(255,255,255,0.1);--acc-summary-bg:rgba(255,255,255,0.05);--acc-summary-hover:rgba(255,255,255,0.1);--acc-focus:rgba(255,255,255,0.6)}
+
+/* --- Light theme override --- */
+[data-theme=light] .acf-accordion{--acc-bg:transparent;--acc-border:color-mix(in srgb,currentColor 12%,transparent);--acc-summary-bg:color-mix(in srgb,currentColor 4%,transparent);--acc-summary-hover:color-mix(in srgb,currentColor 8%,transparent);--acc-focus:currentColor}
+
+/* --- Block Container --- */
+.acf-accordion{overflow:hidden;margin-top:max(0.5rem,8px);margin-bottom:max(0.5rem,8px);background:var(--acc-bg);color:var(--acc-text)}.acf-accordion-item{margin-bottom:0.25em;border:1px solid var(--acc-border);border-radius:6px;overflow:hidden}.acf-accordion-item:last-child{margin-bottom:0}.acf-accordion-item summary{background:var(--acc-summary-bg);transition:background-color 0.2s ease}.acf-accordion-item summary:hover{background:var(--acc-summary-hover)}.acf-accordion-item summary:focus{outline:2px solid var(--acc-focus);outline-offset:2px}

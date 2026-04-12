@@ -3,7 +3,7 @@
  * Plugin Name: ACF Blocks
  * Plugin URI: https://github.com/wpgaurav/acf-blocks-plugin
  * Description: A collection of ACF Pro blocks for the WordPress block editor with automatic field group registration.
- * Version: 2.7.0
+ * Version: 2.7.1
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: Gaurav Tiwari
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin constants
-define( 'ACF_BLOCKS_VERSION', '2.7.0' );
+define( 'ACF_BLOCKS_VERSION', '2.7.1' );
 define( 'ACF_BLOCKS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ACF_BLOCKS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ACF_BLOCKS_PLUGIN_FILE', __FILE__ );
@@ -64,7 +64,11 @@ function acf_blocks_init() {
 }
 add_action( 'plugins_loaded', 'acf_blocks_init' );
 
-// License Manager (loads independently of ACF requirement)
+// License Manager loads independently of the ACF requirement so that users
+// can still manage their license (activate, deactivate, receive update
+// notifications) even when ACF Pro / SCF is not yet installed or active.
+// All block-registration code is gated behind acf_blocks_check_requirements()
+// inside acf_blocks_init(), so nothing block-related runs without ACF.
 require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/license-manager.php';
 $acf_blocks_license = new ACF_Blocks_License_Manager( __FILE__ );
 $acf_blocks_license->hook();

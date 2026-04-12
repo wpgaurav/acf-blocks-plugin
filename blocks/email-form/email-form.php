@@ -32,7 +32,7 @@ $success_message      = acf_blocks_get_field( 'success_message', $block ) ?: __(
 $form_attrs           = acf_blocks_get_field( 'form_attributes', $block );
 
 // Generate unique ID for this block instance.
-$block_uid   = 'ef-' . substr( md5( $block['id'] ?? uniqid() ), 0, 8 );
+$block_uid   = 'ef-' . substr( md5( $block['id'] ?? wp_unique_id() ), 0, 8 );
 $name_id     = $block_uid . '-name';
 $email_id    = $block_uid . '-email';
 

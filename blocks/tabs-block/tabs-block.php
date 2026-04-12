@@ -20,7 +20,7 @@ $inline_style      = acf_blocks_get_field( 'acf_tabs_inline', $block );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
 
 $style_class = $tab_style ? ' acf-tabs-' . esc_attr( $tab_style ) : ' acf-tabs-default';
-$unique_id   = 'acf-tabs-' . ( $block['id'] ?? uniqid() );
+$unique_id   = 'acf-tabs-' . ( $block['id'] ?? wp_unique_id() );
 
 ?>
 

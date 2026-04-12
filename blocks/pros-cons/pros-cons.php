@@ -68,7 +68,7 @@ if ($show_first === 'positive') {
 $anchor_attr = $anchor ? ' id="' . esc_attr($anchor) . '"' : '';
 
 // Generate unique ID for scoped inline styles
-$block_id = 'pc-' . uniqid();
+$block_id = 'pc-' . wp_unique_id();
 ?>
 
 <div <?php echo $anchor_attr; ?> class="<?php echo esc_attr(implode(' ', $wrapper_classes)); ?>" data-pc-id="<?php echo esc_attr($block_id); ?>" data-acf-block="pros-cons">

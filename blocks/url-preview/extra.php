@@ -40,7 +40,7 @@ function acf_url_preview_admin_scripts() {
         wp_enqueue_script( 'acf-url-preview-admin' );
         wp_add_inline_script( 'acf-url-preview-admin', $inline_script );
     } else {
-        wp_enqueue_script( 'acf-url-preview-admin', $script_url, array( 'jquery' ), filemtime( $script_path ), true );
+        wp_enqueue_script( 'acf-url-preview-admin', $script_url, array( 'jquery' ), file_exists( $script_path ) ? filemtime( $script_path ) : ACF_BLOCKS_VERSION, true );
     }
 
     wp_localize_script( 'acf-url-preview-admin', 'acfUrlPreview', array(
@@ -500,7 +500,9 @@ function acf_url_preview_get_image_dimensions( $url ) {
     file_put_contents( $temp, $data );
 
     $size = @getimagesize( $temp );
-    @unlink( $temp );
+    if ( file_exists( $temp ) ) {
+        unlink( $temp );
+    }
 
     if ( $size && isset( $size[0] ) && isset( $size[1] ) ) {
         return array(
@@ -628,7 +630,9 @@ function acf_url_preview_import_image_handler() {
 
     // Ensure it's an image
     if ( ! $mime_type || strpos( $mime_type, 'image/' ) !== 0 ) {
-        @unlink( $temp_file );
+        if ( file_exists( $temp_file ) ) {
+            unlink( $temp_file );
+        }
         wp_send_json_error( __( 'URL does not point to a valid image', 'acf-blocks' ) );
     }
 
@@ -653,7 +657,9 @@ function acf_url_preview_import_image_handler() {
     $attachment_id = media_handle_sideload( $file, $post_id );
 
     if ( is_wp_error( $attachment_id ) ) {
-        @unlink( $temp_file );
+        if ( file_exists( $temp_file ) ) {
+            unlink( $temp_file );
+        }
         wp_send_json_error( $attachment_id->get_error_message() );
     }
 

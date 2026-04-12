@@ -61,7 +61,7 @@ if ( ! empty( $items ) ) {
 $progress_percent = $total_items > 0 ? round( ( $checked_items / $total_items ) * 100 ) : 0;
 
 // Generate unique ID
-$block_id = 'checklist-' . uniqid();
+$block_id = 'checklist-' . wp_unique_id();
 
 $anchor_attr = $anchor ? ' id="' . esc_attr( $anchor ) . '"' : '';
 ?>

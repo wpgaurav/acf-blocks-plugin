@@ -27,20 +27,32 @@ function acf_blocks_get_field( $name, $block = array() ) {
     // Review CPTs store data with field_ prefix (e.g. field_pc_pros_list)
     // while post CPTs use bare names (e.g. pc_pros_list).
     $data = $block['data'] ?? array();
+    $value = null;
+
     if ( isset( $data[ $name ] ) && $data[ $name ] !== '' && $data[ $name ] !== null ) {
-        return $data[ $name ];
-    }
-    if ( isset( $data[ 'field_' . $name ] ) && $data[ 'field_' . $name ] !== '' && $data[ 'field_' . $name ] !== null ) {
-        return $data[ 'field_' . $name ];
+        $value = $data[ $name ];
+    } elseif ( isset( $data[ 'field_' . $name ] ) && $data[ 'field_' . $name ] !== '' && $data[ 'field_' . $name ] !== null ) {
+        $value = $data[ 'field_' . $name ];
+    } else {
+        // Fallback: try native get_field (works in older ACF versions).
+        $native = get_field( $name );
+        if ( $native !== false && $native !== null && $native !== '' ) {
+            $value = $native;
+        }
     }
 
-    // Fallback: try native get_field (works in older ACF versions).
-    $value = get_field( $name );
-    if ( $value !== false && $value !== null && $value !== '' ) {
-        return $value;
-    }
+    /**
+     * Filter the value returned by acf_blocks_get_field().
+     *
+     * Allows themes and plugins to modify ACF block field values at runtime.
+     *
+     * @param mixed  $value The resolved field value (null when not found).
+     * @param string $name  The field name.
+     * @param array  $block The block array passed to render templates.
+     */
+    $value = apply_filters( 'acf_blocks_field_value', $value, $name, $block );
 
-    return null;
+    return $value;
 }
 
 /**

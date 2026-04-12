@@ -24,7 +24,7 @@ if ($className) {
 }
 
 // Generate unique ID for scoped styles
-$block_id = 'changelog-' . uniqid();
+$block_id = 'changelog-' . wp_unique_id();
 $anchor_attr = $anchor ? ' id="' . esc_attr($anchor) . '"' : '';
 ?>
 <div<?php echo $anchor_attr; ?> class="<?php echo esc_attr(implode(' ', $wrapper_classes)); ?>" data-changelog-id="<?php echo esc_attr($block_id); ?>">

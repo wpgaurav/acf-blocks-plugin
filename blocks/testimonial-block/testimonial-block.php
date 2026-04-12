@@ -36,7 +36,7 @@ $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
 $inline_style = acf_blocks_get_field( 'acf_testimonial_inline', $block );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
 
-$unique_id = 'acf-testimonial-' . ( $block['id'] ?? uniqid() );
+$unique_id = 'acf-testimonial-' . ( $block['id'] ?? wp_unique_id() );
 
 // Check for legacy ACF field content (backward compatibility)
 $legacy_quote = acf_blocks_get_field( 'acf_testimonial_quote', $block );
@@ -74,10 +74,10 @@ $inner_blocks_template = [
             <?php endif; ?>
 
             <?php if ( $rating && $rating > 0 ) : ?>
-                <div class="acf-testimonial-rating">
+                <div class="acf-testimonial-rating" aria-label="<?php echo esc_attr( sprintf( __( 'Rating: %s out of 5', 'acf-blocks' ), $rating ) ); ?>">
                     <?php
                     for ( $i = 1; $i <= 5; $i++ ) {
-                        echo $i <= $rating ? '<span class="acf-testimonial-star acf-testimonial-star-filled">★</span>' : '<span class="acf-testimonial-star">☆</span>';
+                        echo $i <= $rating ? '<span class="acf-testimonial-star acf-testimonial-star-filled" aria-hidden="true">★</span>' : '<span class="acf-testimonial-star" aria-hidden="true">☆</span>';
                     }
                     ?>
                 </div>

@@ -243,7 +243,7 @@ if ( $highlight_active ) {
 }
 
 // Generate unique ID for this block instance
-$block_id = ! empty( $block['id'] ) ? $block['id'] : 'acf-toc-' . uniqid();
+$block_id = ! empty( $block['id'] ) ? $block['id'] : 'acf-toc-' . wp_unique_id();
 
 // Get post content for heading extraction
 // Render blocks so headings from ACF blocks (e.g. Hero) are included

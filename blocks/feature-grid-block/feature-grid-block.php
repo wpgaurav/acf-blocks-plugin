@@ -28,7 +28,7 @@ if (strpos($className, 'is-style-card') !== false) {
 }
 
 // Generate unique block ID for scoping inline styles
-$block_id = $anchor ? $anchor : 'acf-feature-grid-' . uniqid();
+$block_id = $anchor ? $anchor : 'acf-feature-grid-' . wp_unique_id();
 
 // ACF fields
 $use_innerblocks = acf_blocks_get_field('acf_fg_use_innerblocks', $block);

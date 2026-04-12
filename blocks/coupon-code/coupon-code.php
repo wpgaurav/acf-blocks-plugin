@@ -14,7 +14,7 @@ $copy_coupon_text       = acf_blocks_get_field( 'cb_copy_text', $block ) ?: __( 
 $activate_discount_text = acf_blocks_get_field( 'cb_activate_text', $block ) ?: __( 'Activate Discount', 'acf-blocks' );
 $activate_discount_url  = acf_blocks_get_field( 'cb_activate_url', $block );
 
-$block_id = 'coupon-' . ( $block['id'] ?? uniqid() );
+$block_id = 'coupon-' . ( $block['id'] ?? wp_unique_id() );
 ?>
 
 <div class="acf-coupon-code-block" id="<?php echo esc_attr( $block_id ); ?>">
