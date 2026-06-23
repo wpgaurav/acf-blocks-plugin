@@ -2,6 +2,14 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.8.1] - 2026-06-23
+
+### Added — Migrator improvements
+- **Batched migration:** the Migrator now processes **30 posts per run** with a **Continue — Migrate Next 30** button and a progress bar, instead of one large request — friendlier on big sites and PHP time limits.
+- **Affected-post visibility:** **Scan** now lists every affected post (title, status, edit/view links) with colour-coded badges showing exactly what will change; each migration batch shows the same per-post detail for what it just changed.
+- **New repair — legacy accordion field schema:** `acf/accordion` blocks whose data used the old `acf_accord_heading` / `acf_accord_content` sub-fields (which render blank on the current template) are remapped in place to `acf_accord_group_title` / `acf_accord_group_content`, preserving FAQ schema and classes. This is the cause behind blank FAQ sections on older posts.
+- **Restore points across batches:** revert now covers the whole multi-batch session, and a new **Discard restore points** action clears backups without changing migrated content. WP-CLI: `wp acf-blocks migrate [--limit=<n>] [--dry-run] [--revert] [--discard]`.
+
 ## [2.8.0] - 2026-06-23
 
 ### Fixed

@@ -314,6 +314,23 @@ function acf_blocks_migrator_transform_list( $blocks, &$stats, &$changed ) {
                 $i++;
                 continue 2;
 
+            case 'acf/accordion':
+                // Current block name, but older content stored its repeater
+                // sub-fields as acf_accord_heading / acf_accord_content, which
+                // the template no longer reads — so the block renders blank.
+                // Remap those sub-fields in place to the current schema.
+                $block = acf_blocks_migrator_remap_accordion_fields( $block, $did );
+                if ( $did ) {
+                    $stats['accordion-fields'] = ( $stats['accordion-fields'] ?? 0 ) + 1;
+                    $changed = true;
+                }
+                if ( ! empty( $block['innerBlocks'] ) ) {
+                    $block['innerBlocks'] = acf_blocks_migrator_transform_list( $block['innerBlocks'], $stats, $changed );
+                }
+                $out[] = $block;
+                $i++;
+                continue 2;
+
             case 'acf/poll':
                 $stats['poll-unsupported'] = ( $stats['poll-unsupported'] ?? 0 ) + 1;
                 $out[] = $block; // left untouched
@@ -330,6 +347,48 @@ function acf_blocks_migrator_transform_list( $blocks, &$stats, &$changed ) {
     }
 
     return $out;
+}
+
+/**
+ * Remap a current acf/accordion block's legacy repeater sub-fields.
+ *
+ * Older content used acf_accord_heading / acf_accord_content; the current
+ * template reads acf_accord_group_title / acf_accord_group_content. This
+ * renames the value keys (and their _field-key references) in place, leaving
+ * every other setting — FAQ schema, classes, group count — untouched.
+ *
+ * @param array $block Parsed acf/accordion block.
+ * @param bool  $did   Set true if any sub-field was remapped.
+ * @return array The block (modified when $did is true).
+ */
+function acf_blocks_migrator_remap_accordion_fields( $block, &$did ) {
+    $did  = false;
+    $data = isset( $block['attrs']['data'] ) ? (array) $block['attrs']['data'] : array();
+
+    if ( empty( $data ) ) {
+        return $block;
+    }
+
+    $remapped = array();
+    foreach ( $data as $k => $v ) {
+        if ( preg_match( '/^(_?)acf_accord_groups_(\d+)_acf_accord_heading$/', $k, $m ) ) {
+            $nk              = $m[1] . 'acf_accord_groups_' . $m[2] . '_acf_accord_group_title';
+            $remapped[ $nk ] = ( '_' === $m[1] ) ? 'field_acf_accord_group_title' : $v;
+            $did             = true;
+        } elseif ( preg_match( '/^(_?)acf_accord_groups_(\d+)_acf_accord_content$/', $k, $m ) ) {
+            $nk              = $m[1] . 'acf_accord_groups_' . $m[2] . '_acf_accord_group_content';
+            $remapped[ $nk ] = ( '_' === $m[1] ) ? 'field_acf_accord_group_content' : $v;
+            $did             = true;
+        } else {
+            $remapped[ $k ] = $v;
+        }
+    }
+
+    if ( $did ) {
+        $block['attrs']['data'] = $remapped;
+    }
+
+    return $block;
 }
 
 /*
@@ -657,16 +716,60 @@ function acf_blocks_migrator_migrate_content( $content, &$report ) {
 }
 
 /**
+ * Issue categories: key => [ label, text colour, background colour ].
+ *
+ * Single source of truth for the scan breakdown and the per-post badges.
+ *
+ * @return array<string,array{0:string,1:string,2:string}>
+ */
+function acf_blocks_migrator_categories() {
+    return array(
+        'unparseable'      => array( __( 'Repaired markup', 'acf-blocks' ),            '#9a5700', '#fcf0e0' ),
+        'orphaned_posts'   => array( __( 'Recovered InnerBlocks HTML', 'acf-blocks' ), '#0b5394', '#e6f0fa' ),
+        'toc'              => array( __( 'Table of Contents → Toc', 'acf-blocks' ),     '#0a6b2e', '#e6f4ea' ),
+        'productbox'       => array( __( 'Product Box', 'acf-blocks' ),                 '#0a6b2e', '#e6f4ea' ),
+        'accordion-item'   => array( __( 'Accordion Item → Accordion', 'acf-blocks' ),  '#0a6b2e', '#e6f4ea' ),
+        'accordion-group'  => array( __( 'Accordion Group → Accordion', 'acf-blocks' ), '#0a6b2e', '#e6f4ea' ),
+        'acf-accordion'    => array( __( 'ACF Accordion → Accordion', 'acf-blocks' ),   '#0a6b2e', '#e6f4ea' ),
+        'accordion-fields' => array( __( 'Accordion fields fixed', 'acf-blocks' ),      '#0a6b2e', '#e6f4ea' ),
+        'poll-unsupported' => array( __( 'Poll (manual — skipped)', 'acf-blocks' ),     '#8a6d00', '#fbf6e0' ),
+    );
+}
+
+/**
+ * Reduce a per-post migrate report to the category keys it touched.
+ *
+ * @param array $report Result from acf_blocks_migrator_migrate_content().
+ * @return string[] Category keys (e.g. array( 'orphaned_posts', 'toc' )).
+ */
+function acf_blocks_migrator_report_keys( $report ) {
+    $keys = array();
+    if ( ! empty( $report['unparseable'] ) ) {
+        $keys[] = 'unparseable';
+    }
+    if ( ! empty( $report['orphaned'] ) ) {
+        $keys[] = 'orphaned_posts';
+    }
+    foreach ( (array) $report['legacy'] as $k => $v ) {
+        if ( $v ) {
+            $keys[] = $k;
+        }
+    }
+    return $keys;
+}
+
+/**
  * Scan all editable posts and tally migration opportunities.
  *
+ * @param int $list_limit Max affected posts to include in the returned list.
  * @return array {
  *     @type int   $scanned       Posts containing ACF markup.
  *     @type int   $posts_changed Posts a migration run would alter.
  *     @type array $totals        Per-issue instance counts.
- *     @type array $post_ids      Affected post IDs (capped sample per issue).
+ *     @type array $posts         Affected posts (id, title, edit, view, status, keys).
  * }
  */
-function acf_blocks_migrator_scan() {
+function acf_blocks_migrator_scan( $list_limit = 500 ) {
     $ids = get_posts( array(
         'post_type'      => get_post_types( array( 'show_in_rest' => true ), 'names' ),
         'post_status'    => array( 'publish', 'draft', 'pending', 'private', 'future' ),
@@ -683,10 +786,12 @@ function acf_blocks_migrator_scan() {
         'accordion-item'   => 0,
         'accordion-group'  => 0,
         'acf-accordion'    => 0,
+        'accordion-fields' => 0,
         'poll-unsupported' => 0,
     );
     $scanned       = 0;
     $posts_changed = 0;
+    $posts         = array();
 
     foreach ( $ids as $id ) {
         $content = get_post_field( 'post_content', $id );
@@ -708,13 +813,37 @@ function acf_blocks_migrator_scan() {
         }
         if ( ! empty( $report['changed'] ) ) {
             $posts_changed++;
+            if ( count( $posts ) < $list_limit ) {
+                $posts[] = acf_blocks_migrator_post_detail( $id, $report );
+            }
         }
     }
 
     return array(
-        'scanned'       => $scanned,
-        'posts_changed' => $posts_changed,
-        'totals'        => $totals,
+        'scanned'        => $scanned,
+        'posts_changed'  => $posts_changed,
+        'totals'         => $totals,
+        'posts'          => $posts,
+        'list_truncated' => $posts_changed > count( $posts ),
+    );
+}
+
+/**
+ * Build a display record for an affected post.
+ *
+ * @param int   $id     Post ID.
+ * @param array $report Per-post migrate report.
+ * @return array
+ */
+function acf_blocks_migrator_post_detail( $id, $report ) {
+    $title = get_the_title( $id );
+    return array(
+        'id'     => $id,
+        'title'  => ( '' !== $title ) ? $title : sprintf( '#%d', $id ),
+        'edit'   => get_edit_post_link( $id, 'raw' ),
+        'view'   => get_permalink( $id ),
+        'status' => get_post_status( $id ),
+        'keys'   => acf_blocks_migrator_report_keys( $report ),
     );
 }
 
@@ -729,16 +858,29 @@ const ACF_BLOCKS_MIGRATOR_BACKUP_META = '_acf_blocks_migrator_backup';
 const ACF_BLOCKS_MIGRATOR_BATCH_OPTION = 'acf_blocks_migrator_last_batch';
 
 /**
- * Apply migrations across all editable posts.
- *
- * For every post that changes, the original content is first snapshotted as a
- * native WordPress revision (best effort) and stored in post meta so the run
- * can be reverted later regardless of the site's revision settings.
- *
- * @param bool $dry_run When true, count but do not write.
- * @return array { @type int $changed, @type int $scanned, @type array $errors }
+ * How many posts a single "Migrate" run processes before pausing.
  */
-function acf_blocks_migrator_run( $dry_run = false ) {
+const ACF_BLOCKS_MIGRATOR_BATCH_SIZE = 30;
+
+/**
+ * Migrate up to $limit affected posts, then report what is left.
+ *
+ * Processes posts in order, writing at most $limit of them. For each post
+ * written, the original content is snapshotted as a native WordPress revision
+ * and (if not already present) stored in post meta as a restore point. The
+ * migrated IDs accumulate into the batch record so a multi-batch run can be
+ * reverted as a whole.
+ *
+ * @param int $limit Max posts to write this run. 0 = no limit (whole site).
+ * @return array {
+ *     @type array $migrated  Per-post detail records written this run.
+ *     @type int   $count     Posts written this run.
+ *     @type int   $remaining Affected posts still pending after this run.
+ *     @type int   $scanned   Posts containing ACF markup that were examined.
+ *     @type array $errors    Per-post error strings.
+ * }
+ */
+function acf_blocks_migrator_run_batch( $limit = ACF_BLOCKS_MIGRATOR_BATCH_SIZE ) {
     $ids = get_posts( array(
         'post_type'      => get_post_types( array( 'show_in_rest' => true ), 'names' ),
         'post_status'    => array( 'publish', 'draft', 'pending', 'private', 'future' ),
@@ -747,17 +889,11 @@ function acf_blocks_migrator_run( $dry_run = false ) {
         'no_found_rows'  => true,
     ) );
 
-    $changed = 0;
-    $scanned = 0;
-    $errors  = array();
-
-    // Only one revert point is kept. Starting a real run supersedes any
-    // previous batch, so clear its leftover backups first.
-    if ( ! $dry_run ) {
-        acf_blocks_migrator_clear_backups();
-    }
-
+    $migrated     = array();
     $migrated_ids = array();
+    $errors       = array();
+    $remaining    = 0;
+    $scanned      = 0;
 
     foreach ( $ids as $id ) {
         $content = get_post_field( 'post_content', $id );
@@ -771,16 +907,21 @@ function acf_blocks_migrator_run( $dry_run = false ) {
             continue;
         }
 
-        if ( $dry_run ) {
-            $changed++;
+        // Already hit this run's quota — just count what remains.
+        if ( $limit > 0 && count( $migrated_ids ) >= $limit ) {
+            $remaining++;
             continue;
         }
 
-        // Snapshot the original: a native revision (so it shows in the
-        // editor's Revisions browser) and a meta backup (the reliable
-        // revert source). Store the backup before updating the post.
+        $detail = acf_blocks_migrator_post_detail( $id, $report );
+
+        // Native revision + restore point (only set the backup once, so the
+        // true pre-migration content survives repeated runs).
         wp_save_post_revision( $id );
-        update_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META, $content );
+        $had_backup = '' !== get_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META, true );
+        if ( ! $had_backup ) {
+            update_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META, $content );
+        }
 
         $result = wp_update_post( array(
             'ID'           => $id,
@@ -788,25 +929,32 @@ function acf_blocks_migrator_run( $dry_run = false ) {
         ), true );
 
         if ( is_wp_error( $result ) ) {
-            delete_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META );
+            if ( ! $had_backup ) {
+                delete_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META );
+            }
             $errors[] = sprintf( '#%d: %s', $id, $result->get_error_message() );
-        } else {
-            $changed++;
-            $migrated_ids[] = $id;
+            continue;
         }
+
+        $migrated[]     = $detail;
+        $migrated_ids[] = $id;
     }
 
-    if ( ! $dry_run && ! empty( $migrated_ids ) ) {
+    if ( ! empty( $migrated_ids ) ) {
+        $batch    = acf_blocks_migrator_get_last_batch();
+        $existing = $batch ? $batch['ids'] : array();
         update_option( ACF_BLOCKS_MIGRATOR_BATCH_OPTION, array(
-            'ids'  => $migrated_ids,
+            'ids'  => array_values( array_unique( array_merge( $existing, $migrated_ids ) ) ),
             'time' => time(),
         ), false );
     }
 
     return array(
-        'changed' => $changed,
-        'scanned' => $scanned,
-        'errors'  => $errors,
+        'migrated'  => $migrated,
+        'count'     => count( $migrated_ids ),
+        'remaining' => $remaining,
+        'scanned'   => $scanned,
+        'errors'    => $errors,
     );
 }
 
@@ -825,15 +973,20 @@ function acf_blocks_migrator_get_last_batch() {
 
 /**
  * Delete stored backups for the recorded batch and clear the batch record.
+ *
+ * @return int Number of restore points discarded.
  */
 function acf_blocks_migrator_clear_backups() {
-    $batch = acf_blocks_migrator_get_last_batch();
+    $batch   = acf_blocks_migrator_get_last_batch();
+    $count   = 0;
     if ( $batch ) {
         foreach ( $batch['ids'] as $id ) {
             delete_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META );
+            $count++;
         }
     }
     delete_option( ACF_BLOCKS_MIGRATOR_BATCH_OPTION );
+    return $count;
 }
 
 /**
@@ -885,7 +1038,7 @@ function acf_blocks_migrator_revert() {
  */
 
 /**
- * Handle Migrator form submissions (scan / dry-run / apply).
+ * Handle Migrator form submissions (scan / migrate / revert / discard).
  */
 function acf_blocks_migrator_handle_actions() {
     if ( ! isset( $_POST['acf_blocks_migrator_action'] ) || ! current_user_can( 'manage_options' ) ) {
@@ -893,8 +1046,8 @@ function acf_blocks_migrator_handle_actions() {
     }
     check_admin_referer( 'acf_blocks_migrator', 'acf_blocks_migrator_nonce' );
 
-    // Scanning/migrating runs over every post in one request; lift the time
-    // limit so a large site can't half-complete on a PHP timeout.
+    // A scan/migrate run iterates every post; lift the time limit so a large
+    // site can't half-complete on a PHP timeout.
     if ( function_exists( 'set_time_limit' ) ) {
         @set_time_limit( 0 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
     }
@@ -902,23 +1055,86 @@ function acf_blocks_migrator_handle_actions() {
     $action = sanitize_text_field( wp_unslash( $_POST['acf_blocks_migrator_action'] ) );
 
     if ( 'scan' === $action ) {
-        $scan = acf_blocks_migrator_scan();
-        set_transient( 'acf_blocks_migrator_report', array( 'type' => 'scan', 'data' => $scan ), 5 * MINUTE_IN_SECONDS );
-    } elseif ( 'dry_run' === $action ) {
-        $res = acf_blocks_migrator_run( true );
-        set_transient( 'acf_blocks_migrator_report', array( 'type' => 'dry_run', 'data' => $res ), 5 * MINUTE_IN_SECONDS );
-    } elseif ( 'apply' === $action ) {
-        $res = acf_blocks_migrator_run( false );
-        set_transient( 'acf_blocks_migrator_report', array( 'type' => 'apply', 'data' => $res ), 5 * MINUTE_IN_SECONDS );
+        $data = acf_blocks_migrator_scan();
+        set_transient( 'acf_blocks_migrator_report', array( 'type' => 'scan', 'data' => $data ), 5 * MINUTE_IN_SECONDS );
+    } elseif ( 'migrate' === $action ) {
+        $data = acf_blocks_migrator_run_batch( ACF_BLOCKS_MIGRATOR_BATCH_SIZE );
+        set_transient( 'acf_blocks_migrator_report', array( 'type' => 'migrate', 'data' => $data ), 5 * MINUTE_IN_SECONDS );
     } elseif ( 'revert' === $action ) {
-        $res = acf_blocks_migrator_revert();
-        set_transient( 'acf_blocks_migrator_report', array( 'type' => 'revert', 'data' => $res ), 5 * MINUTE_IN_SECONDS );
+        $data = acf_blocks_migrator_revert();
+        set_transient( 'acf_blocks_migrator_report', array( 'type' => 'revert', 'data' => $data ), 5 * MINUTE_IN_SECONDS );
+    } elseif ( 'discard' === $action ) {
+        $count = acf_blocks_migrator_clear_backups();
+        set_transient( 'acf_blocks_migrator_report', array( 'type' => 'discard', 'data' => array( 'count' => $count ) ), 5 * MINUTE_IN_SECONDS );
     }
 
     wp_safe_redirect( admin_url( 'options-general.php?page=acf-blocks-license&acf_blocks_migrated=1#acf-blocks-migrator' ) );
     exit;
 }
 add_action( 'admin_init', 'acf_blocks_migrator_handle_actions' );
+
+/**
+ * Render a row of category badges for a set of category keys.
+ *
+ * @param string[] $keys Category keys.
+ * @param array    $cats Output of acf_blocks_migrator_categories().
+ */
+function acf_blocks_migrator_render_badges( $keys, $cats ) {
+    foreach ( $keys as $k ) {
+        if ( ! isset( $cats[ $k ] ) ) {
+            continue;
+        }
+        list( $label, $fg, $bg ) = $cats[ $k ];
+        printf(
+            '<span class="acfbm-badge" style="color:%1$s;background:%2$s;">%3$s</span>',
+            esc_attr( $fg ),
+            esc_attr( $bg ),
+            esc_html( $label )
+        );
+    }
+}
+
+/**
+ * Render a table of affected/migrated posts.
+ *
+ * @param array $posts Post detail records.
+ * @param array $cats  Categories map.
+ */
+function acf_blocks_migrator_render_post_table( $posts, $cats ) {
+    if ( empty( $posts ) ) {
+        return;
+    }
+    ?>
+    <div class="acfbm-scroll">
+        <table class="widefat striped acfbm-table">
+            <thead>
+                <tr>
+                    <th><?php esc_html_e( 'Post', 'acf-blocks' ); ?></th>
+                    <th><?php esc_html_e( 'What changes', 'acf-blocks' ); ?></th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php foreach ( $posts as $p ) : ?>
+                <tr>
+                    <td>
+                        <?php if ( ! empty( $p['edit'] ) ) : ?>
+                            <a href="<?php echo esc_url( $p['edit'] ); ?>"><strong><?php echo esc_html( $p['title'] ); ?></strong></a>
+                        <?php else : ?>
+                            <strong><?php echo esc_html( $p['title'] ); ?></strong>
+                        <?php endif; ?>
+                        <span style="color:#787c82;">— <?php echo esc_html( $p['status'] ); ?></span>
+                        <?php if ( ! empty( $p['view'] ) ) : ?>
+                            · <a href="<?php echo esc_url( $p['view'] ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'view', 'acf-blocks' ); ?></a>
+                        <?php endif; ?>
+                    </td>
+                    <td><?php acf_blocks_migrator_render_badges( $p['keys'], $cats ); ?></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php
+}
 
 /**
  * Render the Migrator card on the options page.
@@ -930,104 +1146,174 @@ function acf_blocks_migrator_render_card() {
         return;
     }
 
-    $report = get_transient( 'acf_blocks_migrator_report' );
-    $labels = array(
-        'unparseable'      => __( 'Unparseable markup (orphaned/dangling delimiters)', 'acf-blocks' ),
-        'orphaned_posts'   => __( 'Posts with orphaned InnerBlocks HTML', 'acf-blocks' ),
-        'toc'              => __( 'Legacy Table of Contents → Toc', 'acf-blocks' ),
-        'productbox'       => __( 'Legacy Product Box → Product Box', 'acf-blocks' ),
-        'accordion-item'   => __( 'Legacy Accordion Item → Accordion', 'acf-blocks' ),
-        'accordion-group'  => __( 'Legacy Accordion Group → Accordion', 'acf-blocks' ),
-        'acf-accordion'    => __( 'Legacy ACF Accordion → Accordion', 'acf-blocks' ),
-        'poll-unsupported' => __( 'Poll blocks (no equivalent — needs manual action)', 'acf-blocks' ),
-    );
+    $report    = get_transient( 'acf_blocks_migrator_report' );
+    $cats      = acf_blocks_migrator_categories();
+    $batch     = acf_blocks_migrator_get_last_batch();
+    $batch_n   = $batch ? count( $batch['ids'] ) : 0;
+    $type      = ( is_array( $report ) && isset( $report['type'] ) ) ? $report['type'] : '';
+    $data      = ( is_array( $report ) && isset( $report['data'] ) ) ? $report['data'] : array();
     ?>
-    <div class="card" id="acf-blocks-migrator" style="max-width: 600px; margin-top: 20px;">
+    <style>
+        #acf-blocks-migrator .acfbm-badge{display:inline-block;font-size:11px;font-weight:600;line-height:1.7;padding:0 8px;border-radius:10px;margin:2px 4px 2px 0;white-space:nowrap;}
+        #acf-blocks-migrator .acfbm-scroll{max-height:360px;overflow:auto;border:1px solid #e2e4e7;border-radius:6px;margin-top:10px;}
+        #acf-blocks-migrator .acfbm-table{border:0;margin:0;}
+        #acf-blocks-migrator .acfbm-bar{height:12px;border-radius:6px;background:#e2e4e7;overflow:hidden;margin:8px 0;}
+        #acf-blocks-migrator .acfbm-bar > span{display:block;height:100%;background:#2271b1;transition:width .3s;}
+        #acf-blocks-migrator .acfbm-note{border-radius:6px;padding:12px 14px;margin-bottom:14px;}
+        #acf-blocks-migrator .acfbm-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px;}
+        #acf-blocks-migrator .acfbm-summary{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;}
+        #acf-blocks-migrator .acfbm-chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:3px 10px;border-radius:14px;border:1px solid #dcdcde;}
+        #acf-blocks-migrator .acfbm-chip b{font-size:13px;}
+    </style>
+    <div class="card" id="acf-blocks-migrator" style="max-width: 820px; margin-top: 20px;">
         <h2 style="margin-top: 0;"><?php esc_html_e( 'Block Migrator &amp; Repair', 'acf-blocks' ); ?></h2>
         <p style="color:#50575e;">
-            <?php esc_html_e( 'Migrate legacy/renamed blocks to their current versions and repair markup that causes "Attempt Recovery" or "block unavailable" errors. Changes are saved as post revisions, so they can be reverted.', 'acf-blocks' ); ?>
+            <?php
+            printf(
+                /* translators: %d: batch size */
+                esc_html__( 'Migrate legacy/renamed blocks and repair markup that causes "Attempt Recovery" or "block unavailable" errors. Posts are processed %d at a time, and every change keeps a revision and a restore point so it can be reverted.', 'acf-blocks' ),
+                (int) ACF_BLOCKS_MIGRATOR_BATCH_SIZE
+            );
+            ?>
         </p>
 
-        <?php if ( is_array( $report ) && isset( $report['type'], $report['data'] ) ) : ?>
-            <?php $data = $report['data']; ?>
-
-            <?php if ( 'scan' === $report['type'] ) : ?>
-                <div style="background:#f0f6fc;border:1px solid #c3d4e6;border-radius:6px;padding:12px 14px;margin-bottom:14px;">
-                    <strong><?php printf( esc_html__( 'Scan complete — %1$d posts with ACF blocks, %2$d would be changed.', 'acf-blocks' ), (int) $data['scanned'], (int) $data['posts_changed'] ); ?></strong>
-                    <table class="widefat striped" style="margin-top:10px;">
-                        <tbody>
-                        <?php foreach ( $labels as $key => $label ) : ?>
-                            <tr>
-                                <td><?php echo esc_html( $label ); ?></td>
-                                <td style="text-align:right;width:70px;"><strong><?php echo (int) ( $data['totals'][ $key ] ?? 0 ); ?></strong></td>
-                            </tr>
+        <?php if ( 'scan' === $type ) : ?>
+            <?php $affected = (int) $data['posts_changed']; ?>
+            <div class="acfbm-note" style="background:<?php echo $affected ? '#f0f6fc' : '#edfaef'; ?>;border:1px solid <?php echo $affected ? '#c3d4e6' : '#a7e3b4'; ?>;">
+                <strong>
+                    <?php
+                    if ( $affected ) {
+                        printf(
+                            esc_html__( '%1$d post(s) need migration (out of %2$d with ACF blocks).', 'acf-blocks' ),
+                            $affected,
+                            (int) $data['scanned']
+                        );
+                    } else {
+                        esc_html_e( 'All clear — no posts need migration.', 'acf-blocks' );
+                    }
+                    ?>
+                </strong>
+                <?php if ( $affected ) : ?>
+                    <div class="acfbm-summary">
+                        <?php foreach ( $cats as $key => $cat ) : ?>
+                            <?php $n = (int) ( $data['totals'][ $key ] ?? 0 ); ?>
+                            <?php if ( $n > 0 ) : ?>
+                                <span class="acfbm-chip"><b><?php echo esc_html( number_format_i18n( $n ) ); ?></b> <?php echo esc_html( $cat[0] ); ?></span>
+                            <?php endif; ?>
                         <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php elseif ( 'dry_run' === $report['type'] ) : ?>
-                <div style="background:#fcf9e8;border:1px solid #e6db8e;border-radius:6px;padding:12px 14px;margin-bottom:14px;">
-                    <strong><?php printf( esc_html__( 'Dry run — %1$d of %2$d scanned posts would be migrated. No changes were written.', 'acf-blocks' ), (int) $data['changed'], (int) $data['scanned'] ); ?></strong>
-                </div>
-            <?php elseif ( 'apply' === $report['type'] ) : ?>
-                <div style="background:#edfaef;border:1px solid #a7e3b4;border-radius:6px;padding:12px 14px;margin-bottom:14px;">
-                    <strong><?php printf( esc_html__( 'Migration complete — %1$d post(s) updated. A revision and a restore point were saved for each.', 'acf-blocks' ), (int) $data['changed'] ); ?></strong>
-                    <?php if ( ! empty( $data['errors'] ) ) : ?>
-                        <p style="color:#b32d2e;margin:8px 0 0;"><?php esc_html_e( 'Errors:', 'acf-blocks' ); ?></p>
-                        <ul style="margin:4px 0 0 18px;list-style:disc;">
-                            <?php foreach ( array_slice( $data['errors'], 0, 20 ) as $err ) : ?>
-                                <li style="color:#b32d2e;"><?php echo esc_html( $err ); ?></li>
-                            <?php endforeach; ?>
-                        </ul>
+                    </div>
+                    <?php acf_blocks_migrator_render_post_table( $data['posts'], $cats ); ?>
+                    <?php if ( ! empty( $data['list_truncated'] ) ) : ?>
+                        <p style="color:#787c82;margin:8px 0 0;"><em><?php esc_html_e( 'List truncated for display; all affected posts will still be migrated.', 'acf-blocks' ); ?></em></p>
                     <?php endif; ?>
+                <?php endif; ?>
+            </div>
+
+        <?php elseif ( 'migrate' === $type ) : ?>
+            <?php
+            $done      = $batch_n; // total migrated so far this session
+            $remaining = (int) $data['remaining'];
+            $total     = $done + $remaining;
+            $pct       = $total > 0 ? (int) round( $done / $total * 100 ) : 100;
+            ?>
+            <div class="acfbm-note" style="background:<?php echo $remaining ? '#f0f6fc' : '#edfaef'; ?>;border:1px solid <?php echo $remaining ? '#c3d4e6' : '#a7e3b4'; ?>;">
+                <strong>
+                    <?php printf( esc_html__( 'Migrated %1$d post(s) this batch. %2$d remaining.', 'acf-blocks' ), (int) $data['count'], $remaining ); ?>
+                </strong>
+                <div class="acfbm-bar" title="<?php echo esc_attr( $pct . '%' ); ?>"><span style="width:<?php echo (int) $pct; ?>%;"></span></div>
+                <p style="margin:0;color:#50575e;">
+                    <?php printf( esc_html__( '%1$d of %2$d done (%3$d%%).', 'acf-blocks' ), $done, $total, $pct ); ?>
+                </p>
+                <?php if ( ! empty( $data['errors'] ) ) : ?>
+                    <ul style="margin:8px 0 0 18px;list-style:disc;color:#b32d2e;">
+                        <?php foreach ( array_slice( $data['errors'], 0, 20 ) as $err ) : ?>
+                            <li><?php echo esc_html( $err ); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+                <?php acf_blocks_migrator_render_post_table( $data['migrated'], $cats ); ?>
+            </div>
+
+            <?php if ( $remaining > 0 ) : ?>
+                <div class="acfbm-note" style="background:#fcf9e8;border:1px solid #e6db8e;">
+                    <strong><?php printf( esc_html__( '%d post(s) still to go.', 'acf-blocks' ), $remaining ); ?></strong>
+                    <?php esc_html_e( 'Click Continue to migrate the next batch.', 'acf-blocks' ); ?>
+                    <div class="acfbm-actions">
+                        <form method="post">
+                            <?php wp_nonce_field( 'acf_blocks_migrator', 'acf_blocks_migrator_nonce' ); ?>
+                            <button type="submit" name="acf_blocks_migrator_action" value="migrate" class="button button-primary">
+                                <?php printf( esc_html__( 'Continue — Migrate Next %d', 'acf-blocks' ), (int) ACF_BLOCKS_MIGRATOR_BATCH_SIZE ); ?>
+                            </button>
+                        </form>
+                    </div>
                 </div>
-            <?php elseif ( 'revert' === $report['type'] ) : ?>
-                <div style="background:#f0f6fc;border:1px solid #c3d4e6;border-radius:6px;padding:12px 14px;margin-bottom:14px;">
-                    <strong><?php printf( esc_html__( 'Revert complete — %1$d of %2$d post(s) restored to their pre-migration content.', 'acf-blocks' ), (int) $data['reverted'], (int) $data['total'] ); ?></strong>
-                    <?php if ( ! empty( $data['errors'] ) ) : ?>
-                        <ul style="margin:4px 0 0 18px;list-style:disc;">
-                            <?php foreach ( array_slice( $data['errors'], 0, 20 ) as $err ) : ?>
-                                <li style="color:#b32d2e;"><?php echo esc_html( $err ); ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    <?php endif; ?>
+            <?php else : ?>
+                <div class="acfbm-note" style="background:#edfaef;border:1px solid #a7e3b4;">
+                    <strong><?php esc_html_e( '🎉 All affected posts have been migrated.', 'acf-blocks' ); ?></strong>
                 </div>
             <?php endif; ?>
+
+        <?php elseif ( 'revert' === $type ) : ?>
+            <div class="acfbm-note" style="background:#f0f6fc;border:1px solid #c3d4e6;">
+                <strong><?php printf( esc_html__( 'Revert complete — %1$d of %2$d post(s) restored to their pre-migration content.', 'acf-blocks' ), (int) $data['reverted'], (int) $data['total'] ); ?></strong>
+                <?php if ( ! empty( $data['errors'] ) ) : ?>
+                    <ul style="margin:8px 0 0 18px;list-style:disc;color:#b32d2e;">
+                        <?php foreach ( array_slice( $data['errors'], 0, 20 ) as $err ) : ?>
+                            <li><?php echo esc_html( $err ); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+            </div>
+
+        <?php elseif ( 'discard' === $type ) : ?>
+            <div class="acfbm-note" style="background:#f6f7f7;border:1px solid #dcdcde;">
+                <strong><?php printf( esc_html__( 'Discarded %d restore point(s). Migrated content is unchanged.', 'acf-blocks' ), (int) $data['count'] ); ?></strong>
+            </div>
         <?php endif; ?>
 
-        <form method="post" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-            <?php wp_nonce_field( 'acf_blocks_migrator', 'acf_blocks_migrator_nonce' ); ?>
-            <button type="submit" name="acf_blocks_migrator_action" value="scan" class="button">
-                <?php esc_html_e( 'Scan', 'acf-blocks' ); ?>
-            </button>
-            <button type="submit" name="acf_blocks_migrator_action" value="dry_run" class="button">
-                <?php esc_html_e( 'Dry Run', 'acf-blocks' ); ?>
-            </button>
-            <button type="submit" name="acf_blocks_migrator_action" value="apply" class="button button-primary"
-                onclick="return confirm('<?php echo esc_js( __( 'Migrate all affected posts now? A revision and restore point are saved for each, so the run can be reverted.', 'acf-blocks' ) ); ?>');">
-                <?php esc_html_e( 'Migrate All', 'acf-blocks' ); ?>
-            </button>
-        </form>
+        <div class="acfbm-actions">
+            <form method="post">
+                <?php wp_nonce_field( 'acf_blocks_migrator', 'acf_blocks_migrator_nonce' ); ?>
+                <button type="submit" name="acf_blocks_migrator_action" value="scan" class="button">
+                    <?php esc_html_e( 'Scan for issues', 'acf-blocks' ); ?>
+                </button>
+            </form>
+            <form method="post">
+                <?php wp_nonce_field( 'acf_blocks_migrator', 'acf_blocks_migrator_nonce' ); ?>
+                <button type="submit" name="acf_blocks_migrator_action" value="migrate" class="button button-primary"
+                    onclick="return confirm('<?php echo esc_js( sprintf( __( 'Migrate up to %d affected posts now? A revision and restore point are saved for each.', 'acf-blocks' ), (int) ACF_BLOCKS_MIGRATOR_BATCH_SIZE ) ); ?>');">
+                    <?php printf( esc_html__( 'Migrate Next %d', 'acf-blocks' ), (int) ACF_BLOCKS_MIGRATOR_BATCH_SIZE ); ?>
+                </button>
+            </form>
+        </div>
 
-        <?php $batch = acf_blocks_migrator_get_last_batch(); ?>
-        <?php if ( $batch ) : ?>
-            <div style="margin-top:14px;padding-top:14px;border-top:1px solid #e2e4e7;">
+        <?php if ( $batch_n > 0 ) : ?>
+            <div style="margin-top:16px;padding-top:14px;border-top:1px solid #e2e4e7;">
                 <p style="margin:0 0 8px;color:#50575e;">
                     <?php
                     printf(
-                        esc_html__( 'Last migration: %1$d post(s) on %2$s. You can roll them all back to their previous content.', 'acf-blocks' ),
-                        count( $batch['ids'] ),
+                        esc_html__( '%1$d post(s) have restore points from this migration session (last change %2$s).', 'acf-blocks' ),
+                        $batch_n,
                         esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), (int) $batch['time'] ) )
                     );
                     ?>
                 </p>
-                <form method="post">
-                    <?php wp_nonce_field( 'acf_blocks_migrator', 'acf_blocks_migrator_nonce' ); ?>
-                    <button type="submit" name="acf_blocks_migrator_action" value="revert" class="button button-secondary"
-                        onclick="return confirm('<?php echo esc_js( __( 'Revert the last migration? All affected posts will be restored to their pre-migration content.', 'acf-blocks' ) ); ?>');">
-                        <?php esc_html_e( 'Revert Last Migration', 'acf-blocks' ); ?>
-                    </button>
-                </form>
+                <div class="acfbm-actions">
+                    <form method="post">
+                        <?php wp_nonce_field( 'acf_blocks_migrator', 'acf_blocks_migrator_nonce' ); ?>
+                        <button type="submit" name="acf_blocks_migrator_action" value="revert" class="button button-secondary"
+                            onclick="return confirm('<?php echo esc_js( __( 'Revert? All posts in this session will be restored to their pre-migration content.', 'acf-blocks' ) ); ?>');">
+                            <?php esc_html_e( 'Revert Migration', 'acf-blocks' ); ?>
+                        </button>
+                    </form>
+                    <form method="post">
+                        <?php wp_nonce_field( 'acf_blocks_migrator', 'acf_blocks_migrator_nonce' ); ?>
+                        <button type="submit" name="acf_blocks_migrator_action" value="discard" class="button button-link-delete"
+                            onclick="return confirm('<?php echo esc_js( __( 'Discard restore points? You will no longer be able to revert, but migrated content stays as-is.', 'acf-blocks' ) ); ?>');">
+                            <?php esc_html_e( 'Discard restore points', 'acf-blocks' ); ?>
+                        </button>
+                    </form>
+                </div>
             </div>
         <?php endif; ?>
     </div>
@@ -1051,13 +1337,20 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
      * [--dry-run]
      * : Report what would change without writing.
      *
+     * [--limit=<number>]
+     * : Migrate at most this many posts (0 = all). Default: 0.
+     *
      * [--revert]
-     * : Roll back the most recent migration, restoring pre-migration content.
+     * : Roll back the migration session, restoring pre-migration content.
+     *
+     * [--discard]
+     * : Delete restore points without changing migrated content.
      *
      * ## EXAMPLES
      *
      *     wp acf-blocks migrate --dry-run
      *     wp acf-blocks migrate
+     *     wp acf-blocks migrate --limit=30
      *     wp acf-blocks migrate --revert
      *
      * @when after_wp_load
@@ -1072,22 +1365,43 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
                 WP_CLI::warning( $err );
             }
             if ( 0 === $res['total'] ) {
-                WP_CLI::success( 'No migration batch to revert.' );
+                WP_CLI::success( 'No migration session to revert.' );
             } else {
                 WP_CLI::success( sprintf( '%d of %d post(s) reverted.', $res['reverted'], $res['total'] ) );
             }
             return;
         }
 
-        $dry = isset( $assoc_args['dry-run'] );
-        $res = acf_blocks_migrator_run( $dry );
+        if ( isset( $assoc_args['discard'] ) ) {
+            $n = acf_blocks_migrator_clear_backups();
+            WP_CLI::success( sprintf( '%d restore point(s) discarded.', $n ) );
+            return;
+        }
+
+        if ( isset( $assoc_args['dry-run'] ) ) {
+            $scan = acf_blocks_migrator_scan();
+            foreach ( acf_blocks_migrator_categories() as $key => $cat ) {
+                $n = (int) ( $scan['totals'][ $key ] ?? 0 );
+                if ( $n > 0 ) {
+                    WP_CLI::log( sprintf( '  %-30s %d', $cat[0], $n ) );
+                }
+            }
+            WP_CLI::success( sprintf( '%d of %d post(s) would be migrated.', $scan['posts_changed'], $scan['scanned'] ) );
+            return;
+        }
+
+        $limit = isset( $assoc_args['limit'] ) ? max( 0, (int) $assoc_args['limit'] ) : 0;
+        $res   = acf_blocks_migrator_run_batch( $limit );
 
         foreach ( $res['errors'] as $err ) {
             WP_CLI::warning( $err );
         }
 
-        $verb = $dry ? 'would be migrated' : 'migrated';
-        WP_CLI::success( sprintf( '%d of %d post(s) %s.', $res['changed'], $res['scanned'], $verb ) );
+        if ( $res['remaining'] > 0 ) {
+            WP_CLI::success( sprintf( '%d post(s) migrated; %d remaining (run again to continue).', $res['count'], $res['remaining'] ) );
+        } else {
+            WP_CLI::success( sprintf( '%d post(s) migrated; none remaining.', $res['count'] ) );
+        }
     }
 
     WP_CLI::add_command( 'acf-blocks migrate', 'acf_blocks_migrator_cli' );
