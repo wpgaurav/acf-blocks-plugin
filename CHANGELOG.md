@@ -2,6 +2,35 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.8.0] - 2026-06-23
+
+### Fixed
+- **Block recovery (all InnerBlocks blocks):** Resolved the "This block contains unexpected or invalid content" / **Attempt Recovery** error that emptied ACF InnerBlocks blocks (Callout, CTA, Hero, Section, Feature Grid, Testimonial, Team Member, Opinion Box, …). The cause was inner content saved as undelimited raw HTML (e.g. a bare `<p>` instead of `<!-- wp:paragraph -->`), which the editor treats as invalid InnerBlocks markup. Clicking *Attempt Recovery* then rebuilt the block from its template default, wiping the author's content.
+
+### Added
+- **`includes/block-recovery.php`** — a self-healing helper that re-wraps orphaned inner HTML into proper core blocks (paragraph, heading, list, quote; anything unrecognised is preserved verbatim in a `core/html` block, so no content is ever lost). It is idempotent and runs in two ways:
+  - **Live self-heal:** filters the block editor's REST `content.raw` (edit context only) so existing posts open cleanly with no action required; saving then persists the repaired markup.
+  - **Permanent bulk repair:** `wp acf-blocks repair-content [--dry-run] [--post=<id>]` rewrites affected posts in the database.
+- The InnerBlocks block set is derived automatically — unioning each `block.json` (`supports.jsx`) with the live block registry (ACF can enable InnerBlocks at runtime without declaring it in `block.json`) — with a `acf_blocks_recovery_innerblock_names` filter to customise it.
+
+### Added — Block Migrator
+- **`includes/block-migrator.php` + visual Migrator on the options page** (Settings → ACF Blocks License). A new **Block Migrator & Repair** card with **Scan**, **Dry Run**, and **Migrate All** actions. Every change is saved through `wp_update_post()` (a revision is stored), so migrations are reversible. WP-CLI parity: `wp acf-blocks migrate [--dry-run]`.
+- **Reversible migrations** — before each post is migrated, its original content is snapshotted both as a native WordPress revision (visible in the editor's Revisions browser) and as a per-post restore point. A **Revert Last Migration** button (and `wp acf-blocks migrate --revert`) rolls the entire batch back to its pre-migration content, byte-for-byte, independent of the site's revision settings.
+- **Legacy / renamed block migrations** — blocks saved under names the plugin no longer registers are remapped to the current block *with field-data translation*, not just renamed:
+  - `acf/table-of-contents`, `acf/table-of-content` → `acf/toc`
+  - `acf/productbox` → `acf/product-box` (incl. the legacy features repeater)
+  - `acf/accordion-item` → `acf/accordion` (consecutive items merged into one block)
+  - `acf/accordion-group` → `acf/accordion` (wrapper + children merged, FAQ schema preserved)
+  - `acf/acf-accordion` → `acf/accordion` (`acc_question`/`acc_answer` sub-fields remapped)
+  - `acf/poll` has no current equivalent — reported and left untouched for manual handling.
+- **Unparseable-markup repair** — fixes content the block parser chokes on:
+  - **Orphaned closing delimiters** (e.g. a stray `<!-- /wp:post-content -->` with no opener) that silently push every following block into freeform text. Removed with a delimiter stack so only genuinely unmatched closers are stripped.
+  - **Dangling openers** (a truncated `<!-- wp:… ` fragment with no `-->`).
+  - Literal `-->` inside ACF block JSON, HTML-encoded to `--&gt;` (identical when rendered).
+
+### Compatibility
+- **WordPress 7.0:** Added `Tested up to: 7.0` header. Audited for WordPress 7 / ACF Pro 6.x — all 29 blocks already use Block API v3, register via `block.json` (no deprecated `acf_register_block_type`), retain the ACF 6.7+ `acf_setup_meta` compatibility layer, and contain no PHP 8.2–8.5 deprecation patterns (verified against PHP 8.5).
+
 ## [2.6.0] - 2026-04-11
 
 ### Changed

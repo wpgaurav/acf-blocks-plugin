@@ -3,8 +3,9 @@
  * Plugin Name: ACF Blocks
  * Plugin URI: https://github.com/wpgaurav/acf-blocks-plugin
  * Description: A collection of ACF Pro blocks for the WordPress block editor with automatic field group registration.
- * Version: 2.7.1
+ * Version: 2.8.0
  * Requires at least: 6.0
+ * Tested up to: 7.0
  * Requires PHP: 7.4
  * Author: Gaurav Tiwari
  * Author URI: https://gauravtiwari.org
@@ -19,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin constants
-define( 'ACF_BLOCKS_VERSION', '2.7.1' );
+define( 'ACF_BLOCKS_VERSION', '2.8.0' );
 define( 'ACF_BLOCKS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ACF_BLOCKS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ACF_BLOCKS_PLUGIN_FILE', __FILE__ );
@@ -58,6 +59,8 @@ function acf_blocks_init() {
     require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/functions.php';
     require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/compat.php';
     require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/image-localizer.php';
+    require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/block-recovery.php';
+    require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/block-migrator.php';
 
     // Load text domain
     load_plugin_textdomain( 'acf-blocks', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );

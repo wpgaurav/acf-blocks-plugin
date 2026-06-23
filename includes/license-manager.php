@@ -415,6 +415,17 @@ class ACF_Blocks_License_Manager {
 					<p><small><?php printf( esc_html__( 'Don\'t have a license? %sGet one here%s.', 'acf-blocks' ), '<a href="https://gauravtiwari.org/product/acf-blocks/" target="_blank">', '</a>' ); ?></small></p>
 				<?php endif; ?>
 			</div>
+
+			<?php
+			/**
+			 * Fires after the built-in cards on the ACF Blocks options page,
+			 * allowing other plugin modules (e.g. the Block Migrator) to render
+			 * their own sections on this page.
+			 *
+			 * @param ACF_Blocks_License_Manager $manager The license manager instance.
+			 */
+			do_action( 'acf_blocks_options_page_after_cards', $this );
+			?>
 		</div>
 		<?php
 	}
