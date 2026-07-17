@@ -38,6 +38,6 @@
       "label": "Bordered"
     }
   ],
-  "style": "file:./post-display.css",
-  "editorStyle": "file:./post-display.css"
+  "style": ["file:./post-display.css", "file:./post-display-variations.css"],
+  "editorStyle": ["file:./post-display.css", "file:./post-display-variations.css"]
 }

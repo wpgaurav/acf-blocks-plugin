@@ -324,10 +324,17 @@ function acf_blocks_attach_srcset( $result, $attachment_id, $size ) {
  * @return int Attachment ID, or 0 if not found or external URL.
  */
 function acf_blocks_url_to_attachment_id( $url ) {
+    static $cache = array();
+
+    if ( isset( $cache[ $url ] ) ) {
+        return $cache[ $url ];
+    }
+
     $site_host = wp_parse_url( home_url(), PHP_URL_HOST );
     $url_host  = wp_parse_url( $url, PHP_URL_HOST );
 
     if ( ! $url_host || ! $site_host ) {
+        $cache[ $url ] = 0;
         return 0;
     }
 
@@ -335,11 +342,13 @@ function acf_blocks_url_to_attachment_id( $url ) {
     $site_bare = preg_replace( '/^www\./i', '', $site_host );
     $url_bare  = preg_replace( '/^www\./i', '', $url_host );
 
-    if ( $url_bare !== $site_bare && ! str_ends_with( $url_bare, '.' . $site_bare ) ) {
+    if ( $url_bare !== $site_bare && ! acf_blocks_str_ends_with( $url_bare, '.' . $site_bare ) ) {
+        $cache[ $url ] = 0;
         return 0;
     }
 
-    return (int) attachment_url_to_postid( $url );
+    $cache[ $url ] = (int) attachment_url_to_postid( $url );
+    return $cache[ $url ];
 }
 
 /**
@@ -604,11 +613,15 @@ function acf_blocks_find_repeater_fields_from_json( $block_name ) {
             continue;
         }
 
-        $data_file = $block_info['folder'] . 'block-data.json';
-        if ( ! file_exists( $data_file ) ) {
-            return array();
+        $groups = $block_info['field_groups'] ?? array();
+        $group  = reset( $groups );
+        if ( ! is_array( $group ) ) {
+            $data_file = $block_info['folder'] . 'block-data.json';
+            if ( ! file_exists( $data_file ) ) {
+                return array();
+            }
+            $group = json_decode( file_get_contents( $data_file ), true );
         }
-        $group = json_decode( file_get_contents( $data_file ), true );
         $fields = $group['fields'] ?? array();
         $repeaters = array();
         foreach ( $fields as $field ) {

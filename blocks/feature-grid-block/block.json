@@ -70,6 +70,6 @@
       }
     }
   },
-  "style": "file:./feature-grid.css",
-  "editorStyle": "file:./feature-grid.css"
+  "style": ["file:./feature-grid.css", "file:./feature-grid-variations.css"],
+  "editorStyle": ["file:./feature-grid.css", "file:./feature-grid-variations.css"]
 }

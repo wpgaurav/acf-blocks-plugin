@@ -43,17 +43,12 @@ if ( $align ) $class_name[] = 'align' . $align;
 
 $post_id = get_the_ID();
 $block_id = sanitize_key( $anchor ?: $block['id'] );
-$meta_key = '_acf_star_rating_' . $block_id;
 
-$count = 0;
-$sum = 0;
-if ( $post_id ) {
-    $aggregates = get_post_meta( $post_id, $meta_key, true );
-    if ( is_array( $aggregates ) ) {
-        $count = (int) ( $aggregates['count'] ?? 0 );
-        $sum = (float) ( $aggregates['sum'] ?? 0 );
-    }
-}
+$aggregate = $post_id && function_exists( 'acf_star_rating_get_aggregate' )
+    ? acf_star_rating_get_aggregate( $post_id, $block_id )
+    : array( 'count' => 0, 'sum' => 0, 'average' => 0 );
+$count = (int) $aggregate['count'];
+$sum   = (float) $aggregate['sum'];
 
 $total_count = $count + $initial_count;
 $total_sum = $sum + ( $initial_count * $initial_rating );
@@ -67,8 +62,7 @@ wp_enqueue_script( 'acf-star-rating-block' );
 static $acf_star_rating_localized = false;
 if ( ! $acf_star_rating_localized ) {
     wp_localize_script( 'acf-star-rating-block', 'acfStarRating', array(
-        'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
-        'nonce'        => wp_create_nonce( 'acf_star_rating_submit' ),
+        'restUrl'      => rest_url( 'acf-blocks/v1/ratings' ),
         'errorMessage' => __( 'Something went wrong. Please try again.', 'acf-blocks' ),
     ) );
     $acf_star_rating_localized = true;
@@ -89,7 +83,7 @@ if ( ! $acf_star_rating_localized ) {
         <div class="acf-star-rating__count"><?php echo esc_html( $count_display ); ?></div>
     </div>
 
-    <form class="acf-star-rating__form" data-block-id="<?php echo esc_attr( $block_id ); ?>" data-post-id="<?php echo esc_attr( $post_id ); ?>" data-thank-you="<?php echo esc_attr( $thank_you ); ?>" data-error="<?php echo esc_attr__( 'Select a rating first.', 'acf-blocks' ); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'acf_star_rating_submit' ) ); ?>">
+    <form class="acf-star-rating__form" data-block-id="<?php echo esc_attr( $block_id ); ?>" data-post-id="<?php echo esc_attr( $post_id ); ?>" data-token="<?php echo esc_attr( acf_star_rating_submission_token( $post_id, $block_id ) ); ?>" data-initial-count="<?php echo esc_attr( $initial_count ); ?>" data-initial-rating="<?php echo esc_attr( $initial_rating ); ?>" data-thank-you="<?php echo esc_attr( $thank_you ); ?>" data-error="<?php echo esc_attr__( 'Select a rating first.', 'acf-blocks' ); ?>">
         <div class="acf-star-rating__options">
             <?php for ( $i = 1; $i <= 5; $i++ ) : ?>
                 <label class="acf-star-rating__option">

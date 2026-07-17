@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  php:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.1', '8.3', '8.5']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: composer:v2
+
+      - uses: ramsey/composer-install@v3
+
+      - name: Validate generated artifacts
+        run: composer generated
+
+      - name: Validate PHP and JSON
+        run: |
+          composer lint
+          find blocks -type f -name '*.json' -print0 | xargs -0 -n1 jq empty
+          find blocks assets -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+
+      - name: PHP compatibility
+        run: composer compat
+
+      - name: Unit tests
+        run: composer test

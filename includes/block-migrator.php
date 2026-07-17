@@ -651,6 +651,68 @@ function acf_blocks_migrator_repair_markup( $content, &$count ) {
  */
 
 /**
+ * Fetch candidate post IDs using a bounded keyset query.
+ *
+ * @param int $after_id Only return IDs greater than this cursor.
+ * @param int $limit    Maximum IDs to return.
+ * @return int[]
+ */
+function acf_blocks_migrator_candidate_ids( $after_id = 0, $limit = 200 ) {
+    global $wpdb;
+
+    $post_types = array_values( get_post_types( array( 'show_in_rest' => true ), 'names' ) );
+    $statuses   = array( 'publish', 'draft', 'pending', 'private', 'future' );
+    if ( empty( $post_types ) ) {
+        return array();
+    }
+
+    $type_placeholders   = implode( ',', array_fill( 0, count( $post_types ), '%s' ) );
+    $status_placeholders = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
+    $sql = "SELECT ID FROM {$wpdb->posts}
+        WHERE ID > %d
+          AND post_type IN ({$type_placeholders})
+          AND post_status IN ({$status_placeholders})
+          AND post_content LIKE %s
+        ORDER BY ID ASC
+        LIMIT %d";
+    $args = array_merge(
+        array( absint( $after_id ) ),
+        $post_types,
+        $statuses,
+        array( '%<!-- wp:acf/%', max( 1, absint( $limit ) ) )
+    );
+
+    return array_map( 'intval', $wpdb->get_col( $wpdb->prepare( $sql, $args ) ) );
+}
+
+/**
+ * Count candidate posts after a cursor without loading their IDs.
+ *
+ * @param int $after_id Cursor.
+ * @return int
+ */
+function acf_blocks_migrator_candidate_count( $after_id = 0 ) {
+    global $wpdb;
+
+    $post_types = array_values( get_post_types( array( 'show_in_rest' => true ), 'names' ) );
+    $statuses   = array( 'publish', 'draft', 'pending', 'private', 'future' );
+    if ( empty( $post_types ) ) {
+        return 0;
+    }
+
+    $type_placeholders   = implode( ',', array_fill( 0, count( $post_types ), '%s' ) );
+    $status_placeholders = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
+    $sql = "SELECT COUNT(ID) FROM {$wpdb->posts}
+        WHERE ID > %d
+          AND post_type IN ({$type_placeholders})
+          AND post_status IN ({$status_placeholders})
+          AND post_content LIKE %s";
+    $args = array_merge( array( absint( $after_id ) ), $post_types, $statuses, array( '%<!-- wp:acf/%' ) );
+
+    return (int) $wpdb->get_var( $wpdb->prepare( $sql, $args ) );
+}
+
+/**
  * Run all migrations + repairs on a block of content.
  *
  * @param string $content Post content.
@@ -770,14 +832,6 @@ function acf_blocks_migrator_report_keys( $report ) {
  * }
  */
 function acf_blocks_migrator_scan( $list_limit = 500 ) {
-    $ids = get_posts( array(
-        'post_type'      => get_post_types( array( 'show_in_rest' => true ), 'names' ),
-        'post_status'    => array( 'publish', 'draft', 'pending', 'private', 'future' ),
-        'posts_per_page' => -1,
-        'fields'         => 'ids',
-        'no_found_rows'  => true,
-    ) );
-
     $totals = array(
         'unparseable'      => 0,
         'orphaned_posts'   => 0,
@@ -793,31 +847,36 @@ function acf_blocks_migrator_scan( $list_limit = 500 ) {
     $posts_changed = 0;
     $posts         = array();
 
-    foreach ( $ids as $id ) {
-        $content = get_post_field( 'post_content', $id );
-        if ( '' === $content || false === strpos( $content, 'wp:acf/' ) ) {
-            continue;
-        }
-        $scanned++;
+    $cursor = 0;
+    do {
+        $ids = acf_blocks_migrator_candidate_ids( $cursor, 200 );
+        foreach ( $ids as $id ) {
+            $cursor  = $id;
+            $content = get_post_field( 'post_content', $id );
+            if ( '' === $content ) {
+                continue;
+            }
+            $scanned++;
 
-        acf_blocks_migrator_migrate_content( $content, $report );
+            acf_blocks_migrator_migrate_content( $content, $report );
 
-        $totals['unparseable'] += (int) $report['unparseable'];
-        if ( ! empty( $report['orphaned'] ) ) {
-            $totals['orphaned_posts']++;
-        }
-        foreach ( (array) $report['legacy'] as $k => $v ) {
-            if ( isset( $totals[ $k ] ) ) {
-                $totals[ $k ] += (int) $v;
+            $totals['unparseable'] += (int) $report['unparseable'];
+            if ( ! empty( $report['orphaned'] ) ) {
+                $totals['orphaned_posts']++;
+            }
+            foreach ( (array) $report['legacy'] as $k => $v ) {
+                if ( isset( $totals[ $k ] ) ) {
+                    $totals[ $k ] += (int) $v;
+                }
+            }
+            if ( ! empty( $report['changed'] ) ) {
+                $posts_changed++;
+                if ( count( $posts ) < $list_limit ) {
+                    $posts[] = acf_blocks_migrator_post_detail( $id, $report );
+                }
             }
         }
-        if ( ! empty( $report['changed'] ) ) {
-            $posts_changed++;
-            if ( count( $posts ) < $list_limit ) {
-                $posts[] = acf_blocks_migrator_post_detail( $id, $report );
-            }
-        }
-    }
+    } while ( 200 === count( $ids ) );
 
     return array(
         'scanned'        => $scanned,
@@ -858,6 +917,14 @@ const ACF_BLOCKS_MIGRATOR_BACKUP_META = '_acf_blocks_migrator_backup';
 const ACF_BLOCKS_MIGRATOR_BATCH_OPTION = 'acf_blocks_migrator_last_batch';
 
 /**
+ * Keyset cursor for resumable migration runs.
+ */
+const ACF_BLOCKS_MIGRATOR_CURSOR_OPTION = 'acf_blocks_migrator_cursor';
+
+const ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION = 'acf_blocks_migrator_background';
+const ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT  = 'acf_blocks_migrator_background_batch';
+
+/**
  * How many posts a single "Migrate" run processes before pausing.
  */
 const ACF_BLOCKS_MIGRATOR_BATCH_SIZE = 30;
@@ -881,63 +948,79 @@ const ACF_BLOCKS_MIGRATOR_BATCH_SIZE = 30;
  * }
  */
 function acf_blocks_migrator_run_batch( $limit = ACF_BLOCKS_MIGRATOR_BATCH_SIZE ) {
-    $ids = get_posts( array(
-        'post_type'      => get_post_types( array( 'show_in_rest' => true ), 'names' ),
-        'post_status'    => array( 'publish', 'draft', 'pending', 'private', 'future' ),
-        'posts_per_page' => -1,
-        'fields'         => 'ids',
-        'no_found_rows'  => true,
-    ) );
-
     $migrated     = array();
     $migrated_ids = array();
     $errors       = array();
-    $remaining    = 0;
     $scanned      = 0;
+    $examined     = 0;
+    $cursor       = (int) get_option( ACF_BLOCKS_MIGRATOR_CURSOR_OPTION, 0 );
+    $done         = false;
+    $scan_limit   = $limit > 0 ? 100 : PHP_INT_MAX;
 
-    foreach ( $ids as $id ) {
-        $content = get_post_field( 'post_content', $id );
-        if ( '' === $content || false === strpos( $content, 'wp:acf/' ) ) {
-            continue;
-        }
-        $scanned++;
-
-        $new = acf_blocks_migrator_migrate_content( $content, $report );
-        if ( empty( $report['changed'] ) ) {
-            continue;
-        }
-
-        // Already hit this run's quota — just count what remains.
-        if ( $limit > 0 && count( $migrated_ids ) >= $limit ) {
-            $remaining++;
-            continue;
+    while ( ( 0 === $limit || count( $migrated_ids ) < $limit ) && $examined < $scan_limit ) {
+        $fetch_limit = min( 100, $scan_limit - $examined );
+        $ids = acf_blocks_migrator_candidate_ids( $cursor, $fetch_limit );
+        if ( empty( $ids ) ) {
+            $done = true;
+            break;
         }
 
-        $detail = acf_blocks_migrator_post_detail( $id, $report );
-
-        // Native revision + restore point (only set the backup once, so the
-        // true pre-migration content survives repeated runs).
-        wp_save_post_revision( $id );
-        $had_backup = '' !== get_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META, true );
-        if ( ! $had_backup ) {
-            update_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META, $content );
-        }
-
-        $result = wp_update_post( array(
-            'ID'           => $id,
-            'post_content' => wp_slash( $new ),
-        ), true );
-
-        if ( is_wp_error( $result ) ) {
-            if ( ! $had_backup ) {
-                delete_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META );
+        foreach ( $ids as $id ) {
+            $cursor  = $id;
+            $examined++;
+            $content = get_post_field( 'post_content', $id );
+            if ( '' === $content ) {
+                continue;
             }
-            $errors[] = sprintf( '#%d: %s', $id, $result->get_error_message() );
-            continue;
+            $scanned++;
+
+            $new = acf_blocks_migrator_migrate_content( $content, $report );
+            if ( empty( $report['changed'] ) ) {
+                continue;
+            }
+
+            $detail = acf_blocks_migrator_post_detail( $id, $report );
+            wp_save_post_revision( $id );
+            $had_backup = '' !== get_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META, true );
+            if ( ! $had_backup ) {
+                update_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META, $content );
+            }
+
+            $result = wp_update_post( array(
+                'ID'           => $id,
+                'post_content' => wp_slash( $new ),
+            ), true );
+
+            if ( is_wp_error( $result ) ) {
+                if ( ! $had_backup ) {
+                    delete_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META );
+                }
+                $errors[] = sprintf( '#%d: %s', $id, $result->get_error_message() );
+            } else {
+                $migrated[]     = $detail;
+                $migrated_ids[] = $id;
+            }
+
+            if ( $limit > 0 && count( $migrated_ids ) >= $limit ) {
+                break 2;
+            }
         }
 
-        $migrated[]     = $detail;
-        $migrated_ids[] = $id;
+        if ( count( $ids ) < $fetch_limit ) {
+            $done = true;
+            break;
+        }
+    }
+
+    $remaining = $done ? 0 : acf_blocks_migrator_candidate_count( $cursor );
+    if ( 0 === $remaining ) {
+        $done = true;
+    }
+
+    if ( $done ) {
+        delete_option( ACF_BLOCKS_MIGRATOR_CURSOR_OPTION );
+    } else {
+        update_option( ACF_BLOCKS_MIGRATOR_CURSOR_OPTION, $cursor, false );
     }
 
     if ( ! empty( $migrated_ids ) ) {
@@ -956,6 +1039,67 @@ function acf_blocks_migrator_run_batch( $limit = ACF_BLOCKS_MIGRATOR_BATCH_SIZE 
         'scanned'   => $scanned,
         'errors'    => $errors,
     );
+}
+
+/**
+ * Start the resumable background migration worker.
+ */
+function acf_blocks_migrator_start_background() {
+    delete_option( ACF_BLOCKS_MIGRATOR_CURSOR_OPTION );
+    update_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION, array(
+        'running'     => true,
+        'migrated'    => 0,
+        'scanned'     => 0,
+        'errors'      => array(),
+        'started_at'  => time(),
+        'completed_at'=> 0,
+    ), false );
+    if ( ! wp_next_scheduled( ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT ) ) {
+        wp_schedule_single_event( time() + 1, ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT );
+    }
+}
+
+/**
+ * Process one background migration batch.
+ */
+function acf_blocks_migrator_process_background() {
+    $state = get_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION, array() );
+    if ( empty( $state['running'] ) ) {
+        return;
+    }
+
+    if ( get_transient( 'acf_blocks_migrator_lock' ) ) {
+        if ( ! wp_next_scheduled( ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT ) ) {
+            wp_schedule_single_event( time() + 60, ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT );
+        }
+        return;
+    }
+    set_transient( 'acf_blocks_migrator_lock', 1, 5 * MINUTE_IN_SECONDS );
+
+    $result = acf_blocks_migrator_run_batch( ACF_BLOCKS_MIGRATOR_BATCH_SIZE );
+    $state['migrated'] = (int) ( $state['migrated'] ?? 0 ) + (int) $result['count'];
+    $state['scanned']  = (int) ( $state['scanned'] ?? 0 ) + (int) $result['scanned'];
+    $state['errors']   = array_slice( array_merge( (array) ( $state['errors'] ?? array() ), (array) $result['errors'] ), -50 );
+
+    if ( empty( $result['remaining'] ) ) {
+        $state['running']      = false;
+        $state['completed_at'] = time();
+    } else {
+        wp_schedule_single_event( time() + 20, ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT );
+    }
+    update_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION, $state, false );
+    delete_transient( 'acf_blocks_migrator_lock' );
+}
+add_action( ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT, 'acf_blocks_migrator_process_background' );
+
+/**
+ * Stop the background worker without reverting completed changes.
+ */
+function acf_blocks_migrator_cancel_background() {
+    $state = get_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION, array() );
+    $state['running'] = false;
+    update_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION, $state, false );
+    wp_clear_scheduled_hook( ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT );
 }
 
 /**
@@ -986,6 +1130,9 @@ function acf_blocks_migrator_clear_backups() {
         }
     }
     delete_option( ACF_BLOCKS_MIGRATOR_BATCH_OPTION );
+    delete_option( ACF_BLOCKS_MIGRATOR_CURSOR_OPTION );
+    delete_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION );
+    wp_clear_scheduled_hook( ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT );
     return $count;
 }
 
@@ -1027,6 +1174,9 @@ function acf_blocks_migrator_revert() {
 
     $total = count( $batch['ids'] );
     delete_option( ACF_BLOCKS_MIGRATOR_BATCH_OPTION );
+    delete_option( ACF_BLOCKS_MIGRATOR_CURSOR_OPTION );
+    delete_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION );
+    wp_clear_scheduled_hook( ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT );
 
     return array( 'reverted' => $reverted, 'total' => $total, 'errors' => $errors );
 }
@@ -1055,11 +1205,16 @@ function acf_blocks_migrator_handle_actions() {
     $action = sanitize_text_field( wp_unslash( $_POST['acf_blocks_migrator_action'] ) );
 
     if ( 'scan' === $action ) {
+        delete_option( ACF_BLOCKS_MIGRATOR_CURSOR_OPTION );
         $data = acf_blocks_migrator_scan();
         set_transient( 'acf_blocks_migrator_report', array( 'type' => 'scan', 'data' => $data ), 5 * MINUTE_IN_SECONDS );
     } elseif ( 'migrate' === $action ) {
         $data = acf_blocks_migrator_run_batch( ACF_BLOCKS_MIGRATOR_BATCH_SIZE );
         set_transient( 'acf_blocks_migrator_report', array( 'type' => 'migrate', 'data' => $data ), 5 * MINUTE_IN_SECONDS );
+    } elseif ( 'migrate_background' === $action ) {
+        acf_blocks_migrator_start_background();
+    } elseif ( 'cancel_background' === $action ) {
+        acf_blocks_migrator_cancel_background();
     } elseif ( 'revert' === $action ) {
         $data = acf_blocks_migrator_revert();
         set_transient( 'acf_blocks_migrator_report', array( 'type' => 'revert', 'data' => $data ), 5 * MINUTE_IN_SECONDS );
@@ -1152,6 +1307,7 @@ function acf_blocks_migrator_render_card() {
     $batch_n   = $batch ? count( $batch['ids'] ) : 0;
     $type      = ( is_array( $report ) && isset( $report['type'] ) ) ? $report['type'] : '';
     $data      = ( is_array( $report ) && isset( $report['data'] ) ) ? $report['data'] : array();
+    $background = get_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION, array() );
     ?>
     <style>
         #acf-blocks-migrator .acfbm-badge{display:inline-block;font-size:11px;font-weight:600;line-height:1.7;padding:0 8px;border-radius:10px;margin:2px 4px 2px 0;white-space:nowrap;}
@@ -1218,7 +1374,7 @@ function acf_blocks_migrator_render_card() {
             ?>
             <div class="acfbm-note" style="background:<?php echo $remaining ? '#f0f6fc' : '#edfaef'; ?>;border:1px solid <?php echo $remaining ? '#c3d4e6' : '#a7e3b4'; ?>;">
                 <strong>
-                    <?php printf( esc_html__( 'Migrated %1$d post(s) this batch. %2$d remaining.', 'acf-blocks' ), (int) $data['count'], $remaining ); ?>
+                    <?php printf( esc_html__( 'Migrated %1$d post(s) this batch. %2$d candidate post(s) remain to scan.', 'acf-blocks' ), (int) $data['count'], $remaining ); ?>
                 </strong>
                 <div class="acfbm-bar" title="<?php echo esc_attr( $pct . '%' ); ?>"><span style="width:<?php echo (int) $pct; ?>%;"></span></div>
                 <p style="margin:0;color:#50575e;">
@@ -1236,7 +1392,7 @@ function acf_blocks_migrator_render_card() {
 
             <?php if ( $remaining > 0 ) : ?>
                 <div class="acfbm-note" style="background:#fcf9e8;border:1px solid #e6db8e;">
-                    <strong><?php printf( esc_html__( '%d post(s) still to go.', 'acf-blocks' ), $remaining ); ?></strong>
+                    <strong><?php printf( esc_html__( '%d candidate post(s) still to scan.', 'acf-blocks' ), $remaining ); ?></strong>
                     <?php esc_html_e( 'Click Continue to migrate the next batch.', 'acf-blocks' ); ?>
                     <div class="acfbm-actions">
                         <form method="post">
@@ -1285,7 +1441,34 @@ function acf_blocks_migrator_render_card() {
                     <?php printf( esc_html__( 'Migrate Next %d', 'acf-blocks' ), (int) ACF_BLOCKS_MIGRATOR_BATCH_SIZE ); ?>
                 </button>
             </form>
+            <?php if ( empty( $background['running'] ) ) : ?>
+                <form method="post">
+                    <?php wp_nonce_field( 'acf_blocks_migrator', 'acf_blocks_migrator_nonce' ); ?>
+                    <button type="submit" name="acf_blocks_migrator_action" value="migrate_background" class="button"
+                        onclick="return confirm('<?php echo esc_js( __( 'Start background migration? Batches will continue through WP-Cron and can be stopped without reverting completed posts.', 'acf-blocks' ) ); ?>');">
+                        <?php esc_html_e( 'Run in Background', 'acf-blocks' ); ?>
+                    </button>
+                </form>
+            <?php else : ?>
+                <form method="post">
+                    <?php wp_nonce_field( 'acf_blocks_migrator', 'acf_blocks_migrator_nonce' ); ?>
+                    <button type="submit" name="acf_blocks_migrator_action" value="cancel_background" class="button button-secondary">
+                        <?php esc_html_e( 'Stop Background Migration', 'acf-blocks' ); ?>
+                    </button>
+                </form>
+            <?php endif; ?>
         </div>
+
+        <?php if ( ! empty( $background ) ) : ?>
+            <p style="color:#50575e;">
+                <?php printf(
+                    esc_html__( 'Background migration: %1$s. Migrated %2$d posts; scanned %3$d candidate posts.', 'acf-blocks' ),
+                    ! empty( $background['running'] ) ? esc_html__( 'running', 'acf-blocks' ) : esc_html__( 'stopped', 'acf-blocks' ),
+                    absint( $background['migrated'] ?? 0 ),
+                    absint( $background['scanned'] ?? 0 )
+                ); ?>
+            </p>
+        <?php endif; ?>
 
         <?php if ( $batch_n > 0 ) : ?>
             <div style="margin-top:16px;padding-top:14px;border-top:1px solid #e2e4e7;">

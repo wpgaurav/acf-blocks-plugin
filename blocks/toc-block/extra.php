@@ -35,30 +35,44 @@ function acf_toc_add_heading_ids( $content ) {
         return $content;
     }
 
-    // Track existing IDs to avoid duplicates
+    // Temporarily remove rendered TOC navigation so its own title is not
+    // counted as a content heading.
+    $protected = array();
+    $content = preg_replace_callback(
+        '/<nav\b[^>]*class=["\'][^"\']*\bacf-toc\b[^"\']*["\'][^>]*>.*?<\/nav>/is',
+        function( $match ) use ( &$protected ) {
+            $key = '%%ACF_TOC_' . count( $protected ) . '%%';
+            $protected[ $key ] = $match[0];
+            return $key;
+        },
+        $content
+    );
+
+    // Track existing IDs to avoid duplicates.
     $existing_ids = array();
+    $heading_index = 0;
 
     // Find all headings without IDs
     $pattern = '/<(h[1-6])([^>]*)>(.*?)<\/\1>/is';
 
-    $content = preg_replace_callback( $pattern, function( $matches ) use ( &$existing_ids ) {
+    $content = preg_replace_callback( $pattern, function( $matches ) use ( &$existing_ids, &$heading_index ) {
         $tag        = $matches[1];
         $attributes = $matches[2];
         $text       = $matches[3];
+        $heading_index++;
 
-        // Check if heading already has an ID
+        $id = '';
         if ( preg_match( '/\bid=["\']([^"\']+)["\']/i', $attributes, $id_match ) ) {
-            $existing_ids[ $id_match[1] ] = true;
-            return $matches[0]; // Return unchanged
+            $id = $id_match[1];
+            $attributes = preg_replace( '/\s*\bid=["\'][^"\']+["\']/i', '', $attributes, 1 );
         }
 
-        // Generate ID from heading text
-        $heading_text = wp_strip_all_tags( $text );
-        $id = sanitize_title( $heading_text );
+        if ( '' === $id ) {
+            $id = sanitize_title( wp_strip_all_tags( $text ) );
+        }
 
-        // Handle empty IDs
         if ( empty( $id ) ) {
-            $id = 'heading-' . wp_rand( 1000, 9999 );
+            $id = 'heading-' . $heading_index;
         }
 
         // Handle duplicates
@@ -80,34 +94,7 @@ function acf_toc_add_heading_ids( $content ) {
         return $new_opening . $text . '</' . $tag . '>';
     }, $content );
 
-    return $content;
+    return strtr( $content, $protected );
 }
 add_filter( 'the_content', 'acf_toc_add_heading_ids', 10 );
-}
-
-/**
- * Add scroll-margin-top to headings when TOC is present.
- *
- * This ensures headings are not hidden behind fixed headers
- * when navigating via TOC links.
- */
-if ( ! function_exists( 'acf_toc_add_scroll_margin_style' ) ) {
-function acf_toc_add_scroll_margin_style() {
-    global $post;
-
-    if ( ! is_singular() || ! $post || ! has_block( 'acf/toc', $post->post_content ) ) {
-        return;
-    }
-
-    // Get the sticky offset if TOC is set to sticky
-    // Default to a reasonable value for most themes
-    ?>
-    <style id="acf-toc-scroll-margin">
-        h1[id], h2[id], h3[id], h4[id], h5[id], h6[id] {
-            scroll-margin-top: 80px;
-        }
-    </style>
-    <?php
-}
-add_action( 'wp_head', 'acf_toc_add_scroll_margin_style', 99 );
 }

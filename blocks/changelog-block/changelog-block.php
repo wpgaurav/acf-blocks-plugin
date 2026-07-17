@@ -14,32 +14,15 @@ if (empty($entries)) {
 $className = $block['className'] ?? '';
 $anchor = $block['anchor'] ?? '';
 
-// Detect style variation
-$is_timeline = $className && strpos($className, 'is-style-timeline') !== false;
-
 // Build wrapper classes
 $wrapper_classes = ['acf-changelog'];
 if ($className) {
     $wrapper_classes[] = $className;
 }
 
-// Generate unique ID for scoped styles
-$block_id = 'changelog-' . wp_unique_id();
 $anchor_attr = $anchor ? ' id="' . esc_attr($anchor) . '"' : '';
 ?>
-<div<?php echo $anchor_attr; ?> class="<?php echo esc_attr(implode(' ', $wrapper_classes)); ?>" data-changelog-id="<?php echo esc_attr($block_id); ?>">
-    <?php if ($is_timeline) :
-        ob_start();
-        ?>
-        [data-changelog-id="<?php echo esc_attr($block_id); ?>"] { padding-left: max(2rem,32px); border-left: 2px solid #e5e5e5; }
-        [data-changelog-id="<?php echo esc_attr($block_id); ?>"] .acf-changelog-entry { position: relative; padding-left: max(1.5rem,24px); }
-        [data-changelog-id="<?php echo esc_attr($block_id); ?>"] .acf-changelog-entry::before { content: ''; position: absolute; left: -max(2.35rem,37.6px); top: max(0.5rem,8px); width: 12px; height: 12px; background: #007bff; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 2px #007bff; }
-        [data-changelog-id="<?php echo esc_attr($block_id); ?>"] .acf-changelog-version { color: #007bff; }
-        @media (max-width: 480px) { [data-changelog-id="<?php echo esc_attr($block_id); ?>"] { padding-left: max(1.5rem,24px); } }
-        <?php
-        $css = ob_get_clean();
-        echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
-    endif; ?>
+<div<?php echo $anchor_attr; ?> class="<?php echo esc_attr(implode(' ', $wrapper_classes)); ?>">
     <?php
     $data = $block['data'] ?? [];
     foreach ($entries as $entry_index => $entry) :

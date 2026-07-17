@@ -1,2 +1,4 @@
 .DS_Store
 acf-blocks-*.zip
+vendor/
+.phpunit.result.cache

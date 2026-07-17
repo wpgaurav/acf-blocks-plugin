@@ -1,0 +1,33 @@
+{
+  "name": "wpgaurav/acf-blocks-plugin",
+  "description": "Performance-focused ACF block collection for WordPress.",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+    "phpcompatibility/phpcompatibility-wp": "^2.1",
+    "phpunit/phpunit": "^9.6",
+    "squizlabs/php_codesniffer": "^3.10"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    },
+    "sort-packages": true
+  },
+  "scripts": {
+    "lint": "find . -type f -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l",
+    "compat": "phpcs --standard=phpcs.xml.dist",
+    "generated": [
+      "php tools/generate-manifest.php --check",
+      "php tools/build-editor-css.php --check"
+    ],
+    "test": "phpunit --configuration phpunit.xml.dist",
+    "check": [
+      "@lint",
+      "@compat",
+      "@generated",
+      "@test"
+    ]
+  }
+}

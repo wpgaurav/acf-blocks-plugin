@@ -18,20 +18,18 @@ if ( ! function_exists( 'acf_toc_extract_headings' ) ) {
             return array();
         }
 
-        // Build regex pattern for selected heading levels
-        $level_pattern = implode( '|', array_map( function( $level ) {
-            return preg_quote( $level, '/' );
-        }, $levels ) );
-
-        // Match headings with their content and existing IDs
-        $pattern = '/<(' . $level_pattern . ')([^>]*)>(.*?)<\/\1>/is';
+        // Match every heading so duplicate IDs remain deterministic even when
+        // an intermediate heading level is excluded from the TOC.
+        $pattern = '/<(h[1-6])([^>]*)>(.*?)<\/\1>/is';
 
         preg_match_all( $pattern, $content, $matches, PREG_SET_ORDER );
 
         $headings = array();
-        $id_counts = array();
+        $used_ids = array();
+        $heading_index = 0;
 
         foreach ( $matches as $match ) {
+            $heading_index++;
             $tag        = strtolower( $match[1] );
             $attributes = $match[2];
             $text       = wp_strip_all_tags( $match[3] );
@@ -47,27 +45,86 @@ if ( ! function_exists( 'acf_toc_extract_headings' ) ) {
             if ( empty( $id ) ) {
                 $id = sanitize_title( $text );
                 if ( empty( $id ) ) {
-                    $id = 'heading-' . count( $headings );
+                    $id = 'heading-' . $heading_index;
                 }
             }
 
-            // Handle duplicate IDs
-            if ( isset( $id_counts[ $id ] ) ) {
-                $id_counts[ $id ]++;
-                $id = $id . '-' . $id_counts[ $id ];
-            } else {
-                $id_counts[ $id ] = 1;
+            // Handle duplicate IDs using the same algorithm as the final
+            // content filter in extra.php.
+            $original_id = $id;
+            $counter     = 2;
+            while ( isset( $used_ids[ $id ] ) ) {
+                $id = $original_id . '-' . $counter;
+                $counter++;
             }
+            $used_ids[ $id ] = true;
 
-            $headings[] = array(
-                'id'    => $id,
-                'text'  => $text,
-                'level' => $level,
-                'tag'   => $tag,
-            );
+            if ( in_array( $tag, $levels, true ) ) {
+                $headings[] = array(
+                    'id'    => $id,
+                    'text'  => $text,
+                    'level' => $level,
+                    'tag'   => $tag,
+                );
+            }
         }
 
         return $headings;
+    }
+}
+
+/**
+ * Collect heading-bearing HTML from parsed blocks without rendering the post.
+ *
+ * The previous implementation called do_blocks() from inside the TOC render
+ * callback, causing every dynamic block and query in the post to execute a
+ * second time. This walker reads core heading markup directly and recurses into
+ * normal InnerBlocks. ACF blocks are included only when requested; data-only
+ * ACF blocks may be rendered individually as an opt-in compatibility fallback.
+ *
+ * @param array $blocks               Parsed blocks.
+ * @param bool  $include_acf_headings Include headings nested inside ACF blocks.
+ * @return string
+ */
+if ( ! function_exists( 'acf_toc_collect_heading_html' ) ) {
+    function acf_toc_collect_heading_html( $blocks, $include_acf_headings ) {
+        $html = '';
+
+        foreach ( $blocks as $parsed_block ) {
+            $name   = array_key_exists( 'blockName', $parsed_block ) ? $parsed_block['blockName'] : '';
+            $is_acf = 0 === strpos( $name, 'acf/' );
+
+            if ( 'core/heading' === $name || null === $name ) {
+                $html .= (string) ( $parsed_block['innerHTML'] ?? '' );
+            }
+
+            if ( $is_acf && $include_acf_headings ) {
+                /**
+                 * Supply heading HTML generated from ACF data-only blocks.
+                 *
+                 * InnerBlocks headings are handled by recursion. Integrations
+                 * can expose template-generated headings without rendering the
+                 * full post by returning a small heading-only HTML fragment.
+                 *
+                 * @param string $html_fragment Heading-only HTML.
+                 * @param array  $parsed_block  Parsed ACF block.
+                 */
+                $acf_heading_html = (string) apply_filters( 'acf_toc_acf_block_heading_html', '', $parsed_block );
+                $may_render_fallback = 'acf/toc' !== $name
+                    && empty( $parsed_block['innerBlocks'] )
+                    && apply_filters( 'acf_toc_render_acf_block_for_headings', true, $parsed_block );
+                if ( '' === $acf_heading_html && $may_render_fallback && function_exists( 'render_block' ) ) {
+                    $acf_heading_html = render_block( $parsed_block );
+                }
+                $html .= $acf_heading_html;
+            }
+
+            if ( ! empty( $parsed_block['innerBlocks'] ) && ( ! $is_acf || $include_acf_headings ) ) {
+                $html .= acf_toc_collect_heading_html( $parsed_block['innerBlocks'], $include_acf_headings );
+            }
+        }
+
+        return $html;
     }
 }
 
@@ -216,6 +273,12 @@ $aria_label        = acf_blocks_get_field( 'toc_aria_label', $block ) ?: 'Table 
 $include_acf_headings = acf_blocks_get_field( 'toc_include_acf_block_headings', $block );
 
 // Validate heading levels
+if ( is_array( $heading_levels ) ) {
+    $heading_levels = array_values( array_intersect(
+        array( 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' ),
+        array_map( 'strtolower', $heading_levels )
+    ) );
+}
 if ( ! is_array( $heading_levels ) || empty( $heading_levels ) ) {
     $heading_levels = array( 'h2' );
 }
@@ -245,36 +308,16 @@ if ( $highlight_active ) {
 // Generate unique ID for this block instance
 $block_id = ! empty( $block['id'] ) ? $block['id'] : 'acf-toc-' . wp_unique_id();
 
-// Get post content for heading extraction
-// Render blocks so headings from ACF blocks (e.g. Hero) are included
+// Get heading markup without re-rendering the post or its dynamic blocks.
 $post_content = '';
 if ( $post_id ) {
     $post_obj = get_post( $post_id );
     if ( $post_obj ) {
-        $raw_content = $post_obj->post_content;
-
-        // Remove TOC blocks to prevent infinite recursion during rendering
-        $content_without_toc = preg_replace(
-            '/<!-- wp:acf\/toc\b.*?(?:\/-->|-->.*?<!-- \/wp:acf\/toc -->)/s',
-            '',
-            $raw_content
+        $post_content = acf_toc_collect_heading_html(
+            parse_blocks( $post_obj->post_content ),
+            (bool) $include_acf_headings
         );
-
-        // Render blocks to get full HTML including headings from ACF blocks
-        $post_content = do_blocks( $content_without_toc );
     }
-}
-
-// Strip headings inside ACF blocks when checkbox is OFF (default)
-if ( ! $include_acf_headings && ! empty( $post_content ) ) {
-    // After do_blocks(), rendered HTML contains data-acf-block attributes
-    // on product boxes, pros/cons, etc. Strip those wrappers and their content
-    // so their internal headings don't appear in the TOC.
-    $post_content = preg_replace(
-        '/<([a-z][a-z0-9]*)\b[^>]*\bdata-acf-block\b[^>]*>.*?<\/\1>/is',
-        '',
-        $post_content
-    );
 }
 
 // Extract headings from the rendered content
@@ -321,8 +364,11 @@ if ( ! in_array( $title_tag, $allowed_title_tags ) ) {
     id="<?php echo esc_attr( $block_id ); ?>"
     class="<?php echo esc_attr( implode( ' ', $block_classes ) ); ?>"
     aria-label="<?php echo esc_attr( $aria_label ); ?>"
+    data-heading-levels="<?php echo esc_attr( implode( ',', array_map( 'strtolower', $heading_levels ) ) ); ?>"
+    data-include-acf-headings="<?php echo $include_acf_headings ? '1' : '0'; ?>"
     <?php if ( $sticky ) : ?>data-sticky="true" data-sticky-offset="<?php echo esc_attr( $sticky_offset ); ?>"<?php endif; ?>
     <?php if ( $highlight_active ) : ?>data-highlight-active="true"<?php endif; ?>
+    <?php if ( $sticky ) : ?>style="--acf-toc-sticky-offset:calc(var(--header-height,0px) + var(--wp-admin--admin-bar--height,0px) + <?php echo absint( $sticky_offset ); ?>px);"<?php endif; ?>
 >
     <?php if ( $collapsible ) : ?>
         <details<?php echo ! $collapsed_default ? ' open' : ''; ?> class="acf-toc__details">
@@ -352,84 +398,3 @@ if ( ! in_array( $title_tag, $allowed_title_tags ) ) {
 if ( $include_schema && ! $is_preview && ! empty( $headings ) ) {
     echo acf_toc_generate_schema( $headings, $post_id );
 }
-
-// Inline CSS for sticky behavior (only when sticky is enabled)
-if ( $sticky && ! defined( 'ACF_TOC_STICKY_CSS_LOADED' ) ) :
-    define( 'ACF_TOC_STICKY_CSS_LOADED', true );
-    $sticky_css = ':root{--acf-toc-sticky-offset:calc(var(--header-height,0px) + var(--wp-admin--admin-bar--height,0px) + 20px)}@media(min-width:1400px){.acf-toc--sticky{position:fixed;top:var(--acf-toc-sticky-offset);right:0;max-width:220px;max-height:calc(100vh - var(--acf-toc-sticky-offset) - 20px);overflow-y:auto;scrollbar-width:thin;font-size:0.8125em;line-height:1.4;z-index:100;padding:max(1rem,16px);border-radius:10px}.acf-toc--sticky .acf-toc__title{font-size:0.75em;margin-bottom:0.5em;padding-bottom:0.375em}.acf-toc--sticky .acf-toc__item{padding:0}.acf-toc--sticky .acf-toc__link{padding:0.15em 0.375em;border-radius:4px}.acf-toc--sticky .acf-toc__sublist{padding-left:0.75em;margin-top:0;margin-left:0}.acf-toc--sticky::-webkit-scrollbar{width:3px}.acf-toc--sticky::-webkit-scrollbar-thumb{background-color:color-mix(in srgb,currentColor 15%,transparent);border-radius:2px}}';
-    echo '<style>' . acf_blocks_minify_css( $sticky_css ) . '</style>';
-    // Set custom offset if provided
-    if ( $sticky_offset && $sticky_offset != 20 ) {
-        $offset_css = '#' . esc_attr( $block_id ) . '{--acf-toc-sticky-offset:calc(var(--header-height,0px) + var(--wp-admin--admin-bar--height,0px) + ' . intval( $sticky_offset ) . 'px)}';
-        echo '<style>' . acf_blocks_minify_css( $offset_css ) . '</style>';
-    }
-endif;
-
-// Inline CSS for smooth scroll (only when enabled)
-if ( $smooth_scroll && ! defined( 'ACF_TOC_SMOOTH_CSS_LOADED' ) ) :
-    define( 'ACF_TOC_SMOOTH_CSS_LOADED', true );
-    $smooth_css = 'html:has(.acf-toc--smooth-scroll){scroll-behavior:smooth}@media(prefers-reduced-motion:reduce){html:has(.acf-toc--smooth-scroll){scroll-behavior:auto}}';
-    echo '<style>' . acf_blocks_minify_css( $smooth_css ) . '</style>';
-endif;
-
-// Inline JS for active section highlighting (only when enabled)
-if ( $highlight_active && ! defined( 'ACF_TOC_HIGHLIGHT_JS_LOADED' ) ) :
-    define( 'ACF_TOC_HIGHLIGHT_JS_LOADED', true );
-?>
-<script>
-(function() {
-    'use strict';
-
-    function initTocHighlighting() {
-        var tocs = document.querySelectorAll('.acf-toc--highlight-active');
-        if (!tocs.length || !('IntersectionObserver' in window)) return;
-
-        tocs.forEach(function(toc) {
-            var links = toc.querySelectorAll('.acf-toc__link');
-            var headingIds = [];
-
-            links.forEach(function(link) {
-                var href = link.getAttribute('href');
-                if (href && href.startsWith('#')) {
-                    headingIds.push(href.substring(1));
-                }
-            });
-
-            if (!headingIds.length) return;
-
-            var headings = headingIds.map(function(id) {
-                return document.getElementById(id);
-            }).filter(Boolean);
-
-            if (!headings.length) return;
-
-            var observer = new IntersectionObserver(function(entries) {
-                entries.forEach(function(entry) {
-                    var link = toc.querySelector('a[href="#' + entry.target.id + '"]');
-                    if (link) {
-                        if (entry.isIntersecting) {
-                            // Remove active from all links
-                            links.forEach(function(l) { l.classList.remove('acf-toc__link--active'); });
-                            link.classList.add('acf-toc__link--active');
-                        }
-                    }
-                });
-            }, {
-                rootMargin: '-80px 0px -80% 0px',
-                threshold: 0
-            });
-
-            headings.forEach(function(heading) {
-                observer.observe(heading);
-            });
-        });
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initTocHighlighting);
-    } else {
-        initTocHighlighting();
-    }
-})();
-</script>
-<?php endif; ?>

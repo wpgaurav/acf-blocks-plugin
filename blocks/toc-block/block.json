@@ -23,8 +23,9 @@
       "isDefault": true
     }
   ],
-  "style": "file:./toc-block.css",
-  "editorStyle": "file:./toc-block.css",
+  "style": ["file:./toc-block.css", "file:./toc-runtime.css"],
+  "editorStyle": ["file:./toc-block.css", "file:./toc-runtime.css"],
+  "viewScript": "file:./toc.js",
   "example": {
     "attributes": {
       "mode": "preview",

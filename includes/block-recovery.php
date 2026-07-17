@@ -73,7 +73,7 @@ function acf_blocks_recovery_innerblock_block_names() {
         return $names;
     }
 
-    foreach ( acf_blocks_get_block_metadata_cache() as $block_info ) {
+    foreach ( acf_blocks_get_block_metadata_cache( true ) as $block_info ) {
         $metadata = $block_info['metadata'];
 
         if ( empty( $metadata['name'] ) ) {
@@ -446,6 +446,32 @@ function acf_blocks_recovery_filter_rest_response( $response, $post, $request ) 
  * --------------------------------------------------------------------------
  */
 
+/**
+ * Fetch a bounded recovery candidate batch for WP-CLI.
+ *
+ * @param string[] $post_types Post types.
+ * @param string[] $statuses   Post statuses.
+ * @param int      $after_id   Keyset cursor.
+ * @param int      $limit      Batch size.
+ * @return int[]
+ */
+function acf_blocks_recovery_candidate_ids( $post_types, $statuses, $after_id, $limit = 500 ) {
+    global $wpdb;
+    if ( empty( $post_types ) || empty( $statuses ) ) {
+        return array();
+    }
+    $type_placeholders   = implode( ',', array_fill( 0, count( $post_types ), '%s' ) );
+    $status_placeholders = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
+    $sql = "SELECT ID FROM {$wpdb->posts}
+        WHERE ID > %d
+          AND post_type IN ({$type_placeholders})
+          AND post_status IN ({$status_placeholders})
+          AND post_content LIKE %s
+        ORDER BY ID ASC LIMIT %d";
+    $args = array_merge( array( absint( $after_id ) ), $post_types, $statuses, array( '%<!-- wp:acf/%', absint( $limit ) ) );
+    return array_map( 'intval', $wpdb->get_col( $wpdb->prepare( $sql, $args ) ) );
+}
+
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
 
     /**
@@ -479,31 +505,25 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
     function acf_blocks_recovery_cli_repair( $args, $assoc_args ) {
         $dry_run = isset( $assoc_args['dry-run'] );
 
-        if ( isset( $assoc_args['post'] ) ) {
-            $post_ids = array( (int) $assoc_args['post'] );
-        } else {
-            $post_types = isset( $assoc_args['post_type'] )
-                ? array_map( 'trim', explode( ',', $assoc_args['post_type'] ) )
-                : get_post_types( array( 'show_in_rest' => true ), 'names' );
-
-            $statuses = isset( $assoc_args['post_status'] )
-                ? array_map( 'trim', explode( ',', $assoc_args['post_status'] ) )
-                : array( 'publish', 'draft', 'pending', 'private', 'future' );
-
-            $post_ids = get_posts( array(
-                'post_type'      => $post_types,
-                'post_status'    => $statuses,
-                'posts_per_page' => -1,
-                'fields'         => 'ids',
-                'no_found_rows'  => true,
-                's'              => '', // no search
-            ) );
-        }
+        $single_post = isset( $assoc_args['post'] );
+        $post_types = isset( $assoc_args['post_type'] )
+            ? array_map( 'trim', explode( ',', $assoc_args['post_type'] ) )
+            : get_post_types( array( 'show_in_rest' => true ), 'names' );
+        $statuses = isset( $assoc_args['post_status'] )
+            ? array_map( 'trim', explode( ',', $assoc_args['post_status'] ) )
+            : array( 'publish', 'draft', 'pending', 'private', 'future' );
 
         $scanned  = 0;
         $repaired = 0;
 
+        $cursor = 0;
+        do {
+            $post_ids = $single_post
+                ? array( (int) $assoc_args['post'] )
+                : acf_blocks_recovery_candidate_ids( $post_types, $statuses, $cursor, 500 );
+
         foreach ( $post_ids as $post_id ) {
+            $cursor = max( $cursor, (int) $post_id );
             $content = get_post_field( 'post_content', $post_id );
 
             if ( '' === $content ) {
@@ -536,6 +556,7 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
                 WP_CLI::log( sprintf( 'Repaired post #%d (%s)', $post_id, get_the_title( $post_id ) ) );
             }
         }
+        } while ( ! $single_post && 500 === count( $post_ids ) );
 
         $verb = $dry_run ? 'would be repaired' : 'repaired';
         WP_CLI::success( sprintf( '%d of %d post(s) scanned %s.', $repaired, $scanned, $verb ) );

@@ -23,6 +23,10 @@ function acf_url_preview_admin_scripts() {
         return;
     }
 
+    if ( ! empty( $screen->post_type ) && function_exists( 'use_block_editor_for_post_type' ) && ! use_block_editor_for_post_type( $screen->post_type ) ) {
+        return;
+    }
+
     // Only enqueue once
     static $enqueued = false;
     if ( $enqueued ) {
@@ -33,14 +37,8 @@ function acf_url_preview_admin_scripts() {
     $script_path = plugin_dir_path( __FILE__ ) . 'admin.js';
     $script_url = plugin_dir_url( __FILE__ ) . 'admin.js';
 
-    // Create inline script if file doesn't exist
-    if ( ! file_exists( $script_path ) ) {
-        $inline_script = acf_url_preview_get_admin_script();
-        wp_register_script( 'acf-url-preview-admin', '', array( 'jquery' ), '1.0.0', true );
-        wp_enqueue_script( 'acf-url-preview-admin' );
-        wp_add_inline_script( 'acf-url-preview-admin', $inline_script );
-    } else {
-        wp_enqueue_script( 'acf-url-preview-admin', $script_url, array( 'jquery' ), file_exists( $script_path ) ? filemtime( $script_path ) : ACF_BLOCKS_VERSION, true );
+    if ( file_exists( $script_path ) ) {
+        wp_enqueue_script( 'acf-url-preview-admin', $script_url, array( 'jquery', 'wp-data' ), ACF_BLOCKS_VERSION, true );
     }
 
     wp_localize_script( 'acf-url-preview-admin', 'acfUrlPreview', array(
@@ -54,154 +52,6 @@ function acf_url_preview_admin_scripts() {
     ) );
 }
 add_action( 'admin_enqueue_scripts', 'acf_url_preview_admin_scripts' );
-}
-
-/**
- * Get the admin JavaScript code
- *
- * @return string JavaScript code
- */
-if ( ! function_exists( 'acf_url_preview_get_admin_script' ) ) {
-function acf_url_preview_get_admin_script() {
-    return <<<'JS'
-(function($) {
-    'use strict';
-
-    // Debounce function to prevent rapid clicks
-    function debounce(func, wait) {
-        var timeout;
-        return function() {
-            var context = this, args = arguments;
-            clearTimeout(timeout);
-            timeout = setTimeout(function() {
-                func.apply(context, args);
-            }, wait);
-        };
-    }
-
-    // Handle fetch button clicks
-    $(document).on('click', '.acf-url-preview-fetch-btn', debounce(function(e) {
-        e.preventDefault();
-
-        var $btn = $(this);
-        var $status = $btn.siblings('.acf-url-preview-fetch-status');
-        var $block = $btn.closest('.acf-block-component, .acf-fields');
-
-        // Find the URL field
-        var $urlField = $block.find('[data-name="source_url"] input');
-        var url = $urlField.val();
-
-        if (!url) {
-            $status.text('Please enter a URL first').css('color', '#d63638');
-            return;
-        }
-
-        // Disable button and show loading
-        $btn.prop('disabled', true);
-        $status.text(acfUrlPreview.fetchingText).css('color', '#2271b1');
-
-        $.ajax({
-            url: acfUrlPreview.ajaxUrl,
-            type: 'POST',
-            data: {
-                action: 'acf_url_preview_fetch',
-                nonce: acfUrlPreview.fetchNonce,
-                url: url
-            },
-            success: function(response) {
-                if (response.success && response.data) {
-                    var data = response.data;
-
-                    // Populate title
-                    if (data.title) {
-                        $block.find('[data-name="preview_title"] input').val(data.title).trigger('change');
-                    }
-
-                    // Populate description
-                    if (data.description) {
-                        $block.find('[data-name="preview_description"] textarea').val(data.description).trigger('change');
-                    }
-
-                    // Populate external image URL
-                    if (data.image) {
-                        $block.find('[data-name="external_image_url"] input').val(data.image).trigger('change');
-                    }
-
-                    // Populate image alt
-                    if (data.title && !$block.find('[data-name="image_alt"] input').val()) {
-                        $block.find('[data-name="image_alt"] input').val(data.title).trigger('change');
-                    }
-
-                    $status.text(acfUrlPreview.successText + ' ✓').css('color', '#00a32a');
-                } else {
-                    $status.text(response.data || acfUrlPreview.errorText).css('color', '#d63638');
-                }
-            },
-            error: function() {
-                $status.text(acfUrlPreview.errorText).css('color', '#d63638');
-            },
-            complete: function() {
-                $btn.prop('disabled', false);
-                setTimeout(function() {
-                    $status.text('');
-                }, 3000);
-            }
-        });
-    }, 300));
-
-    // Handle import button clicks
-    $(document).on('click', '.acf-url-preview-import-btn', debounce(function(e) {
-        e.preventDefault();
-
-        var $btn = $(this);
-        var $status = $btn.siblings('.acf-url-preview-import-status');
-        var $block = $btn.closest('.acf-block-component, .acf-fields');
-
-        // Find the external image URL
-        var $externalField = $block.find('[data-name="external_image_url"] input');
-        var imageUrl = $externalField.val();
-
-        if (!imageUrl) {
-            $status.text('No external image URL to import').css('color', '#d63638');
-            return;
-        }
-
-        // Get post ID
-        var postId = $('#post_ID').val() || wp.data.select('core/editor').getCurrentPostId();
-
-        // Disable button and show loading
-        $btn.prop('disabled', true);
-        $status.text(acfUrlPreview.importingText).css('color', '#2271b1');
-
-        $.ajax({
-            url: acfUrlPreview.ajaxUrl,
-            type: 'POST',
-            data: {
-                action: 'acf_url_preview_import_image',
-                nonce: acfUrlPreview.importNonce,
-                image_url: imageUrl,
-                post_id: postId
-            },
-            success: function(response) {
-                if (response.success && response.data) {
-                    $status.text(acfUrlPreview.successText + ' - Refresh to see image').css('color', '#00a32a');
-                    // Note: ACF image field population requires page refresh or complex ACF JS API
-                } else {
-                    $status.text(response.data || acfUrlPreview.errorText).css('color', '#d63638');
-                }
-            },
-            error: function() {
-                $status.text(acfUrlPreview.errorText).css('color', '#d63638');
-            },
-            complete: function() {
-                $btn.prop('disabled', false);
-            }
-        });
-    }, 300));
-
-})(jQuery);
-JS;
-}
 }
 
 /**
@@ -249,8 +99,10 @@ function acf_url_preview_fetch_handler() {
     }
 
     // Fetch the URL
-    $response = wp_remote_get( $url, array(
-        'timeout' => 15,
+    $response = wp_safe_remote_get( $url, array(
+        'timeout'             => 10,
+        'redirection'         => 3,
+        'limit_response_size' => 1024 * 1024,
         'user-agent' => 'Mozilla/5.0 (compatible; WordPress/' . get_bloginfo( 'version' ) . '; +' . home_url() . ')',
         'headers' => array(
             'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',

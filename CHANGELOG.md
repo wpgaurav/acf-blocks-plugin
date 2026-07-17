@@ -2,6 +2,28 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.9.0] - 2026-07-17
+
+### Performance
+- Replaced request-time block and field-group discovery with a generated OPcache-friendly manifest.
+- Consolidated editor styles into one cacheable bundle, with site-specific bundles that exclude blocks disabled through Block Manager.
+- Removed the TOC block's full-post `do_blocks()` re-render and moved its runtime CSS/JavaScript to conditional assets.
+- Moved external-image downloads and thumbnail generation out of post saves into a bounded WP-Cron queue.
+- Changed migration and recovery scans from unbounded all-post queries to resumable keyset batches, including an optional background migration worker.
+- Added request-level image attachment lookup caching, post cache priming, bounded URL-preview responses, and contextual module loading.
+- Moved callout, feature-grid, post-display, checklist, changelog, and pros/cons variation styling into cacheable stylesheets or CSS custom properties.
+
+### Added
+- Block Manager for disabling unused block registrations and field groups.
+- Asynchronous block usage inventory, job status, and performance diagnostics.
+- Optional `Server-Timing` metrics in debug environments.
+- Generated-artifact checks, PHP 7.4-8.5 compatibility CI, JSON validation, and PHPUnit coverage.
+
+### Fixed
+- Replaced PHP 8-only `str_ends_with()` calls while retaining the advertised PHP 7.4 minimum.
+- Reworked public star ratings to use atomic database tables and a REST endpoint, preventing lost concurrent votes and transient-option growth.
+- Made URL Preview editor code cacheable and limited remote HTML responses to 1 MB.
+
 ## [2.8.1] - 2026-06-23
 
 ### Added — Migrator improvements

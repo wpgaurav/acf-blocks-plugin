@@ -43,8 +43,8 @@
       "label": "Highlight"
     }
   ],
-  "style": "file:./callout.css",
-  "editorStyle": "file:./callout.css",
+  "style": ["file:./callout.css", "file:./callout-variations.css"],
+  "editorStyle": ["file:./callout.css", "file:./callout-variations.css"],
   "example": {
     "attributes": {
       "mode": "preview",

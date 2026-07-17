@@ -3,7 +3,7 @@
  * Plugin Name: ACF Blocks
  * Plugin URI: https://github.com/wpgaurav/acf-blocks-plugin
  * Description: A collection of ACF Pro blocks for the WordPress block editor with automatic field group registration.
- * Version: 2.8.1
+ * Version: 2.9.0
  * Requires at least: 6.0
  * Tested up to: 7.0
  * Requires PHP: 7.4
@@ -19,8 +19,12 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+if ( ! defined( 'ACF_BLOCKS_REQUEST_START' ) ) {
+    define( 'ACF_BLOCKS_REQUEST_START', microtime( true ) );
+}
+
 // Plugin constants
-define( 'ACF_BLOCKS_VERSION', '2.8.1' );
+define( 'ACF_BLOCKS_VERSION', '2.9.0' );
 define( 'ACF_BLOCKS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ACF_BLOCKS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ACF_BLOCKS_PLUGIN_FILE', __FILE__ );
@@ -58,23 +62,55 @@ function acf_blocks_init() {
     // Load the main functions file
     require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/functions.php';
     require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/compat.php';
-    require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/image-localizer.php';
-    require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/block-recovery.php';
-    require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/block-migrator.php';
+    require_once ACF_BLOCKS_PLUGIN_DIR . 'blocks/star-rating-block/extra.php';
+
+    // Public requests only need block registration/rendering. Load operational
+    // modules in the contexts where their hooks can actually run.
+    if ( is_admin() || ( defined( 'DOING_CRON' ) && DOING_CRON ) || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+        require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/image-localizer.php';
+    }
+
+    if ( is_admin() || ( defined( 'DOING_CRON' ) && DOING_CRON ) || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+        require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/block-migrator.php';
+    }
+
+    if ( is_admin() || ( defined( 'DOING_CRON' ) && DOING_CRON ) || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+        require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/performance-manager.php';
+    }
+
+    if ( defined( 'WP_CLI' ) && WP_CLI ) {
+        require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/block-recovery.php';
+    }
 
     // Load text domain
     load_plugin_textdomain( 'acf-blocks', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 }
 add_action( 'plugins_loaded', 'acf_blocks_init' );
 
+/**
+ * Load REST-only modules before their normal rest_api_init callbacks run.
+ */
+function acf_blocks_load_rest_modules() {
+    require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/image-localizer.php';
+    require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/block-recovery.php';
+}
+add_action( 'rest_api_init', 'acf_blocks_load_rest_modules', -100 );
+
 // License Manager loads independently of the ACF requirement so that users
 // can still manage their license (activate, deactivate, receive update
 // notifications) even when ACF Pro / SCF is not yet installed or active.
 // All block-registration code is gated behind acf_blocks_check_requirements()
 // inside acf_blocks_init(), so nothing block-related runs without ACF.
-require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/license-manager.php';
-$acf_blocks_license = new ACF_Blocks_License_Manager( __FILE__ );
-$acf_blocks_license->hook();
+function acf_blocks_load_license_manager() {
+    if ( ! is_admin() && ! ( defined( 'DOING_CRON' ) && DOING_CRON ) && ! ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+        return;
+    }
+
+    require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/license-manager.php';
+    $license_manager = new ACF_Blocks_License_Manager( ACF_BLOCKS_PLUGIN_FILE );
+    $license_manager->hook();
+}
+add_action( 'plugins_loaded', 'acf_blocks_load_license_manager', 20 );
 
 /**
  * Check if ACF Pro or SCF is installed (not necessarily active).
@@ -134,6 +170,10 @@ function acf_blocks_install_scf() {
  */
 function acf_blocks_activate() {
     acf_blocks_install_scf();
+    require_once ACF_BLOCKS_PLUGIN_DIR . 'blocks/star-rating-block/extra.php';
+    if ( function_exists( 'acf_star_rating_install_tables' ) ) {
+        acf_star_rating_install_tables();
+    }
     flush_rewrite_rules();
 }
 register_activation_hook( __FILE__, 'acf_blocks_activate' );
@@ -142,6 +182,10 @@ register_activation_hook( __FILE__, 'acf_blocks_activate' );
  * Deactivation hook.
  */
 function acf_blocks_deactivate() {
+    wp_clear_scheduled_hook( 'acf_blocks_verify_license' );
+    wp_clear_scheduled_hook( 'acf_blocks_process_image_queue' );
+    wp_clear_scheduled_hook( 'acf_blocks_usage_scan_batch' );
+    wp_clear_scheduled_hook( 'acf_blocks_migrator_background_batch' );
     flush_rewrite_rules();
 }
 register_deactivation_hook( __FILE__, 'acf_blocks_deactivate' );

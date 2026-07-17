@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<ruleset name="ACF Blocks PHP Compatibility">
+    <description>Validate the advertised PHP 7.4 runtime boundary.</description>
+    <file>acf-blocks.php</file>
+    <file>blocks</file>
+    <file>includes</file>
+    <exclude-pattern>includes/generated-block-manifest.php</exclude-pattern>
+    <arg name="extensions" value="php"/>
+    <arg name="parallel" value="8"/>
+    <config name="testVersion" value="7.4-"/>
+    <rule ref="PHPCompatibilityWP"/>
+</ruleset>

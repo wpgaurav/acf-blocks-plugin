@@ -12,56 +12,125 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Get cached block metadata from all block folders.
+ * PHP 7.4-compatible string suffix check.
  *
- * Scans the blocks directory once per request and caches the results,
- * avoiding redundant glob() calls and block.json reads across the
- * multiple hooks that need this data.
+ * The plugin currently supports PHP 7.4, while str_ends_with() was added in
+ * PHP 8.0. Keep the compatibility boundary in one helper so runtime code does
+ * not accidentally raise the minimum PHP version.
  *
+ * @param string $haystack String to inspect.
+ * @param string $needle   Expected suffix.
+ * @return bool
+ */
+function acf_blocks_str_ends_with( $haystack, $needle ) {
+    $haystack = (string) $haystack;
+    $needle   = (string) $needle;
+
+    if ( '' === $needle ) {
+        return true;
+    }
+
+    if ( strlen( $needle ) > strlen( $haystack ) ) {
+        return false;
+    }
+
+    return 0 === substr_compare( $haystack, $needle, -strlen( $needle ) );
+}
+
+/**
+ * Get cached block metadata from the generated manifest.
+ *
+ * Production requests load a generated PHP array, which is OPcache-friendly
+ * and avoids directory scans plus repeated JSON decoding. A filesystem scan
+ * remains as a development fallback when the generated file is missing.
+ *
+ * @param bool $include_disabled Include blocks disabled through Block Manager.
  * @return array[] Array of block info arrays with keys: folder, folder_name, metadata.
  */
-function acf_blocks_get_block_metadata_cache() {
-    static $cache = null;
+function acf_blocks_get_block_metadata_cache( $include_disabled = false ) {
+    static $all_blocks = null;
 
-    if ( null !== $cache ) {
-        return $cache;
+    if ( null === $all_blocks ) {
+        $all_blocks   = array();
+        $manifest_file = ACF_BLOCKS_PLUGIN_DIR . 'includes/generated-block-manifest.php';
+        $manifest      = is_readable( $manifest_file ) ? require $manifest_file : array();
+
+        if ( is_array( $manifest ) && ! empty( $manifest ) ) {
+            foreach ( $manifest as $folder_name => $definition ) {
+                if ( empty( $definition['metadata']['name'] ) ) {
+                    continue;
+                }
+                $all_blocks[] = array(
+                    'folder'       => trailingslashit( ACF_BLOCKS_PLUGIN_DIR . 'blocks/' . $folder_name ),
+                    'folder_name'  => $folder_name,
+                    'metadata'     => $definition['metadata'],
+                    'field_groups' => $definition['field_groups'] ?? array(),
+                );
+            }
+        } else {
+            $all_blocks = acf_blocks_discover_block_metadata();
+        }
     }
 
-    $cache      = array();
-    $blocks_dir = ACF_BLOCKS_PLUGIN_DIR . 'blocks/';
-
-    if ( ! is_dir( $blocks_dir ) ) {
-        return $cache;
+    if ( $include_disabled ) {
+        return $all_blocks;
     }
 
-    $block_folders = glob( $blocks_dir . '*', GLOB_ONLYDIR );
-
-    if ( ! $block_folders ) {
-        return $cache;
+    $disabled = acf_blocks_get_disabled_blocks();
+    if ( empty( $disabled ) ) {
+        return $all_blocks;
     }
 
-    foreach ( $block_folders as $block_folder ) {
-        $block_folder = trailingslashit( $block_folder );
-        $block_json   = $block_folder . 'block.json';
+    return array_values( array_filter( $all_blocks, function( $block_info ) use ( $disabled ) {
+        return ! in_array( $block_info['metadata']['name'], $disabled, true );
+    } ) );
+}
 
-        if ( ! file_exists( $block_json ) || ! is_readable( $block_json ) ) {
+/**
+ * Filesystem fallback used when the generated block manifest is unavailable.
+ *
+ * @return array[]
+ */
+function acf_blocks_discover_block_metadata() {
+    $blocks = array();
+    $folders = glob( ACF_BLOCKS_PLUGIN_DIR . 'blocks/*', GLOB_ONLYDIR );
+
+    foreach ( (array) $folders as $folder ) {
+        $folder     = trailingslashit( $folder );
+        $block_file = $folder . 'block.json';
+        if ( ! is_readable( $block_file ) ) {
             continue;
         }
-
-        $metadata = json_decode( file_get_contents( $block_json ), true );
-
+        $metadata = json_decode( (string) file_get_contents( $block_file ), true );
         if ( empty( $metadata['name'] ) ) {
             continue;
         }
-
-        $cache[] = array(
-            'folder'      => $block_folder,
-            'folder_name' => basename( rtrim( $block_folder, '/' ) ),
-            'metadata'    => $metadata,
+        $blocks[] = array(
+            'folder'       => $folder,
+            'folder_name'  => basename( untrailingslashit( $folder ) ),
+            'metadata'     => $metadata,
+            'field_groups' => array(),
         );
     }
 
-    return $cache;
+    return $blocks;
+}
+
+/**
+ * Return block names disabled through the Block Manager.
+ *
+ * @return string[]
+ */
+function acf_blocks_get_disabled_blocks() {
+    static $disabled = null;
+
+    if ( null === $disabled ) {
+        $disabled = function_exists( 'get_option' ) ? get_option( 'acf_blocks_disabled_blocks', array() ) : array();
+        $disabled = is_array( $disabled ) ? array_values( array_filter( array_map( 'sanitize_text_field', $disabled ) ) ) : array();
+        $disabled = apply_filters( 'acf_blocks_disabled_blocks', $disabled );
+    }
+
+    return $disabled;
 }
 
 /**
@@ -132,6 +201,9 @@ function acf_blocks_load_blocks() {
         return;
     }
 
+    $started    = microtime( true );
+    $registered = 0;
+
     foreach ( acf_blocks_get_block_metadata_cache() as $block_info ) {
         $block_folder = $block_info['folder'];
         $metadata     = $block_info['metadata'];
@@ -179,14 +251,19 @@ function acf_blocks_load_blocks() {
             continue;
         }
 
+        $registered++;
+
         // Register ACF field groups from JSON files
-        acf_blocks_register_field_groups( $block_folder );
+        acf_blocks_register_field_groups( $block_folder, $block_info['field_groups'] ?? null );
 
         // Load extra.php if present
         if ( file_exists( $extra_php ) && is_readable( $extra_php ) ) {
             require_once $extra_php;
         }
     }
+
+    $GLOBALS['acf_blocks_runtime_metrics']['registration_ms'] = ( microtime( true ) - $started ) * 1000;
+    $GLOBALS['acf_blocks_runtime_metrics']['registered']      = $registered;
 }
 add_action( 'acf/init', 'acf_blocks_load_blocks', 5 );
 
@@ -195,10 +272,20 @@ add_action( 'acf/init', 'acf_blocks_load_blocks', 5 );
  *
  * Supports both single field group objects and arrays of field groups.
  *
- * @param string $block_folder Absolute path to the block directory.
+ * @param string     $block_folder Absolute path to the block directory.
+ * @param array|null $field_groups Generated field groups, or null for fallback discovery.
  */
-function acf_blocks_register_field_groups( $block_folder ) {
+function acf_blocks_register_field_groups( $block_folder, $field_groups = null ) {
     if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+        return;
+    }
+
+    if ( is_array( $field_groups ) ) {
+        foreach ( $field_groups as $group ) {
+            if ( isset( $group['key'], $group['fields'] ) ) {
+                acf_add_local_field_group( $group );
+            }
+        }
         return;
     }
 
@@ -316,146 +403,44 @@ function acf_blocks_enqueue_editor_assets() {
 add_action( 'enqueue_block_editor_assets', 'acf_blocks_enqueue_editor_assets' );
 
 /**
- * Enqueue all ACF block styles in the editor iframe at high priority.
+ * Enqueue the generated ACF Blocks editor bundle.
  *
  * This ensures styles load at the bottom of the head for maximum specificity.
  * Uses a very high priority (999999) to load after theme and other plugin styles.
  */
 function acf_blocks_enqueue_editor_styles() {
-    // Only load in admin/editor context — frontend styles are handled
-    // conditionally by register_block_type() via wp_register_style().
     if ( ! is_admin() ) {
         return;
     }
 
-    $blocks_url = ACF_BLOCKS_PLUGIN_URL . 'blocks/';
-
+    // Block metadata registers per-block style and editorStyle handles. Remove
+    // those in the editor and replace them with one cacheable bundle. Frontend
+    // requests retain conditional per-block loading.
     foreach ( acf_blocks_get_block_metadata_cache() as $block_info ) {
-        $metadata     = $block_info['metadata'];
-        $block_folder = $block_info['folder'];
-        $folder_name  = $block_info['folder_name'];
-
-        // Check for style property in block.json
-        if ( ! empty( $metadata['style'] ) && is_string( $metadata['style'] ) ) {
-            if ( strpos( $metadata['style'], 'file:./' ) === 0 ) {
-                $css_file = substr( $metadata['style'], 7 );
-                $css_path = $block_folder . $css_file;
-                $css_url  = $blocks_url . $folder_name . '/' . $css_file;
-
-                if ( file_exists( $css_path ) ) {
-                    $handle = 'acf-blocks-editor-' . $folder_name;
-                    wp_enqueue_style(
-                        $handle,
-                        $css_url,
-                        array(),
-                        ACF_BLOCKS_VERSION
-                    );
-                }
-            }
-        }
-
-        // Also check for editorStyle
-        if ( ! empty( $metadata['editorStyle'] ) && is_string( $metadata['editorStyle'] ) ) {
-            if ( strpos( $metadata['editorStyle'], 'file:./' ) === 0 ) {
-                $css_file = substr( $metadata['editorStyle'], 7 );
-                $css_path = $block_folder . $css_file;
-                $css_url  = $blocks_url . $folder_name . '/' . $css_file;
-
-                // Only enqueue if different from style
-                if ( file_exists( $css_path ) && ( empty( $metadata['style'] ) || $metadata['editorStyle'] !== $metadata['style'] ) ) {
-                    $handle = 'acf-blocks-editor-' . $folder_name . '-editor';
-                    wp_enqueue_style(
-                        $handle,
-                        $css_url,
-                        array(),
-                        ACF_BLOCKS_VERSION
-                    );
-                }
-            }
+        $base_handle = str_replace( '/', '-', $block_info['metadata']['name'] );
+        wp_dequeue_style( $base_handle . '-style' );
+        wp_dequeue_style( $base_handle . '-editor-style' );
+        for ( $index = 2; $index <= 5; $index++ ) {
+            wp_dequeue_style( $base_handle . '-style-' . $index );
+            wp_dequeue_style( $base_handle . '-editor-style-' . $index );
         }
     }
+
+    $site_bundle = get_option( 'acf_blocks_editor_bundle', array() );
+    $site_bundle_is_valid = ! empty( $site_bundle['url'] )
+        && ! empty( $site_bundle['path'] )
+        && is_readable( $site_bundle['path'] );
+    $bundle_url = $site_bundle_is_valid ? $site_bundle['url'] : ACF_BLOCKS_PLUGIN_URL . 'assets/css/editor-blocks.css';
+    $version    = $site_bundle_is_valid && ! empty( $site_bundle['version'] ) ? $site_bundle['version'] : ACF_BLOCKS_VERSION;
+
+    wp_enqueue_style(
+        'acf-blocks-editor-bundle',
+        $bundle_url,
+        array(),
+        $version
+    );
 }
-// Use very high priority to ensure styles load at the bottom of head
 add_action( 'enqueue_block_assets', 'acf_blocks_enqueue_editor_styles', 999999 );
-
-/**
- * Add ACF block styles to editor via add_editor_style for iframe support.
- *
- * This method ensures styles are loaded in the editor iframe even before
- * any blocks are inserted, providing consistent preview styling.
- */
-function acf_blocks_add_editor_styles() {
-    $blocks_url = ACF_BLOCKS_PLUGIN_URL . 'blocks/';
-
-    foreach ( acf_blocks_get_block_metadata_cache() as $block_info ) {
-        $metadata     = $block_info['metadata'];
-        $block_folder = $block_info['folder'];
-        $folder_name  = $block_info['folder_name'];
-
-        // Check for style property in block.json
-        if ( ! empty( $metadata['style'] ) && is_string( $metadata['style'] ) ) {
-            if ( strpos( $metadata['style'], 'file:./' ) === 0 ) {
-                $css_file = substr( $metadata['style'], 7 );
-                $css_path = $block_folder . $css_file;
-                $css_url  = $blocks_url . $folder_name . '/' . $css_file;
-
-                if ( file_exists( $css_path ) ) {
-                    add_editor_style( $css_url );
-                }
-            }
-        }
-    }
-}
-add_action( 'after_setup_theme', 'acf_blocks_add_editor_styles', 999 );
-
-/**
- * Inject ACF block styles directly into block editor settings.
- *
- * This provides a fallback method to ensure styles are always available
- * in the block editor iframe with maximum specificity.
- *
- * @param array $editor_settings Editor settings array.
- * @return array Modified editor settings.
- */
-function acf_blocks_inject_editor_styles( $editor_settings ) {
-    $combined_css = '';
-
-    foreach ( acf_blocks_get_block_metadata_cache() as $block_info ) {
-        $metadata     = $block_info['metadata'];
-        $block_folder = $block_info['folder'];
-
-        // Check for style property in block.json
-        if ( ! empty( $metadata['style'] ) && is_string( $metadata['style'] ) ) {
-            if ( strpos( $metadata['style'], 'file:./' ) === 0 ) {
-                $css_file = substr( $metadata['style'], 7 );
-                $css_path = $block_folder . $css_file;
-
-                if ( file_exists( $css_path ) && is_readable( $css_path ) ) {
-                    $css_content = file_get_contents( $css_path );
-                    if ( $css_content ) {
-                        $combined_css .= "\n/* ACF Block: " . esc_html( $metadata['name'] ) . " */\n";
-                        $combined_css .= $css_content;
-                    }
-                }
-            }
-        }
-    }
-
-    if ( ! empty( $combined_css ) ) {
-        // Ensure styles array exists
-        if ( ! isset( $editor_settings['styles'] ) ) {
-            $editor_settings['styles'] = array();
-        }
-
-        // Add our styles at the end for maximum specificity
-        $editor_settings['styles'][] = array(
-            'css' => $combined_css,
-        );
-    }
-
-    return $editor_settings;
-}
-add_filter( 'block_editor_settings_all', 'acf_blocks_inject_editor_styles', 999999 );
 
 /**
  * Validate a heading tag against an allowed list.
@@ -469,3 +454,18 @@ add_filter( 'block_editor_settings_all', 'acf_blocks_inject_editor_styles', 9999
 function acf_blocks_validate_heading_tag( $tag, $default = 'p' ) {
     return in_array( $tag, array( 'p', 'h2', 'h3', 'h4', 'h5', 'h6' ), true ) ? $tag : $default;
 }
+
+/**
+ * Expose opt-in Server-Timing metrics for profiling environments.
+ */
+function acf_blocks_send_server_timing() {
+    $enabled = defined( 'WP_DEBUG' ) && WP_DEBUG;
+    if ( ! apply_filters( 'acf_blocks_server_timing_enabled', $enabled ) || headers_sent() ) {
+        return;
+    }
+
+    $bootstrap = defined( 'ACF_BLOCKS_REQUEST_START' ) ? ( microtime( true ) - ACF_BLOCKS_REQUEST_START ) * 1000 : 0;
+    $register  = (float) ( $GLOBALS['acf_blocks_runtime_metrics']['registration_ms'] ?? 0 );
+    header( sprintf( 'Server-Timing: acf-blocks-bootstrap;dur=%.2f, acf-blocks-register;dur=%.2f', $bootstrap, $register ), false );
+}
+add_action( 'send_headers', 'acf_blocks_send_server_timing', 100 );

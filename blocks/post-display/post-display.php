@@ -30,10 +30,18 @@ if (!$selected_posts) {
     return;
 }
 
-// Normalize to WP_Post objects — compat layer may return raw post IDs.
+// Normalize to WP_Post objects — compat layer may return raw post IDs. Prime
+// all posts in one query before resolving them to avoid an N+1 cache miss.
+$raw_selected = (array) $selected_posts;
+$selected_ids = array_values( array_filter( array_map( function( $item ) {
+    return $item instanceof WP_Post ? 0 : absint( $item );
+}, $raw_selected ) ) );
+if ( ! empty( $selected_ids ) && function_exists( '_prime_post_caches' ) ) {
+    _prime_post_caches( $selected_ids, false, false );
+}
 $selected_posts = array_filter( array_map( function( $item ) {
     return $item instanceof WP_Post ? $item : get_post( $item );
-}, (array) $selected_posts ) );
+}, $raw_selected ) );
 
 if ( empty( $selected_posts ) ) {
     return;
@@ -65,150 +73,9 @@ if ($className) {
 
 $container_class = implode(' ', $container_classes);
 
-// Detect style variation
-$style_variation = '';
-if (strpos($className, 'is-style-dark') !== false) {
-    $style_variation = 'dark';
-} elseif (strpos($className, 'is-style-card') !== false) {
-    $style_variation = 'card';
-} elseif (strpos($className, 'is-style-minimal') !== false) {
-    $style_variation = 'minimal';
-} elseif (strpos($className, 'is-style-bordered') !== false) {
-    $style_variation = 'bordered';
-}
 ?>
 
 <div id="<?php echo esc_attr($block_id); ?>" class="<?php echo esc_attr($container_class); ?>">
-    <?php if ($style_variation === 'dark'): ?>
-    <?php
-    static $acf_post_display_css_dark = false;
-    if ( ! $acf_post_display_css_dark ) {
-    $css = '
-        .acf-post-display.is-style-dark .acf-post-display-item {
-            background-color: #1a1a2e;
-            border-color: #374151;
-            color: #ffffff;
-        }
-        .acf-post-display.is-style-dark .acf-post-display-title a {
-            color: #ffffff;
-        }
-        .acf-post-display.is-style-dark .acf-post-display-title a:hover {
-            color: #ffd700;
-        }
-        .acf-post-display.is-style-dark .acf-post-display-meta {
-            color: #9ca3af;
-        }
-        .acf-post-display.is-style-dark .acf-post-display-excerpt {
-            color: #d1d5db;
-        }
-        .acf-post-display.is-style-dark .acf-post-display-read-more-button {
-            background-color: #ffd700;
-            color: #1a1a2e;
-        }
-        .acf-post-display.is-style-dark .acf-post-display-read-more-button:hover {
-            background-color: #ffed4a;
-        }
-        .acf-post-display.is-style-dark.acf-post-display-layout-text_links .acf-post-display-link {
-            color: #ffd700;
-        }';
-    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
-    $acf_post_display_css_dark = true;
-    }
-    ?>
-    <?php elseif ($style_variation === 'card'): ?>
-    <?php
-    static $acf_post_display_css_card = false;
-    if ( ! $acf_post_display_css_card ) {
-    $css = '
-        .acf-post-display.is-style-card .acf-post-display-item {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-        .acf-post-display.is-style-card .acf-post-display-item:hover {
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-            transform: translateY(-2px);
-            transition: all 0.3s ease;
-        }
-        .acf-post-display.is-style-card .acf-post-display-content {
-            padding: max(1.5rem,24px);
-        }
-        .acf-post-display.is-style-card .acf-post-display-read-more-button {
-            border-radius: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .acf-post-display.is-style-card .acf-post-display-read-more-button:hover {
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-        }';
-    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
-    $acf_post_display_css_card = true;
-    }
-    ?>
-    <?php elseif ($style_variation === 'minimal'): ?>
-    <?php
-    static $acf_post_display_css_minimal = false;
-    if ( ! $acf_post_display_css_minimal ) {
-    $css = '
-        .acf-post-display.is-style-minimal .acf-post-display-item {
-            background: transparent;
-            border: none;
-            border-radius: 0;
-            box-shadow: none;
-            border-bottom: 1px solid #e0e0e0;
-            padding-bottom: max(1rem,16px);
-            margin-bottom: max(1rem,16px);
-        }
-        .acf-post-display.is-style-minimal .acf-post-display-item:hover {
-            box-shadow: none;
-        }
-        .acf-post-display.is-style-minimal .acf-post-display-content {
-            padding: 0;
-        }
-        .acf-post-display.is-style-minimal .acf-post-display-thumb {
-            border-bottom: none;
-        }
-        .acf-post-display.is-style-minimal .acf-post-display-read-more-button {
-            background: transparent;
-            color: #0073aa;
-            padding: 0;
-            text-decoration: underline;
-        }
-        .acf-post-display.is-style-minimal .acf-post-display-read-more-button:hover {
-            background: transparent;
-            color: #005a87;
-        }';
-    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
-    $acf_post_display_css_minimal = true;
-    }
-    ?>
-    <?php elseif ($style_variation === 'bordered'): ?>
-    <?php
-    static $acf_post_display_css_bordered = false;
-    if ( ! $acf_post_display_css_bordered ) {
-    $css = '
-        .acf-post-display.is-style-bordered .acf-post-display-item {
-            border: 3px solid #1a1a1a;
-            border-radius: 0;
-            background: #ffffff;
-        }
-        .acf-post-display.is-style-bordered .acf-post-display-item:hover {
-            box-shadow: 4px 4px 0 #1a1a1a;
-        }
-        .acf-post-display.is-style-bordered .acf-post-display-title a {
-            color: #1a1a1a;
-        }
-        .acf-post-display.is-style-bordered .acf-post-display-read-more-button {
-            background: #1a1a1a;
-            border-radius: 0;
-        }
-        .acf-post-display.is-style-bordered .acf-post-display-read-more-button:hover {
-            background: #333333;
-        }';
-    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
-    $acf_post_display_css_bordered = true;
-    }
-    ?>
-    <?php endif; ?>
     <?php if ($layout === 'text_links'): ?>
 
         <ul class="acf-post-display-list">

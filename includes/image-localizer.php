@@ -2,8 +2,9 @@
 /**
  * ACF Blocks External Image Localizer
  *
- * Scans ACF block field data on post save, downloads external images
- * to uploads/acf-blocks-plugin/images/, and rewrites the URLs.
+ * Queues ACF block content on post save, then downloads external images in a
+ * bounded WP-Cron job. Remote I/O and thumbnail generation never block the
+ * editor's save request.
  * This improves privacy by serving assets from the local domain.
  *
  * @package ACF_Blocks
@@ -12,6 +13,140 @@
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
+}
+
+const ACF_BLOCKS_IMAGE_QUEUE_OPTION = 'acf_blocks_image_localization_queue';
+const ACF_BLOCKS_IMAGE_QUEUE_EVENT  = 'acf_blocks_process_image_queue';
+
+/**
+ * Get the queued post records.
+ *
+ * @return array
+ */
+function acf_blocks_get_image_queue() {
+    $queue = get_option( ACF_BLOCKS_IMAGE_QUEUE_OPTION, array() );
+    return is_array( $queue ) ? $queue : array();
+}
+
+/**
+ * Read or set the in-process guard.
+ *
+ * @param bool|null $set New state, or null to read.
+ * @return bool
+ */
+function acf_blocks_image_queue_processing( $set = null ) {
+    static $processing = false;
+    if ( null !== $set ) {
+        $processing = (bool) $set;
+    }
+    return $processing;
+}
+
+/**
+ * Queue a post when its ACF block content contains a remote image candidate.
+ *
+ * @param int     $post_id Post ID.
+ * @param WP_Post $post    Post object.
+ */
+function acf_blocks_queue_external_images( $post_id, $post ) {
+    if ( acf_blocks_image_queue_processing() || wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+        return;
+    }
+
+    if ( ! $post instanceof WP_Post || false === strpos( $post->post_content, 'wp:acf/' ) ) {
+        return;
+    }
+
+    if ( ! preg_match( '#https?://[^\s"\'<>]+\.(?:jpe?g|png|gif|webp|avif|bmp|svg)(?:\?[^\s"\'<>]*)?#i', $post->post_content ) ) {
+        return;
+    }
+
+    $queue = acf_blocks_get_image_queue();
+    $queue[ (string) $post_id ] = array(
+        'post_id'   => (int) $post_id,
+        'queued_at' => time(),
+        'attempts'  => isset( $queue[ (string) $post_id ]['attempts'] ) ? (int) $queue[ (string) $post_id ]['attempts'] : 0,
+    );
+    update_option( ACF_BLOCKS_IMAGE_QUEUE_OPTION, $queue, false );
+
+    if ( ! wp_next_scheduled( ACF_BLOCKS_IMAGE_QUEUE_EVENT ) ) {
+        wp_schedule_single_event( time() + 10, ACF_BLOCKS_IMAGE_QUEUE_EVENT );
+    }
+}
+add_action( 'save_post', 'acf_blocks_queue_external_images', 20, 2 );
+
+/**
+ * Process a small image localization batch outside the save request.
+ */
+function acf_blocks_process_image_queue() {
+    $queue = acf_blocks_get_image_queue();
+    if ( empty( $queue ) ) {
+        return;
+    }
+
+    if ( get_transient( 'acf_blocks_image_queue_lock' ) ) {
+        if ( ! wp_next_scheduled( ACF_BLOCKS_IMAGE_QUEUE_EVENT ) ) {
+            wp_schedule_single_event( time() + 60, ACF_BLOCKS_IMAGE_QUEUE_EVENT );
+        }
+        return;
+    }
+    set_transient( 'acf_blocks_image_queue_lock', 1, 10 * MINUTE_IN_SECONDS );
+
+    $batch = array_slice( $queue, 0, 2, true );
+    foreach ( $batch as $key => $job ) {
+        unset( $queue[ $key ] );
+        $result = acf_blocks_localize_post_images( absint( $job['post_id'] ?? 0 ) );
+        if ( is_wp_error( $result ) && (int) ( $job['attempts'] ?? 0 ) < 2 ) {
+            $job['attempts'] = (int) ( $job['attempts'] ?? 0 ) + 1;
+            $queue[ $key ]   = $job;
+        }
+    }
+
+    update_option( ACF_BLOCKS_IMAGE_QUEUE_OPTION, $queue, false );
+    if ( ! empty( $queue ) ) {
+        wp_schedule_single_event( time() + 30, ACF_BLOCKS_IMAGE_QUEUE_EVENT );
+    }
+    delete_transient( 'acf_blocks_image_queue_lock' );
+}
+add_action( ACF_BLOCKS_IMAGE_QUEUE_EVENT, 'acf_blocks_process_image_queue' );
+
+/**
+ * Localize remote images for one saved post.
+ *
+ * @param int $post_id Post ID.
+ * @return bool|WP_Error
+ */
+function acf_blocks_localize_post_images( $post_id ) {
+    $post = get_post( $post_id );
+    if ( ! $post || false === strpos( $post->post_content, 'wp:acf/' ) ) {
+        return new WP_Error( 'acf_blocks_missing_post', __( 'Post content is unavailable.', 'acf-blocks' ) );
+    }
+
+    $blocks   = parse_blocks( $post->post_content );
+    $modified = false;
+    $failed   = false;
+    acf_blocks_walk_blocks_for_images( $blocks, $modified, $failed );
+
+    if ( ! $modified ) {
+        return $failed
+            ? new WP_Error( 'acf_blocks_image_download_failed', __( 'One or more remote images could not be localized.', 'acf-blocks' ) )
+            : true;
+    }
+
+    acf_blocks_image_queue_processing( true );
+    $result = wp_update_post( array(
+        'ID'           => $post_id,
+        'post_content' => wp_slash( serialize_blocks( $blocks ) ),
+    ), true );
+    acf_blocks_image_queue_processing( false );
+
+    if ( is_wp_error( $result ) ) {
+        return $result;
+    }
+
+    return $failed
+        ? new WP_Error( 'acf_blocks_image_download_failed', __( 'One or more remote images could not be localized.', 'acf-blocks' ) )
+        : true;
 }
 
 /**
@@ -61,15 +196,21 @@ function acf_blocks_localize_external_images( $data, $postarr ) {
 
     return $data;
 }
-add_filter( 'wp_insert_post_data', 'acf_blocks_localize_external_images', 10, 2 );
+// Retained as a public compatibility helper for integrations that explicitly
+// call the old pre-save function. It is no longer attached to post saves.
 
 /**
  * Recursively walk a parsed block tree and localize images in ACF blocks.
  *
  * @param array $blocks   Parsed blocks array (by reference).
- * @param bool  $modified Flag set to true when any URL is replaced.
+ * @param bool      $modified Flag set to true when any URL is replaced.
+ * @param bool|null $failed   Optional. Flag set when a remote download fails.
  */
-function acf_blocks_walk_blocks_for_images( &$blocks, &$modified ) {
+function acf_blocks_walk_blocks_for_images( &$blocks, &$modified, &$failed = null ) {
+    if ( null === $failed ) {
+        $failed = false;
+    }
+
     foreach ( $blocks as &$block ) {
         // Process ACF blocks only.
         if (
@@ -78,12 +219,12 @@ function acf_blocks_walk_blocks_for_images( &$blocks, &$modified ) {
             && ! empty( $block['attrs']['data'] )
             && is_array( $block['attrs']['data'] )
         ) {
-            acf_blocks_localize_block_data( $block['attrs']['data'], $modified );
+            acf_blocks_localize_block_data( $block['attrs']['data'], $modified, $failed );
         }
 
         // Recurse into inner blocks.
         if ( ! empty( $block['innerBlocks'] ) ) {
-            acf_blocks_walk_blocks_for_images( $block['innerBlocks'], $modified );
+            acf_blocks_walk_blocks_for_images( $block['innerBlocks'], $modified, $failed );
         }
     }
 }
@@ -96,9 +237,14 @@ function acf_blocks_walk_blocks_for_images( &$blocks, &$modified ) {
  *   2. A field value containing HTML with <img> src attributes.
  *
  * @param array $data     Block data key-value pairs (by reference).
- * @param bool  $modified Flag set to true when any URL is replaced.
+ * @param bool      $modified Flag set to true when any URL is replaced.
+ * @param bool|null $failed   Optional. Flag set when a remote download fails.
  */
-function acf_blocks_localize_block_data( &$data, &$modified ) {
+function acf_blocks_localize_block_data( &$data, &$modified, &$failed = null ) {
+    if ( null === $failed ) {
+        $failed = false;
+    }
+
     $image_extensions = 'jpe?g|png|gif|webp|avif|bmp|svg';
     $url_pattern      = '#(https?://[^\s"\'<>]+\.(?:' . $image_extensions . ')(?:\?[^\s"\'<>]*)?)#i';
 
@@ -121,6 +267,8 @@ function acf_blocks_localize_block_data( &$data, &$modified ) {
             if ( $local_url ) {
                 $value    = str_replace( $url, $local_url, $value );
                 $modified = true;
+            } else {
+                $failed = true;
             }
         }
     }
@@ -155,12 +303,12 @@ function acf_blocks_is_local_url( $url ) {
     }
 
     // Subdomain match — url_host ends with .site_bare (e.g. cdn.example.com).
-    if ( str_ends_with( $url_bare, '.' . $site_bare ) ) {
+    if ( acf_blocks_str_ends_with( $url_bare, '.' . $site_bare ) ) {
         return true;
     }
 
     // Bunny CDN (*.b-cdn.net) — treat as local / owned CDN.
-    if ( str_ends_with( $url_host, '.b-cdn.net' ) ) {
+    if ( acf_blocks_str_ends_with( $url_host, '.b-cdn.net' ) ) {
         return true;
     }
 

@@ -66,39 +66,14 @@ if ($show_first === 'positive') {
 }
 
 $anchor_attr = $anchor ? ' id="' . esc_attr($anchor) . '"' : '';
-
-// Generate unique ID for scoped inline styles
-$block_id = 'pc-' . wp_unique_id();
+$style_vars = sprintf(
+    '--pc-neg-bg:%1$s;--pc-neg-border:%2$s;--pc-neg-title:%3$s;--pc-neg-icon:%4$s;--pc-pos-bg:%5$s;--pc-pos-border:%6$s;--pc-pos-title:%7$s;--pc-pos-icon:%8$s;',
+    esc_attr( $neg_bg ), esc_attr( $neg_border ), esc_attr( $neg_title_color ), esc_attr( $neg_icon_color ),
+    esc_attr( $pos_bg ), esc_attr( $pos_border ), esc_attr( $pos_title_color ), esc_attr( $pos_icon_color )
+);
 ?>
 
-<div <?php echo $anchor_attr; ?> class="<?php echo esc_attr(implode(' ', $wrapper_classes)); ?>" data-pc-id="<?php echo esc_attr($block_id); ?>" data-acf-block="pros-cons">
-    <?php
-    ob_start();
-    ?>
-    [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__negative {
-        background-color: <?php echo esc_attr($neg_bg); ?>;
-    }
-    [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__negative .acf-pros-cons__title {
-        color: <?php echo esc_attr($neg_title_color); ?>;
-    }
-    [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__negative .acf-pros-cons__icon {
-        color: <?php echo esc_attr($neg_icon_color); ?>;
-        background-color: <?php echo esc_attr($neg_icon_color); ?>20;
-    }
-    [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__positive {
-        background-color: <?php echo esc_attr($pos_bg); ?>;
-    }
-    [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__positive .acf-pros-cons__title {
-        color: <?php echo esc_attr($pos_title_color); ?>;
-    }
-    [data-pc-id="<?php echo esc_attr($block_id); ?>"] .acf-pros-cons__positive .acf-pros-cons__icon {
-        color: <?php echo esc_attr($pos_icon_color); ?>;
-        background-color: <?php echo esc_attr($pos_icon_color); ?>20;
-    }
-    <?php
-    $css = ob_get_clean();
-    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
-    ?>
+<div <?php echo $anchor_attr; ?> class="<?php echo esc_attr(implode(' ', $wrapper_classes)); ?>" data-acf-block="pros-cons" style="<?php echo esc_attr( $style_vars ); ?>">
 
     <?php
     // Negative side

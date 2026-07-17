@@ -46,8 +46,8 @@ function acf_product_box_resolve_image( $image, $image_url, $alt = 'Product imag
         $url_host  = wp_parse_url( $image_url, PHP_URL_HOST );
 
         // Match domain or subdomain (e.g. cdn.example.com matches example.com)
-        if ( $url_host && $site_host && ( $url_host === $site_host || str_ends_with( $url_host, '.' . $site_host ) ) ) {
-            $attachment_id = attachment_url_to_postid( $image_url );
+        if ( $url_host && $site_host && ( $url_host === $site_host || acf_blocks_str_ends_with( $url_host, '.' . $site_host ) ) ) {
+            $attachment_id = acf_blocks_url_to_attachment_id( $image_url );
             if ( $attachment_id ) {
                 $sized = wp_get_attachment_image_src( $attachment_id, $size );
                 if ( $sized ) {

@@ -44,10 +44,6 @@ if ( $strikethrough ) {
     $wrapper_classes[] = 'acf-checklist--strikethrough';
 }
 
-// Detect style variation
-$is_card_style = $className && strpos( $className, 'is-style-card' ) !== false;
-$is_minimal_style = $className && strpos( $className, 'is-style-minimal' ) !== false;
-
 // Calculate progress
 $total_items   = count( $items );
 $checked_items = 0;
@@ -66,33 +62,7 @@ $block_id = 'checklist-' . wp_unique_id();
 $anchor_attr = $anchor ? ' id="' . esc_attr( $anchor ) . '"' : '';
 ?>
 
-<div <?php echo $anchor_attr; ?> class="<?php echo esc_attr( implode( ' ', $wrapper_classes ) ); ?>" data-checklist-id="<?php echo esc_attr( $block_id ); ?>">
-    <?php
-    ob_start();
-    ?>
-        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] {
-            --checklist-accent: <?php echo esc_attr( $accent_color ); ?>;
-            --checklist-bg: <?php echo esc_attr( $bg_color ); ?>;
-        }
-        <?php if ( $is_card_style ) : ?>
-        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] { background-color: var(--checklist-bg); padding: max(1.5rem,24px); border-radius: 12px; border: 1px solid #e5e7eb; }
-        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__item { background-color: #fff; padding: max(0.875rem,14px) max(1rem,16px); border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: max(0.5rem,8px); }
-        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__item:last-child { margin-bottom: 0; }
-        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__item--checked { background-color: #f0fdf4; border-color: #bbf7d0; }
-        @media (max-width: 600px) { [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] { padding: max(1rem,16px); } [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__item { padding: max(0.75rem,12px); } }
-        <?php endif; ?>
-        <?php if ( $is_minimal_style ) : ?>
-        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] { padding: 0; }
-        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__item { padding: max(0.5rem,8px) 0; border-bottom: none; }
-        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__progress-bar { height: 4px; }
-        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__checkmark,
-        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__icon--empty { width: 18px; height: 18px; border-radius: 50%; }
-        [data-checklist-id="<?php echo esc_attr( $block_id ); ?>"] .acf-checklist__checkmark svg { width: 12px; height: 12px; }
-        <?php endif; ?>
-    <?php
-    $css = ob_get_clean();
-    echo '<style>' . acf_blocks_minify_css( $css ) . '</style>';
-    ?>
+<div <?php echo $anchor_attr; ?> class="<?php echo esc_attr( implode( ' ', $wrapper_classes ) ); ?>" data-checklist-id="<?php echo esc_attr( $block_id ); ?>" style="--checklist-accent:<?php echo esc_attr( $accent_color ); ?>;--checklist-bg:<?php echo esc_attr( $bg_color ); ?>;">
 
     <?php if ( ! empty( $title ) ) : ?>
         <h3 class="acf-checklist__title"><?php echo esc_html( $title ); ?></h3>

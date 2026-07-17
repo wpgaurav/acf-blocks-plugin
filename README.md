@@ -9,6 +9,8 @@ A comprehensive WordPress plugin that provides a collection of reusable, customi
 - **Modern Block Registration**: Uses ACF Block v3 with block.json metadata
 - **Zero-JavaScript Accordions**: Uses native HTML `<details>`/`<summary>` elements for accordion blocks
 - **Conditional Asset Loading**: CSS and JS only load when blocks are actually used on the page
+- **Performance Controls**: Disable unused blocks, inspect block usage, and generate a lean site-specific editor stylesheet
+- **Background Processing**: Image localization and large content migrations run in bounded resumable jobs
 - **Modular Architecture**: Each block is self-contained with its own template, styles, and configuration
 - **ACF Pro Compatible**: Requires ACF Pro 6.0+ for full functionality
 
@@ -49,7 +51,7 @@ No additional configuration required - field groups are automatically registered
 - **Video Block** (`acf/video`) - Video embeds
 - **Gallery Block** (`acf/gallery`) - Image galleries
 - **Stats Block** (`acf/stats`) - Statistics display
-- **Star Rating** (`acf/star-rating`) - Interactive ratings with AJAX submission
+- **Star Rating** (`acf/star-rating`) - Interactive ratings with atomic storage and a public REST endpoint
 
 ### Navigation & Organization
 - **Tabs Block** (`acf/tabs`) - Tabbed content with multiple styles
@@ -148,6 +150,16 @@ Enable debug mode for detailed error logging:
 define( 'WP_DEBUG', true );
 define( 'WP_DEBUG_LOG', true );
 ```
+
+After changing block metadata, field JSON, or block CSS, regenerate the cached artifacts and run the full validation suite:
+
+```bash
+php tools/generate-manifest.php
+php tools/build-editor-css.php
+composer check
+```
+
+CI validates PHP 7.4, 8.1, 8.3, and 8.5, plus PHP/JSON/JavaScript syntax, generated artifacts, compatibility rules, and unit tests.
 
 ## License
 

@@ -66,8 +66,8 @@
         var ratingInput = form.querySelector('input[name="acf_star_rating"]:checked');
         var blockId = form.dataset.blockId;
         var postId = form.dataset.postId;
+        var token = form.dataset.token;
         var thankYou = form.dataset.thankYou || '';
-        var nonce = form.dataset.nonce;
         var settings = window.acfStarRating || {};
 
         if (!ratingInput) {
@@ -75,35 +75,38 @@
             return;
         }
 
-        if (!settings.ajaxUrl) return;
+        if (!settings.restUrl) return;
 
         showMessage(wrapper, '.acf-star-rating__error', '');
         disableForm(form);
 
-        var formData = new FormData();
-        formData.append('action', 'acf_star_rating_submit');
-        formData.append('rating', ratingInput.value);
-        formData.append('blockId', blockId);
-        formData.append('postId', postId);
-        formData.append('nonce', nonce || settings.nonce || '');
-
-        fetch(settings.ajaxUrl, { method: 'POST', credentials: 'same-origin', body: formData })
-            .then(function (r) { if (!r.ok) throw r; return r.json(); })
-            .then(function (payload) {
-                if (!payload || !payload.success) throw payload;
-                updateAggregate(wrapper, payload.data);
+        fetch(settings.restUrl, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                rating: Number(ratingInput.value),
+                blockId: blockId,
+                postId: Number(postId),
+                token: token,
+                initialCount: Number(form.dataset.initialCount || 0),
+                initialRating: Number(form.dataset.initialRating || 0)
+            })
+        })
+            .then(function (r) {
+                return r.json().then(function (data) {
+                    if (!r.ok) throw data;
+                    return data;
+                });
+            })
+            .then(function (data) {
+                updateAggregate(wrapper, data);
                 showMessage(wrapper, '.acf-star-rating__thank-you', thankYou);
                 markRated(postId, blockId);
             })
             .catch(function (error) {
                 var msg = settings.errorMessage || 'Error';
-                if (error && typeof error.json === 'function') {
-                    error.json().then(function (d) {
-                        showMessage(wrapper, '.acf-star-rating__error', (d && d.data && d.data.message) || msg);
-                    });
-                } else {
-                    showMessage(wrapper, '.acf-star-rating__error', (error && error.data && error.data.message) || msg);
-                }
+                showMessage(wrapper, '.acf-star-rating__error', (error && error.message) || msg);
                 enableForm(form);
             });
     }
