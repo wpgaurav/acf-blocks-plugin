@@ -312,10 +312,15 @@ function acf_blocks_migrator_transform_list( $blocks, &$stats, &$changed ) {
                 // Current block name, but older content stored its repeater
                 // sub-fields as acf_accord_heading / acf_accord_content, which
                 // the template no longer reads — so the block renders blank.
-                // Remap those sub-fields in place to the current schema.
-                $block = acf_blocks_migrator_remap_accordion_fields( $block, $did );
+                // Remap those sub-fields in place to the current schema, and
+                // strip the FAQ-schema flag retired in 2.9.1.
+                $block = acf_blocks_migrator_remap_accordion_fields( $block, $did, $did_faq );
                 if ( $did ) {
                     $stats['accordion-fields'] = ( $stats['accordion-fields'] ?? 0 ) + 1;
+                    $changed = true;
+                }
+                if ( $did_faq ) {
+                    $stats['accordion-faq-schema'] = ( $stats['accordion-faq-schema'] ?? 0 ) + 1;
                     $changed = true;
                 }
                 if ( ! empty( $block['innerBlocks'] ) ) {
@@ -344,20 +349,28 @@ function acf_blocks_migrator_transform_list( $blocks, &$stats, &$changed ) {
 }
 
 /**
- * Remap a current acf/accordion block's legacy repeater sub-fields.
+ * Remap a current acf/accordion block's legacy repeater sub-fields and drop
+ * the retired FAQ-schema flag.
  *
  * Older content used acf_accord_heading / acf_accord_content; the current
  * template reads acf_accord_group_title / acf_accord_group_content. This
  * renames the value keys (and their _field-key references) in place, leaving
  * every other setting — classes, group count — untouched.
  *
- * @param array $block Parsed acf/accordion block.
- * @param bool  $did   Set true if any sub-field was remapped.
- * @return array The block (modified when $did is true).
+ * Separately, 2.9.1 removed FAQ schema (Google dropped FAQ rich results), so
+ * acf_accord_enable_faq_schema and its _field reference are dead weight in
+ * older content. They are stripped here; the template already ignores them,
+ * so this is a data cleanup rather than a behaviour change.
+ *
+ * @param array $block   Parsed acf/accordion block.
+ * @param bool  $did     Set true if any sub-field was remapped.
+ * @param bool  $did_faq Set true if a retired FAQ-schema key was removed.
+ * @return array The block (modified when either flag is true).
  */
-function acf_blocks_migrator_remap_accordion_fields( $block, &$did ) {
-    $did  = false;
-    $data = isset( $block['attrs']['data'] ) ? (array) $block['attrs']['data'] : array();
+function acf_blocks_migrator_remap_accordion_fields( $block, &$did, &$did_faq = null ) {
+    $did     = false;
+    $did_faq = false;
+    $data    = isset( $block['attrs']['data'] ) ? (array) $block['attrs']['data'] : array();
 
     if ( empty( $data ) ) {
         return $block;
@@ -365,6 +378,11 @@ function acf_blocks_migrator_remap_accordion_fields( $block, &$did ) {
 
     $remapped = array();
     foreach ( $data as $k => $v ) {
+        if ( 'acf_accord_enable_faq_schema' === $k || '_acf_accord_enable_faq_schema' === $k ) {
+            $did_faq = true;
+            continue; // Retired in 2.9.1 — drop, do not carry over.
+        }
+
         if ( preg_match( '/^(_?)acf_accord_groups_(\d+)_acf_accord_heading$/', $k, $m ) ) {
             $nk              = $m[1] . 'acf_accord_groups_' . $m[2] . '_acf_accord_group_title';
             $remapped[ $nk ] = ( '_' === $m[1] ) ? 'field_acf_accord_group_title' : $v;
@@ -378,7 +396,7 @@ function acf_blocks_migrator_remap_accordion_fields( $block, &$did ) {
         }
     }
 
-    if ( $did ) {
+    if ( $did || $did_faq ) {
         $block['attrs']['data'] = $remapped;
     }
 
@@ -788,6 +806,7 @@ function acf_blocks_migrator_categories() {
         'accordion-group'  => array( __( 'Accordion Group → Accordion', 'acf-blocks' ), '#0a6b2e', '#e6f4ea' ),
         'acf-accordion'    => array( __( 'ACF Accordion → Accordion', 'acf-blocks' ),   '#0a6b2e', '#e6f4ea' ),
         'accordion-fields' => array( __( 'Accordion fields fixed', 'acf-blocks' ),      '#0a6b2e', '#e6f4ea' ),
+        'accordion-faq-schema' => array( __( 'Retired FAQ schema flag removed', 'acf-blocks' ), '#0a6b2e', '#e6f4ea' ),
         'poll-unsupported' => array( __( 'Poll (manual — skipped)', 'acf-blocks' ),     '#8a6d00', '#fbf6e0' ),
     );
 }
@@ -835,6 +854,7 @@ function acf_blocks_migrator_scan( $list_limit = 500 ) {
         'accordion-group'  => 0,
         'acf-accordion'    => 0,
         'accordion-fields' => 0,
+        'accordion-faq-schema' => 0,
         'poll-unsupported' => 0,
     );
     $scanned       = 0;

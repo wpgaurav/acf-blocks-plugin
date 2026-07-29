@@ -2,6 +2,16 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.9.2] - 2026-07-29
+
+### Changed
+- **The migrator now strips the retired FAQ-schema flag from existing content.** 2.9.1 made `acf_accord_enable_faq_schema` inert; this removes it (and its `_acf_accord_enable_faq_schema` field reference) from `acf/accordion` blocks when the migrator runs, so old posts no longer carry a key nothing reads.
+- Removals are reported under their own **Retired FAQ schema flag removed** category in the scan breakdown and per-post badges, rather than being folded into "Accordion fields fixed".
+
+### Notes
+- **Expect a one-time jump in the migrator's affected-post count.** Posts whose only issue is the stale flag now show up as needing migration. Rendering is unchanged either way — this is a data cleanup, not a fix for a visible bug, so it is safe to defer.
+- Accordion blocks with nothing to clean are left byte-identical and are not rewritten, so no post gains a revision for no reason.
+
 ## [2.9.1] - 2026-07-29
 
 ### Removed

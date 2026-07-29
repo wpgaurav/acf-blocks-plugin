@@ -9,5 +9,10 @@ function add_action() {}
 function add_filter() {}
 function apply_filters( $hook, $value ) { return $value; }
 function sanitize_text_field( $value ) { return trim( (string) $value ); }
+function __( $text, $domain = null ) { return $text; }
 
 require_once dirname( __DIR__ ) . '/includes/functions.php';
+
+// Pure transform helpers are unit-testable; the file's admin hooks are inert
+// against the stubs above.
+require_once dirname( __DIR__ ) . '/includes/block-migrator.php';
