@@ -2,6 +2,15 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.9.1] - 2026-07-29
+
+### Removed
+- **FAQ schema dropped from the Accordion block.** Google no longer supports FAQ rich results, so `acf/accordion` no longer emits `FAQPage` JSON-LD and the "Enable FAQ Schema" field is gone from the block settings.
+- Existing posts need no migration: blocks that still carry `acf_accord_enable_faq_schema` set to `1` render normally, and the stored value is ignored — no schema is printed.
+- The block migrator no longer writes `acf_accord_enable_faq_schema` into blocks it converts.
+
+The Accordion block itself is unchanged — same markup, same styles, still searchable by "FAQ" in the inserter.
+
 ## [2.9.0] - 2026-07-17
 
 ### Performance

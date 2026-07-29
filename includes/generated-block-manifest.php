@@ -10,7 +10,7 @@ return array (
       'apiVersion' => 3,
       'name' => 'acf/accordion',
       'title' => 'Accordion',
-      'description' => 'A customizable accordion block with FAQ schema support.',
+      'description' => 'A customizable accordion block for FAQs and collapsible content.',
       'category' => 'acf-blocks',
       'icon' => 'list-view',
       'keywords' => 
@@ -65,8 +65,8 @@ return array (
               ),
               2 => 
               array (
-                'acf_accord_group_title' => 'Is FAQ schema supported?',
-                'acf_accord_group_content' => 'Yes, you can enable FAQ schema from the block settings to improve SEO.',
+                'acf_accord_group_title' => 'Does it need JavaScript?',
+                'acf_accord_group_content' => 'No. The block renders native details and summary elements, so it works without any JavaScript.',
               ),
             ),
           ),
@@ -84,16 +84,6 @@ return array (
         'fields' => 
         array (
           0 => 
-          array (
-            'key' => 'field_acf_accord_enable_faq_schema',
-            'label' => 'Enable FAQ Schema',
-            'name' => 'acf_accord_enable_faq_schema',
-            'type' => 'true_false',
-            'instructions' => 'Enable FAQ Schema for this accordion block.',
-            'required' => 0,
-            'default_value' => 0,
-          ),
-          1 => 
           array (
             'key' => 'field_acf_accord_groups',
             'label' => 'Accordion Groups',
@@ -129,7 +119,7 @@ return array (
               ),
             ),
           ),
-          2 => 
+          1 => 
           array (
             'key' => 'field_acf_accordion_class',
             'label' => 'Custom CSS Class',
@@ -138,7 +128,7 @@ return array (
             'instructions' => 'Add custom CSS class(es) for styling.',
             'required' => 0,
           ),
-          3 => 
+          2 => 
           array (
             'key' => 'field_acf_accordion_inline',
             'label' => 'Inline Styles',

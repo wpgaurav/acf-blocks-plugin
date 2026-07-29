@@ -2,7 +2,7 @@
   "apiVersion": 3,
   "name": "acf/accordion",
   "title": "Accordion",
-  "description": "A customizable accordion block with FAQ schema support.",
+  "description": "A customizable accordion block for FAQs and collapsible content.",
   "category": "acf-blocks",
   "icon": "list-view",
   "keywords": ["accordion", "faq", "toggle"],
@@ -37,8 +37,8 @@
             "acf_accord_group_content": "You can use the block style variations or add custom CSS classes for advanced styling."
           },
           {
-            "acf_accord_group_title": "Is FAQ schema supported?",
-            "acf_accord_group_content": "Yes, you can enable FAQ schema from the block settings to improve SEO."
+            "acf_accord_group_title": "Does it need JavaScript?",
+            "acf_accord_group_content": "No. The block renders native details and summary elements, so it works without any JavaScript."
           }
         ]
       }

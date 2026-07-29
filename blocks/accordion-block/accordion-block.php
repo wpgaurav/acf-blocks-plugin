@@ -10,8 +10,7 @@
  * @param int|string  $post_id    The post ID.
  */
 
-$groups            = acf_blocks_get_repeater( 'acf_accord_groups', [ 'acf_accord_group_title', 'acf_accord_group_content' ], $block );
-$enable_faq_schema = acf_blocks_get_field( 'acf_accord_enable_faq_schema', $block ) ? true : false;
+$groups = acf_blocks_get_repeater( 'acf_accord_groups', [ 'acf_accord_group_title', 'acf_accord_group_content' ], $block );
 
 $custom_class = acf_blocks_get_field( 'acf_accordion_class', $block );
 $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
@@ -47,27 +46,3 @@ $unique_id = 'acf-accordion-' . ( $block['id'] ?? wp_unique_id() );
     endif;
     ?>
 </div>
-
-<?php
-if ( $enable_faq_schema && $groups && is_array( $groups ) && count( $groups ) > 0 ) :
-    $faq_schema = array(
-        '@context'   => 'https://schema.org',
-        '@type'      => 'FAQPage',
-        'mainEntity' => array(),
-    );
-
-    foreach ( $groups as $group ) {
-        $faq_schema['mainEntity'][] = array(
-            '@type'          => 'Question',
-            'name'           => wp_strip_all_tags( do_shortcode( $group['acf_accord_group_title'] ) ),
-            'acceptedAnswer' => array(
-                '@type' => 'Answer',
-                'text'  => wp_strip_all_tags( do_shortcode( $group['acf_accord_group_content'] ) ),
-            ),
-        );
-    }
-    ?>
-    <script type="application/ld+json">
-        <?php echo wp_json_encode( $faq_schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ); ?>
-    </script>
-<?php endif; ?>

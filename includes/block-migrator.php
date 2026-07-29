@@ -84,17 +84,14 @@ function acf_blocks_migrator_make_acf_block( $name, $data ) {
 /**
  * Build current accordion block data from an ordered list of Q/A rows.
  *
- * @param array[] $rows       Each row: array( 'title' => string, 'content' => string ).
- * @param bool    $faq_schema Whether to enable FAQ schema output.
+ * @param array[] $rows Each row: array( 'title' => string, 'content' => string ).
  * @return array ACF flat data array.
  */
-function acf_blocks_migrator_build_accordion_data( $rows, $faq_schema ) {
+function acf_blocks_migrator_build_accordion_data( $rows ) {
     $rows = array_values( $rows );
     $data = array(
-        'acf_accord_enable_faq_schema'  => $faq_schema ? '1' : '0',
-        '_acf_accord_enable_faq_schema' => 'field_acf_accord_enable_faq_schema',
-        'acf_accord_groups'             => (string) count( $rows ),
-        '_acf_accord_groups'            => 'field_acf_accord_groups',
+        'acf_accord_groups'  => (string) count( $rows ),
+        '_acf_accord_groups' => 'field_acf_accord_groups',
     );
 
     foreach ( $rows as $idx => $row ) {
@@ -205,11 +202,9 @@ function acf_blocks_migrator_transform_acf_accordion( $block ) {
         );
     }
 
-    $faq = ! empty( $d['acf_accord_enable_faq_schema'] ) || ! isset( $d['acf_accord_enable_faq_schema'] );
-
     return acf_blocks_migrator_make_acf_block(
         'acf/accordion',
-        acf_blocks_migrator_build_accordion_data( $clean, $faq )
+        acf_blocks_migrator_build_accordion_data( $clean )
     );
 }
 
@@ -265,14 +260,13 @@ function acf_blocks_migrator_transform_list( $blocks, &$stats, &$changed ) {
                 }
                 $out[] = acf_blocks_migrator_make_acf_block(
                     'acf/accordion',
-                    acf_blocks_migrator_build_accordion_data( $rows, true )
+                    acf_blocks_migrator_build_accordion_data( $rows )
                 );
                 $stats['accordion-item'] = ( $stats['accordion-item'] ?? 0 ) + count( $rows );
                 $changed = true;
                 continue 2;
 
             case 'acf/accordion-group':
-                $faq  = ! empty( $block['attrs']['data']['faq_schema'] );
                 $rows = array();
                 foreach ( (array) ( $block['innerBlocks'] ?? array() ) as $child ) {
                     if ( ( $child['blockName'] ?? '' ) === 'acf/accordion' ) {
@@ -285,7 +279,7 @@ function acf_blocks_migrator_transform_list( $blocks, &$stats, &$changed ) {
                 }
                 $out[] = acf_blocks_migrator_make_acf_block(
                     'acf/accordion',
-                    acf_blocks_migrator_build_accordion_data( $rows, $faq )
+                    acf_blocks_migrator_build_accordion_data( $rows )
                 );
                 $stats['accordion-group'] = ( $stats['accordion-group'] ?? 0 ) + 1;
                 $changed = true;
@@ -355,7 +349,7 @@ function acf_blocks_migrator_transform_list( $blocks, &$stats, &$changed ) {
  * Older content used acf_accord_heading / acf_accord_content; the current
  * template reads acf_accord_group_title / acf_accord_group_content. This
  * renames the value keys (and their _field-key references) in place, leaving
- * every other setting — FAQ schema, classes, group count — untouched.
+ * every other setting — classes, group count — untouched.
  *
  * @param array $block Parsed acf/accordion block.
  * @param bool  $did   Set true if any sub-field was remapped.

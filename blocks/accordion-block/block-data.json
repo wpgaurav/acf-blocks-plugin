@@ -3,15 +3,6 @@
     "title": "Accordion Block",
     "fields": [
         {
-            "key": "field_acf_accord_enable_faq_schema",
-            "label": "Enable FAQ Schema",
-            "name": "acf_accord_enable_faq_schema",
-            "type": "true_false",
-            "instructions": "Enable FAQ Schema for this accordion block.",
-            "required": 0,
-            "default_value": 0
-        },
-        {
             "key": "field_acf_accord_groups",
             "label": "Accordion Groups",
             "name": "acf_accord_groups",

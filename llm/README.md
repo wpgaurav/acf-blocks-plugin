@@ -26,7 +26,7 @@ These apply to **every** block in this library:
 
 | Block | Doc | Description |
 |---|---|---|
-| `acf/accordion` | [accordion.md](accordion.md) | Collapsible sections with optional FAQ schema |
+| `acf/accordion` | [accordion.md](accordion.md) | Collapsible sections for FAQs and disclosure content |
 | `acf/callout` | [callout.md](callout.md) | Styled callout/notice box (InnerBlocks) |
 | `acf/cta` | [cta.md](cta.md) | Call-to-action with heading, description, button |
 | `acf/hero` | [hero.md](hero.md) | Hero section with image + CTA (InnerBlocks) |

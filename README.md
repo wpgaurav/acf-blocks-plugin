@@ -32,7 +32,7 @@ No additional configuration required - field groups are automatically registered
 ## Available Blocks
 
 ### Content Blocks
-- **Accordion Block** (`acf/accordion`) - Collapsible content with FAQ schema support (searchable by "FAQ")
+- **Accordion Block** (`acf/accordion`) - Collapsible content for FAQs and disclosure sections (searchable by "FAQ")
 - **Testimonial Block** (`acf/testimonial`) - Customer testimonials with ratings
 - **Hero Block** (`acf/hero`) - Hero section with headline, image, and CTA
 - **CTA Block** (`acf/cta`) - Call-to-action with heading and button
