@@ -99,7 +99,7 @@ CSS files are only enqueued when their respective blocks are used on a page, red
 
 ### Optional Semantic Fallback Styles
 
-Every rendered ACF block receives a shared `.acf-block` class. Settings → ACF Blocks License → Theme Compatibility Styles can optionally load a small semantic stylesheet for headings, paragraphs, lists, links, quotes, media, tables, code, forms, and native disclosure elements. Its selectors use `:where()` for zero specificity, so regular theme styles take precedence.
+Every rendered ACF block receives a shared `.acf-block` class and a zero-specificity `1.5rem` block-end gap for baseline rhythm; normal theme and block margins take precedence. Settings → ACF Blocks License → Theme Compatibility Styles can optionally load a small semantic stylesheet for headings, paragraphs, lists, links, quotes, media, tables, code, forms, and native disclosure elements. Its selectors use `:where()` for zero specificity, so regular theme styles take precedence.
 
 ## Creating Custom Blocks
 

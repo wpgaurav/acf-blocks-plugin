@@ -46,8 +46,9 @@ final class CompatibilityTest extends TestCase {
         $this->assertStringContainsString( '.acf-toc__list--ul', $block_css );
         $this->assertStringContainsString( '.acf-toc__list--plain', $block_css );
         $this->assertStringContainsString( 'border: 1px solid color-mix(in srgb, currentColor 18%, transparent)', $block_css );
-        $this->assertStringContainsString( 'border-inline-start: 0.3rem solid currentColor', $block_css );
         $this->assertStringContainsString( 'border-block-end: 1px solid color-mix(in srgb, currentColor 14%, transparent)', $block_css );
+        $this->assertStringNotContainsString( 'border-inline-start:', $block_css );
+        $this->assertStringNotContainsString( 'border-radius:', $block_css );
         $this->assertDoesNotMatchRegularExpression( '/#[0-9a-f]{3,8}\b/i', $block_css );
         $this->assertStringNotContainsString( 'rgb(', $block_css );
         $this->assertStringNotContainsString( '[data-theme=', $block_css );
@@ -134,6 +135,28 @@ final class CompatibilityTest extends TestCase {
         $rendered      = acf_blocks_add_common_wrapper_class( $comment_first, array( 'blockName' => 'acf/callout' ) );
         $this->assertStringContainsString( '<!-- Example: <aside>not markup</aside> -->', $rendered );
         $this->assertStringContainsString( '<article class="acf-block">', $rendered );
+    }
+
+    public function test_common_block_gap_is_zero_specificity_and_block_scoped(): void {
+        $root = dirname( __DIR__ );
+        $css  = file_get_contents( $root . '/assets/css/block-layout.css' );
+
+        $this->assertStringContainsString( ':where(.acf-block)', $css );
+        $this->assertStringContainsString( 'margin-block-end: 1.5rem', $css );
+        $this->assertStringNotContainsString( '!important', $css );
+        $this->assertStringNotContainsString( 'background', $css );
+        $this->assertStringNotContainsString( 'border', $css );
+
+        $GLOBALS['acf_blocks_test_block_styles'] = array();
+        acf_blocks_register_layout_styles();
+
+        $this->assertCount( 29, $GLOBALS['acf_blocks_test_block_styles'] );
+        foreach ( $GLOBALS['acf_blocks_test_block_styles'] as $block_name => $args ) {
+            $this->assertStringStartsWith( 'acf/', $block_name );
+            $this->assertSame( 'acf-blocks-layout', $args['handle'] );
+            $this->assertStringEndsWith( '/assets/css/block-layout.css', $args['src'] );
+            $this->assertSame( ACF_BLOCKS_VERSION, $args['ver'] );
+        }
     }
 
     public function test_semantic_styles_are_opt_in_and_zero_specificity(): void {

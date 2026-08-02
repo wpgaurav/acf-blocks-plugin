@@ -208,6 +208,35 @@ function acf_blocks_add_common_wrapper_class( $block_content, $block ) {
 add_filter( 'render_block', 'acf_blocks_add_common_wrapper_class', 10, 2 );
 
 /**
+ * Attach a zero-specificity block-gap fallback to every enabled ACF block.
+ *
+ * WordPress loads the shared handle once and can keep it block-on-demand on the
+ * frontend. Any normal theme or block selector outranks the fallback.
+ */
+function acf_blocks_register_layout_styles() {
+    if ( ! function_exists( 'wp_enqueue_block_style' ) ) {
+        return;
+    }
+
+    $path = ACF_BLOCKS_PLUGIN_DIR . 'assets/css/block-layout.css';
+    if ( ! is_readable( $path ) ) {
+        return;
+    }
+
+    $args = array(
+        'handle' => 'acf-blocks-layout',
+        'src'    => ACF_BLOCKS_PLUGIN_URL . 'assets/css/block-layout.css',
+        'path'   => $path,
+        'ver'    => ACF_BLOCKS_VERSION,
+    );
+
+    foreach ( acf_blocks_get_block_metadata_cache() as $block_info ) {
+        wp_enqueue_block_style( $block_info['metadata']['name'], $args );
+    }
+}
+add_action( 'init', 'acf_blocks_register_layout_styles', 6 );
+
+/**
  * Load opt-in semantic HTML defaults in the block editor and frontend.
  */
 function acf_blocks_enqueue_semantic_styles() {

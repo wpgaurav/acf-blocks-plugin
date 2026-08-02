@@ -449,14 +449,12 @@
 
 /*
  * The theme owns the TOC's typography, palette, links, and disclosure
- * treatment. Add a restrained currentColor frame and preserve list modes.
+ * treatment. Add a restrained currentColor hairline and preserve list modes.
  */
 .acf-toc {
 	box-sizing: border-box;
-	padding: 1rem 1.25rem;
+	padding: 1rem;
 	border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
-	border-inline-start: 0.3rem solid currentColor;
-	border-radius: 0.5rem;
 }
 
 .acf-toc > .acf-toc__title,

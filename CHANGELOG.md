@@ -2,6 +2,12 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.9.5] - 2026-08-02
+
+### Changed
+- Replaced the Table of Contents' thick rounded accent treatment with a quiet square hairline frame while retaining the title divider, active-state emphasis, semantic list styles, and theme inheritance.
+- Added a zero-specificity `1.5rem` block-end spacing fallback to every rendered `.acf-block`; existing theme and block margins continue to take precedence.
+
 ## [2.9.4] - 2026-08-02
 
 ### Changed

@@ -1,0 +1,7 @@
+/**
+ * Baseline rhythm for rendered ACF blocks.
+ * Zero specificity lets any theme or block margin take precedence.
+ */
+:where(.acf-block) {
+	margin-block-end: 1.5rem;
+}

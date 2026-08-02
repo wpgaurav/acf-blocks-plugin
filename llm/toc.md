@@ -11,7 +11,7 @@ Create an SEO-optimized table of contents block that auto-generates from page he
 ## Design Notes
 
 - Inherits typography, colors, link treatment, and disclosure styling from the active theme
-- Adds a restrained `currentColor` frame with a stronger leading edge, modest padding and radius, and a divider below the title or collapsible summary
+- Adds a restrained square `currentColor` hairline frame, modest padding, and a divider below the title or collapsible summary
 - Uses no background fill, hard-coded color, fixed font, custom hover fill, or decorative list marker
 - Ordered and bulleted modes keep their native semantic list markers; plain mode removes markers
 - Active-section highlighting uses a minimal relative font-weight change without assigning a font, size, or color
