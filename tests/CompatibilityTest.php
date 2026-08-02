@@ -34,7 +34,6 @@ final class CompatibilityTest extends TestCase {
         $visual_properties = array(
             '/\bbackground(?:-color)?\s*:/i',
             '/\bcolor\s*:/i',
-            '/\bborder(?:-[a-z-]+)?\s*:/i',
             '/\bfont-size\s*:/i',
             '/\bfont-family\s*:/i',
         );
@@ -46,6 +45,13 @@ final class CompatibilityTest extends TestCase {
         $this->assertStringContainsString( '.acf-toc__list--ol', $block_css );
         $this->assertStringContainsString( '.acf-toc__list--ul', $block_css );
         $this->assertStringContainsString( '.acf-toc__list--plain', $block_css );
+        $this->assertStringContainsString( 'border: 1px solid color-mix(in srgb, currentColor 18%, transparent)', $block_css );
+        $this->assertStringContainsString( 'border-inline-start: 0.3rem solid currentColor', $block_css );
+        $this->assertStringContainsString( 'border-block-end: 1px solid color-mix(in srgb, currentColor 14%, transparent)', $block_css );
+        $this->assertDoesNotMatchRegularExpression( '/#[0-9a-f]{3,8}\b/i', $block_css );
+        $this->assertStringNotContainsString( 'rgb(', $block_css );
+        $this->assertStringNotContainsString( '[data-theme=', $block_css );
+        $this->assertStringNotContainsString( 'prefers-color-scheme', $block_css );
         $this->assertStringContainsString( '--acf-toc-sticky-offset:', $runtime_css );
         $this->assertStringContainsString( 'top: var(--acf-toc-sticky-offset)', $runtime_css );
         $this->assertStringContainsString( "'acf-toc__list--' . \$list_mode", $template );

@@ -2,6 +2,11 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.9.4] - 2026-08-02
+
+### Changed
+- Gave the theme-native Table of Contents a restrained `currentColor` frame, stronger leading edge, title divider, and modest inset spacing without restoring plugin backgrounds, hard-coded colors, fixed typography, or custom markers.
+
 ## [2.9.3] - 2026-08-02
 
 ### Added

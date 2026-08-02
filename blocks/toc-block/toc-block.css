@@ -1,9 +1,28 @@
 /* === TOC Block === */
 
 /*
- * The theme owns the TOC's typography, colors, spacing, links, and disclosure
- * treatment. Keep only the selected list marker behavior here.
+ * The theme owns the TOC's typography, palette, links, and disclosure
+ * treatment. Add a restrained currentColor frame and preserve list modes.
  */
+.acf-toc {
+	box-sizing: border-box;
+	padding: 1rem 1.25rem;
+	border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+	border-inline-start: 0.3rem solid currentColor;
+	border-radius: 0.5rem;
+}
+
+.acf-toc > .acf-toc__title,
+.acf-toc__summary {
+	padding-block-end: 0.625em;
+	border-block-end: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+	font-weight: bolder;
+}
+
+.acf-toc > .acf-toc__title {
+	margin-block-start: 0;
+}
+
 .acf-toc__list--ol,
 .acf-toc__list--ol .acf-toc__sublist {
 	list-style-type: decimal;
@@ -21,4 +40,5 @@
 
 .acf-toc__link--active {
 	font-weight: bolder;
+	text-decoration-thickness: max(2px, 0.12em);
 }
