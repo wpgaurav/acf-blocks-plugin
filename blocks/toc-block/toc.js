@@ -7,7 +7,7 @@
         var includeAcf = toc.dataset.includeAcfHeadings === '1';
         var headings = Array.prototype.filter.call(scope.querySelectorAll(levels.join(',')), function(heading) {
             if (heading.closest('.acf-toc')) return false;
-            return includeAcf || !heading.closest('[data-acf-block]');
+            return includeAcf || !heading.closest('[data-acf-block],.acf-block');
         });
         var links = toc.querySelectorAll('.acf-toc__link');
 

@@ -10,6 +10,7 @@ A comprehensive WordPress plugin that provides a collection of reusable, customi
 - **Zero-JavaScript Accordions**: Uses native HTML `<details>`/`<summary>` elements for accordion blocks
 - **Conditional Asset Loading**: CSS and JS only load when blocks are actually used on the page
 - **Performance Controls**: Disable unused blocks, inspect block usage, and generate a lean site-specific editor stylesheet
+- **Optional Semantic Defaults**: Add zero-specificity fallback styles inside a shared `.acf-block` wrapper for themes with incomplete content styling
 - **Background Processing**: Image localization and large content migrations run in bounded resumable jobs
 - **Modular Architecture**: Each block is self-contained with its own template, styles, and configuration
 - **ACF Pro Compatible**: Requires ACF Pro 6.0+ for full functionality
@@ -95,6 +96,10 @@ The Accordion block uses native HTML `<details>` and `<summary>` elements instea
 ### Conditional Asset Loading
 
 CSS files are only enqueued when their respective blocks are used on a page, reducing unnecessary asset loading for better performance.
+
+### Optional Semantic Fallback Styles
+
+Every rendered ACF block receives a shared `.acf-block` class. Settings → ACF Blocks License → Theme Compatibility Styles can optionally load a small semantic stylesheet for headings, paragraphs, lists, links, quotes, media, tables, code, forms, and native disclosure elements. Its selectors use `:where()` for zero specificity, so regular theme styles take precedence.
 
 ## Creating Custom Blocks
 

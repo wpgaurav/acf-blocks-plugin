@@ -23,6 +23,8 @@ function acf_blocks_performance_handle_actions() {
     check_admin_referer( 'acf_blocks_performance', 'acf_blocks_performance_nonce' );
     $action = sanitize_key( wp_unslash( $_POST['acf_blocks_performance_action'] ) );
 
+    $anchor = 'acf-blocks-performance';
+
     if ( 'save_blocks' === $action ) {
         $known    = wp_list_pluck( acf_blocks_get_block_metadata_cache( true ), 'metadata' );
         $known    = wp_list_pluck( $known, 'name' );
@@ -30,13 +32,17 @@ function acf_blocks_performance_handle_actions() {
         $disabled = array_values( array_intersect( $known, array_map( 'sanitize_text_field', $disabled ) ) );
         update_option( 'acf_blocks_disabled_blocks', $disabled, false );
         acf_blocks_build_site_editor_bundle( $disabled );
+    } elseif ( 'save_semantic_styles' === $action ) {
+        $enabled = isset( $_POST['semantic_styles_enabled'] ) ? 1 : 0;
+        update_option( ACF_BLOCKS_SEMANTIC_STYLES_OPTION, $enabled, false );
+        $anchor = 'acf-blocks-semantic-styles';
     } elseif ( 'scan_usage' === $action ) {
         acf_blocks_usage_scan_start();
     } elseif ( 'process_images' === $action && function_exists( 'acf_blocks_process_image_queue' ) ) {
         acf_blocks_process_image_queue();
     }
 
-    wp_safe_redirect( admin_url( 'options-general.php?page=acf-blocks-license&acf_blocks_performance_updated=1#acf-blocks-performance' ) );
+    wp_safe_redirect( admin_url( 'options-general.php?page=acf-blocks-license&acf_blocks_performance_updated=1#' . $anchor ) );
     exit;
 }
 add_action( 'admin_init', 'acf_blocks_performance_handle_actions' );
@@ -196,6 +202,7 @@ function acf_blocks_render_performance_manager() {
     $image_queue = function_exists( 'acf_blocks_get_image_queue' ) ? acf_blocks_get_image_queue() : array();
     $manifest   = ACF_BLOCKS_PLUGIN_DIR . 'includes/generated-block-manifest.php';
     $editor_css = ACF_BLOCKS_PLUGIN_DIR . 'assets/css/editor-blocks.css';
+    $semantic_styles_enabled = acf_blocks_semantic_styles_enabled();
     ?>
     <div id="acf-blocks-performance" class="card" style="max-width:1000px;margin-top:20px;">
         <h2 style="margin-top:0;"><?php esc_html_e( 'Performance & Block Manager', 'acf-blocks' ); ?></h2>
@@ -219,6 +226,25 @@ function acf_blocks_render_performance_manager() {
         </form>
 
         <hr>
+        <div id="acf-blocks-semantic-styles">
+            <h3><?php esc_html_e( 'Theme Compatibility Styles', 'acf-blocks' ); ?></h3>
+            <p><?php esc_html_e( 'Enable a small semantic HTML stylesheet when the active theme does not adequately style block content.', 'acf-blocks' ); ?></p>
+            <form method="post">
+                <?php wp_nonce_field( 'acf_blocks_performance', 'acf_blocks_performance_nonce' ); ?>
+                <input type="hidden" name="acf_blocks_performance_action" value="save_semantic_styles">
+                <label style="display:flex;gap:8px;align-items:flex-start;max-width:760px;">
+                    <input type="checkbox" name="semantic_styles_enabled" value="1" <?php checked( $semantic_styles_enabled, true ); ?>>
+                    <span>
+                        <strong><?php esc_html_e( 'Load semantic fallback block styles', 'acf-blocks' ); ?></strong><br>
+                        <span class="description"><?php esc_html_e( 'Styles headings, paragraphs, lists, links, quotes, media, tables, code, forms, and disclosure elements inside .acf-block wrappers. Zero-specificity selectors allow normal theme rules to override these defaults.', 'acf-blocks' ); ?></span>
+                    </span>
+                </label>
+                <p class="description"><?php esc_html_e( 'The shared .acf-block class is always added to rendered ACF blocks, so themes can target it even when this stylesheet is disabled.', 'acf-blocks' ); ?></p>
+                <p><button class="button button-primary" type="submit"><?php esc_html_e( 'Save Style Setting', 'acf-blocks' ); ?></button></p>
+            </form>
+        </div>
+
+        <hr>
         <h3><?php esc_html_e( 'Diagnostics', 'acf-blocks' ); ?></h3>
         <table class="widefat striped" style="max-width:760px;">
             <tbody>
@@ -226,6 +252,7 @@ function acf_blocks_render_performance_manager() {
                 <tr><td><?php esc_html_e( 'Current request registration time', 'acf-blocks' ); ?></td><td><?php echo esc_html( number_format_i18n( (float) ( $GLOBALS['acf_blocks_runtime_metrics']['registration_ms'] ?? 0 ), 2 ) ); ?> ms</td></tr>
                 <tr><td><?php esc_html_e( 'Generated manifest', 'acf-blocks' ); ?></td><td><?php echo esc_html( is_file( $manifest ) ? size_format( filesize( $manifest ) ) : __( 'Missing', 'acf-blocks' ) ); ?></td></tr>
                 <tr><td><?php esc_html_e( 'Editor CSS bundle', 'acf-blocks' ); ?></td><td><?php echo esc_html( is_file( $editor_css ) ? size_format( filesize( $editor_css ) ) : __( 'Missing', 'acf-blocks' ) ); ?></td></tr>
+                <tr><td><?php esc_html_e( 'Semantic fallback styles', 'acf-blocks' ); ?></td><td><?php echo $semantic_styles_enabled ? esc_html__( 'Enabled', 'acf-blocks' ) : esc_html__( 'Disabled', 'acf-blocks' ); ?></td></tr>
                 <tr><td><?php esc_html_e( 'Queued image-localization posts', 'acf-blocks' ); ?></td><td><?php echo esc_html( count( $image_queue ) ); ?></td></tr>
             </tbody>
         </table>

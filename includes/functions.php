@@ -133,6 +133,102 @@ function acf_blocks_get_disabled_blocks() {
     return $disabled;
 }
 
+const ACF_BLOCKS_SEMANTIC_STYLES_OPTION = 'acf_blocks_semantic_styles_enabled';
+
+/**
+ * Whether the optional semantic HTML fallback stylesheet should load.
+ *
+ * @return bool
+ */
+function acf_blocks_semantic_styles_enabled() {
+    $enabled = function_exists( 'get_option' ) && (bool) get_option( ACF_BLOCKS_SEMANTIC_STYLES_OPTION, false );
+
+    return (bool) apply_filters( 'acf_blocks_semantic_styles_enabled', $enabled );
+}
+
+/**
+ * Add a predictable class to the first HTML element rendered by every ACF block.
+ *
+ * WordPress 6.2+ uses the HTML API. The conservative regular-expression
+ * fallback keeps the plugin's WordPress 6.0 minimum working.
+ *
+ * @param string $block_content Rendered block HTML.
+ * @param array  $block         Parsed block data.
+ * @return string
+ */
+function acf_blocks_add_common_wrapper_class( $block_content, $block ) {
+    if ( empty( $block['blockName'] ) || 0 !== strpos( $block['blockName'], 'acf/' ) || '' === trim( $block_content ) ) {
+        return $block_content;
+    }
+
+    if ( class_exists( 'WP_HTML_Tag_Processor' ) ) {
+        $processor = new WP_HTML_Tag_Processor( $block_content );
+        $ignored_tags = array( 'script', 'style', 'template', 'noscript', 'link', 'meta' );
+        while ( $processor->next_tag() ) {
+            if ( in_array( strtolower( $processor->get_tag() ), $ignored_tags, true ) ) {
+                continue;
+            }
+            $processor->add_class( 'acf-block' );
+            return $processor->get_updated_html();
+        }
+    }
+
+    $updated = preg_replace_callback(
+        '~(?:<!--.*?(?:-->|\z)|<!\[CDATA\[.*?(?:\]\]>|\z)|<(?:script|style|template|noscript)\b[^>]*>.*?(?:</(?:script|style|template|noscript)\s*>|\z))(*SKIP)(*F)|<(?!(?:script|style|template|noscript|link|meta)\b)([a-z][a-z0-9:-]*)\b([^>]*)>~is',
+        function( $matches ) {
+            $attributes = $matches[2];
+            $class_pattern = '/\sclass\s*=\s*(["\'])(.*?)\1/is';
+
+            if ( preg_match( $class_pattern, $attributes, $class_match ) ) {
+                $classes = preg_split( '/\s+/', trim( $class_match[2] ) );
+                if ( in_array( 'acf-block', $classes, true ) ) {
+                    return $matches[0];
+                }
+
+                $attributes = preg_replace_callback(
+                    $class_pattern,
+                    function( $existing ) {
+                        return ' class=' . $existing[1] . trim( $existing[2] . ' acf-block' ) . $existing[1];
+                    },
+                    $attributes,
+                    1
+                );
+            } else {
+                $attributes .= ' class="acf-block"';
+            }
+
+            return '<' . $matches[1] . $attributes . '>';
+        },
+        $block_content,
+        1
+    );
+
+    return null === $updated ? $block_content : $updated;
+}
+add_filter( 'render_block', 'acf_blocks_add_common_wrapper_class', 10, 2 );
+
+/**
+ * Load opt-in semantic HTML defaults in the block editor and frontend.
+ */
+function acf_blocks_enqueue_semantic_styles() {
+    if ( ! acf_blocks_semantic_styles_enabled() ) {
+        return;
+    }
+
+    $path = ACF_BLOCKS_PLUGIN_DIR . 'assets/css/semantic-blocks.css';
+    if ( ! is_readable( $path ) ) {
+        return;
+    }
+
+    wp_enqueue_style(
+        'acf-blocks-semantic-styles',
+        ACF_BLOCKS_PLUGIN_URL . 'assets/css/semantic-blocks.css',
+        array(),
+        ACF_BLOCKS_VERSION
+    );
+}
+add_action( 'enqueue_block_assets', 'acf_blocks_enqueue_semantic_styles', 20 );
+
 /**
  * Register custom block category for ACF Blocks.
  *

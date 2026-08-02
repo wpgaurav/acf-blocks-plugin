@@ -5,24 +5,18 @@ Create an SEO-optimized table of contents block that auto-generates from page he
 ## Block Info
 
 - **Block Name:** `acf/toc`
-- **Description:** Minimalist table of contents with subtle border container, opacity-based link styling, and optional schema markup.
+- **Description:** Theme-native table of contents with selectable list markers and optional schema markup.
 - **Styles:** Default
 
 ## Design Notes
 
-- Inherits font-family from the active theme via `font: inherit`
-- All colors derived from `currentColor` via `color-mix()` — automatically adapts to any theme (light or dark, any palette)
-- Container: `background: color-mix(in srgb, currentColor 3%, transparent)`, `border: 1px solid color-mix(in srgb, currentColor 8%, transparent)`, `border-radius: 12px`, `padding: 1rem 1.25rem`
-- Title is uppercase, `0.8125em`, at `0.6` opacity, separated from list by a thin bottom border
-- Links use `opacity: 0.6`, with `border-radius: 6px` and `padding: 0.2em 0.4em`
-- Links on hover get `opacity: 1` and subtle `currentColor`-based background highlight
-- Active link gets `font-weight: 600`, full opacity, and `currentColor`-based background
-- Ordered lists (`ol`) show CSS counters (e.g. "1. ", "2. ") via `::before` pseudo-elements with `tabular-nums`
-- Nested sublists have a left border guide line derived from `currentColor`; nested `ol` sublists get independent counters
-- Font size is `0.875em`, line-height `1.5`
-- Collapsible uses `<details>/<summary>` with SVG chevron via CSS mask; summary has hover background
-- No separate dark mode rules needed — `color-mix(in srgb, currentColor, transparent)` adapts automatically
-- Headings inside ACF blocks (`data-acf-block` wrappers) are excluded from TOC by default
+- Inherits typography, colors, backgrounds, borders, spacing, link treatment, and disclosure styling from the active theme
+- Ordered and bulleted modes keep their native semantic list markers; plain mode removes markers
+- Active-section highlighting uses a minimal relative font-weight change without assigning a font, size, or color
+- Collapsible mode uses native `<details>/<summary>` behavior and the theme's disclosure treatment
+- Sticky mode adds only the positioning and overflow rules needed for the feature
+- No plugin-specific light or dark mode rules are applied
+- Headings inside other ACF blocks (`.acf-block` or `data-acf-block` wrappers) are excluded from TOC by default
 
 ## Fields
 

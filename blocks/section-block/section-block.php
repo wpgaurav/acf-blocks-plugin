@@ -33,8 +33,16 @@ $bg_video  = acf_blocks_get_field('acf_bg_video', $block);
 // Determine the final HTML tag
 $tag = ($html_tag === 'custom' && !empty($custom_tag)) ? $custom_tag : $html_tag;
 
-// Build classes array from utility classes
-$classes = array();
+// Build classes array from block support and utility classes.
+$classes = array( 'acf-section-block' );
+
+if ( ! empty( $block['align'] ) ) {
+    $classes[] = 'align' . $block['align'];
+}
+
+if ( ! empty( $block['className'] ) ) {
+    $classes = array_merge( $classes, explode( ' ', $block['className'] ) );
+}
 
 if ($layout_class) {
     $classes = array_merge($classes, explode(' ', $layout_class));

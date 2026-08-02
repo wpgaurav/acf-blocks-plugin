@@ -25,6 +25,139 @@ final class CompatibilityTest extends TestCase {
         $this->assertGreaterThanOrEqual( 29, substr_count( $css, '/* blocks/' ) );
     }
 
+    public function test_toc_styles_inherit_from_the_theme(): void {
+        $root        = dirname( __DIR__ );
+        $block_css   = file_get_contents( $root . '/blocks/toc-block/toc-block.css' );
+        $runtime_css = file_get_contents( $root . '/blocks/toc-block/toc-runtime.css' );
+        $template    = file_get_contents( $root . '/blocks/toc-block/toc-block.php' );
+
+        $visual_properties = array(
+            '/\bbackground(?:-color)?\s*:/i',
+            '/\bcolor\s*:/i',
+            '/\bborder(?:-[a-z-]+)?\s*:/i',
+            '/\bfont-size\s*:/i',
+            '/\bfont-family\s*:/i',
+        );
+        foreach ( $visual_properties as $property ) {
+            $this->assertDoesNotMatchRegularExpression( $property, $block_css );
+            $this->assertDoesNotMatchRegularExpression( $property, $runtime_css );
+        }
+
+        $this->assertStringContainsString( '.acf-toc__list--ol', $block_css );
+        $this->assertStringContainsString( '.acf-toc__list--ul', $block_css );
+        $this->assertStringContainsString( '.acf-toc__list--plain', $block_css );
+        $this->assertStringContainsString( '--acf-toc-sticky-offset:', $runtime_css );
+        $this->assertStringContainsString( 'top: var(--acf-toc-sticky-offset)', $runtime_css );
+        $this->assertStringContainsString( "'acf-toc__list--' . \$list_mode", $template );
+        $this->assertStringNotContainsString( 'acf-toc__preview-notice" style=', $template );
+    }
+
+    public function test_accordion_uses_native_theme_styles(): void {
+        $root     = dirname( __DIR__ );
+        $metadata = json_decode( file_get_contents( $root . '/blocks/accordion-block/block.json' ), true );
+        $manifest = require $root . '/includes/generated-block-manifest.php';
+
+        $this->assertFileDoesNotExist( $root . '/blocks/accordion-block/accordion.css' );
+        $this->assertArrayNotHasKey( 'style', $metadata );
+        $this->assertArrayNotHasKey( 'editorStyle', $metadata );
+        $this->assertArrayNotHasKey( 'style', $manifest['accordion-block']['metadata'] );
+        $this->assertArrayNotHasKey( 'editorStyle', $manifest['accordion-block']['metadata'] );
+    }
+
+    public function test_tabs_keep_behavior_without_a_plugin_palette(): void {
+        $root     = dirname( __DIR__ );
+        $css      = file_get_contents( $root . '/blocks/tabs-block/tabs.css' );
+        $template = file_get_contents( $root . '/blocks/tabs-block/tabs-block.php' );
+
+        $this->assertDoesNotMatchRegularExpression( '/#[0-9a-f]{3,8}\b/i', $css );
+        $this->assertStringNotContainsString( 'rgb(', $css );
+        $this->assertStringNotContainsString( 'color-mix(', $css );
+        $this->assertStringNotContainsString( '[data-theme=', $css );
+        $this->assertStringNotContainsString( 'prefers-color-scheme', $css );
+
+        $this->assertStringContainsString( '.acf-tab-panel.active', $css );
+        $this->assertStringContainsString( '.acf-tab-button:focus-visible', $css );
+        $this->assertStringContainsString( '.acf-tabs-pills', $css );
+        $this->assertStringContainsString( '.acf-tabs-underline', $css );
+        $this->assertStringContainsString( '.acf-tabs-boxed', $css );
+        $this->assertStringContainsString( 'acf-tab-button wp-element-button', $template );
+    }
+
+    public function test_section_styles_are_structural_only(): void {
+        $root     = dirname( __DIR__ );
+        $css      = file_get_contents( $root . '/blocks/section-block/section-block.css' );
+        $template = file_get_contents( $root . '/blocks/section-block/section-block.php' );
+
+        $this->assertStringNotContainsString( 'color:', $css );
+        $this->assertStringNotContainsString( 'background:', $css );
+        $this->assertStringNotContainsString( '[data-theme=', $css );
+        $this->assertStringNotContainsString( 'prefers-color-scheme', $css );
+        $this->assertStringNotContainsString( 'max-width:', $css );
+        $this->assertStringNotContainsString( 'padding:', $css );
+        $this->assertStringContainsString( '.acf-section-bg-video', $css );
+        $this->assertStringContainsString( '.acf-section-bg-overlay', $css );
+        $this->assertStringContainsString( "array( 'acf-section-block' )", $template );
+        $this->assertStringContainsString( "'align' . \$block['align']", $template );
+    }
+
+    public function test_common_acf_block_class_is_added_without_touching_core_blocks(): void {
+        $acf_html = '<nav class="acf-toc"><p>Contents</p></nav>';
+        $rendered = acf_blocks_add_common_wrapper_class( $acf_html, array( 'blockName' => 'acf/toc' ) );
+
+        $this->assertStringContainsString( 'class="acf-toc acf-block"', $rendered );
+        $this->assertSame(
+            $rendered,
+            acf_blocks_add_common_wrapper_class( $rendered, array( 'blockName' => 'acf/toc' ) )
+        );
+        $this->assertSame(
+            '<p>Core paragraph</p>',
+            acf_blocks_add_common_wrapper_class( '<p>Core paragraph</p>', array( 'blockName' => 'core/paragraph' ) )
+        );
+        $this->assertStringContainsString(
+            '<section class="acf-block">',
+            acf_blocks_add_common_wrapper_class( '<section><p>Content</p></section>', array( 'blockName' => 'acf/section-block' ) )
+        );
+
+        $script_first = '<script>window.config = {};</script><div class="acf-email-form-wrapper"><form></form></div>';
+        $rendered     = acf_blocks_add_common_wrapper_class( $script_first, array( 'blockName' => 'acf/email-form' ) );
+        $this->assertStringContainsString( '<script>window.config = {};</script>', $rendered );
+        $this->assertStringContainsString( 'class="acf-email-form-wrapper acf-block"', $rendered );
+        $this->assertStringNotContainsString( '<script class="acf-block">', $rendered );
+
+        $comment_first = '<!-- Example: <aside>not markup</aside> --><article><p>Content</p></article>';
+        $rendered      = acf_blocks_add_common_wrapper_class( $comment_first, array( 'blockName' => 'acf/callout' ) );
+        $this->assertStringContainsString( '<!-- Example: <aside>not markup</aside> -->', $rendered );
+        $this->assertStringContainsString( '<article class="acf-block">', $rendered );
+    }
+
+    public function test_semantic_styles_are_opt_in_and_zero_specificity(): void {
+        $root = dirname( __DIR__ );
+        $css  = file_get_contents( $root . '/assets/css/semantic-blocks.css' );
+
+        $this->assertStringContainsString( ':where(.acf-block)', $css );
+        $this->assertStringNotContainsString( '!important', $css );
+        $this->assertFalse( acf_blocks_semantic_styles_enabled() );
+
+        $GLOBALS['acf_blocks_test_styles'] = array();
+        acf_blocks_enqueue_semantic_styles();
+        $this->assertArrayNotHasKey( 'acf-blocks-semantic-styles', $GLOBALS['acf_blocks_test_styles'] );
+
+        $GLOBALS['acf_blocks_test_options'][ ACF_BLOCKS_SEMANTIC_STYLES_OPTION ] = 1;
+        $this->assertTrue( acf_blocks_semantic_styles_enabled() );
+        acf_blocks_enqueue_semantic_styles();
+        $this->assertArrayHasKey( 'acf-blocks-semantic-styles', $GLOBALS['acf_blocks_test_styles'] );
+        $this->assertStringEndsWith( '/assets/css/semantic-blocks.css', $GLOBALS['acf_blocks_test_styles']['acf-blocks-semantic-styles']['src'] );
+        unset( $GLOBALS['acf_blocks_test_options'][ ACF_BLOCKS_SEMANTIC_STYLES_OPTION ] );
+    }
+
+    public function test_license_page_exposes_semantic_style_setting(): void {
+        $source = file_get_contents( dirname( __DIR__ ) . '/includes/performance-manager.php' );
+
+        $this->assertStringContainsString( "'save_semantic_styles'", $source );
+        $this->assertStringContainsString( 'semantic_styles_enabled', $source );
+        $this->assertStringContainsString( 'Load semantic fallback block styles', $source );
+    }
+
     public function test_faq_schema_stays_removed(): void {
         $root = dirname( __DIR__ );
 

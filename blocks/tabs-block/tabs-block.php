@@ -33,7 +33,7 @@ $unique_id   = 'acf-tabs-' . ( $block['id'] ?? wp_unique_id() );
                 $panel_id     = esc_attr( $unique_id . '-panel-' . $index );
                 $active_class = $is_active ? ' active' : '';
                 ?>
-                <button class="acf-tab-button<?php echo $active_class; ?>"
+                <button class="acf-tab-button wp-element-button<?php echo $active_class; ?>"
                         id="<?php echo $tab_id; ?>"
                         type="button"
                         role="tab"

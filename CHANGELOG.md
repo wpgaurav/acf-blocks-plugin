@@ -2,6 +2,20 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.9.3] - 2026-08-02
+
+### Added
+- **Optional semantic fallback styles for minimal themes.** Settings → ACF Blocks License → Theme Compatibility Styles can load a small zero-specificity stylesheet for common semantic HTML inside ACF blocks. It is disabled by default and loads in both the editor and frontend only when enabled.
+- Every rendered `acf/*` block now exposes a predictable `.acf-block` class for theme authors, whether or not the fallback stylesheet is enabled.
+
+### Changed
+- **The Table of Contents block now inherits its visual design from the active theme.** Removed plugin-defined backgrounds, colors, borders, radii, fixed type sizing/casing, link decoration, hover fills, spacing, custom markers, dark-mode overrides, and scrollbar styling.
+- Numbered, bulleted, and plain list modes remain explicit. Ordered and unordered lists use native theme-aware markers, while plain lists stay marker-free.
+- Sticky positioning, smooth scrolling, reduced-motion handling, active-section emphasis, and heading scroll offsets remain intact.
+- **The Accordion block is now entirely theme-native.** Its native `<details>`/`<summary>` behavior needs no plugin stylesheet, so the CSS asset and metadata references were removed.
+- **Tabs now ship only structural, state, accessibility, responsive, and style-mode rules.** Removed the plugin palette, light/dark overrides, opacity system, decorative fills, transition effects, container spacing, and forced typography while retaining all four tab treatments and panel switching.
+- **Section block CSS now covers structure only.** Removed inactive default palette, dark-mode, width, spacing, and container rules. The template now emits its scoped wrapper and alignment classes so user-selected video and overlay backgrounds layer correctly without imposing a design.
+
 ## [2.9.2] - 2026-07-29
 
 ### Changed

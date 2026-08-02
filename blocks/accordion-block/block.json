@@ -43,7 +43,5 @@
         ]
       }
     }
-  },
-  "style": "file:./accordion.css",
-  "editorStyle": "file:./accordion.css"
+  }
 }

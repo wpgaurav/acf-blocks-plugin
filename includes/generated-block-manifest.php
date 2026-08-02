@@ -72,8 +72,6 @@ return array (
           ),
         ),
       ),
-      'style' => 'file:./accordion.css',
-      'editorStyle' => 'file:./accordion.css',
     ),
     'field_groups' => 
     array (

@@ -8,6 +8,12 @@ Create a tabbed content block for organizing information into switchable section
 - **Description:** A tabbed content block for organizing information into switchable sections.
 - **Styles:** Default
 
+## Design Notes
+
+- Inherits its palette, typography, button treatment, and surrounding spacing from the active theme
+- Plugin CSS is limited to tab layout, visible/hidden panel state, focus visibility, responsive stacking, and the selected style's defining shape or border
+- No plugin-specific light or dark mode rules are applied
+
 ## Fields
 
 | Field Key | Name | Type | Notes |

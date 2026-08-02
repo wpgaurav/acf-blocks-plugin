@@ -8,6 +8,12 @@ Create an accordion/FAQ block using the ACF Accordion block format. Each accordi
 - **Description:** A customizable accordion block for FAQs and collapsible content.
 - **Styles:** Default
 
+## Design Notes
+
+- Uses the active theme's native `<details>` and `<summary>` styling
+- Adds no plugin stylesheet, palette, background, border, spacing, or typography
+- Custom classes and the optional inline-style field remain available for deliberate overrides
+
 ## Fields
 
 | Field Key | Name | Type | Notes |

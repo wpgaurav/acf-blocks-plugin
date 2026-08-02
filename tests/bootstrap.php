@@ -5,11 +5,20 @@ define( 'ACF_BLOCKS_PLUGIN_DIR', dirname( __DIR__ ) . '/' );
 define( 'ACF_BLOCKS_PLUGIN_URL', 'https://example.test/wp-content/plugins/acf-blocks-plugin/' );
 define( 'ACF_BLOCKS_VERSION', 'test' );
 
+$GLOBALS['acf_blocks_test_options'] = array();
+$GLOBALS['acf_blocks_test_styles']  = array();
+
 function add_action() {}
 function add_filter() {}
 function apply_filters( $hook, $value ) { return $value; }
 function sanitize_text_field( $value ) { return trim( (string) $value ); }
 function __( $text, $domain = null ) { return $text; }
+function get_option( $name, $default = false ) {
+    return array_key_exists( $name, $GLOBALS['acf_blocks_test_options'] ) ? $GLOBALS['acf_blocks_test_options'][ $name ] : $default;
+}
+function wp_enqueue_style( $handle, $src, $dependencies = array(), $version = false ) {
+    $GLOBALS['acf_blocks_test_styles'][ $handle ] = compact( 'src', 'dependencies', 'version' );
+}
 
 require_once dirname( __DIR__ ) . '/includes/functions.php';
 

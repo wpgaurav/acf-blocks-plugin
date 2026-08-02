@@ -137,7 +137,12 @@ if ( ! function_exists( 'acf_toc_build_list' ) ) {
             return '';
         }
 
-        $list_class_attr = ! empty( $list_class ) ? ' class="' . esc_attr( $list_class ) . '"' : '';
+        $list_mode    = $is_plain ? 'plain' : ( 'ol' === $list_type ? 'ol' : 'ul' );
+        $list_classes = array( 'acf-toc__list', 'acf-toc__list--' . $list_mode );
+        if ( ! empty( $list_class ) ) {
+            $list_classes[] = $list_class;
+        }
+        $list_class_attr = ' class="' . esc_attr( implode( ' ', $list_classes ) ) . '"';
         $link_class_str  = ! empty( $link_class ) ? esc_attr( $link_class ) : '';
 
         // Find minimum level to use as base for depth calculation
@@ -328,7 +333,7 @@ if ( $is_preview && empty( $headings ) ) {
     ?>
     <div class="acf-toc acf-toc--preview <?php echo esc_attr( implode( ' ', array_slice( $block_classes, 1 ) ) ); ?>">
         <p class="acf-toc__title"><?php echo esc_html( $title ); ?></p>
-        <p class="acf-toc__preview-notice" style="color: #666; font-style: italic; margin: 0.5em 0;">
+        <p class="acf-toc__preview-notice">
             <?php esc_html_e( 'Table of contents will be generated from headings in your content.', 'acf-blocks' ); ?>
             <br>
             <small><?php printf( esc_html__( 'Included levels: %s', 'acf-blocks' ), esc_html( implode( ', ', array_map( 'strtoupper', $heading_levels ) ) ) ); ?></small>

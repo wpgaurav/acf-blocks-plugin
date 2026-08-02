@@ -8,6 +8,12 @@ Create a container/wrapper block that wraps inner WordPress blocks with customiz
 - **Description:** A customizable container block that wraps inner blocks.
 - **Styles:** None
 
+## Design Notes
+
+- Inherits all visual design from the active theme and supplied utility/custom classes
+- Plugin CSS only positions user-selected video and overlay backgrounds behind the section content
+- Background colors and images are applied only when explicitly configured on the block
+
 ## Fields
 
 | Field Key | Name | Type | Notes |
