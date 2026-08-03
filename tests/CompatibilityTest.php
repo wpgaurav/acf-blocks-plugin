@@ -47,6 +47,10 @@ final class CompatibilityTest extends TestCase {
         $this->assertStringContainsString( '.acf-toc__list--plain', $block_css );
         $this->assertStringContainsString( 'border: 1px solid color-mix(in srgb, currentColor 18%, transparent)', $block_css );
         $this->assertStringContainsString( 'border-block-end: 1px solid color-mix(in srgb, currentColor 14%, transparent)', $block_css );
+        $this->assertStringContainsString( '.acf-toc__content > .acf-toc__list', $block_css );
+        $this->assertStringContainsString( '.acf-toc__list > .acf-toc__item:first-child', $block_css );
+        $this->assertStringContainsString( '.acf-toc__list > .acf-toc__item:last-child', $block_css );
+        $this->assertStringContainsString( 'padding-block-start: 1rem', $block_css );
         $this->assertStringNotContainsString( 'border-inline-start:', $block_css );
         $this->assertStringNotContainsString( 'border-radius:', $block_css );
         $this->assertDoesNotMatchRegularExpression( '/#[0-9a-f]{3,8}\b/i', $block_css );

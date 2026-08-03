@@ -2,6 +2,11 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.9.6] - 2026-08-03
+
+### Fixed
+- Kept the Table of Contents frame padding visually even under opinionated theme margins by normalizing only its outer title and list-edge spacing. Numbering, marker indentation, link treatment, and spacing between list items continue to inherit from the theme.
+
 ## [2.9.5] - 2026-08-02
 
 ### Changed
