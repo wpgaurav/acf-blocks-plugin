@@ -551,6 +551,47 @@ final class CompatibilityTest extends TestCase {
         $this->assertSame( array(), $offenders );
     }
 
+    /**
+     * A filled control must never take a surface token as its background while
+     * its text stays inverted. --acfb-surface-* is a light neutral, so pairing
+     * it with --acfb-on-primary (white) renders the control invisible. Filled
+     * controls use --acfb-button, which the theme guarantees pairs with
+     * --acfb-on-primary in both schemes.
+     */
+    public function test_filled_controls_are_not_painted_on_surface_tokens(): void {
+        $offenders = array();
+
+        foreach ( (array) glob( dirname( __DIR__ ) . '/blocks/*/*.css' ) as $file ) {
+            if ( preg_match( '/\.min\.css$/', $file ) ) {
+                continue;
+            }
+
+            $css = (string) file_get_contents( $file );
+
+            preg_match_all( '/(--[a-z0-9-]+)\s*:\s*([^;{}]+)/i', $css, $m, PREG_SET_ORDER );
+            $defs = array();
+            foreach ( $m as $d ) {
+                $defs[ $d[1] ] = trim( $d[2] );
+            }
+
+            foreach ( $defs as $name => $value ) {
+                if ( ! preg_match( '/(btn|button|rank|badge|discount|copy|cta)[a-z-]*-bg$/', $name ) ) {
+                    continue;
+                }
+                if ( false === strpos( $value, '--acfb-surface' ) ) {
+                    continue;
+                }
+
+                $paired = $defs[ preg_replace( '/-bg$/', '-text', $name ) ] ?? '';
+                if ( false !== strpos( $paired, '--acfb-on-primary' ) ) {
+                    $offenders[] = basename( dirname( $file ) ) . ': ' . $name;
+                }
+            }
+        }
+
+        $this->assertSame( array(), $offenders );
+    }
+
     public function test_performance_regressions_stay_removed(): void {
         $root = dirname( __DIR__ );
         $toc = file_get_contents( $root . '/blocks/toc-block/toc-block.php' );

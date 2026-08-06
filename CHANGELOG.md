@@ -2,6 +2,16 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.10.1] - 2026-08-06
+
+### Fixed
+- **Filled buttons were unreadable in 2.10.0.** The 2.10.0 conversion mapped several filled controls to `--acfb-surface-3`, a light neutral, while leaving their text inverted white — so they rendered as pale text on a pale fill. Affected: the Product Box primary and Amazon buttons and its discount badge, the Product List primary button and rank chip, and the Coupon Code copy button.
+- Filled controls now use `--acfb-button`, which the theme guarantees pairs with `--acfb-button-text`. Measured 5.44:1 in both light and dark.
+- The Product Box Amazon button is now a readable neutral secondary (dark text on a light fill, 13.4–14.4:1) rather than a second full-strength fill, so the card keeps one primary action. Its hover no longer darkens toward the brand colour underneath dark text.
+
+### Notes
+- Added a regression test rejecting any filled control whose background is a `--acfb-surface-*` token while its paired text is `--acfb-on-primary`.
+
 ## [2.10.0] - 2026-08-06
 
 ### Added
