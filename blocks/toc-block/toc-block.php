@@ -309,6 +309,9 @@ if ( $smooth_scroll ) {
 if ( $highlight_active ) {
     $block_classes[] = 'acf-toc--highlight-active';
 }
+if ( $collapsible ) {
+    $block_classes[] = 'acf-toc--collapsible';
+}
 
 // Generate unique ID for this block instance
 $block_id = ! empty( $block['id'] ) ? $block['id'] : 'acf-toc-' . wp_unique_id();

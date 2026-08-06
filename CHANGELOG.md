@@ -2,6 +2,14 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.10.2] - 2026-08-06
+
+### Fixed
+- **Collapsible TOC rendered a double border on themes that style `<details>` as a card.** The block drew its own hairline frame and summary divider around the `<details>` element, so themes with disclosure-card styling (such as Marketers Delight) showed two nested borders. The render template now adds an `acf-toc--collapsible` modifier class, and the block stylesheet drops its frame, summary divider, and duplicate content padding for that variant, letting the theme's disclosure card own the chrome. Non-collapsible TOCs are unchanged.
+
+### Notes
+- `blocks/toc-block/block.json` now declares `"version"`, so the enqueued stylesheet URL busts CDN caches on plugin updates.
+
 ## [2.10.1] - 2026-08-06
 
 ### Fixed

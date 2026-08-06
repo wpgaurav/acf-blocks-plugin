@@ -801,10 +801,23 @@
 	border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
 }
 
-.acf-toc > .acf-toc__title,
-.acf-toc__summary {
+/*
+ * Collapsible variant: the theme's <details> disclosure card already
+ * draws the frame, summary divider, and inner padding. Drop the block's
+ * duplicates so the collapsible TOC renders one border, not two.
+ */
+.acf-toc--collapsible {
+	padding: 0;
+	border: none;
+}
+
+.acf-toc > .acf-toc__title {
 	padding-block-end: 0.625em;
 	border-block-end: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.acf-toc > .acf-toc__title,
+.acf-toc__summary {
 	font-weight: bolder;
 }
 
@@ -821,8 +834,7 @@
 	margin-block: 0;
 }
 
-.acf-toc > .acf-toc__title + .acf-toc__content,
-.acf-toc__summary + .acf-toc__content {
+.acf-toc > .acf-toc__title + .acf-toc__content {
 	padding-block-start: 1rem;
 }
 

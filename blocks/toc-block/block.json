@@ -1,6 +1,7 @@
 {
   "apiVersion": 3,
   "name": "acf/toc",
+  "version": "2.10.2",
   "title": "Table of Contents",
   "description": "Display an SEO-optimized table of contents with schema markup, multiple list styles, and optional sticky behavior.",
   "category": "acf-blocks",
