@@ -1,0 +1,129 @@
+/**
+ * ACF Blocks — design token bridge.
+ *
+ * Every block stylesheet styles through the --acfb-* tokens below. Each one
+ * resolves to a Marketers Delight theme token when MD is active, and to a
+ * neutral literal otherwise, so the blocks stay presentable on any theme.
+ *
+ * Dark mode:
+ *   MD toggles [data-theme="dark"] on <html> and re-maps its own --color-*
+ *   tokens there. Because these tokens are declared on :root (the same
+ *   element) and only *reference* MD tokens, they re-resolve automatically —
+ *   no [data-theme] rules are needed in block CSS.
+ *
+ *   Two MD scales deliberately are NOT used here:
+ *     --neutral-*      light-only, never re-mapped for dark
+ *     --primary-tint-* light-only, never re-mapped for dark
+ *     --color-surface-* dark-only, absent in light
+ *   Surfaces and tints are derived with color-mix() against --color-content-bg
+ *   and --color-text instead, both of which exist and flip in both modes.
+ *
+ *   The prefers-color-scheme block at the end only swaps the *fallback*
+ *   literals. MD's values still win wherever MD is active, so a reader using
+ *   MD's light toggle on a dark OS is unaffected.
+ */
+
+:root {
+	/* --- Surfaces ------------------------------------------------------ */
+	--acfb-bg: var(--color-content-bg, #ffffff);
+	--acfb-surface: color-mix(in srgb, var(--color-text, #1f2328) 3%, var(--color-content-bg, #ffffff));
+	--acfb-surface-2: color-mix(in srgb, var(--color-text, #1f2328) 6%, var(--color-content-bg, #ffffff));
+	--acfb-surface-3: color-mix(in srgb, var(--color-text, #1f2328) 10%, var(--color-content-bg, #ffffff));
+
+	/* --- Text ---------------------------------------------------------- */
+	--acfb-text: var(--color-text, #1f2328);
+	--acfb-text-sec: var(--color-text-sec, #5b6470);
+	/* 72%, not 62%: at 62% this lands near 3.9:1 on a tinted well, under the
+	   4.5:1 AA floor for the muted UI text it backs (inactive tabs, meta). */
+	--acfb-text-muted: color-mix(in srgb, var(--color-text, #1f2328) 72%, var(--color-content-bg, #ffffff));
+	--acfb-headline: var(--color-headline, var(--color-text, #16191d));
+	--acfb-text-invert: var(--color-button-text, #ffffff);
+
+	/* --- Lines --------------------------------------------------------- */
+	--acfb-border: var(--color-border, color-mix(in srgb, var(--color-text, #1f2328) 14%, transparent));
+	--acfb-border-soft: color-mix(in srgb, var(--acfb-border) 55%, transparent);
+	--acfb-border-strong: color-mix(in srgb, var(--color-text, #1f2328) 28%, transparent);
+
+	/* --- Brand --------------------------------------------------------- */
+	--acfb-primary: var(--color-primary, #2563eb);
+	--acfb-link: var(--color-links, var(--color-primary, #2563eb));
+	/* Button fill is deliberately NOT --color-primary. MD keeps --color-button
+	   stable across light and dark and guarantees it pairs with
+	   --color-button-text; --color-primary lightens in dark mode, which drops
+	   white button text to ~3.3:1. Always use these two together. */
+	--acfb-button: var(--color-button, var(--color-primary, #2563eb));
+	--acfb-on-primary: var(--color-button-text, #ffffff);
+	--acfb-primary-tint: color-mix(in srgb, var(--acfb-primary) 10%, var(--acfb-bg));
+	--acfb-primary-border: color-mix(in srgb, var(--acfb-primary) 32%, var(--acfb-border));
+
+	/* --- Semantic ------------------------------------------------------
+	   Routed through MD's preset palette, which MD lightens for dark mode,
+	   so these track the active scheme without extra rules. */
+	--acfb-success: var(--button-success, var(--wp--preset--color--teal, #0f766e));
+	--acfb-warning: var(--wp--preset--color--amber, #b45309);
+	--acfb-danger: var(--button-danger, var(--wp--preset--color--rose, #dc2626));
+	--acfb-info: var(--wp--preset--color--sky, #0369a1);
+	--acfb-star: var(--wp--preset--color--amber, #f59e0b);
+
+	--acfb-success-tint: color-mix(in srgb, var(--acfb-success) 12%, var(--acfb-bg));
+	--acfb-warning-tint: color-mix(in srgb, var(--acfb-warning) 14%, var(--acfb-bg));
+	--acfb-danger-tint: color-mix(in srgb, var(--acfb-danger) 12%, var(--acfb-bg));
+	--acfb-info-tint: color-mix(in srgb, var(--acfb-info) 12%, var(--acfb-bg));
+
+	--acfb-success-border: color-mix(in srgb, var(--acfb-success) 35%, var(--acfb-border));
+	--acfb-info-border: color-mix(in srgb, var(--acfb-info) 35%, var(--acfb-border));
+
+	/* --- Geometry ------------------------------------------------------ */
+	--acfb-radius-m: var(--radius-m, 0.5rem);
+	--acfb-radius-full: var(--radius-full, 999rem);
+
+	/* --- Spacing ------------------------------------------------------- */
+	--acfb-space-s: var(--space-half, 0.9375rem);
+
+	/* --- Type ---------------------------------------------------------- */
+	--acfb-fs-s: var(--fs-s, 0.9375rem);
+	--acfb-lh: var(--lh-base, 1.6);
+	--acfb-lh-tight: var(--lh-tight, 1.25);
+
+	/* --- Depth --------------------------------------------------------- */
+	--acfb-shadow-sm: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.06));
+	--acfb-shadow-md: var(--shadow-md, 0 4px 16px rgba(0, 0, 0, 0.1));
+
+	/* --- Motion & focus ------------------------------------------------ */
+	--acfb-motion-fast: var(--motion-fast, 0.18s cubic-bezier(0.25, 1, 0.5, 1));
+}
+
+/**
+ * Standalone dark fallbacks.
+ *
+ * Only the literal after the comma changes. When MD is active its --color-*
+ * values still resolve first, so MD's own light/dark toggle stays in control.
+ */
+@media (prefers-color-scheme: dark) {
+	:root {
+		--acfb-bg: var(--color-content-bg, #16191d);
+		--acfb-surface: color-mix(in srgb, var(--color-text, #e6edf3) 4%, var(--color-content-bg, #16191d));
+		--acfb-surface-2: color-mix(in srgb, var(--color-text, #e6edf3) 8%, var(--color-content-bg, #16191d));
+		--acfb-surface-3: color-mix(in srgb, var(--color-text, #e6edf3) 13%, var(--color-content-bg, #16191d));
+
+		--acfb-text: var(--color-text, #e6edf3);
+		--acfb-text-sec: var(--color-text-sec, #9aa4b2);
+		--acfb-text-muted: color-mix(in srgb, var(--color-text, #e6edf3) 72%, var(--color-content-bg, #16191d));
+		--acfb-headline: var(--color-headline, var(--color-text, #f3f6f9));
+
+		--acfb-border: var(--color-border, color-mix(in srgb, var(--color-text, #e6edf3) 16%, transparent));
+		--acfb-border-strong: color-mix(in srgb, var(--color-text, #e6edf3) 30%, transparent);
+
+		--acfb-primary: var(--color-primary, #60a5fa);
+		--acfb-link: var(--color-links, var(--color-primary, #60a5fa));
+
+		--acfb-success: var(--button-success, var(--wp--preset--color--teal, #5eead4));
+		--acfb-warning: var(--wp--preset--color--amber, #fbbf24);
+		--acfb-danger: var(--button-danger, var(--wp--preset--color--rose, #fb7185));
+		--acfb-info: var(--wp--preset--color--sky, #38bdf8);
+		--acfb-star: var(--wp--preset--color--amber, #fbbf24);
+
+		--acfb-shadow-sm: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.35));
+		--acfb-shadow-md: var(--shadow-md, 0 4px 16px rgba(0, 0, 0, 0.55));
+	}
+}

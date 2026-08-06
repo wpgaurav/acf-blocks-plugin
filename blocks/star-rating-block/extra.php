@@ -76,11 +76,11 @@ add_action( 'init', 'acf_star_rating_maybe_install_tables', 1 );
  */
 function acf_star_rating_register_assets() {
     $dir = ACF_BLOCKS_PLUGIN_DIR . 'blocks/star-rating-block/';
-    $url = ACF_BLOCKS_PLUGIN_URL . 'blocks/star-rating-block/';
     if ( file_exists( $dir . 'star-rating-block.js' ) ) {
+        $asset = acf_blocks_asset( 'blocks/star-rating-block/star-rating-block.js' );
         wp_register_script(
             'acf-star-rating-block',
-            $url . 'star-rating-block.js',
+            $asset['url'],
             array(),
             ACF_BLOCKS_VERSION,
             true

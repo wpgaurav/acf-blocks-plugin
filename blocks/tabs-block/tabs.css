@@ -1,28 +1,80 @@
-/* === Tabs Block === */
+/* === Tabs Block ===
+ *
+ * Minimal segmented control. Styled entirely through --acfb-* tokens, so the
+ * active theme's light/dark toggle carries it without any [data-theme] rules.
+ */
 
-/* Structure and state only. The active theme owns the visual treatment. */
+.acf-tabs-block {
+	--acfb-tab-radius: var(--acfb-radius-m);
+}
+
+/* --- Tab list ----------------------------------------------------------- */
+
 .acf-tabs-nav {
 	display: flex;
-	align-items: stretch;
-	flex-wrap: wrap;
-	gap: 0.25em;
+	align-items: center;
+	gap: 0.125rem;
+	margin-block-end: var(--acfb-space-s);
+	/* Overflow scrolls rather than wrapping: a wrapped segmented control
+	   reads as two separate controls. */
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+
+.acf-tabs-nav::-webkit-scrollbar {
+	display: none;
 }
 
 .acf-tab-button {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.5em;
+	justify-content: center;
+	gap: 0.4em;
+	flex: 0 0 auto;
+	margin: 0;
+	padding: 0.45rem 0.8rem;
+	border: 0;
+	background: transparent;
+	/* Muted rather than --acfb-text-sec: a theme may set its secondary text to
+	   a saturated colour, which makes inactive tabs read as links. */
+	color: var(--acfb-text-muted);
+	font-family: inherit;
+	font-size: var(--acfb-fs-s);
+	font-weight: 500;
+	line-height: var(--acfb-lh-tight);
+	white-space: nowrap;
 	cursor: pointer;
+	border-radius: calc(var(--acfb-tab-radius) - 2px);
+	transition: color var(--acfb-motion-fast), background-color var(--acfb-motion-fast);
+}
+
+.acf-tab-button:hover {
+	color: var(--acfb-text);
 }
 
 .acf-tab-button.active {
-	font-weight: bolder;
+	color: var(--acfb-headline);
 }
 
 .acf-tab-button:focus-visible {
-	outline: 2px solid currentColor;
+	outline: 2px solid var(--acfb-primary);
 	outline-offset: 2px;
 }
+
+.acf-tab-icon {
+	display: inline-flex;
+	align-items: center;
+	font-size: 1.05em;
+}
+
+.acf-tab-icon svg,
+.acf-tab-icon img {
+	width: 1em;
+	height: 1em;
+	display: block;
+}
+
+/* --- Panels ------------------------------------------------------------- */
 
 .acf-tab-panel {
 	display: none;
@@ -32,39 +84,115 @@
 	display: block;
 }
 
-/* Preserve the selectable tab treatments without assigning a palette. */
-.acf-tabs-block.acf-tabs-pills .acf-tab-button {
-	border-radius: 999px;
+.acf-tab-panel > :first-child {
+	margin-block-start: 0;
 }
 
-.acf-tabs-block.acf-tabs-underline .acf-tab-button {
-	background: transparent;
-	color: inherit;
-	border: 0;
-	border-block-end: 2px solid transparent;
+.acf-tab-panel > :last-child {
+	margin-block-end: 0;
+}
+
+/* --- Default: inset segmented control ----------------------------------- */
+
+.acf-tabs-default .acf-tabs-nav {
+	display: inline-flex;
+	padding: 0.25rem;
+	background: var(--acfb-surface-2);
+	border-radius: var(--acfb-tab-radius);
+	max-width: 100%;
+}
+
+.acf-tabs-default .acf-tab-button.active {
+	background: var(--acfb-bg);
+	box-shadow: var(--acfb-shadow-sm);
+}
+
+/* --- Underline ---------------------------------------------------------- */
+
+.acf-tabs-underline .acf-tabs-nav {
+	gap: 0.25rem;
+	border-block-end: 1px solid var(--acfb-border);
+}
+
+.acf-tabs-underline .acf-tab-button {
 	border-radius: 0;
+	padding-inline: 0.15rem;
+	margin-inline-end: 1rem;
+	padding-block-end: 0.6rem;
+	position: relative;
 }
 
-.acf-tabs-block.acf-tabs-underline .acf-tab-button.active {
-	border-block-end-color: currentColor;
+.acf-tabs-underline .acf-tab-button::after {
+	content: "";
+	position: absolute;
+	inset-inline: 0;
+	inset-block-end: -1px;
+	block-size: 2px;
+	background: transparent;
+	transition: background-color var(--acfb-motion-fast);
 }
 
-.acf-tabs-block.acf-tabs-boxed .acf-tab-button,
-.acf-tabs-block.acf-tabs-boxed .acf-tabs-content {
-	border: 1px solid currentColor;
+.acf-tabs-underline .acf-tab-button.active::after {
+	background: var(--acfb-primary);
 }
 
-.acf-tabs-block.acf-tabs-boxed .acf-tabs-content {
-	padding: 1em;
+/* --- Pills -------------------------------------------------------------- */
+
+.acf-tabs-pills .acf-tab-button {
+	border-radius: var(--acfb-radius-full);
+	border: 1px solid transparent;
 }
+
+.acf-tabs-pills .acf-tab-button:hover {
+	background: var(--acfb-surface);
+}
+
+.acf-tabs-pills .acf-tab-button.active {
+	background: var(--acfb-primary-tint);
+	border-color: var(--acfb-primary-border);
+	color: var(--acfb-headline);
+}
+
+/* --- Boxed -------------------------------------------------------------- */
+
+.acf-tabs-boxed .acf-tabs-nav {
+	gap: 0;
+	margin-block-end: 0;
+	border: 1px solid var(--acfb-border);
+	border-block-end: 0;
+	border-start-start-radius: var(--acfb-tab-radius);
+	border-start-end-radius: var(--acfb-tab-radius);
+	padding: 0.25rem 0.25rem 0;
+	background: var(--acfb-surface);
+}
+
+.acf-tabs-boxed .acf-tab-button {
+	border-radius: calc(var(--acfb-tab-radius) - 2px) calc(var(--acfb-tab-radius) - 2px) 0 0;
+	padding-block: 0.55rem;
+}
+
+.acf-tabs-boxed .acf-tab-button.active {
+	background: var(--acfb-bg);
+	color: var(--acfb-headline);
+}
+
+.acf-tabs-boxed .acf-tabs-content {
+	border: 1px solid var(--acfb-border);
+	border-end-start-radius: var(--acfb-tab-radius);
+	border-end-end-radius: var(--acfb-tab-radius);
+	padding: var(--acfb-space-s);
+	background: var(--acfb-bg);
+}
+
+/* --- Small screens ------------------------------------------------------ */
 
 @media (max-width: 480px) {
 	.acf-tabs-nav {
-		flex-direction: column;
+		/* Edge-to-edge scroll keeps the control on one row. */
+		scroll-snap-type: x proximity;
 	}
 
 	.acf-tab-button {
-		width: 100%;
-		text-align: start;
+		scroll-snap-align: start;
 	}
 }

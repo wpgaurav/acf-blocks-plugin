@@ -35,10 +35,10 @@ function acf_url_preview_admin_scripts() {
     $enqueued = true;
 
     $script_path = plugin_dir_path( __FILE__ ) . 'admin.js';
-    $script_url = plugin_dir_url( __FILE__ ) . 'admin.js';
 
     if ( file_exists( $script_path ) ) {
-        wp_enqueue_script( 'acf-url-preview-admin', $script_url, array( 'jquery', 'wp-data' ), ACF_BLOCKS_VERSION, true );
+        $asset = acf_blocks_asset( 'blocks/url-preview/admin.js' );
+        wp_enqueue_script( 'acf-url-preview-admin', $asset['url'], array( 'jquery', 'wp-data' ), ACF_BLOCKS_VERSION, true );
     }
 
     wp_localize_script( 'acf-url-preview-admin', 'acfUrlPreview', array(

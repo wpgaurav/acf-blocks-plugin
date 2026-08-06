@@ -2,6 +2,30 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.10.0] - 2026-07-29
+
+### Added
+- **Design token bridge** (`assets/css/tokens.css`). Every block now styles through `--acfb-*` tokens that resolve to Marketers Delight theme tokens when MD is active and to neutral literals otherwise. Dark mode follows the theme's own toggle with no per-block rules.
+- **Build-time asset minification** (`tools/build-assets.php`). Writes a `.min` sibling for every CSS and JS file; the enqueue layer serves it, `SCRIPT_DEBUG` serves the source, and a missing artifact falls back to the source rather than 404ing. `composer build` regenerates, `composer generated` (and CI) verifies freshness.
+- Keyboard support for the Tabs block: arrow keys, Home/End, and a roving tabindex, per the ARIA tabs pattern.
+
+### Changed
+- **Tabs redesigned** as a minimal segmented control. Tab buttons no longer carry `wp-element-button`, which had rendered every tab as a filled CTA button. Pills, underline and boxed variants retained.
+- Tabs behaviour moved out of an inline `<script>` into `tabs.js`, registered as the block's `viewScript`.
+- 797 hardcoded colours across the block stylesheets reduced to 89, all of which are deliberate (social brand colours, code-editor syntax themes, video letterboxing).
+- 54 hand-rolled `[data-theme]` override rules removed; the token layer handles both schemes.
+
+### Fixed
+- **Video block rendered on the front end but not in the block editor.** The player is absolutely positioned, so the wrapper's `padding-bottom` was the block's only source of height — if the stylesheet did not reach the editor the block collapsed to 0px and vanished. The aspect ratio is now carried inline, so the box survives with no CSS at all.
+- **Pros & Cons is now dark-mode capable.** It previously hardcoded dark text on light pink and green tints, which was unreadable on a dark background.
+- Semantic status labels (changelog, pricing) sat at 4.0–4.2:1 against their own tint, under the WCAG AA floor. They are now mixed toward the text colour.
+- Button fills used `--color-primary`, which MD lightens for dark mode, dropping white button text to 3.3:1. They now use `--color-button`, which MD keeps stable and guarantees pairs with `--color-button-text`.
+- Removed the rounded-container-plus-thick-coloured-rail treatment from the opinion box, video caption, compact URL preview and Pros & Cons.
+
+### Notes
+- Total shipped CSS dropped from ~291 KB to ~257 KB: deleting the dark-mode override rules more than pays for the token layer.
+- Every measured text/background pair passes WCAG AA in both light and dark (19 pairs across 14 block palettes, worst 5.44:1).
+
 ## [2.9.6] - 2026-08-03
 
 ### Fixed

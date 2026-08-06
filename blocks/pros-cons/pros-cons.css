@@ -1,1 +1,136 @@
-.acf-pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:max(.25rem,4px);margin-bottom:max(.25rem,4px);border-radius:10px;overflow:hidden;font-size:max(.875rem,14px);line-height:1.6}.acf-pros-cons__column{padding:max(1.25rem,20px) max(1rem,16px)}.acf-pros-cons__negative{color:#3d2020;background:var(--pc-neg-bg,#fef2f2);border-top:4px solid var(--pc-neg-border,#dc2626)}.acf-pros-cons__positive{color:#1a3a1a;background:var(--pc-pos-bg,#f0fdf4);border-top:4px solid var(--pc-pos-border,#16a34a)}.acf-pros-cons__title{font-size:max(.8125rem,13px);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin:0 0 max(1rem,16px);display:flex;align-items:center;gap:max(.5rem,8px)}.acf-pros-cons__negative .acf-pros-cons__title{color:var(--pc-neg-title,#991b1b)}.acf-pros-cons__positive .acf-pros-cons__title{color:var(--pc-pos-title,#166534)}.acf-pros-cons__list ul,.acf-pros-cons__list ol{list-style:none;margin:0;padding:0}.acf-pros-cons__list li{display:flex;align-items:flex-start;gap:max(.625rem,10px);padding:max(.625rem,10px) 0;border-bottom:1px solid rgba(0,0,0,.06);line-height:1.5}.acf-pros-cons__list li:last-child{border-bottom:none;padding-bottom:0}.acf-pros-cons__list li:first-child{padding-top:0}.acf-pros-cons__icon{flex-shrink:0;display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;margin-top:max(.1rem,1.6px);font-size:12px;font-weight:700;line-height:1}.acf-pros-cons__negative .acf-pros-cons__icon{color:var(--pc-neg-icon,#dc2626);background:color-mix(in srgb,var(--pc-neg-icon,#dc2626) 12%,transparent)}.acf-pros-cons__positive .acf-pros-cons__icon{color:var(--pc-pos-icon,#16a34a);background:color-mix(in srgb,var(--pc-pos-icon,#16a34a) 12%,transparent)}.acf-pros-cons__item-content{flex:1}.acf-pros-cons__item-content strong{font-weight:600}@media(max-width:768px){.acf-pros-cons{grid-template-columns:1fr}.acf-pros-cons--pros-first .acf-pros-cons__positive{order:-1}}.acf-pros-cons.alignwide,.acf-pros-cons.alignfull{width:100%}:is(.dark,.is-dark-theme,[data-theme=dark]) .acf-pros-cons__list li{border-bottom-color:rgba(255,255,255,.08)}
+/* === Pros & Cons Block ===
+ *
+ * Tonal two-column comparison. Every colour derives from --acfb-* tokens via
+ * color-mix against the page surface, so the same rules read correctly in
+ * light and dark without a [data-theme] branch.
+ *
+ * The --pc-* custom properties remain the public override API: set any of them
+ * on the block (or a parent) to retint a column.
+ */
+
+.acf-pros-cons {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0;
+	margin-block: max(0.25rem, 4px);
+	border-radius: var(--acfb-radius-m);
+	overflow: hidden;
+	font-size: max(0.875rem, 14px);
+	line-height: var(--acfb-lh);
+}
+
+.acf-pros-cons__column {
+	padding: max(1.25rem, 20px) max(1rem, 16px);
+	color: var(--acfb-text);
+}
+
+/* Flat tonal wells. The tint alone carries the pro/con distinction — a thick
+   coloured rail on a rounded container is the generic AI-callout signature and
+   adds weight without adding information. Column separation is a hairline. */
+.acf-pros-cons__negative {
+	background: var(--pc-neg-bg, color-mix(in srgb, var(--acfb-danger) 7%, var(--acfb-bg)));
+}
+
+.acf-pros-cons__positive {
+	background: var(--pc-pos-bg, color-mix(in srgb, var(--acfb-success) 7%, var(--acfb-bg)));
+	border-inline-end: 1px solid color-mix(in srgb, var(--acfb-text) 8%, transparent);
+}
+
+.acf-pros-cons__title {
+	display: flex;
+	align-items: center;
+	gap: max(0.5rem, 8px);
+	margin: 0 0 max(1rem, 16px);
+	font-size: max(0.8125rem, 13px);
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+/* Mixed toward the text colour so the label keeps contrast on the tinted
+   well in both schemes, rather than sitting at full chroma. */
+.acf-pros-cons__negative .acf-pros-cons__title {
+	color: var(--pc-neg-title, color-mix(in srgb, var(--acfb-danger) 72%, var(--acfb-text)));
+}
+
+.acf-pros-cons__positive .acf-pros-cons__title {
+	color: var(--pc-pos-title, color-mix(in srgb, var(--acfb-success) 72%, var(--acfb-text)));
+}
+
+.acf-pros-cons__list ul,
+.acf-pros-cons__list ol {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.acf-pros-cons__list li {
+	display: flex;
+	align-items: flex-start;
+	gap: max(0.625rem, 10px);
+	padding: max(0.625rem, 10px) 0;
+	border-block-end: 1px solid color-mix(in srgb, var(--acfb-text) 10%, transparent);
+	line-height: 1.5;
+}
+
+.acf-pros-cons__list li:first-child {
+	padding-block-start: 0;
+}
+
+.acf-pros-cons__list li:last-child {
+	border-block-end: none;
+	padding-block-end: 0;
+}
+
+.acf-pros-cons__icon {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	margin-block-start: max(0.1rem, 1.6px);
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.acf-pros-cons__negative .acf-pros-cons__icon {
+	color: var(--pc-neg-icon, var(--acfb-danger));
+	background: color-mix(in srgb, var(--pc-neg-icon, var(--acfb-danger)) 15%, transparent);
+}
+
+.acf-pros-cons__positive .acf-pros-cons__icon {
+	color: var(--pc-pos-icon, var(--acfb-success));
+	background: color-mix(in srgb, var(--pc-pos-icon, var(--acfb-success)) 15%, transparent);
+}
+
+.acf-pros-cons__item-content {
+	flex: 1;
+}
+
+.acf-pros-cons__item-content strong {
+	font-weight: 600;
+}
+
+.acf-pros-cons.alignwide,
+.acf-pros-cons.alignfull {
+	width: 100%;
+}
+
+@media (max-width: 768px) {
+	.acf-pros-cons {
+		grid-template-columns: 1fr;
+	}
+
+	/* Stacked: the divider belongs between the rows, not on a side edge. */
+	.acf-pros-cons__positive {
+		border-inline-end: 0;
+		border-block-end: 1px solid color-mix(in srgb, var(--acfb-text) 8%, transparent);
+	}
+
+	.acf-pros-cons--pros-first .acf-pros-cons__positive {
+		order: -1;
+	}
+}

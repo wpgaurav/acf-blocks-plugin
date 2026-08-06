@@ -23,7 +23,13 @@
     "compat": "phpcs --standard=phpcs.xml.dist",
     "generated": [
       "php tools/generate-manifest.php --check",
-      "php tools/build-editor-css.php --check"
+      "php tools/build-editor-css.php --check",
+      "php tools/build-assets.php --check"
+    ],
+    "build": [
+      "php tools/generate-manifest.php",
+      "php tools/build-editor-css.php",
+      "php tools/build-assets.php"
     ],
     "test": "phpunit --configuration phpunit.xml.dist",
     "check": [

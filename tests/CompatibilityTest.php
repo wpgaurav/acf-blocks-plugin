@@ -75,23 +75,49 @@ final class CompatibilityTest extends TestCase {
         $this->assertArrayNotHasKey( 'editorStyle', $manifest['accordion-block']['metadata'] );
     }
 
-    public function test_tabs_keep_behavior_without_a_plugin_palette(): void {
+    public function test_tabs_style_through_tokens_not_literals(): void {
         $root     = dirname( __DIR__ );
         $css      = file_get_contents( $root . '/blocks/tabs-block/tabs.css' );
         $template = file_get_contents( $root . '/blocks/tabs-block/tabs-block.php' );
 
+        // The block now carries its own visual treatment, but every value comes
+        // from a token, so the theme's dark toggle still drives it and no
+        // [data-theme] rules are needed here.
         $this->assertDoesNotMatchRegularExpression( '/#[0-9a-f]{3,8}\b/i', $css );
         $this->assertStringNotContainsString( 'rgb(', $css );
-        $this->assertStringNotContainsString( 'color-mix(', $css );
         $this->assertStringNotContainsString( '[data-theme=', $css );
         $this->assertStringNotContainsString( 'prefers-color-scheme', $css );
+        $this->assertStringContainsString( 'var(--acfb-', $css );
 
         $this->assertStringContainsString( '.acf-tab-panel.active', $css );
         $this->assertStringContainsString( '.acf-tab-button:focus-visible', $css );
         $this->assertStringContainsString( '.acf-tabs-pills', $css );
         $this->assertStringContainsString( '.acf-tabs-underline', $css );
         $this->assertStringContainsString( '.acf-tabs-boxed', $css );
-        $this->assertStringContainsString( 'acf-tab-button wp-element-button', $template );
+
+        // wp-element-button made every tab render as a filled CTA button.
+        $this->assertStringNotContainsString( 'wp-element-button', $template );
+    }
+
+    public function test_tabs_behaviour_is_external_and_keyboard_accessible(): void {
+        $root     = dirname( __DIR__ );
+        $template = file_get_contents( $root . '/blocks/tabs-block/tabs-block.php' );
+        $script   = file_get_contents( $root . '/blocks/tabs-block/tabs.js' );
+        $metadata = json_decode( file_get_contents( $root . '/blocks/tabs-block/block.json' ), true );
+
+        // No inline handlers, and no inline <script> left in the template.
+        $this->assertStringNotContainsString( 'onclick', $template );
+        $this->assertStringNotContainsString( '<script', $template );
+        $this->assertSame( 'file:./tabs.js', $metadata['viewScript'] );
+
+        // ARIA tabs keyboard pattern.
+        foreach ( array( 'ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp', 'Home', 'End' ) as $key ) {
+            $this->assertStringContainsString( "'" . $key . "'", $script );
+        }
+
+        // Roving tabindex: exactly one tab reachable via Tab.
+        $this->assertStringContainsString( 'tabindex', $script );
+        $this->assertStringContainsString( 'tabindex="<?php echo $is_active ? \'0\' : \'-1\'; ?>"', $template );
     }
 
     public function test_section_styles_are_structural_only(): void {
@@ -158,7 +184,8 @@ final class CompatibilityTest extends TestCase {
         foreach ( $GLOBALS['acf_blocks_test_block_styles'] as $block_name => $args ) {
             $this->assertStringStartsWith( 'acf/', $block_name );
             $this->assertSame( 'acf-blocks-layout', $args['handle'] );
-            $this->assertStringEndsWith( '/assets/css/block-layout.css', $args['src'] );
+            // Minified build is served whenever it exists and SCRIPT_DEBUG is off.
+            $this->assertStringEndsWith( '/assets/css/block-layout.min.css', $args['src'] );
             $this->assertSame( ACF_BLOCKS_VERSION, $args['ver'] );
         }
     }
@@ -179,7 +206,7 @@ final class CompatibilityTest extends TestCase {
         $this->assertTrue( acf_blocks_semantic_styles_enabled() );
         acf_blocks_enqueue_semantic_styles();
         $this->assertArrayHasKey( 'acf-blocks-semantic-styles', $GLOBALS['acf_blocks_test_styles'] );
-        $this->assertStringEndsWith( '/assets/css/semantic-blocks.css', $GLOBALS['acf_blocks_test_styles']['acf-blocks-semantic-styles']['src'] );
+        $this->assertStringEndsWith( '/assets/css/semantic-blocks.min.css', $GLOBALS['acf_blocks_test_styles']['acf-blocks-semantic-styles']['src'] );
         unset( $GLOBALS['acf_blocks_test_options'][ ACF_BLOCKS_SEMANTIC_STYLES_OPTION ] );
     }
 
@@ -291,6 +318,237 @@ final class CompatibilityTest extends TestCase {
         $this->assertSame( $clean, $out[0]['attrs']['data'] );
         $this->assertFalse( $changed );
         $this->assertArrayNotHasKey( 'accordion-faq-schema', $stats );
+    }
+
+    /**
+     * The minifiers are scanners, not regex passes. These are the cases where a
+     * regex-based minifier silently corrupts output.
+     *
+     * @dataProvider css_minify_cases
+     */
+    public function test_css_minifier_preserves_meaning( string $source, string $expected ): void {
+        $this->assertSame( $expected, acfb_minify_css( $source ) );
+    }
+
+    public function css_minify_cases(): array {
+        return array(
+            'strips comments'         => array( 'a { /* x */ color: red; }', 'a{color:red}' ),
+            'keeps bang banner'       => array( "/*! keep */\na { color: red; }", '/*! keep */a{color:red}' ),
+            'url in string'           => array( 'a::after{content:"https://x.com"}', 'a::after{content:"https://x.com"}' ),
+            'comment open in string'  => array( 'a::after{content:"/* x"}', 'a::after{content:"/* x"}' ),
+            'semicolon in string'     => array( 'a::after{content:"a;b"}', 'a::after{content:"a;b"}' ),
+            'data uri'                => array( 'a{background:url(data:image/svg+xml;base64,AA//BB)}', 'a{background:url(data:image/svg+xml;base64,AA//BB)}' ),
+            'descendant space kept'   => array( 'a b { color: red; }', 'a b{color:red}' ),
+            'child combinator'        => array( 'a > b { color: red; }', 'a>b{color:red}' ),
+            // Space after "@media" is required; "@media(" fails to parse.
+            'media query space'       => array( '@media (max-width: 480px) { a { color: red; } }', '@media (max-width:480px){a{color:red}}' ),
+            // Space after ")" is significant inside color-mix percentages.
+            'color-mix percentage'    => array( 'a{color:color-mix(in srgb, var(--x) 3%, var(--y))}', 'a{color:color-mix(in srgb,var(--x) 3%,var(--y))}' ),
+            // calc() requires whitespace around + and -.
+            'calc keeps operators'    => array( 'a{width:calc(100% - 2px)}', 'a{width:calc(100% - 2px)}' ),
+        );
+    }
+
+    /**
+     * @dataProvider js_minify_cases
+     */
+    public function test_js_minifier_preserves_meaning( string $source, string $expected ): void {
+        $this->assertSame( $expected, acfb_minify_js( $source ) );
+    }
+
+    public function js_minify_cases(): array {
+        return array(
+            'line comment'        => array( "var a = 1; // note\nvar b = 2;", "var a = 1;\nvar b = 2;" ),
+            'url in string'       => array( 'var u = "https://x.com";', 'var u = "https://x.com";' ),
+            'comment in string'   => array( 'var s = "/* x */";', 'var s = "/* x */";' ),
+            'regex with slashstar'=> array( 'var re = /\/\*/g;', 'var re = /\/\*/g;' ),
+            'regex char class'    => array( 'var re = /[/]/;', 'var re = /[/]/;' ),
+            'division not regex'  => array( "var x = a / b;\nvar y = c / d;", "var x = a / b;\nvar y = c / d;" ),
+            'template literal'    => array( 'var s = `a ${b} // c`;', 'var s = `a ${b} // c`;' ),
+            // Newlines are kept so automatic semicolon insertion is unchanged.
+            'asi preserved'       => array( "function f() {\n  return\n  1;\n}", "function f() {\nreturn\n1;\n}" ),
+            'blank lines'         => array( "var a = 1;\n\n\nvar b = 2;", "var a = 1;\nvar b = 2;" ),
+        );
+    }
+
+    public function test_every_shipped_asset_has_a_minified_build(): void {
+        $root    = dirname( __DIR__ );
+        $sources = array_merge(
+            (array) glob( $root . '/assets/css/*.css' ),
+            (array) glob( $root . '/assets/js/*.js' ),
+            (array) glob( $root . '/blocks/*/*.css' ),
+            (array) glob( $root . '/blocks/*/*.js' )
+        );
+
+        $missing = array();
+        foreach ( $sources as $file ) {
+            if ( preg_match( '/\.min\.(css|js)$/', $file ) ) {
+                continue;
+            }
+            $min = preg_replace( '/\.(css|js)$/', '.min.$1', $file );
+            if ( ! is_readable( $min ) ) {
+                $missing[] = substr( $file, strlen( $root ) + 1 );
+            }
+        }
+
+        $this->assertSame( array(), $missing, 'Run: composer build' );
+    }
+
+    public function test_asset_resolver_falls_back_to_source(): void {
+        // Present: the minified build wins.
+        $built = acf_blocks_asset( 'assets/css/tokens.css' );
+        $this->assertTrue( $built['min'] );
+        $this->assertStringEndsWith( '/assets/css/tokens.min.css', $built['url'] );
+        $this->assertStringEndsWith( '/assets/css/tokens.min.css', $built['path'] );
+
+        // Absent: degrade to the readable source rather than emitting a 404.
+        $missing = acf_blocks_asset( 'assets/css/does-not-exist.css' );
+        $this->assertFalse( $missing['min'] );
+        $this->assertStringEndsWith( '/assets/css/does-not-exist.css', $missing['url'] );
+
+        // Non-asset paths pass through untouched.
+        $other = acf_blocks_asset( 'assets/img/logo.svg' );
+        $this->assertFalse( $other['min'] );
+        $this->assertStringEndsWith( '/assets/img/logo.svg', $other['url'] );
+    }
+
+    public function test_editor_bundle_excludes_minified_siblings(): void {
+        // Globbing blocks/*/*.css would otherwise pull in the .min.css files
+        // and include every block's CSS in the bundle twice.
+        $css = file_get_contents( dirname( __DIR__ ) . '/assets/css/editor-blocks.css' );
+        $this->assertStringNotContainsString( '.min.css */', $css );
+    }
+
+    /**
+     * House rule: a rounded container must never carry a >=2px border, on any
+     * single side. That combination is the generic AI-callout signature —
+     * conflicting geometry that adds weight without adding information.
+     *
+     * Narrow exceptions: focus rings, checkbox/radio indicators, avatar rings,
+     * buttons, timeline axes and the loading spinner, none of which are cards,
+     * callouts, panels or content boxes.
+     */
+    public function test_no_thick_border_on_rounded_containers(): void {
+        $exempt = array(
+            'focus', 'spinner', 'checkbox', 'checkmark', 'avatar', 'img',
+            'timeline', 'btn', 'button', '::before', '::after', 'icon--empty',
+        );
+
+        $offenders = array();
+
+        foreach ( (array) glob( dirname( __DIR__ ) . '/blocks/*/*.css' ) as $file ) {
+            if ( preg_match( '/\.min\.css$/', $file ) ) {
+                continue;
+            }
+
+            $css = preg_replace( '#/\*.*?\*/#s', '', (string) file_get_contents( $file ) );
+
+            if ( ! preg_match_all( '/([^{}]+)\{([^{}]*)\}/', $css, $rules, PREG_SET_ORDER ) ) {
+                continue;
+            }
+
+            foreach ( $rules as $rule ) {
+                $selector = strtolower( trim( $rule[1] ) );
+                $body     = $rule[2];
+
+                foreach ( $exempt as $needle ) {
+                    if ( false !== strpos( $selector, $needle ) ) {
+                        continue 2;
+                    }
+                }
+
+                // Any border shorthand or side declaration of 2px or more.
+                $thick = false;
+                if ( preg_match_all( '/border(?:-(?:top|right|bottom|left|block|inline)[a-z-]*)?\s*:\s*([^;{}]+)/i', $body, $borders ) ) {
+                    foreach ( $borders[1] as $value ) {
+                        if ( false !== stripos( $value, 'radius' ) ) {
+                            continue;
+                        }
+                        if ( preg_match( '/(\d+(?:\.\d+)?)px/', $value, $px ) && (float) $px[1] >= 2 ) {
+                            $thick = true;
+                        }
+                    }
+                }
+
+                $rounded = preg_match( '/border(?:-[a-z-]*)?radius\s*:\s*(?!0[;\s}])/i', $body );
+
+                if ( $thick && $rounded ) {
+                    $offenders[] = basename( dirname( $file ) ) . ': ' . trim( $rule[1] );
+                }
+            }
+        }
+
+        $this->assertSame( array(), $offenders );
+    }
+
+    /**
+     * The video player is absolutely positioned, so the wrapper is the only
+     * source of height. When the stylesheet did not apply the block collapsed
+     * to 0px and vanished — visible on the front end, invisible in the editor.
+     * The ratio is now inline, so the box survives with no CSS at all.
+     */
+    public function test_video_block_holds_its_box_without_css(): void {
+        $root     = dirname( __DIR__ );
+        $template = file_get_contents( $root . '/blocks/video-block/video-block.php' );
+        $css      = file_get_contents( $root . '/blocks/video-block/video.css' );
+
+        $this->assertStringContainsString( 'aspect-ratio: ', $template );
+        $this->assertStringContainsString( "'16-9' => '16 / 9'", $template );
+        $this->assertStringContainsString( '$wrapper_style_at', $template );
+
+        // The padding-bottom hack must stay behind @supports, or it stacks on
+        // top of the inline aspect-ratio and doubles the height.
+        $this->assertStringContainsString( '@supports not (aspect-ratio:1/1)', $css );
+
+        $outside = preg_replace( '/@supports not \(aspect-ratio:1\/1\)\{.*?\}\}/s', '', $css );
+        $this->assertStringNotContainsString( 'padding-bottom:56.25%', (string) $outside );
+    }
+
+    /**
+     * Blocks style through the --acfb-* bridge, so the theme's own light/dark
+     * toggle carries them. A hand-rolled [data-theme] rule in block CSS means
+     * a colour escaped the token layer and will drift out of sync.
+     */
+    public function test_blocks_have_no_hand_rolled_dark_overrides(): void {
+        $offenders = array();
+
+        foreach ( (array) glob( dirname( __DIR__ ) . '/blocks/*/*.css' ) as $file ) {
+            if ( preg_match( '/\.min\.css$/', $file ) ) {
+                continue;
+            }
+            // Comments may mention the attribute; only real rules count.
+            $css = preg_replace( '#/\*.*?\*/#s', '', (string) file_get_contents( $file ) );
+            if ( preg_match( '/(?:\[data-theme|\.is-dark-theme)[^{}]*\{/', (string) $css ) ) {
+                $offenders[] = basename( dirname( $file ) );
+            }
+        }
+
+        $this->assertSame( array(), $offenders );
+    }
+
+    /**
+     * Button fills must pair --acfb-button with --acfb-on-primary. MD lightens
+     * --color-primary for dark mode, which drops white button text to ~3.3:1,
+     * while --color-button is stable and guaranteed to pair with its text.
+     */
+    public function test_button_fills_use_the_button_token(): void {
+        $tokens = file_get_contents( dirname( __DIR__ ) . '/assets/css/tokens.css' );
+        $this->assertStringContainsString( '--acfb-button:', $tokens );
+
+        $offenders = array();
+        foreach ( (array) glob( dirname( __DIR__ ) . '/blocks/*/*.css' ) as $file ) {
+            if ( preg_match( '/\.min\.css$/', $file ) ) {
+                continue;
+            }
+            $css = (string) file_get_contents( $file );
+            if ( preg_match_all( '/(--[a-z0-9-]*(?:btn|button)[a-z0-9-]*(?:bg|hover))\s*:\s*var\(--acfb-primary\)/i', $css, $m ) ) {
+                foreach ( $m[1] as $name ) {
+                    $offenders[] = basename( dirname( $file ) ) . ': ' . $name;
+                }
+            }
+        }
+
+        $this->assertSame( array(), $offenders );
     }
 
     public function test_performance_regressions_stay_removed(): void {

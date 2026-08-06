@@ -64,7 +64,7 @@ function acf_blocks_build_site_editor_bundle( $disabled ) {
                 if ( is_string( $style ) && 0 === strpos( $style, 'file:./' ) ) {
                     $path = $block_info['folder'] . substr( $style, 7 );
                     if ( is_readable( $path ) ) {
-                        $css_files[ $path ] = true;
+                        $css_files[ acf_blocks_minified_path( $path ) ] = true;
                     }
                 }
             }

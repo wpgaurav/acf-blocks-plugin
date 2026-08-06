@@ -5680,6 +5680,7 @@ return array (
       ),
       'style' => 'file:./tabs.css',
       'editorStyle' => 'file:./tabs.css',
+      'viewScript' => 'file:./tabs.js',
     ),
     'field_groups' => 
     array (

@@ -208,30 +208,148 @@ function acf_blocks_add_common_wrapper_class( $block_content, $block ) {
 add_filter( 'render_block', 'acf_blocks_add_common_wrapper_class', 10, 2 );
 
 /**
- * Attach a zero-specificity block-gap fallback to every enabled ACF block.
+ * Resolve a plugin asset to its minified build when one is available.
  *
- * WordPress loads the shared handle once and can keep it block-on-demand on the
- * frontend. Any normal theme or block selector outranks the fallback.
+ * `php tools/build-assets.php` writes a .min sibling next to every CSS and JS
+ * source. This returns that sibling when it exists, so a missing or stale
+ * artifact degrades to the readable source rather than to a 404.
+ *
+ * Defining SCRIPT_DEBUG serves the sources, which is what debugging a style
+ * or a handler in devtools needs.
+ *
+ * @param string $relative Plugin-relative path, e.g. 'assets/css/tokens.css'.
+ * @return array{path:string,url:string,min:bool} Resolved filesystem path and URL.
+ */
+function acf_blocks_asset( $relative ) {
+    $source = array(
+        'path' => ACF_BLOCKS_PLUGIN_DIR . $relative,
+        'url'  => ACF_BLOCKS_PLUGIN_URL . $relative,
+        'min'  => false,
+    );
+
+    if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
+        return $source;
+    }
+
+    $minified = preg_replace( '/\.(css|js)$/', '.min.$1', $relative );
+    if ( null === $minified || $minified === $relative ) {
+        return $source;
+    }
+
+    $path = ACF_BLOCKS_PLUGIN_DIR . $minified;
+    if ( ! is_readable( $path ) ) {
+        return $source;
+    }
+
+    return array(
+        'path' => $path,
+        'url'  => ACF_BLOCKS_PLUGIN_URL . $minified,
+        'min'  => true,
+    );
+}
+
+/**
+ * Swap an absolute asset path for its minified build when one exists.
+ *
+ * Used where code reads asset bytes off disk rather than enqueueing a URL —
+ * notably the site-specific editor bundle, which concatenates block CSS.
+ *
+ * @param string $path Absolute path to a .css or .js file.
+ * @return string The .min sibling when readable, otherwise the input path.
+ */
+function acf_blocks_minified_path( $path ) {
+    if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
+        return $path;
+    }
+
+    $minified = preg_replace( '/(?<!\.min)\.(css|js)$/', '.min.$1', $path );
+
+    return ( null !== $minified && $minified !== $path && is_readable( $minified ) )
+        ? $minified
+        : $path;
+}
+
+/**
+ * Serve the minified build for any plugin asset WordPress resolves on its own.
+ *
+ * Direct enqueues go through acf_blocks_asset(), but block.json `viewScript`
+ * and `style` entries are resolved by WordPress from the metadata path, so
+ * they never reach that helper. This rewrites those URLs at output time, which
+ * also covers any asset added later without touching this file.
+ *
+ * Only rewrites plugin-owned URLs that have a readable .min sibling.
+ *
+ * @param string $src Registered source URL.
+ * @return string Possibly rewritten URL.
+ */
+function acf_blocks_minify_loader_src( $src ) {
+    if ( ! is_string( $src ) || '' === $src ) {
+        return $src;
+    }
+    if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
+        return $src;
+    }
+    if ( 0 !== strpos( $src, ACF_BLOCKS_PLUGIN_URL ) ) {
+        return $src;
+    }
+
+    $parts = explode( '?', $src, 2 );
+    $base  = $parts[0];
+
+    if ( ! preg_match( '/(?<!\.min)\.(css|js)$/', $base ) ) {
+        return $src;
+    }
+
+    $relative = substr( $base, strlen( ACF_BLOCKS_PLUGIN_URL ) );
+    $minified = preg_replace( '/\.(css|js)$/', '.min.$1', $relative );
+
+    if ( null === $minified || ! is_readable( ACF_BLOCKS_PLUGIN_DIR . $minified ) ) {
+        return $src;
+    }
+
+    return ACF_BLOCKS_PLUGIN_URL . $minified . ( isset( $parts[1] ) ? '?' . $parts[1] : '' );
+}
+add_filter( 'script_loader_src', 'acf_blocks_minify_loader_src', 20 );
+add_filter( 'style_loader_src', 'acf_blocks_minify_loader_src', 20 );
+
+/**
+ * Attach the design token bridge and block-gap fallback to every enabled block.
+ *
+ * WordPress loads each shared handle once and can keep it block-on-demand on
+ * the frontend. Any normal theme or block selector outranks the fallback.
+ *
+ * The token sheet must ride along with every block: block CSS styles entirely
+ * through --acfb-* custom properties, which resolve to Marketers Delight theme
+ * tokens when MD is active and to neutral literals otherwise.
  */
 function acf_blocks_register_layout_styles() {
     if ( ! function_exists( 'wp_enqueue_block_style' ) ) {
         return;
     }
 
-    $path = ACF_BLOCKS_PLUGIN_DIR . 'assets/css/block-layout.css';
-    if ( ! is_readable( $path ) ) {
-        return;
-    }
-
-    $args = array(
-        'handle' => 'acf-blocks-layout',
-        'src'    => ACF_BLOCKS_PLUGIN_URL . 'assets/css/block-layout.css',
-        'path'   => $path,
-        'ver'    => ACF_BLOCKS_VERSION,
+    $sheets = array(
+        'acf-blocks-tokens' => 'assets/css/tokens.css',
+        'acf-blocks-layout' => 'assets/css/block-layout.css',
     );
 
-    foreach ( acf_blocks_get_block_metadata_cache() as $block_info ) {
-        wp_enqueue_block_style( $block_info['metadata']['name'], $args );
+    $blocks = acf_blocks_get_block_metadata_cache();
+
+    foreach ( $sheets as $handle => $relative ) {
+        if ( ! is_readable( ACF_BLOCKS_PLUGIN_DIR . $relative ) ) {
+            continue;
+        }
+
+        $asset = acf_blocks_asset( $relative );
+        $args  = array(
+            'handle' => $handle,
+            'src'    => $asset['url'],
+            'path'   => $asset['path'],
+            'ver'    => ACF_BLOCKS_VERSION,
+        );
+
+        foreach ( $blocks as $block_info ) {
+            wp_enqueue_block_style( $block_info['metadata']['name'], $args );
+        }
     }
 }
 add_action( 'init', 'acf_blocks_register_layout_styles', 6 );
@@ -244,14 +362,15 @@ function acf_blocks_enqueue_semantic_styles() {
         return;
     }
 
-    $path = ACF_BLOCKS_PLUGIN_DIR . 'assets/css/semantic-blocks.css';
-    if ( ! is_readable( $path ) ) {
+    if ( ! is_readable( ACF_BLOCKS_PLUGIN_DIR . 'assets/css/semantic-blocks.css' ) ) {
         return;
     }
 
+    $asset = acf_blocks_asset( 'assets/css/semantic-blocks.css' );
+
     wp_enqueue_style(
         'acf-blocks-semantic-styles',
-        ACF_BLOCKS_PLUGIN_URL . 'assets/css/semantic-blocks.css',
+        $asset['url'],
         array(),
         ACF_BLOCKS_VERSION
     );
@@ -298,13 +417,13 @@ function acf_blocks_register_styles() {
             if ( strpos( $metadata['style'], 'file:./' ) === 0 ) {
                 $css_file = substr( $metadata['style'], 7 );
                 $css_path = $block_folder . $css_file;
-                $css_url  = $blocks_url . $folder_name . '/' . $css_file;
 
                 if ( file_exists( $css_path ) ) {
+                    $asset  = acf_blocks_asset( 'blocks/' . $folder_name . '/' . $css_file );
                     $handle = str_replace( '/', '-', $metadata['name'] ) . '-style';
                     wp_register_style(
                         $handle,
-                        $css_url,
+                        $asset['url'],
                         array(),
                         ACF_BLOCKS_VERSION
                     );
@@ -510,16 +629,15 @@ function acf_blocks_minify_css( $css ) {
  * Loads JavaScript that enables converting core blocks to ACF Blocks.
  */
 function acf_blocks_enqueue_editor_assets() {
-    $script_path = ACF_BLOCKS_PLUGIN_DIR . 'assets/js/block-transforms.js';
-    $script_url  = ACF_BLOCKS_PLUGIN_URL . 'assets/js/block-transforms.js';
-
-    if ( ! file_exists( $script_path ) ) {
+    if ( ! file_exists( ACF_BLOCKS_PLUGIN_DIR . 'assets/js/block-transforms.js' ) ) {
         return;
     }
 
+    $asset = acf_blocks_asset( 'assets/js/block-transforms.js' );
+
     wp_enqueue_script(
         'acf-blocks-transforms',
-        $script_url,
+        $asset['url'],
         array( 'wp-blocks', 'wp-hooks', 'wp-element' ),
         ACF_BLOCKS_VERSION,
         true
@@ -555,7 +673,9 @@ function acf_blocks_enqueue_editor_styles() {
     $site_bundle_is_valid = ! empty( $site_bundle['url'] )
         && ! empty( $site_bundle['path'] )
         && is_readable( $site_bundle['path'] );
-    $bundle_url = $site_bundle_is_valid ? $site_bundle['url'] : ACF_BLOCKS_PLUGIN_URL . 'assets/css/editor-blocks.css';
+    $bundle_url = $site_bundle_is_valid
+        ? $site_bundle['url']
+        : acf_blocks_asset( 'assets/css/editor-blocks.css' )['url'];
     $version    = $site_bundle_is_valid && ! empty( $site_bundle['version'] ) ? $site_bundle['version'] : ACF_BLOCKS_VERSION;
 
     wp_enqueue_style(

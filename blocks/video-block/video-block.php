@@ -54,6 +54,25 @@ $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"
 
 $aspect_ratio_class = $aspect_ratio ? ' acf-aspect-' . esc_attr( $aspect_ratio ) : ' acf-aspect-16-9';
 
+/*
+ * The player is absolutely positioned, so the wrapper is the only thing giving
+ * this block height. If the stylesheet does not apply — a stale editor bundle,
+ * a caching layer, or an editor iframe that never receives it — the block
+ * collapses to 0px and disappears entirely, which is what made it render on the
+ * front end but not in the editor. Other blocks merely look unstyled.
+ *
+ * Carrying the ratio inline makes the box intrinsic to the markup, so the block
+ * always occupies space even with no CSS at all.
+ */
+$aspect_ratios = array(
+    '16-9' => '16 / 9',
+    '4-3'  => '4 / 3',
+    '21-9' => '21 / 9',
+    '1-1'  => '1 / 1',
+);
+$ratio_value      = isset( $aspect_ratios[ $aspect_ratio ] ) ? $aspect_ratios[ $aspect_ratio ] : '16 / 9';
+$wrapper_style_at = ' style="aspect-ratio: ' . esc_attr( $ratio_value ) . ';"';
+
 // Function to extract video ID from YouTube URL
 if ( ! function_exists( 'acf_get_youtube_id' ) ) {
     function acf_get_youtube_id( $url ) {
@@ -81,7 +100,7 @@ $block_id = isset( $block['id'] ) ? $block['id'] : wp_unique_id( 'video-' );
         </div>
     <?php endif; ?>
 
-    <div class="acf-video-wrapper">
+    <div class="acf-video-wrapper"<?php echo $wrapper_style_at; ?>>
         <?php if ( $video_type === 'youtube' && $video_url ) : ?>
             <?php
             $youtube_id = acf_get_youtube_id( $video_url );

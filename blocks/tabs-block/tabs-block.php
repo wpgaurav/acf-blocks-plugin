@@ -2,7 +2,8 @@
 /**
  * Tabs Block Template.
  *
- * Uses minimal inline JavaScript for tab switching.
+ * Behaviour lives in tabs.js, registered as the block's viewScript, so the
+ * markup carries no inline handlers.
  *
  * @param array       $block      Block settings and attributes.
  * @param string      $content    The block inner HTML (empty).
@@ -33,14 +34,14 @@ $unique_id   = 'acf-tabs-' . ( $block['id'] ?? wp_unique_id() );
                 $panel_id     = esc_attr( $unique_id . '-panel-' . $index );
                 $active_class = $is_active ? ' active' : '';
                 ?>
-                <button class="acf-tab-button wp-element-button<?php echo $active_class; ?>"
+                <button class="acf-tab-button<?php echo $active_class; ?>"
                         id="<?php echo $tab_id; ?>"
                         type="button"
                         role="tab"
                         aria-selected="<?php echo $is_active ? 'true' : 'false'; ?>"
                         aria-controls="<?php echo $panel_id; ?>"
-                        data-tab-index="<?php echo esc_attr( $index ); ?>"
-                        onclick="acfBlocksSwitchTab(this, '<?php echo esc_js( $unique_id ); ?>')">
+                        tabindex="<?php echo $is_active ? '0' : '-1'; ?>"
+                        data-tab-index="<?php echo esc_attr( $index ); ?>">
                     <?php if ( ! empty( $tab['acf_tab_icon'] ) ) : ?>
                         <span class="acf-tab-icon">
                             <?php
@@ -76,39 +77,3 @@ $unique_id   = 'acf-tabs-' . ( $block['id'] ?? wp_unique_id() );
         <?php endif; ?>
     <?php endif; ?>
 </div>
-
-<?php
-// Output the tab switching script once per page
-if ( ! defined( 'ACF_BLOCKS_TABS_SCRIPT_LOADED' ) ) :
-    define( 'ACF_BLOCKS_TABS_SCRIPT_LOADED', true );
-    ?>
-    <script>
-    function acfBlocksSwitchTab(btn, containerId) {
-        var container = document.getElementById(containerId);
-        if (!container) return;
-
-        var tabIndex = btn.getAttribute('data-tab-index');
-
-        // Update buttons
-        var buttons = container.querySelectorAll('.acf-tab-button');
-        buttons.forEach(function(b) {
-            b.classList.remove('active');
-            b.setAttribute('aria-selected', 'false');
-        });
-        btn.classList.add('active');
-        btn.setAttribute('aria-selected', 'true');
-
-        // Update panels
-        var panels = container.querySelectorAll('.acf-tab-panel');
-        panels.forEach(function(p, i) {
-            if (i == tabIndex) {
-                p.classList.add('active');
-                p.removeAttribute('hidden');
-            } else {
-                p.classList.remove('active');
-                p.setAttribute('hidden', '');
-            }
-        });
-    }
-    </script>
-<?php endif; ?>

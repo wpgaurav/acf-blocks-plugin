@@ -30,3 +30,7 @@ require_once dirname( __DIR__ ) . '/includes/functions.php';
 // Pure transform helpers are unit-testable; the file's admin hooks are inert
 // against the stubs above.
 require_once dirname( __DIR__ ) . '/includes/block-migrator.php';
+
+// Exposes acfb_minify_css()/acfb_minify_js(); the build body self-guards and
+// does not run when the file is required rather than invoked.
+require_once dirname( __DIR__ ) . '/tools/build-assets.php';
