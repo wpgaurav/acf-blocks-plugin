@@ -2,7 +2,7 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
-## [2.10.0] - 2026-07-29
+## [2.10.0] - 2026-08-06
 
 ### Added
 - **Design token bridge** (`assets/css/tokens.css`). Every block now styles through `--acfb-*` tokens that resolve to Marketers Delight theme tokens when MD is active and to neutral literals otherwise. Dark mode follows the theme's own toggle with no per-block rules.
