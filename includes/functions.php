@@ -313,6 +313,69 @@ add_filter( 'script_loader_src', 'acf_blocks_minify_loader_src', 20 );
 add_filter( 'style_loader_src', 'acf_blocks_minify_loader_src', 20 );
 
 /**
+ * Point registered plugin styles at their minified builds, `path` data included.
+ *
+ * acf_blocks_minify_loader_src() only runs when a stylesheet is printed as a
+ * <link>. Styles registered from block.json also carry `path` data, and
+ * wp_maybe_inline_styles() reads that file straight off disk and prints its
+ * bytes into the document without the URL ever reaching style_loader_src — so
+ * every inlined block sheet shipped unminified source.
+ *
+ * The blocks that hit this are the ones whose block.json declares `style` as an
+ * array (Callout, Feature Grid, Post Display, Table of Contents). A string
+ * `style` is pre-registered by acf_blocks_register_styles() under the handle
+ * WordPress would have generated, so core's wp_register_style() call returns
+ * false and it bails before attaching `path`.
+ *
+ * Rewriting the registration rather than the printed tag keeps the inlining:
+ * the page still avoids the extra request, it just carries the smaller payload.
+ */
+function acf_blocks_minify_registered_styles() {
+    if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
+        return;
+    }
+
+    // Read the global rather than calling wp_styles(): instantiating WP_Styles
+    // before core is ready fires wp_default_styles too early.
+    $styles = isset( $GLOBALS['wp_styles'] ) ? $GLOBALS['wp_styles'] : null;
+
+    if ( ! is_object( $styles ) || ! isset( $styles->registered ) || ! is_array( $styles->registered ) ) {
+        return;
+    }
+
+    $plugin_dir = wp_normalize_path( ACF_BLOCKS_PLUGIN_DIR );
+
+    foreach ( $styles->registered as $style ) {
+        if ( ! is_object( $style ) ) {
+            continue;
+        }
+
+        if ( is_string( $style->src ) && 0 === strpos( $style->src, ACF_BLOCKS_PLUGIN_URL ) ) {
+            $style->src = acf_blocks_minify_loader_src( $style->src );
+        }
+
+        if ( empty( $style->extra['path'] ) || ! is_string( $style->extra['path'] ) ) {
+            continue;
+        }
+
+        $path = wp_normalize_path( $style->extra['path'] );
+
+        if ( 0 !== strpos( $path, $plugin_dir ) ) {
+            continue;
+        }
+
+        $style->extra['path'] = acf_blocks_minified_path( $path );
+    }
+}
+// wp_maybe_inline_styles() runs on wp_head and wp_footer at priority 1. Core
+// registers wp_enqueue_scripts on wp_head at the same priority but earlier, so
+// the sweep lands before the first inline pass and the rewritten registration
+// still stands for blocks enqueued late and inlined in the footer.
+add_action( 'wp_enqueue_scripts', 'acf_blocks_minify_registered_styles', PHP_INT_MAX );
+add_action( 'admin_enqueue_scripts', 'acf_blocks_minify_registered_styles', PHP_INT_MAX );
+add_action( 'enqueue_block_assets', 'acf_blocks_minify_registered_styles', PHP_INT_MAX );
+
+/**
  * Attach the design token bridge and block-gap fallback to every enabled block.
  *
  * WordPress loads each shared handle once and can keep it block-on-demand on
@@ -376,6 +439,46 @@ function acf_blocks_enqueue_semantic_styles() {
     );
 }
 add_action( 'enqueue_block_assets', 'acf_blocks_enqueue_semantic_styles', 20 );
+
+/**
+ * Load the layout sheets inside the block editor canvas.
+ *
+ * acf_blocks_register_layout_styles() attaches tokens.css and block-layout.css
+ * with wp_enqueue_block_style(), which only fires when a block actually renders
+ * on the front end. The editor never received them, so ACF blocks had no
+ * baseline bottom margin in the canvas: a heading following a Table of Contents
+ * block sat flush against it while editing and had 1.5rem of air once
+ * published.
+ *
+ * enqueue_block_assets is the hook WordPress injects into the canvas document.
+ * Front-end delivery is left to wp_enqueue_block_style() so pages still only
+ * pay for the sheets when a block is present.
+ */
+function acf_blocks_enqueue_layout_styles_editor() {
+	if ( ! is_admin() ) {
+		return;
+	}
+
+	$sheets = array(
+		'acf-blocks-tokens' => 'assets/css/tokens.css',
+		'acf-blocks-layout' => 'assets/css/block-layout.css',
+	);
+
+	foreach ( $sheets as $handle => $relative ) {
+		if ( ! is_readable( ACF_BLOCKS_PLUGIN_DIR . $relative ) ) {
+			continue;
+		}
+
+		$asset = acf_blocks_asset( $relative );
+
+		if ( ! wp_style_is( $handle, 'registered' ) ) {
+			wp_register_style( $handle, $asset['url'], array(), ACF_BLOCKS_VERSION );
+		}
+
+		wp_enqueue_style( $handle );
+	}
+}
+add_action( 'enqueue_block_assets', 'acf_blocks_enqueue_layout_styles_editor', 21 );
 
 /**
  * Register custom block category for ACF Blocks.

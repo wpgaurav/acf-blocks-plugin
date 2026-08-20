@@ -13,6 +13,7 @@ function add_action() {}
 function add_filter() {}
 function apply_filters( $hook, $value ) { return $value; }
 function trailingslashit( $value ) { return rtrim( (string) $value, '/\\' ) . '/'; }
+function wp_normalize_path( $path ) { return str_replace( '\\', '/', (string) $path ); }
 function sanitize_text_field( $value ) { return trim( (string) $value ); }
 function __( $text, $domain = null ) { return $text; }
 function get_option( $name, $default = false ) {

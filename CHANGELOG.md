@@ -2,6 +2,13 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.11.0] - 2026-08-20
+
+### Fixed
+- **Inlined block stylesheets shipped unminified source.** `acf_blocks_minify_loader_src()` only runs when a sheet is printed as a `<link>`. Styles registered from `block.json` also carry `path` data, and `wp_maybe_inline_styles()` reads that file straight off disk and prints its bytes into the page without the URL ever reaching `style_loader_src` — so every page rendering one of those blocks carried the readable source. It hit the four blocks whose `block.json` declares `style` as an array (Callout, Feature Grid, Post Display, Table of Contents); a string `style` is pre-registered by `acf_blocks_register_styles()` under the handle WordPress would have generated, so core bails before attaching `path`. `acf_blocks_minify_registered_styles()` now rewrites both `src` and `path` on plugin-owned registrations before the inline pass. Rewriting the registration rather than the printed tag keeps the inlining, so pages still avoid the extra request and just carry less of it — measured on a published Table of Contents post, 2,279 inlined bytes down to 1,494.
+- **ACF blocks now keep their baseline rhythm in the block editor.** `acf_blocks_register_layout_styles()` attaches `tokens.css` and `block-layout.css` with `wp_enqueue_block_style()`, which only fires when a block renders on the front end — the editor canvas never received them. A heading following a Table of Contents block sat flush against it while editing and had 1.5rem of air once published. The sheets are now also enqueued on `enqueue_block_assets` in admin, the hook WordPress injects into the canvas document. Front-end delivery still goes through `wp_enqueue_block_style()`, so pages only pay for the sheets when a block is actually present.
+- **`block-layout.css` matches the editor's markup.** The front end renders the block element itself carrying `.acf-block`, while the editor wraps the same output in `.wp-block` and puts `acf-block-component` / `acf-block-<name>` on the wrapper — so `.acf-block` matched nothing inside the canvas even once the sheet loaded. The rule now carries a second selector for the wrapper. The two cannot match the same element, so the margin is never doubled. That second selector deliberately does not use `:where()`: the block editor sets its own margins on `.wp-block` elements, so a zero-specificity rule loses to them. Measured on a Table of Contents block followed by a heading — 0px with `:where()`, 24px without, against 24px on the published page.
+
 ## [2.10.2] - 2026-08-06
 
 ### Fixed

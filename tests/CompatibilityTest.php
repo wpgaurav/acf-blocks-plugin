@@ -412,6 +412,84 @@ final class CompatibilityTest extends TestCase {
         $this->assertStringEndsWith( '/assets/img/logo.svg', $other['url'] );
     }
 
+    public function test_inlined_block_styles_are_minified(): void {
+        // wp_maybe_inline_styles() reads the registered `path` off disk and
+        // prints the bytes inline, so style_loader_src never sees the URL.
+        // Blocks whose block.json declares `style` as an array get their
+        // handles registered by core, path data and all — those were shipping
+        // unminified source into every page that rendered one.
+        $root = dirname( __DIR__ );
+
+        $registered = static function ( $relative ) use ( $root ) {
+            $style        = new stdClass();
+            $style->src   = 'https://example.test/wp-content/plugins/acf-blocks-plugin/' . $relative;
+            $style->extra = array( 'path' => $root . '/' . $relative );
+
+            return $style;
+        };
+
+        $styles             = new stdClass();
+        $styles->registered = array(
+            'acf-toc-style'    => $registered( 'blocks/toc-block/toc-block.css' ),
+            'acf-toc-style-2'  => $registered( 'blocks/toc-block/toc-runtime.css' ),
+            'theme-stylesheet' => ( static function () {
+                $style        = new stdClass();
+                $style->src   = 'https://example.test/wp-content/themes/md/style.css';
+                $style->extra = array( 'path' => '/srv/themes/md/style.css' );
+
+                return $style;
+            } )(),
+        );
+
+        $GLOBALS['wp_styles'] = $styles;
+        acf_blocks_minify_registered_styles();
+
+        foreach ( array( 'acf-toc-style' => 'toc-block', 'acf-toc-style-2' => 'toc-runtime' ) as $handle => $file ) {
+            $this->assertStringEndsWith( "/blocks/toc-block/{$file}.min.css", $styles->registered[ $handle ]->src );
+            $this->assertStringEndsWith( "/blocks/toc-block/{$file}.min.css", $styles->registered[ $handle ]->extra['path'] );
+        }
+
+        // Another plugin's or the theme's sheets are none of our business.
+        $this->assertSame( 'https://example.test/wp-content/themes/md/style.css', $styles->registered['theme-stylesheet']->src );
+        $this->assertSame( '/srv/themes/md/style.css', $styles->registered['theme-stylesheet']->extra['path'] );
+
+        // Idempotent: the sweep runs on three hooks and must not produce
+        // toc-block.min.min.css on the second pass.
+        acf_blocks_minify_registered_styles();
+        $this->assertStringEndsWith( '/blocks/toc-block/toc-block.min.css', $styles->registered['acf-toc-style']->extra['path'] );
+
+        unset( $GLOBALS['wp_styles'] );
+    }
+
+    public function test_every_block_json_style_entry_has_a_minified_build(): void {
+        // The sweep degrades to the source when a .min sibling is missing, so
+        // a stale build would silently undo it rather than 404.
+        $root    = dirname( __DIR__ );
+        $missing = array();
+
+        foreach ( (array) glob( $root . '/blocks/*/block.json' ) as $file ) {
+            $metadata = json_decode( (string) file_get_contents( $file ), true );
+            $folder   = dirname( $file );
+
+            foreach ( array( 'style', 'editorStyle', 'viewStyle' ) as $key ) {
+                foreach ( (array) ( $metadata[ $key ] ?? array() ) as $entry ) {
+                    if ( ! is_string( $entry ) || 0 !== strpos( $entry, 'file:./' ) ) {
+                        continue;
+                    }
+
+                    $source = $folder . '/' . substr( $entry, 7 );
+                    $min    = preg_replace( '/\.css$/', '.min.css', $source );
+
+                    if ( is_readable( $source ) && ! is_readable( $min ) ) {
+                        $missing[] = substr( $min, strlen( $root ) + 1 );
+                    }
+                }
+            }
+        }
+
+        $this->assertSame( array(), array_values( array_unique( $missing ) ), 'Run: composer build' );
+    }
+
     public function test_editor_bundle_excludes_minified_siblings(): void {
         // Globbing blocks/*/*.css would otherwise pull in the .min.css files
         // and include every block's CSS in the bundle twice.

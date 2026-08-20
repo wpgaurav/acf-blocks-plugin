@@ -1,7 +1,26 @@
 /**
  * Baseline rhythm for rendered ACF blocks.
- * Zero specificity lets any theme or block margin take precedence.
+ *
+ * Two selectors, because the markup differs by surface. The front end renders
+ * the block element itself carrying `.acf-block`; the block editor wraps the
+ * same output in `.wp-block` and puts `acf-block-component` / `acf-block-<name>`
+ * on the wrapper instead, so `.acf-block` never matches inside the canvas.
+ * They cannot both match the same element, so the margin is never doubled.
+ *
+ * The specificity differs on purpose:
+ *
+ * - Front end keeps `:where()` (zero specificity) so any theme or block margin
+ *   takes precedence, which is the original intent of this file.
+ * - The editor selector must NOT use `:where()`. The block editor sets its own
+ *   margins on `.wp-block` elements, so a zero-specificity rule loses and every
+ *   ACF block sat flush against the following block in the canvas while the
+ *   published page had 1.5rem of air. Measured: 0px with `:where()`, 24px
+ *   without.
  */
 :where(.acf-block) {
+	margin-block-end: 1.5rem;
+}
+
+.editor-styles-wrapper .wp-block[class*="acf-block-"] {
 	margin-block-end: 1.5rem;
 }
