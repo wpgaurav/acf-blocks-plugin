@@ -2,6 +2,15 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.11.3] - 2026-08-31
+
+### Fixed
+- **Block stylesheets were never cache-busted by a plugin release.** Core's `register_block_style_handle()` reads `$metadata['version']` from block.json and falls back to `false`, which makes `wp_register_style()` stamp the *WordPress* version onto the URL. Every one of this plugin's block.json-registered handles was therefore versioned by core, not by the plugin: on this site `url-preview.min.css` shipped as `?ver=7.1` for WordPress 7.1, and the files are served `public, max-age=31536000`. The query string is the only thing that can retire a year-long cached copy, so a CSS fix in a plugin release stayed invisible to every reader who had already loaded the page until WordPress itself updated. The 2.11.2 contrast fix was landing this way — correct on disk and at the CDN, still broken in the browser of anyone who had visited before.
+
+  A `block_type_metadata` filter now sets `version` to `ACF_BLOCKS_VERSION` for blocks whose `block.json` lives inside this plugin, matching what the plugin's direct `wp_enqueue_style()` calls have always passed. Blocks that other plugins register under the `acf/` namespace are left alone. Asset URLs now carry the plugin version and change with every release.
+
+  Sites running GT Performance saw this compounded: its `assetVersion` filter rewrites `ver` when it equals the core version, turning `?ver=7.1` into a stable hash. It was doing its job — hiding the core version — but the versioning underneath was already wrong, and the hash made the staleness harder to spot.
+
 ## [2.11.2] - 2026-08-31
 
 ### Fixed

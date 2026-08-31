@@ -208,6 +208,40 @@ function acf_blocks_add_common_wrapper_class( $block_content, $block ) {
 add_filter( 'render_block', 'acf_blocks_add_common_wrapper_class', 10, 2 );
 
 /**
+ * Stamp this plugin's version onto the asset handles core builds from block.json.
+ *
+ * `register_block_style_handle()` reads `$metadata['version']` and falls back to
+ * `false`, which makes `wp_register_style()` put the *WordPress* version in the
+ * URL. Those files are served with a year-long `max-age`, so the query string is
+ * the only thing that can retire a cached copy — and it only changes when core
+ * updates. A CSS fix shipped in a plugin release was therefore invisible to
+ * every reader who had already loaded the page, for as long as core stood still.
+ *
+ * Direct `wp_enqueue_style()` calls in this plugin already pass
+ * ACF_BLOCKS_VERSION; this closes the same gap for the block.json-registered
+ * handles. Scoped by file path, so blocks that other plugins register under the
+ * `acf/` namespace keep their own versioning.
+ *
+ * @param array $metadata Parsed block.json metadata.
+ * @return array Metadata carrying an explicit version.
+ */
+function acf_blocks_version_block_assets( $metadata ) {
+    if ( isset( $metadata['version'] ) || empty( $metadata['file'] ) ) {
+        return $metadata;
+    }
+
+    $file = wp_normalize_path( (string) $metadata['file'] );
+    $dir  = wp_normalize_path( ACF_BLOCKS_PLUGIN_DIR );
+
+    if ( 0 === strpos( $file, $dir ) ) {
+        $metadata['version'] = ACF_BLOCKS_VERSION;
+    }
+
+    return $metadata;
+}
+add_filter( 'block_type_metadata', 'acf_blocks_version_block_assets' );
+
+/**
  * Resolve a plugin asset to its minified build when one is available.
  *
  * `php tools/build-assets.php` writes a .min sibling next to every CSS and JS
