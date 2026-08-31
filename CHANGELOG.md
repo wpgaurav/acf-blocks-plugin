@@ -2,6 +2,17 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.11.2] - 2026-08-31
+
+### Fixed
+- **The URL Preview button was white-on-white in dark mode.** `.acf-url-preview__button` fills with `background:var(--acfb-text)` and wrote its label in `var(--acfb-text-invert)`. Those two are only inverses of each other in light mode: `--acfb-text-invert` aliases `--color-button-text`, which MD deliberately holds at white in both schemes so it stays legible on the saturated `--color-button` fill, while `--acfb-text` flips to a light value for dark. Measured on a live page, the button rendered `#FFFFFF` on `#E4E4E4`, a contrast ratio of **1.27:1** against the 4.5:1 AA floor, while light mode was fine at 16.09:1. The `Featured` variant inherited the same label color under an `--acfb-text` gradient fill. Seven published posts and pages carry URL Preview blocks; every button on them was affected.
+- **`Dark` callouts had the same defect, latent.** `.acf-callout.is-style-dark` also fills with `--acfb-text` and set its body text, its links, and its button links in `--acfb-text-invert`, so the box inverted into a light panel with white text wherever dark mode was on. No published post currently uses the variation, so nothing shipped broken, but the rule was wrong in the same way.
+
+### Added
+- **`--acfb-on-text`**, the companion to `--acfb-text` used as a background, mirroring how `--acfb-on-primary` companions `--acfb-button`. It resolves to `--color-content-bg`, which is the true inverse of `--color-text` and flips under both the `[data-theme]` toggle and the `prefers-color-scheme` fallback, so a single `:root` declaration covers both paths and no dark-mode override is required. The five affected rules now use it: the URL Preview button and its `:hover`, and the Dark callout's base, link, and button-link rules. Dark mode measures **13.69:1** after the change, light mode is untouched at 16.09:1.
+
+  `--acfb-text-invert` keeps its meaning and its 41 remaining consumers across 17 stylesheets, all of which pair it with a saturated accent or brand fill where white is the correct choice. Redefining it for dark would have fixed these five rules and put those at risk, so it was left alone. Reach for `--acfb-on-text` whenever `--acfb-text` is the background, and `--acfb-text-invert` only on a brand-colored one.
+
 ## [2.11.1] - 2026-08-31
 
 ### Fixed

@@ -38,6 +38,15 @@
 	--acfb-text-muted: color-mix(in srgb, var(--color-text, #1f2328) 72%, var(--color-content-bg, #ffffff));
 	--acfb-headline: var(--color-headline, var(--color-text, #16191d));
 	--acfb-text-invert: var(--color-button-text, #ffffff);
+	/* Pairs with --acfb-text used AS A BACKGROUND, the way --acfb-on-primary
+	   pairs with --acfb-button. Do not reach for --acfb-text-invert there:
+	   that one aliases --color-button-text, which MD keeps white in both
+	   schemes so it stays legible on the saturated --color-button fill. When
+	   --acfb-text flips to a light value in dark mode, white-on-white lands at
+	   1.27:1. --color-content-bg is the true inverse and flips in both the
+	   [data-theme] and prefers-color-scheme paths, so one declaration covers
+	   both and no dark override is needed below. */
+	--acfb-on-text: var(--color-content-bg, #ffffff);
 
 	/* --- Lines --------------------------------------------------------- */
 	--acfb-border: var(--color-border, color-mix(in srgb, var(--color-text, #1f2328) 14%, transparent));
