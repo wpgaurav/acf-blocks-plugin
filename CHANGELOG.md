@@ -2,6 +2,16 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.11.1] - 2026-08-31
+
+### Fixed
+- **Callout labels ignored the colour the block was given, and every one of them failed contrast.** `.acf-callout-label` carried a hardcoded `color:#d4a600` that never varied with the block's own `callout_bgColor` or `callout_textColor`, and four style variations replaced it with literals that were just as uncoupled. Across 501 labelled callouts on 272 posts, 500 of the 500 evaluable labels came in under 4.5:1 — none passed. The mustard sat at 2.17:1 on `#f0fdf4` (172 blocks) and 2.09:1 on `#eff6ff` (131), and a "Warning" label on `#f8d7da` bottomed out at 1.70:1. The label now resolves to `currentColor`, inheriting the callout's own text colour, which authors already pick to pair with the background: 415 of 415 blocks carrying explicit colours now pass, and the 85 with none fall back to the theme's own `--acfb-text` on `--acfb-bg` pair. The Dark and Dashed Dark variants keep their `--acfb-star` label, which is token-based and already correct on a dark ground.
+- **Custom `border-color` could not override a variation's border.** Highlight, Dashed Light, and Dashed Dark set `border` as a shorthand, so a block supplying only `callout_borderColor` kept the variation's width and style and changed nothing but the hue — a Highlight callout with custom colours rendered a 3px dashed border it never asked for, on top of the 1px solid the base rule intended. The three variations now set `border-width`, `border-style`, and `border-color` as longhands so a per-block colour lands without dragging the rest of the shorthand with it.
+- **Highlight and Testimonial opted out of dark mode.** Both hardcoded their surface (`#f0fff0` and `#fdf6e3`) instead of deriving it from `--acfb-bg`, so they stayed bright on a dark page while every other callout followed the theme. Both now tint the token with `color-mix()`, which reproduces the previous light-mode surface to within a couple of values and yields a correspondingly dark tint in dark mode. Highlight's `→` list marker keeps its green.
+
+### Notes
+- Callout registers `style` as an array in `block.json`, so WordPress inlines the bytes rather than linking a URL. There is no asset URL to bust here; page caches need a purge for the change to appear on already-cached HTML.
+
 ## [2.11.0] - 2026-08-20
 
 ### Fixed
