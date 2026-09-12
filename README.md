@@ -1,5 +1,7 @@
 # ACF Blocks Plugin
 
+[![Buy me a coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-FFDD00?style=flat&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/gauravtiwari)
+
 A comprehensive WordPress plugin that provides a collection of reusable, customizable ACF Pro blocks for the block editor. Uses ACF Block Version 3 with automatic field group registration.
 
 ## Features
@@ -165,6 +167,16 @@ composer check
 ```
 
 CI validates PHP 7.4, 8.1, 8.3, and 8.5, plus PHP/JSON/JavaScript syntax, generated artifacts, compatibility rules, and unit tests.
+
+## Support This Project
+
+This free and open source plugin adds 23 ACF Pro blocks to the WordPress block editor, from FAQ accordions and product boxes to tabs and coupon codes. It registers each block's field group for you and I keep it maintained, with CI checks on PHP 7.4, 8.1, 8.3 and 8.5.
+
+If the auto-registered field groups kept you out of the ACF admin's import and export tools, you can buy me a coffee.
+
+<a href="https://buymeacoffee.com/gauravtiwari"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy me a coffee" height="50"></a>
+
+A star on GitHub helps, and when a block breaks, an issue with the block name, your WordPress, PHP and ACF Pro versions and the steps that trigger it gives me enough to reproduce the problem.
 
 ## License
 
