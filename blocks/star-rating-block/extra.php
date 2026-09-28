@@ -72,22 +72,68 @@ function acf_star_rating_maybe_install_tables() {
 add_action( 'init', 'acf_star_rating_maybe_install_tables', 1 );
 
 /**
- * Register the frontend script.
+ * Register and localize the frontend script.
+ *
+ * Runs on init, not wp_enqueue_scripts: block themes render the template, and
+ * with it this block, before wp_head fires wp_enqueue_scripts. Localizing an
+ * unregistered handle fails silently, which left the widget with no REST URL.
+ * The data is attached here, once, so every render path finds it.
  */
 function acf_star_rating_register_assets() {
-    $dir = ACF_BLOCKS_PLUGIN_DIR . 'blocks/star-rating-block/';
-    if ( file_exists( $dir . 'star-rating-block.js' ) ) {
-        $asset = acf_blocks_asset( 'blocks/star-rating-block/star-rating-block.js' );
-        wp_register_script(
-            'acf-star-rating-block',
-            $asset['url'],
-            array(),
-            ACF_BLOCKS_VERSION,
-            true
-        );
+    if ( wp_script_is( 'acf-star-rating-block', 'registered' ) ) {
+        return;
     }
+
+    $dir = ACF_BLOCKS_PLUGIN_DIR . 'blocks/star-rating-block/';
+    if ( ! file_exists( $dir . 'star-rating-block.js' ) ) {
+        return;
+    }
+
+    $asset = acf_blocks_asset( 'blocks/star-rating-block/star-rating-block.js' );
+    wp_register_script(
+        'acf-star-rating-block',
+        $asset['url'],
+        array(),
+        ACF_BLOCKS_VERSION,
+        true
+    );
+    wp_localize_script( 'acf-star-rating-block', 'acfStarRating', array(
+        'restUrl'      => rest_url( 'acf-blocks/v1/ratings' ),
+        'errorMessage' => __( 'Something went wrong. Please try again.', 'acf-blocks' ),
+    ) );
 }
-add_action( 'wp_enqueue_scripts', 'acf_star_rating_register_assets' );
+add_action( 'init', 'acf_star_rating_register_assets' );
+
+/**
+ * Sanitize a numeric REST argument as a float.
+ *
+ * WordPress calls sanitize callbacks with ( $value, $request, $param ). PHP 8
+ * throws ArgumentCountError when an internal function such as floatval()
+ * receives those extra arguments, so the route must use a PHP function.
+ * Non-numeric input, including arrays, becomes 0 and fails range checks.
+ *
+ * @param mixed $value Raw value.
+ * @return float
+ */
+function acf_star_rating_sanitize_float( $value ) {
+    return is_numeric( $value ) ? (float) $value : 0.0;
+}
+
+/**
+ * Arguments for the public rating endpoint.
+ *
+ * @return array
+ */
+function acf_star_rating_rest_args() {
+    return array(
+        'postId'        => array( 'required' => true, 'sanitize_callback' => 'absint' ),
+        'blockId'       => array( 'required' => true, 'sanitize_callback' => 'sanitize_key' ),
+        'rating'        => array( 'required' => true, 'sanitize_callback' => 'acf_star_rating_sanitize_float' ),
+        'token'         => array( 'required' => true, 'sanitize_callback' => 'sanitize_text_field' ),
+        'initialCount'  => array( 'required' => false, 'default' => 0, 'sanitize_callback' => 'absint' ),
+        'initialRating' => array( 'required' => false, 'default' => 0, 'sanitize_callback' => 'acf_star_rating_sanitize_float' ),
+    );
+}
 
 /**
  * Register the public rating endpoint.
@@ -97,14 +143,7 @@ function acf_star_rating_register_rest_route() {
         'methods'             => WP_REST_Server::CREATABLE,
         'callback'            => 'acf_star_rating_rest_submit',
         'permission_callback' => '__return_true',
-        'args'                => array(
-            'postId'  => array( 'required' => true, 'sanitize_callback' => 'absint' ),
-            'blockId' => array( 'required' => true, 'sanitize_callback' => 'sanitize_key' ),
-            'rating'  => array( 'required' => true, 'sanitize_callback' => 'floatval' ),
-            'token'   => array( 'required' => true, 'sanitize_callback' => 'sanitize_text_field' ),
-            'initialCount'  => array( 'required' => false, 'default' => 0, 'sanitize_callback' => 'absint' ),
-            'initialRating' => array( 'required' => false, 'default' => 0, 'sanitize_callback' => 'floatval' ),
-        ),
+        'args'                => acf_star_rating_rest_args(),
     ) );
 }
 add_action( 'rest_api_init', 'acf_star_rating_register_rest_route' );

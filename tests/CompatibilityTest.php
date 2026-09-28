@@ -688,4 +688,34 @@ final class CompatibilityTest extends TestCase {
             $this->assertStringNotContainsString( '<style>', file_get_contents( $root . $template ) );
         }
     }
+
+    public function test_star_rating_rest_sanitizers_accept_wordpress_callback_arguments(): void {
+        // WP_REST_Request::sanitize_params() passes ( $value, $request, $param ).
+        // Internal functions such as floatval() throw ArgumentCountError on PHP 8.
+        foreach ( acf_star_rating_rest_args() as $param => $arg ) {
+            $callback = $arg['sanitize_callback'];
+            if ( is_string( $callback ) ) {
+                $function = new ReflectionFunction( $callback );
+                $this->assertFalse( $function->isInternal(), $param . ' uses internal function ' . $callback );
+            }
+            call_user_func( $callback, '4', null, $param );
+        }
+
+        $this->assertSame( 4.5, acf_star_rating_sanitize_float( '4.5', null, 'rating' ) );
+        $this->assertSame( 0.0, acf_star_rating_sanitize_float( 'five' ) );
+        $this->assertSame( 0.0, acf_star_rating_sanitize_float( array( 5 ) ) );
+    }
+
+    public function test_star_rating_script_is_localized_before_any_render(): void {
+        // Block themes render content before wp_head fires wp_enqueue_scripts.
+        $this->assertContains( 'acf_star_rating_register_assets', $GLOBALS['acf_blocks_test_actions']['init'] ?? array() );
+        $this->assertNotContains( 'acf_star_rating_register_assets', $GLOBALS['acf_blocks_test_actions']['wp_enqueue_scripts'] ?? array() );
+
+        acf_star_rating_register_assets();
+        $data = $GLOBALS['acf_blocks_test_script_data']['acf-star-rating-block']['acfStarRating'] ?? array();
+        $this->assertSame( 'https://example.test/wp-json/acf-blocks/v1/ratings', $data['restUrl'] ?? null );
+
+        $template = file_get_contents( dirname( __DIR__ ) . '/blocks/star-rating-block/star-rating-block.php' );
+        $this->assertStringNotContainsString( 'wp_localize_script', $template );
+    }
 }

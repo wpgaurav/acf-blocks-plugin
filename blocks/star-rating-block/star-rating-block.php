@@ -57,16 +57,12 @@ $average = $total_count > 0 ? $total_sum / $total_count : 0;
 $average_display = number_format_i18n( $average, 1 );
 $count_display = sprintf( _n( '%s rating', '%s ratings', $total_count, 'acf-blocks' ), number_format_i18n( $total_count ) );
 
-wp_enqueue_script( 'acf-star-rating-block' );
-
-static $acf_star_rating_localized = false;
-if ( ! $acf_star_rating_localized ) {
-    wp_localize_script( 'acf-star-rating-block', 'acfStarRating', array(
-        'restUrl'      => rest_url( 'acf-blocks/v1/ratings' ),
-        'errorMessage' => __( 'Something went wrong. Please try again.', 'acf-blocks' ),
-    ) );
-    $acf_star_rating_localized = true;
+// Registered and localized on init; the call is a no-op once registered and
+// covers renders that happen outside the normal hook order.
+if ( function_exists( 'acf_star_rating_register_assets' ) ) {
+    acf_star_rating_register_assets();
 }
+wp_enqueue_script( 'acf-star-rating-block' );
 ?>
 <div id="<?php echo esc_attr( $anchor ); ?>" class="<?php echo esc_attr( implode( ' ', $class_name ) ); ?>">
     <?php if ( $heading ) : ?>

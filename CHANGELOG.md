@@ -2,6 +2,15 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.11.4] - 2026-09-28
+
+### Fixed
+- **Star Rating votes never saved.** Since 2.9.0 the public `acf-blocks/v1/ratings` route used `floatval` as the `sanitize_callback` for `rating` and `initialRating`. WordPress calls sanitize callbacks with three arguments (`$value`, `$request`, `$param`), and an internal PHP function given more arguments than it accepts throws `ArgumentCountError` on PHP 8 (PHP 7 warned and returned `null`, which the range check then rejected). Every submission failed before reaching storage: a 500 on PHP 8, a 400 on PHP 7. Both arguments now use `acf_star_rating_sanitize_float()`, which also turns non-numeric input, arrays included, into 0, so the existing 1 to 5 range check answers it with a 400 instead of counting it.
+- **The Star Rating widget had no REST URL on block themes.** The script was registered on `wp_enqueue_scripts`, but a block theme renders its template, and every block in it, before `wp_head` fires that hook. The render template's `wp_localize_script()` call hit an unregistered handle and returned false, and a static flag stopped later renders from retrying, so `window.acfStarRating` was never defined and the submit handler returned without sending anything. Registration and localization now happen once on `init`, and the template calls the same helper before enqueueing so renders outside the normal hook order are covered too. Classic themes, where `wp_enqueue_scripts` runs before the content, were only affected by the first bug.
+
+### Added
+- Regression tests: every sanitize callback on the ratings route must be a PHP function that tolerates WordPress's three arguments, and the Star Rating script must be registered and localized on `init`, with no localization left in the render template.
+
 ## [2.11.3] - 2026-08-31
 
 ### Fixed
