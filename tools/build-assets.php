@@ -77,6 +77,8 @@ function acfb_minify_css( $css ) {
         // The two sets are deliberately asymmetric:
         //   ')' is absent from $drop_after — "var(--x) 3%" needs that space.
         //   '(' is absent from $drop_before — "@media (max-width:1px)" needs it.
+        //   ':' is absent from $drop_before — ".a :is(b)" and ".a ::before" are
+        //   descendant selectors; dropping the space makes them match ".a" itself.
         // Arithmetic operators (+ - * /) are in neither set, because calc()
         // requires whitespace around them: "calc(1px+2px)" is invalid.
         if ( preg_match( '/\s/', $c ) ) {
@@ -88,7 +90,7 @@ function acfb_minify_css( $css ) {
             $after = $j < $len ? $css[ $j ] : '';
 
             $drop_after  = '{};:,>([';
-            $drop_before = '{};:,>)]';
+            $drop_before = '{};,>)]';
 
             $droppable = '' === $prev || '' === $after
                 || false !== strpos( $drop_after, $prev )

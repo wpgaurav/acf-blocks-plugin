@@ -2,6 +2,60 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.12.0] - 2026-09-29
+
+### Fixed
+- **Product Box: the Top Image style cropped the product.** The hero was forced into a 16:9 frame with `object-fit: cover`, so a tall or square product lost its top and bottom, and a very wide one lost its sides. The hero now shows the whole image (`contain`) at the image's own shape, capped at 420px tall (260px on phones).
+- **Product Box: every image was the full-size original.** The template asked for `product-box-image` (550×550) and `product-box-wide` (800×450), but `extra.php` registered those sizes on `after_setup_theme` and is itself loaded on `acf/init`, after that hook has fired. The sizes were never generated, so WordPress fell back to the original upload: a 3000px photo went into a 300px column. The side image now uses core's `medium_large` (768px) and the Top Image `large` (1024px), both uncropped and with `srcset`. The dead size registration is removed, so no extra files are generated per upload.
+- The corner badge no longer overlaps a long title or the new label in the default and No Image styles. Above a contained Top Image, above a stacked side image on phones, and above a No Image box on phones, it gets its own strip instead of covering the product or squeezing the title.
+- Two phone-width rules never applied: the smaller badge and the smaller price lost to the higher-specificity base selectors. Both now take effect.
+- **The CSS minifier broke descendant selectors that start with a colon.** `tools/build-assets.php` dropped whitespace before every `:`, so `.box :is(*, ::before)` shipped as `.box:is(*, ::before)`, which matches the box itself instead of what's inside it. The source files were right and only the `.min.css` files the plugin actually serves were wrong. Rules that were silently dead in production now apply as written:
+  - Product Box: `box-sizing: border-box` for everything inside the box. Themes with a global border-box reset hid this; without one, full-width buttons and the Top Image ran past the box's right edge on phones.
+  - Product Cards: the same `box-sizing` rule for `::before` and `::after`.
+  - TOC: `scroll-margin-top: 80px` on headings, so jump links stop headings from hiding under a sticky header.
+  - Callout (Testimonial style): the gold star color.
+  - Feature Grid (Dark, Minimal and Bordered styles): button colors.
+  - Product List: the same `box-sizing` rule for everything inside the block.
+  - Semantic block styles (opt-in setting): heading, list and link rules inside ACF blocks.
+
+  The space before `:` is now always kept (it costs a byte in the rare `color : red` and never changes meaning), and three regression cases cover it.
+
+### Added
+- **Image Fit** (Display tab): "Show full image" (default) or "Fill & crop". Fill & crop restores the old cropped look: a square frame in the side layout, and an edge-to-edge image in Top Image. Cropping is CSS-only, so the full image is always what's downloaded.
+- **Top Image Frame** (Display tab): Auto (the image's own shape), 16:9, 4:3 or 1:1, so several Top Image boxes in a grid line up. With "Show full image" the product sits inside the frame; with "Fill & crop" it fills it.
+- **Highlight Label**: a pill above the title ("Best Overall", "Editor's Choice"). Setting it also gives the box an accent border so the pick stands out in a list.
+- **Open Links in New Tab**: applies to the title, image and button links, and adds `rel="noopener"` without duplicating tokens already present.
+- **Title & Image Link Rel**: the title link had no `rel` at all, so an affiliate URL in the title shipped without `sponsored`. It now takes its own rel value.
+- **Disclosure**: optional small print under the buttons for affiliate disclosures.
+- The rating now shows its number (for example, 4.5) next to the stars. Screen readers get one label on the stars instead of an `aria-label` on a plain `div`, which most of them ignore.
+- The Top Image hero links to the title URL, like the side image always has.
+- Images served from the media library carry `width` and `height`, so the box no longer jumps when the image loads.
+- **Rank**: a "#1", "#2" tile beside the title for "best of" lists.
+- **Review Score**: your own score as a ring beside the title, out of 10, 5 or 100, with an editable label ("Our score" by default). Screen readers get one label: "Our score: 9.2 out of 10".
+- **Verdict**: a one-line "Why it wins" callout above the features, with an editable label.
+- **Spec Chips**: up to eight short facts (`49"`, `144Hz`) as pills under the title.
+- **"You save" amount**: worked out from Original and Current Price and printed in the current price's own format ("$60.57", "₹1,20,000" with Indian grouping, "300,00 €"). It stays hidden rather than guessing when either price isn't a plain amount ("Free", "From $99", "$9.99/mo") or the two use different currencies.
+- **Price Checked On**: a date under the price, shown in the site's date format inside a `<time>` element. Amazon's Associates rules expect displayed prices to carry one.
+- **Perks**: up to six icon-and-text items (shipping, returns, warranty, secure, deal, fast, gift, check). The icons are inline SVG, so they don't depend on the theme's icon font.
+- **Amazon Yellow** button style.
+- **Emphasize First Button**: the first button gets larger and filled with the accent color, and the rest become outlines. Amazon Yellow and Custom buttons keep their own colors.
+- **Arrow on First Button**: an arrow that nudges forward on hover or keyboard focus.
+- **Shine on First Button**: Off, On hover, or Repeat (a sweep every few seconds, which also works on phones). The shine is its own element, so it can't collide with theme icon classes like `md-icon-external` that use `::before` or `::after`.
+- **Box Style: Spotlight**: a gradient border, a soft accent tint at the top and an accent glow. On browsers that support relative colors, the gradient's second color is derived from the accent.
+- **Accent Color**: one color for the label, rank, score ring, verdict, Spotlight border, primary buttons and discount chip. The text on it is picked automatically for contrast, and only `#rgb`/`#rrggbb` values reach the `style` attribute.
+- The field group is split into Product, Highlights, Price & Buttons, and Display tabs, and the score and verdict label fields only appear once a score or verdict is entered.
+- Tests for price parsing across US, Indian and European formats, the savings math, date handling, accent sanitizing and contrast, link attributes and image-size selection. Other tests assert that every new field is optional and defaults to off, and that the product box registers no image sizes of its own.
+
+### Compatibility
+Every field added in 2.12.0 is optional and off when empty. Rendering blocks saved by 2.11.x through the new template gives the same markup with one exception: the price, discount and price note are now wrapped in `.acf-product-box__price-block`. All existing class names are unchanged.
+
+### Changed
+- In the bottom section, the description now sits above the price and buttons, which share one row. Before, the price, the price note, the description and the buttons were separate items in one wrapping row, so the price note and description floated between the price and the buttons, and the buttons often wrapped onto a line of their own.
+- Image frames are transparent. The gray panel behind the side and Top Image pictures is gone, so a product cutout (a transparent PNG or WebP) sits directly on the card, and the divider under the Top Image is gone with it. Images with their own background get 8px rounded corners.
+- Phone layout: a stacked side image is capped at 220px tall and a Top Image at 260px, so the title and price stay near the top of the screen. Buttons are full width with 44px touch targets and 14px text. Spacing is tighter, and the disclosure is centered under the buttons.
+- The image zoom on hover only runs on devices that can hover, so tapping on a phone no longer leaves the image stuck zoomed.
+- Button focus rings use `:focus-visible`, so they show for keyboard users and not after a mouse click.
+
 ## [2.11.4] - 2026-09-28
 
 ### Fixed

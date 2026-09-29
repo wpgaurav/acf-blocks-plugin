@@ -58,3 +58,8 @@ require_once dirname( __DIR__ ) . '/tools/build-assets.php';
 // Star Rating storage and REST helpers; database work only runs inside the
 // functions, so requiring the file just defines them and records its hooks.
 require_once dirname( __DIR__ ) . '/blocks/star-rating-block/extra.php';
+
+// Product Box pure helpers (price parsing, savings, dates, colors). Only its
+// image-size hook is registered on require.
+function esc_attr( $value ) { return htmlspecialchars( (string) $value, ENT_QUOTES ); }
+require_once dirname( __DIR__ ) . '/blocks/product-box/extra.php';

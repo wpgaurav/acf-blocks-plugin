@@ -3633,6 +3633,15 @@ return array (
         array (
           0 => 
           array (
+            'key' => 'field_pb_tab_product',
+            'label' => 'Product',
+            'name' => '',
+            'type' => 'tab',
+            'placement' => 'top',
+            'endpoint' => 0,
+          ),
+          1 => 
+          array (
             'key' => 'field_pb_image',
             'label' => 'Product Image',
             'name' => 'pb_image',
@@ -3643,7 +3652,7 @@ return array (
             'preview_size' => 'medium',
             'library' => 'all',
           ),
-          1 => 
+          2 => 
           array (
             'key' => 'field_pb_image_url',
             'label' => 'Or Image URL',
@@ -3652,27 +3661,7 @@ return array (
             'instructions' => 'Alternatively, enter a direct image URL. This takes priority over the uploaded image.',
             'required' => 0,
           ),
-          2 => 
-          array (
-            'key' => 'field_pb_badge_text',
-            'label' => 'Sale Badge Text',
-            'name' => 'pb_badge_text',
-            'type' => 'text',
-            'instructions' => 'Optional badge text shown in corner (e.g., \'SAVE 10%\', \'HOT DEAL\', \'BEST SELLER\').',
-            'required' => 0,
-            'placeholder' => 'SAVE 10%',
-          ),
           3 => 
-          array (
-            'key' => 'field_pb_badge_color',
-            'label' => 'Badge Background Color',
-            'name' => 'pb_badge_color',
-            'type' => 'color_picker',
-            'instructions' => 'Background color for the badge.',
-            'required' => 0,
-            'default_value' => '#22c55e',
-          ),
-          4 => 
           array (
             'key' => 'field_pb_title',
             'label' => 'Product Title',
@@ -3682,13 +3671,22 @@ return array (
             'required' => 0,
             'default_value' => 'Product Title',
           ),
-          5 => 
+          4 => 
           array (
             'key' => 'field_pb_title_url',
             'label' => 'Title Link URL',
             'name' => 'pb_title_url',
             'type' => 'url',
             'instructions' => 'Optional URL to link the title to the product page.',
+            'required' => 0,
+          ),
+          5 => 
+          array (
+            'key' => 'field_pb_title_rel',
+            'label' => 'Title & Image Link Rel',
+            'name' => 'pb_title_rel',
+            'type' => 'text',
+            'instructions' => 'Optional rel attribute for the title and image links (e.g., nofollow sponsored). Use it when the title URL is an affiliate link.',
             'required' => 0,
           ),
           6 => 
@@ -3759,41 +3757,30 @@ return array (
           ),
           10 => 
           array (
-            'key' => 'field_pb_original_price',
-            'label' => 'Original Price',
-            'name' => 'pb_original_price',
-            'type' => 'text',
-            'instructions' => 'Original/list price to show strikethrough (e.g., \'$99.99\').',
             'required' => 0,
+            'key' => 'field_pb_specs',
+            'label' => 'Spec Chips',
+            'name' => 'pb_specs',
+            'type' => 'repeater',
+            'instructions' => 'Optional short facts shown as pills under the title (e.g., 49", 144Hz, 5120×1440).',
+            'min' => 0,
+            'max' => 8,
+            'layout' => 'table',
+            'button_label' => 'Add Spec',
+            'sub_fields' => 
+            array (
+              0 => 
+              array (
+                'key' => 'field_pb_spec_text',
+                'label' => 'Spec',
+                'name' => 'pb_spec_text',
+                'type' => 'text',
+                'instructions' => '',
+                'required' => 0,
+              ),
+            ),
           ),
           11 => 
-          array (
-            'key' => 'field_pb_discount_percent',
-            'label' => 'Discount Percentage',
-            'name' => 'pb_discount_percent',
-            'type' => 'text',
-            'instructions' => 'Discount percentage to display (e.g., \'-15%\').',
-            'required' => 0,
-          ),
-          12 => 
-          array (
-            'key' => 'field_pb_current_price',
-            'label' => 'Current Price',
-            'name' => 'pb_current_price',
-            'type' => 'text',
-            'instructions' => 'Current/sale price (e.g., \'$79.99\').',
-            'required' => 0,
-          ),
-          13 => 
-          array (
-            'key' => 'field_pb_price_note',
-            'label' => 'Price Note',
-            'name' => 'pb_price_note',
-            'type' => 'text',
-            'instructions' => 'Optional note below price (e.g., \'Free shipping\', \'Prime eligible\').',
-            'required' => 0,
-          ),
-          14 => 
           array (
             'key' => 'field_pb_description',
             'label' => 'Description',
@@ -3806,7 +3793,266 @@ return array (
             'media_upload' => 0,
             'default_value' => '',
           ),
+          12 => 
+          array (
+            'key' => 'field_pb_tab_highlights',
+            'label' => 'Highlights',
+            'name' => '',
+            'type' => 'tab',
+            'placement' => 'top',
+            'endpoint' => 0,
+          ),
+          13 => 
+          array (
+            'key' => 'field_pb_label',
+            'label' => 'Highlight Label',
+            'name' => 'pb_label',
+            'type' => 'text',
+            'instructions' => 'Optional label shown above the title (e.g., \'Best Overall\', \'Editor\'s Choice\'). Also gives the box an accent border.',
+            'required' => 0,
+            'placeholder' => 'Best Overall',
+          ),
+          14 => 
+          array (
+            'key' => 'field_pb_badge_text',
+            'label' => 'Sale Badge Text',
+            'name' => 'pb_badge_text',
+            'type' => 'text',
+            'instructions' => 'Optional badge text shown in corner (e.g., \'SAVE 10%\', \'HOT DEAL\', \'BEST SELLER\').',
+            'required' => 0,
+            'placeholder' => 'SAVE 10%',
+          ),
           15 => 
+          array (
+            'key' => 'field_pb_badge_color',
+            'label' => 'Badge Background Color',
+            'name' => 'pb_badge_color',
+            'type' => 'color_picker',
+            'instructions' => 'Background color for the badge.',
+            'required' => 0,
+            'default_value' => '#22c55e',
+          ),
+          16 => 
+          array (
+            'required' => 0,
+            'key' => 'field_pb_rank',
+            'label' => 'Rank',
+            'name' => 'pb_rank',
+            'type' => 'number',
+            'instructions' => 'Optional list position shown as #1, #2 beside the title. Leave empty to hide.',
+            'min' => 1,
+            'max' => 99,
+            'step' => 1,
+          ),
+          17 => 
+          array (
+            'required' => 0,
+            'key' => 'field_pb_score',
+            'label' => 'Review Score',
+            'name' => 'pb_score',
+            'type' => 'number',
+            'instructions' => 'Optional editor score shown as a ring beside the title (e.g., 9.2). Leave empty to hide.',
+            'min' => 0,
+            'max' => 100,
+            'step' => 0.1,
+          ),
+          18 => 
+          array (
+            'required' => 0,
+            'key' => 'field_pb_score_max',
+            'label' => 'Score Out Of',
+            'name' => 'pb_score_max',
+            'type' => 'select',
+            'instructions' => '',
+            'choices' => 
+            array (
+              10 => '10',
+              5 => '5',
+              100 => '100',
+            ),
+            'default_value' => '10',
+            'return_format' => 'value',
+            'conditional_logic' => 
+            array (
+              0 => 
+              array (
+                0 => 
+                array (
+                  'field' => 'field_pb_score',
+                  'operator' => '!=empty',
+                ),
+              ),
+            ),
+          ),
+          19 => 
+          array (
+            'required' => 0,
+            'key' => 'field_pb_score_label',
+            'label' => 'Score Label',
+            'name' => 'pb_score_label',
+            'type' => 'text',
+            'instructions' => 'Text under the ring. Defaults to \'Our score\'.',
+            'placeholder' => 'Our score',
+            'conditional_logic' => 
+            array (
+              0 => 
+              array (
+                0 => 
+                array (
+                  'field' => 'field_pb_score',
+                  'operator' => '!=empty',
+                ),
+              ),
+            ),
+          ),
+          20 => 
+          array (
+            'required' => 0,
+            'key' => 'field_pb_verdict',
+            'label' => 'Verdict',
+            'name' => 'pb_verdict',
+            'type' => 'text',
+            'instructions' => 'Optional one-line reason this product wins, shown above the features.',
+            'placeholder' => 'The widest screen you can buy without a multi-monitor mess.',
+          ),
+          21 => 
+          array (
+            'required' => 0,
+            'key' => 'field_pb_verdict_label',
+            'label' => 'Verdict Label',
+            'name' => 'pb_verdict_label',
+            'type' => 'text',
+            'instructions' => 'Defaults to \'Why it wins\'.',
+            'placeholder' => 'Why it wins',
+            'conditional_logic' => 
+            array (
+              0 => 
+              array (
+                0 => 
+                array (
+                  'field' => 'field_pb_verdict',
+                  'operator' => '!=empty',
+                ),
+              ),
+            ),
+          ),
+          22 => 
+          array (
+            'key' => 'field_pb_tab_pricing',
+            'label' => 'Price & Buttons',
+            'name' => '',
+            'type' => 'tab',
+            'placement' => 'top',
+            'endpoint' => 0,
+          ),
+          23 => 
+          array (
+            'key' => 'field_pb_original_price',
+            'label' => 'Original Price',
+            'name' => 'pb_original_price',
+            'type' => 'text',
+            'instructions' => 'Original/list price to show strikethrough (e.g., \'$99.99\').',
+            'required' => 0,
+          ),
+          24 => 
+          array (
+            'key' => 'field_pb_discount_percent',
+            'label' => 'Discount Percentage',
+            'name' => 'pb_discount_percent',
+            'type' => 'text',
+            'instructions' => 'Discount percentage to display (e.g., \'-15%\').',
+            'required' => 0,
+          ),
+          25 => 
+          array (
+            'key' => 'field_pb_current_price',
+            'label' => 'Current Price',
+            'name' => 'pb_current_price',
+            'type' => 'text',
+            'instructions' => 'Current/sale price (e.g., \'$79.99\').',
+            'required' => 0,
+          ),
+          26 => 
+          array (
+            'key' => 'field_pb_price_note',
+            'label' => 'Price Note',
+            'name' => 'pb_price_note',
+            'type' => 'text',
+            'instructions' => 'Optional note below price (e.g., \'Free shipping\', \'Prime eligible\').',
+            'required' => 0,
+          ),
+          27 => 
+          array (
+            'required' => 0,
+            'key' => 'field_pb_show_savings',
+            'label' => 'Show \'You Save\' Amount',
+            'name' => 'pb_show_savings',
+            'type' => 'true_false',
+            'instructions' => 'Works out the saving from Original and Current Price. Hidden when the prices can\'t be read or use different currencies.',
+            'default_value' => 0,
+            'ui' => 1,
+          ),
+          28 => 
+          array (
+            'required' => 0,
+            'key' => 'field_pb_price_checked',
+            'label' => 'Price Checked On',
+            'name' => 'pb_price_checked',
+            'type' => 'date_picker',
+            'instructions' => 'Optional date shown under the price. Amazon\'s Associates rules expect displayed prices to carry a date.',
+            'display_format' => 'j M Y',
+            'return_format' => 'Ymd',
+            'first_day' => 1,
+          ),
+          29 => 
+          array (
+            'required' => 0,
+            'key' => 'field_pb_perks',
+            'label' => 'Perks',
+            'name' => 'pb_perks',
+            'type' => 'repeater',
+            'instructions' => 'Optional row of icons for shipping, returns, warranty and similar.',
+            'min' => 0,
+            'max' => 6,
+            'layout' => 'table',
+            'button_label' => 'Add Perk',
+            'sub_fields' => 
+            array (
+              0 => 
+              array (
+                'key' => 'field_pb_perk_icon',
+                'label' => 'Icon',
+                'name' => 'pb_perk_icon',
+                'type' => 'select',
+                'instructions' => '',
+                'required' => 0,
+                'choices' => 
+                array (
+                  'check' => 'Checkmark',
+                  'truck' => 'Shipping',
+                  'return' => 'Returns',
+                  'shield' => 'Warranty',
+                  'lock' => 'Secure',
+                  'tag' => 'Deal',
+                  'clock' => 'Fast',
+                  'gift' => 'Gift',
+                ),
+                'default_value' => 'check',
+                'return_format' => 'value',
+              ),
+              1 => 
+              array (
+                'key' => 'field_pb_perk_text',
+                'label' => 'Text',
+                'name' => 'pb_perk_text',
+                'type' => 'text',
+                'instructions' => '',
+                'required' => 0,
+                'placeholder' => 'Free shipping',
+              ),
+            ),
+          ),
+          30 => 
           array (
             'key' => 'field_pb_buttons',
             'label' => 'Call to Action Buttons',
@@ -3852,6 +4098,7 @@ return array (
                   'primary' => 'Primary (Filled)',
                   'secondary' => 'Secondary (Outline)',
                   'amazon' => 'Amazon Style',
+                  'amazon-yellow' => 'Amazon Yellow',
                   'custom' => 'Custom (use CSS class)',
                 ),
                 'default_value' => 'primary',
@@ -3893,6 +4140,138 @@ return array (
                 'required' => 0,
               ),
             ),
+          ),
+          31 => 
+          array (
+            'required' => 0,
+            'key' => 'field_pb_cta_emphasis',
+            'label' => 'Emphasize First Button',
+            'name' => 'pb_cta_emphasis',
+            'type' => 'true_false',
+            'instructions' => 'Makes the first button larger and filled with the accent color, and turns the other buttons into outlines. Amazon Yellow keeps its color.',
+            'default_value' => 0,
+            'ui' => 1,
+          ),
+          32 => 
+          array (
+            'required' => 0,
+            'key' => 'field_pb_btn_arrow',
+            'label' => 'Arrow on First Button',
+            'name' => 'pb_btn_arrow',
+            'type' => 'true_false',
+            'instructions' => 'Adds an arrow that nudges forward on hover.',
+            'default_value' => 0,
+            'ui' => 1,
+          ),
+          33 => 
+          array (
+            'required' => 0,
+            'key' => 'field_pb_btn_shine',
+            'label' => 'Shine on First Button',
+            'name' => 'pb_btn_shine',
+            'type' => 'button_group',
+            'instructions' => 'A light sweep across the button. Repeat runs every few seconds, which also works on phones. Visitors who turn off motion never see it.',
+            'choices' => 
+            array (
+              'off' => 'Off',
+              'hover' => 'On hover',
+              'repeat' => 'Repeat',
+            ),
+            'default_value' => 'off',
+            'layout' => 'horizontal',
+            'return_format' => 'value',
+          ),
+          34 => 
+          array (
+            'key' => 'field_pb_new_tab',
+            'label' => 'Open Links in New Tab',
+            'name' => 'pb_new_tab',
+            'type' => 'true_false',
+            'instructions' => 'Open the title, image, and button links in a new tab. Adds rel="noopener" automatically.',
+            'required' => 0,
+            'default_value' => 0,
+            'ui' => 1,
+          ),
+          35 => 
+          array (
+            'key' => 'field_pb_disclosure',
+            'label' => 'Disclosure',
+            'name' => 'pb_disclosure',
+            'type' => 'text',
+            'instructions' => 'Optional small print under the buttons (e.g., \'As an Amazon Associate I earn from qualifying purchases.\').',
+            'required' => 0,
+          ),
+          36 => 
+          array (
+            'key' => 'field_pb_tab_display',
+            'label' => 'Display',
+            'name' => '',
+            'type' => 'tab',
+            'placement' => 'top',
+            'endpoint' => 0,
+          ),
+          37 => 
+          array (
+            'required' => 0,
+            'key' => 'field_pb_box_style',
+            'label' => 'Box Style',
+            'name' => 'pb_box_style',
+            'type' => 'button_group',
+            'instructions' => 'Spotlight adds a gradient border, a soft tint and a glow. Use it on one pick per page.',
+            'choices' => 
+            array (
+              'standard' => 'Standard',
+              'spotlight' => 'Spotlight',
+            ),
+            'default_value' => 'standard',
+            'layout' => 'horizontal',
+            'return_format' => 'value',
+          ),
+          38 => 
+          array (
+            'required' => 0,
+            'key' => 'field_pb_accent_color',
+            'label' => 'Accent Color',
+            'name' => 'pb_accent_color',
+            'type' => 'color_picker',
+            'instructions' => 'Optional. Drives the label, rank, score ring, verdict, Spotlight border and the primary buttons. Leave empty to use the theme\'s button color.',
+            'enable_opacity' => 0,
+            'return_format' => 'string',
+          ),
+          39 => 
+          array (
+            'key' => 'field_pb_image_fit',
+            'label' => 'Image Fit',
+            'name' => 'pb_image_fit',
+            'type' => 'button_group',
+            'instructions' => 'Show full image keeps the whole product visible. Fill & crop fills the frame and trims the edges.',
+            'required' => 0,
+            'choices' => 
+            array (
+              'contain' => 'Show full image',
+              'cover' => 'Fill & crop',
+            ),
+            'default_value' => 'contain',
+            'layout' => 'horizontal',
+            'return_format' => 'value',
+          ),
+          40 => 
+          array (
+            'key' => 'field_pb_image_ratio',
+            'label' => 'Top Image Frame',
+            'name' => 'pb_image_ratio',
+            'type' => 'select',
+            'instructions' => 'Top Image style only. Auto uses the image\'s own shape; a fixed frame keeps several boxes aligned in a grid.',
+            'required' => 0,
+            'choices' => 
+            array (
+              'auto' => 'Auto (image\'s own shape)',
+              '16-9' => 'Wide (16:9)',
+              '4-3' => 'Standard (4:3)',
+              '1-1' => 'Square (1:1)',
+            ),
+            'default_value' => 'auto',
+            'return_format' => 'value',
           ),
         ),
         'location' => 

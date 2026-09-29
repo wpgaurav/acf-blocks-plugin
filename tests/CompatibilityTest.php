@@ -340,6 +340,10 @@ final class CompatibilityTest extends TestCase {
             'data uri'                => array( 'a{background:url(data:image/svg+xml;base64,AA//BB)}', 'a{background:url(data:image/svg+xml;base64,AA//BB)}' ),
             'descendant space kept'   => array( 'a b { color: red; }', 'a b{color:red}' ),
             'child combinator'        => array( 'a > b { color: red; }', 'a>b{color:red}' ),
+            // A space before ":" is a descendant combinator in a selector.
+            'descendant pseudo-class' => array( '.a :is(b, ::before) { box-sizing: border-box; }', '.a :is(b,::before){box-sizing:border-box}' ),
+            'descendant pseudo-elem'  => array( '.a ::selection { color: red; }', '.a ::selection{color:red}' ),
+            'compound pseudo-class'   => array( 'a:hover, a :focus { color: red; }', 'a:hover,a :focus{color:red}' ),
             // Space after "@media" is required; "@media(" fails to parse.
             'media query space'       => array( '@media (max-width: 480px) { a { color: red; } }', '@media (max-width:480px){a{color:red}}' ),
             // Space after ")" is significant inside color-mix percentages.
@@ -717,5 +721,123 @@ final class CompatibilityTest extends TestCase {
 
         $template = file_get_contents( dirname( __DIR__ ) . '/blocks/star-rating-block/star-rating-block.php' );
         $this->assertStringNotContainsString( 'wp_localize_script', $template );
+    }
+    /**
+     * @dataProvider product_box_price_cases
+     */
+    public function test_product_box_parses_prices( string $price, ?float $amount ): void {
+        $parsed = acf_product_box_parse_price( $price );
+        if ( null === $amount ) {
+            $this->assertNull( $parsed );
+            return;
+        }
+        $this->assertNotNull( $parsed );
+        $this->assertEqualsWithDelta( $amount, $parsed['amount'], 0.001 );
+    }
+
+    public function product_box_price_cases(): array {
+        return array(
+            'dollars and cents'     => array( '$988.15', 988.15 ),
+            'US thousands'          => array( '$1,299', 1299.0 ),
+            'US thousands + cents'  => array( '$1,299.99', 1299.99 ),
+            'Indian grouping'       => array( '₹1,29,999', 129999.0 ),
+            'European'              => array( '1.299,00 €', 1299.0 ),
+            'European no decimals'  => array( '€1.299', 1299.0 ),
+            'short decimal comma'   => array( '12,5 €', 12.5 ),
+            'currency code'         => array( 'USD 49', 49.0 ),
+            'free is not a price'   => array( 'Free', null ),
+            'leading words refused' => array( 'From $99', null ),
+            'per-month refused'     => array( '$9.99/mo', null ),
+            'empty'                 => array( '', null ),
+        );
+    }
+
+    /**
+     * @dataProvider product_box_savings_cases
+     */
+    public function test_product_box_savings( string $original, string $current, string $expected ): void {
+        $this->assertSame( $expected, acf_product_box_savings( $original, $current ) );
+    }
+
+    public function product_box_savings_cases(): array {
+        return array(
+            'dollars'               => array( '$988.15', '$927.58', '$60.57' ),
+            'whole dollars'         => array( '$1,299', '$999', '$300' ),
+            'thousands in saving'   => array( '$2,499', '$1,199', '$1,300' ),
+            'rupees under a lakh'   => array( '₹1,49,999', '₹1,29,999', '₹20,000' ),
+            'rupees over a lakh'    => array( '₹2,49,999', '₹1,29,999', '₹1,20,000' ),
+            'European'              => array( '1.299,00 €', '999,00 €', '300,00 €' ),
+            'no saving'             => array( '$10', '$12', '' ),
+            'equal prices'          => array( '$10', '$10', '' ),
+            'currency mismatch'     => array( '$99', '€79', '' ),
+            'unreadable current'    => array( '$99.99', 'Free', '' ),
+            'missing original'      => array( '', '$79', '' ),
+        );
+    }
+
+    public function test_product_box_formats_price_checked_date(): void {
+        $acf = acf_product_box_format_date( '20260929' );
+        $this->assertSame( '2026-09-29', $acf['iso'] );
+        $this->assertSame( '29 Sep 2026', $acf['display'] );
+
+        $this->assertSame( '2026-09-29', acf_product_box_format_date( '2026-09-29' )['iso'] );
+        $this->assertNull( acf_product_box_format_date( '' ) );
+        $this->assertNull( acf_product_box_format_date( 'not a date' ) );
+    }
+
+    public function test_product_box_accent_color_is_sanitized_and_contrasted(): void {
+        $this->assertSame( '#ea580c', acf_product_box_sanitize_hex( ' #EA580C ' ) );
+        $this->assertSame( '#abc', acf_product_box_sanitize_hex( '#abc' ) );
+        $this->assertSame( '', acf_product_box_sanitize_hex( 'red' ) );
+        $this->assertSame( '', acf_product_box_sanitize_hex( '#12345g' ) );
+        $this->assertSame( '', acf_product_box_sanitize_hex( '#fff;background:url(x)' ) );
+
+        $this->assertSame( '#111827', acf_product_box_contrast_text( '#ffd814' ) );
+        $this->assertSame( '#ffffff', acf_product_box_contrast_text( '#1d4ed8' ) );
+        $this->assertSame( '#ffffff', acf_product_box_contrast_text( '#000' ) );
+    }
+
+    public function test_product_box_link_attrs_add_noopener_once(): void {
+        $this->assertSame( '', acf_product_box_link_attrs( '', false ) );
+        $this->assertSame( ' rel="nofollow sponsored"', acf_product_box_link_attrs( 'nofollow  sponsored', false ) );
+        $this->assertSame( ' rel="nofollow noopener" target="_blank"', acf_product_box_link_attrs( 'nofollow noopener', true ) );
+        $this->assertSame( ' rel="noopener" target="_blank"', acf_product_box_link_attrs( '', true ) );
+    }
+
+    /**
+     * Cropping is CSS-only: the server always sends an uncropped core size, and
+     * no plugin sub-sizes are registered (they never were, in practice).
+     */
+    public function test_product_box_requests_uncropped_core_sizes(): void {
+        foreach ( array( 'contain', 'cover' ) as $fit ) {
+            $this->assertSame( 'large', acf_product_box_image_size( true, $fit, '16-9' ) );
+            $this->assertSame( 'medium_large', acf_product_box_image_size( false, $fit, 'auto' ) );
+        }
+        $extra = file_get_contents( dirname( __DIR__ ) . '/blocks/product-box/extra.php' );
+        $this->assertStringNotContainsString( 'add_image_size', $extra );
+    }
+
+    /**
+     * Blocks saved before 2.12.0 carry none of the new fields, so every new
+     * field must be optional and default to its "off" state.
+     */
+    public function test_product_box_new_fields_default_off(): void {
+        $group  = json_decode( file_get_contents( dirname( __DIR__ ) . '/blocks/product-box/block-data.json' ), true );
+        $fields = array();
+        foreach ( $group['fields'] as $field ) {
+            if ( 'tab' !== $field['type'] ) {
+                $fields[ $field['name'] ] = $field;
+            }
+        }
+
+        foreach ( array( 'pb_new_tab', 'pb_show_savings', 'pb_cta_emphasis', 'pb_btn_arrow' ) as $toggle ) {
+            $this->assertSame( 0, $fields[ $toggle ]['default_value'], $toggle );
+        }
+        $this->assertSame( 'off', $fields['pb_btn_shine']['default_value'] );
+        $this->assertSame( 'standard', $fields['pb_box_style']['default_value'] );
+        $this->assertSame( 'contain', $fields['pb_image_fit']['default_value'] );
+        foreach ( $fields as $name => $field ) {
+            $this->assertSame( 0, $field['required'], $name );
+        }
     }
 }
