@@ -5191,7 +5191,7 @@ return array (
             'label' => 'Negative Background',
             'name' => 'pc_neg_bg_color',
             'type' => 'color_picker',
-            'default_value' => '#fef2f2',
+            'default_value' => '',
           ),
           10 => 
           array (
@@ -5199,7 +5199,7 @@ return array (
             'label' => 'Negative Border',
             'name' => 'pc_neg_border_color',
             'type' => 'color_picker',
-            'default_value' => '#dc2626',
+            'default_value' => '',
           ),
           11 => 
           array (
@@ -5207,7 +5207,7 @@ return array (
             'label' => 'Negative Title Color',
             'name' => 'pc_neg_title_color',
             'type' => 'color_picker',
-            'default_value' => '#dc2626',
+            'default_value' => '',
           ),
           12 => 
           array (
@@ -5215,7 +5215,7 @@ return array (
             'label' => 'Negative Icon Color',
             'name' => 'pc_neg_icon_color',
             'type' => 'color_picker',
-            'default_value' => '#dc2626',
+            'default_value' => '',
           ),
           13 => 
           array (
@@ -5223,7 +5223,7 @@ return array (
             'label' => 'Positive Background',
             'name' => 'pc_pos_bg_color',
             'type' => 'color_picker',
-            'default_value' => '#f0fdf4',
+            'default_value' => '',
           ),
           14 => 
           array (
@@ -5231,7 +5231,7 @@ return array (
             'label' => 'Positive Border',
             'name' => 'pc_pos_border_color',
             'type' => 'color_picker',
-            'default_value' => '#16a34a',
+            'default_value' => '',
           ),
           15 => 
           array (
@@ -5239,7 +5239,7 @@ return array (
             'label' => 'Positive Title Color',
             'name' => 'pc_pos_title_color',
             'type' => 'color_picker',
-            'default_value' => '#16a34a',
+            'default_value' => '',
           ),
           16 => 
           array (
@@ -5247,7 +5247,7 @@ return array (
             'label' => 'Positive Icon Color',
             'name' => 'pc_pos_icon_color',
             'type' => 'color_picker',
-            'default_value' => '#16a34a',
+            'default_value' => '',
           ),
         ),
         'location' => 

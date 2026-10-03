@@ -42,16 +42,18 @@ $cons_list = acf_blocks_get_field('pc_cons_list', $block);
 $pros_title = acf_blocks_get_field('pc_pros_title', $block) ?: 'Pros';
 $pros_list = acf_blocks_get_field('pc_pros_list', $block);
 
-// Color fields with defaults
-$neg_bg = acf_blocks_get_field('pc_neg_bg_color', $block) ?: '#fef2f2';
-$neg_border = acf_blocks_get_field('pc_neg_border_color', $block) ?: '#dc2626';
-$neg_title_color = acf_blocks_get_field('pc_neg_title_color', $block) ?: '#991b1b';
-$neg_icon_color = acf_blocks_get_field('pc_neg_icon_color', $block) ?: '#dc2626';
-
-$pos_bg = acf_blocks_get_field('pc_pos_bg_color', $block) ?: '#f0fdf4';
-$pos_border = acf_blocks_get_field('pc_pos_border_color', $block) ?: '#16a34a';
-$pos_title_color = acf_blocks_get_field('pc_pos_title_color', $block) ?: '#166534';
-$pos_icon_color = acf_blocks_get_field('pc_pos_icon_color', $block) ?: '#16a34a';
+// Color fields: only colors an editor chose become inline custom properties.
+// Unset colors fall back to theme tokens in pros-cons.css, which follow dark mode.
+$style_vars = acf_pros_cons_style_vars( array(
+    '--pc-neg-bg'     => acf_blocks_get_field('pc_neg_bg_color', $block),
+    '--pc-neg-border' => acf_blocks_get_field('pc_neg_border_color', $block),
+    '--pc-neg-title'  => acf_blocks_get_field('pc_neg_title_color', $block),
+    '--pc-neg-icon'   => acf_blocks_get_field('pc_neg_icon_color', $block),
+    '--pc-pos-bg'     => acf_blocks_get_field('pc_pos_bg_color', $block),
+    '--pc-pos-border' => acf_blocks_get_field('pc_pos_border_color', $block),
+    '--pc-pos-title'  => acf_blocks_get_field('pc_pos_title_color', $block),
+    '--pc-pos-icon'   => acf_blocks_get_field('pc_pos_icon_color', $block),
+) );
 
 // Build wrapper classes
 $wrapper_classes = ['acf-pros-cons'];
@@ -66,14 +68,10 @@ if ($show_first === 'positive') {
 }
 
 $anchor_attr = $anchor ? ' id="' . esc_attr($anchor) . '"' : '';
-$style_vars = sprintf(
-    '--pc-neg-bg:%1$s;--pc-neg-border:%2$s;--pc-neg-title:%3$s;--pc-neg-icon:%4$s;--pc-pos-bg:%5$s;--pc-pos-border:%6$s;--pc-pos-title:%7$s;--pc-pos-icon:%8$s;',
-    esc_attr( $neg_bg ), esc_attr( $neg_border ), esc_attr( $neg_title_color ), esc_attr( $neg_icon_color ),
-    esc_attr( $pos_bg ), esc_attr( $pos_border ), esc_attr( $pos_title_color ), esc_attr( $pos_icon_color )
-);
+$style_attr = '' !== $style_vars ? ' style="' . esc_attr( $style_vars ) . '"' : '';
 ?>
 
-<div <?php echo $anchor_attr; ?> class="<?php echo esc_attr(implode(' ', $wrapper_classes)); ?>" data-acf-block="pros-cons" style="<?php echo esc_attr( $style_vars ); ?>">
+<div <?php echo $anchor_attr; ?> class="<?php echo esc_attr(implode(' ', $wrapper_classes)); ?>" data-acf-block="pros-cons"<?php echo $style_attr; ?>>
 
     <?php
     // Negative side

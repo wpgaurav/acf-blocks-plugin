@@ -11,12 +11,12 @@ Create a two-column pros and cons comparison block with customizable colors and 
 ## Design Notes
 
 - Columns are flush (no gap) with `border-radius: 10px` and `overflow: hidden`
-- Each column has a distinct background color (green-tinted for pros, red-tinted for cons)
+- Each column has a distinct background color (success-tinted for pros, danger-tinted for cons), mixed from the theme's tokens so it follows light and dark mode
 - List items separated by `border-bottom` lines, not margin
 - Titles are uppercase, `0.8125rem`, with letter-spacing
 - Icons are 14px SVG checkmarks/crosses
 - Font size is `0.875rem` (14px)
-- Dark mode: separator borders use `rgba(255,255,255,0.08)`
+- Dark mode: with no custom colors set, backgrounds, titles and icons come from theme tokens and switch with the theme. A custom color is used as-is in both modes, so a light custom background stays light in dark mode
 - Block outputs `data-acf-block="pros-cons"` (used by TOC filtering)
 
 ## Fields
@@ -28,21 +28,22 @@ Create a two-column pros and cons comparison block with customizable colors and 
 | `field_pc_pros_list` | Pros List | wysiwyg | HTML list of pros (use `<ul><li>` format) |
 | `field_pc_cons_title` | Cons Title | text | Heading for cons column (default: "Cons") |
 | `field_pc_cons_list` | Cons List | wysiwyg | HTML list of cons (use `<ul><li>` format) |
-| `field_pc_pos_bg_color` | Pros Background | color_picker | Default: `#f0fdf4` |
-| `field_pc_pos_border_color` | Pros Border | color_picker | Default: `#16a34a` |
-| `field_pc_pos_title_color` | Pros Title Color | color_picker | Default: `#166534` |
-| `field_pc_pos_icon_color` | Pros Icon Color | color_picker | Default: `#16a34a` |
-| `field_pc_neg_bg_color` | Cons Background | color_picker | Default: `#fef2f2` |
-| `field_pc_neg_border_color` | Cons Border | color_picker | Default: `#dc2626` |
-| `field_pc_neg_title_color` | Cons Title Color | color_picker | Default: `#991b1b` |
-| `field_pc_neg_icon_color` | Cons Icon Color | color_picker | Default: `#dc2626` |
+| `field_pc_pos_bg_color` | Pros Background | color_picker | Empty by default (theme token) |
+| `field_pc_pos_border_color` | Pros Border | color_picker | Empty by default (theme token) |
+| `field_pc_pos_title_color` | Pros Title Color | color_picker | Empty by default (theme token) |
+| `field_pc_pos_icon_color` | Pros Icon Color | color_picker | Empty by default (theme token) |
+| `field_pc_neg_bg_color` | Cons Background | color_picker | Empty by default (theme token) |
+| `field_pc_neg_border_color` | Cons Border | color_picker | Empty by default (theme token) |
+| `field_pc_neg_title_color` | Cons Title Color | color_picker | Empty by default (theme token) |
+| `field_pc_neg_icon_color` | Cons Icon Color | color_picker | Empty by default (theme token) |
 
 ## Field Rules
 
 - All keys use `field_` prefix
 - Pros/cons content uses WYSIWYG fields — write as HTML `<ul><li>` lists
 - **CRITICAL: The entire block comment must be a single line of JSON. Never use literal newlines.** Use `\n` for line breaks within HTML string values.
-- Color fields are all optional; defaults use green for pros and red for cons
+- Color fields are all optional. Leave them empty unless the user asks for brand colors: empty fields follow the theme, including dark mode
+- The pre-2.12.1 defaults (`#f0fdf4`, `#16a34a`, `#166534`, `#fef2f2`, `#dc2626`, `#991b1b`) are treated as empty, so blocks saved with them also follow the theme
 - `field_pc_show_first` controls column ordering (which side appears on the left)
 - Inline SVG icons (14px) are auto-injected for checkmarks (pros) and crosses (cons)
 
@@ -64,5 +65,5 @@ Create a two-column pros and cons comparison block with customizable colors and 
 ## Example — Custom colors, cons first
 
 ```html
-<!-- wp:acf/pros-cons {"name":"acf/pros-cons","data":{"field_pc_show_first":"negative","field_pc_pros_title":"What We Like","field_pc_pros_list":"<ul>\n<li>Intuitive dashboard interface</li>\n<li>Excellent documentation</li>\n<li>Generous free tier</li>\n</ul>","field_pc_cons_title":"What Could Improve","field_pc_cons_list":"<ul>\n<li>Limited API rate limits on free plan</li>\n<li>No mobile app available yet</li>\n</ul>","field_pc_pos_bg_color":"#ecfdf5","field_pc_pos_border_color":"#10b981","field_pc_neg_bg_color":"#fef2f2","field_pc_neg_border_color":"#ef4444"}} /-->
+<!-- wp:acf/pros-cons {"name":"acf/pros-cons","data":{"field_pc_show_first":"negative","field_pc_pros_title":"What We Like","field_pc_pros_list":"<ul>\n<li>Intuitive dashboard interface</li>\n<li>Excellent documentation</li>\n<li>Generous free tier</li>\n</ul>","field_pc_cons_title":"What Could Improve","field_pc_cons_list":"<ul>\n<li>Limited API rate limits on free plan</li>\n<li>No mobile app available yet</li>\n</ul>","field_pc_pos_bg_color":"#ecfdf5","field_pc_pos_border_color":"#10b981","field_pc_neg_bg_color":"#fff1f2","field_pc_neg_border_color":"#ef4444"}} /-->
 ```

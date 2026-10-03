@@ -2,6 +2,12 @@
 
 All notable changes to the ACF Blocks plugin are documented here.
 
+## [2.12.1] - 2026-10-03
+
+### Fixed
+- **Pros & Cons: unreadable in dark mode.** The template filled every empty color field with a light hex value (`#f0fdf4`, `#fef2f2` and dark titles) and wrote all eight into the block's inline `style`. An inline custom property beats the stylesheet, so the token fallbacks in `pros-cons.css`, which mix the theme's background, text, success and danger colors and already follow dark mode, never ran. In dark mode the list text turned light while the columns stayed near-white: 1.2:1 contrast against the 4.5:1 that WCAG AA asks for. The block now writes only the colors an editor actually chose and leaves out the `style` attribute when there are none. On a dark theme the columns measure 11.8:1 for text, 7.1:1 or better for titles and 5.9:1 or better for icons. In light mode they look the same as before, except that the pros column takes the theme's success color instead of a fixed green.
+- The eight color fields no longer default to those light values, so a newly inserted block doesn't save them into its data. Blocks that already carry one of the old defaults (`#f0fdf4`, `#16a34a`, `#166534`, `#fef2f2`, `#dc2626`, `#991b1b`) are treated as uncustomized and follow the theme too. Any other custom color still applies exactly as set, in both modes.
+
 ## [2.12.0] - 2026-09-29
 
 ### Fixed

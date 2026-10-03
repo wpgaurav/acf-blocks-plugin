@@ -840,4 +840,54 @@ final class CompatibilityTest extends TestCase {
             $this->assertSame( 0, $field['required'], $name );
         }
     }
+
+    /**
+     * Unset Pros & Cons colors must not be written inline: an inline custom
+     * property beats the stylesheet, so the token fallbacks that follow dark
+     * mode never ran and light text sat on a near-white column (2.12.1).
+     */
+    public function test_pros_cons_unset_colors_leave_theme_tokens_in_charge(): void {
+        $properties = array( '--pc-neg-bg', '--pc-neg-border', '--pc-neg-title', '--pc-neg-icon', '--pc-pos-bg', '--pc-pos-border', '--pc-pos-title', '--pc-pos-icon' );
+
+        $this->assertSame( '', acf_pros_cons_style_vars( array_fill_keys( $properties, '' ) ) );
+        $this->assertSame( '', acf_pros_cons_style_vars( array_fill_keys( $properties, null ) ) );
+        $this->assertSame( '', acf_pros_cons_style_vars( array_fill_keys( $properties, false ) ) );
+
+        // Values older versions shipped as defaults count as "not chosen".
+        $legacy = array(
+            '--pc-neg-bg' => '#fef2f2', '--pc-neg-border' => '#dc2626', '--pc-neg-title' => '#991b1b', '--pc-neg-icon' => '#DC2626',
+            '--pc-pos-bg' => '#F0FDF4', '--pc-pos-border' => '#16a34a', '--pc-pos-title' => ' #166534 ', '--pc-pos-icon' => '#16a34a',
+        );
+        $this->assertSame( '', acf_pros_cons_style_vars( $legacy ) );
+
+        // A real choice survives, alone.
+        $custom = array_merge( $legacy, array( '--pc-pos-bg' => '#ECFDF5', '--pc-neg-title' => 'rgba(190,18,60,0.9)' ) );
+        $this->assertSame( '--pc-neg-title:rgba(190,18,60,0.9);--pc-pos-bg:#ecfdf5;', acf_pros_cons_style_vars( $custom ) );
+    }
+
+    public function test_pros_cons_template_and_fields_ship_no_light_color_defaults(): void {
+        $root     = dirname( __DIR__ );
+        $template = file_get_contents( $root . '/blocks/pros-cons/pros-cons.php' );
+        $this->assertDoesNotMatchRegularExpression( "/\\?:\\s*'#[0-9a-fA-F]{3,8}'/", $template );
+        $this->assertStringContainsString( 'acf_pros_cons_style_vars(', $template );
+        $this->assertStringNotContainsString( 'style="<?php echo esc_attr( $style_vars ); ?>"', $template );
+
+        $group = json_decode( file_get_contents( $root . '/blocks/pros-cons/block-data.json' ), true );
+        $group = isset( $group['fields'] ) ? $group : $group[0]; // This file wraps its group in a list.
+        $colors = 0;
+        foreach ( $group['fields'] as $field ) {
+            if ( 'color_picker' === $field['type'] ) {
+                $colors++;
+                $this->assertSame( '', $field['default_value'], $field['name'] );
+            }
+        }
+        $this->assertSame( 8, $colors );
+
+        // The fallbacks the template now relies on must stay token-based.
+        $css = file_get_contents( $root . '/blocks/pros-cons/pros-cons.css' );
+        foreach ( array( 'var(--pc-neg-bg,', 'var(--pc-pos-bg,', 'var(--pc-neg-title,', 'var(--pc-pos-title,' ) as $fallback ) {
+            $this->assertStringContainsString( $fallback, str_replace( ' ', '', $css ) );
+        }
+        $this->assertStringContainsString( 'var(--acfb-bg)', str_replace( ' ', '', $css ) );
+    }
 }

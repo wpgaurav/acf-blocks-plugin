@@ -63,3 +63,6 @@ require_once dirname( __DIR__ ) . '/blocks/star-rating-block/extra.php';
 // image-size hook is registered on require.
 function esc_attr( $value ) { return htmlspecialchars( (string) $value, ENT_QUOTES ); }
 require_once dirname( __DIR__ ) . '/blocks/product-box/extra.php';
+
+// Pros & Cons pure color helper.
+require_once dirname( __DIR__ ) . '/blocks/pros-cons/extra.php';
