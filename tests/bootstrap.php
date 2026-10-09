@@ -38,6 +38,10 @@ function wp_localize_script( $handle, $name, $data ) {
 function get_option( $name, $default = false ) {
     return array_key_exists( $name, $GLOBALS['acf_blocks_test_options'] ) ? $GLOBALS['acf_blocks_test_options'][ $name ] : $default;
 }
+function update_option( $name, $value, $autoload = null ) { $GLOBALS['acf_blocks_test_options'][ $name ] = $value; return true; }
+function wp_upload_dir() { return array( 'basedir' => $GLOBALS['acf_blocks_test_uploads'], 'baseurl' => 'https://example.test/uploads', 'error' => false ); }
+function wp_mkdir_p( $directory ) { return is_dir( $directory ) || mkdir( $directory, 0755, true ); }
+function wp_delete_file( $file ) { if ( is_file( $file ) ) unlink( $file ); }
 function wp_enqueue_style( $handle, $src, $dependencies = array(), $version = false ) {
     $GLOBALS['acf_blocks_test_styles'][ $handle ] = compact( 'src', 'dependencies', 'version' );
 }
@@ -50,6 +54,7 @@ require_once dirname( __DIR__ ) . '/includes/functions.php';
 // Pure transform helpers are unit-testable; the file's admin hooks are inert
 // against the stubs above.
 require_once dirname( __DIR__ ) . '/includes/block-migrator.php';
+require_once dirname( __DIR__ ) . '/includes/performance-manager.php';
 
 // Exposes acfb_minify_css()/acfb_minify_js(); the build body self-guards and
 // does not run when the file is required rather than invoked.
@@ -62,6 +67,16 @@ require_once dirname( __DIR__ ) . '/blocks/star-rating-block/extra.php';
 // Product Box pure helpers (price parsing, savings, dates, colors). Only its
 // image-size hook is registered on require.
 function esc_attr( $value ) { return htmlspecialchars( (string) $value, ENT_QUOTES ); }
+function esc_url( $value ) { return esc_attr( $value ); }
+function esc_html( $value ) { return esc_attr( $value ); }
+function esc_html_e( $value, $domain = null ) { echo esc_html( $value ); }
+function esc_attr__( $value, $domain = null ) { return esc_attr( $value ); }
+function esc_attr_e( $value, $domain = null ) { echo esc_attr( $value ); }
+function wp_kses_post( $value ) { return (string) $value; }
+function get_field( $name ) { return null; }
+function wp_parse_url( $url, $component = -1 ) { return parse_url( $url, $component ); }
+function wp_unique_id( $prefix = '' ) { static $counter = 0; return $prefix . ++$counter; }
+require_once dirname( __DIR__ ) . '/includes/compat.php';
 require_once dirname( __DIR__ ) . '/blocks/product-box/extra.php';
 
 // Pros & Cons pure color helper.

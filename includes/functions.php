@@ -782,6 +782,21 @@ function acf_blocks_enqueue_editor_assets() {
 }
 add_action( 'enqueue_block_editor_assets', 'acf_blocks_enqueue_editor_assets' );
 
+/** Stable signature of the configured disabled block names. */
+function acf_blocks_editor_settings_hash( $disabled ) {
+    $disabled = array_values( array_unique( (array) $disabled ) );
+    sort( $disabled, SORT_STRING );
+    return hash( 'sha256', implode( "\n", $disabled ) );
+}
+
+/** A bundle must match both this release and the current Block Manager choices. */
+function acf_blocks_editor_bundle_is_current( $bundle, $settings_hash ) {
+    return is_array( $bundle ) && ! empty( $bundle['url'] ) && ! empty( $bundle['path'] )
+        && ( $bundle['plugin_version'] ?? '' ) === ACF_BLOCKS_VERSION
+        && ( $bundle['settings_hash'] ?? '' ) === $settings_hash
+        && is_readable( $bundle['path'] );
+}
+
 /**
  * Enqueue the generated ACF Blocks editor bundle.
  *
@@ -807,9 +822,16 @@ function acf_blocks_enqueue_editor_styles() {
     }
 
     $site_bundle = get_option( 'acf_blocks_editor_bundle', array() );
-    $site_bundle_is_valid = ! empty( $site_bundle['url'] )
-        && ! empty( $site_bundle['path'] )
-        && is_readable( $site_bundle['path'] );
+    $settings_hash = acf_blocks_editor_settings_hash( acf_blocks_get_disabled_blocks() );
+    // A bundle saved by Block Manager lives in uploads and survives plugin
+    // upgrades. Rebuild it once so old rules cannot keep styling ACF fields.
+    if ( ! empty( $site_bundle )
+        && ! acf_blocks_editor_bundle_is_current( $site_bundle, $settings_hash )
+        && function_exists( 'acf_blocks_build_site_editor_bundle' ) ) {
+        acf_blocks_build_site_editor_bundle( acf_blocks_get_disabled_blocks() );
+        $site_bundle = get_option( 'acf_blocks_editor_bundle', array() );
+    }
+    $site_bundle_is_valid = acf_blocks_editor_bundle_is_current( $site_bundle, $settings_hash );
     $bundle_url = $site_bundle_is_valid
         ? $site_bundle['url']
         : acf_blocks_asset( 'assets/css/editor-blocks.css' )['url'];

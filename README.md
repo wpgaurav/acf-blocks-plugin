@@ -164,13 +164,29 @@ After changing block metadata, field JSON, or block CSS, regenerate the cached a
 php tools/generate-manifest.php
 php tools/build-editor-css.php
 composer check
+node --test tests/video-runtime.test.js
+php tools/check-release.php
 ```
 
 CI validates PHP 7.4, 8.1, 8.3, and 8.5, plus PHP/JSON/JavaScript syntax, generated artifacts, compatibility rules, and unit tests.
 
+Release tags must match the plugin header, `ACF_BLOCKS_VERSION`, and changelog.
+The script cache version in `blocks/video-block/youtube-preview.html` must match
+too. The tag workflow runs the checks before packaging; development dependencies
+and tests stay out of the upload ZIP.
+
+AJAX loaders that introduce the first Video block must also enqueue its registered
+styles and view script. Once the script is present, newly added Video blocks are
+initialized automatically.
+
+Use explicit keyword values for boolean HTML attributes in ACF previews, such as
+`hidden="hidden"` and `controls="controls"`. ACF's React preview can drop empty
+attribute values; WordPress helpers such as `checked()` already emit the explicit
+form.
+
 ## Support This Project
 
-This free and open source plugin adds 23 ACF Pro blocks to the WordPress block editor, from FAQ accordions and product boxes to tabs and coupon codes. It registers each block's field group for you and I keep it maintained, with CI checks on PHP 7.4, 8.1, 8.3 and 8.5.
+This free and open source plugin adds 29 ACF Pro blocks to the WordPress block editor, from FAQ accordions and product boxes to tabs and coupon codes. It registers each block's field group for you and I keep it maintained, with CI checks on PHP 7.4, 8.1, 8.3 and 8.5.
 
 If the auto-registered field groups kept you out of the ACF admin's import and export tools, you can buy me a coffee.
 

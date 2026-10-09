@@ -27,6 +27,9 @@ jobs:
       - name: Validate generated artifacts
         run: composer generated
 
+      - name: Release version and runtime assets
+        run: php tools/check-release.php
+
       - name: Validate PHP and JSON
         run: |
           composer lint
@@ -38,3 +41,6 @@ jobs:
 
       - name: Unit tests
         run: composer test
+
+      - name: Video player behavior
+        run: node --test tests/video-runtime.test.js

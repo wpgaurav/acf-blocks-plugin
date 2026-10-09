@@ -89,8 +89,8 @@ wp_enqueue_script( 'acf-star-rating-block' );
             <?php endfor; ?>
         </div>
         <button type="submit" class="acf-star-rating__submit"><?php echo esc_html( $button_label ); ?></button>
-        <p class="acf-star-rating__thank-you" hidden aria-live="polite"></p>
-        <p class="acf-star-rating__error" hidden role="alert"></p>
+        <p class="acf-star-rating__thank-you" hidden="hidden" aria-live="polite"></p>
+        <p class="acf-star-rating__error" hidden="hidden" role="alert"></p>
     </form>
 
     <?php if ( $enable_schema && $total_count > 0 ) :

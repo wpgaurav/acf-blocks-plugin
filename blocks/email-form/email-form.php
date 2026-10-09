@@ -33,8 +33,8 @@ $form_attrs           = acf_blocks_get_field( 'form_attributes', $block );
 
 // Generate unique ID for this block instance.
 $block_uid   = 'ef-' . substr( md5( $block['id'] ?? wp_unique_id() ), 0, 8 );
-$name_id     = $block_uid . '-name';
-$email_id    = $block_uid . '-email';
+$name_id     = ! empty( $name_field_attrs['id'] ) ? $name_field_attrs['id'] : $block_uid . '-name';
+$email_id    = ! empty( $email_field_attrs['id'] ) ? $email_field_attrs['id'] : $block_uid . '-email';
 
 // Set default classes.
 $default_form_class   = 'acf-email-form acf-email-form-full';
@@ -80,9 +80,9 @@ if ( 'webhook' === $form_type && $webhook_url && ! $is_preview ) :
 				<input
 					type="text"
 					name="email_form_name"
-					id="<?php echo esc_attr( ! empty( $name_field_attrs['id'] ) ? $name_field_attrs['id'] : $name_id ); ?>"
+					id="<?php echo esc_attr( $name_id ); ?>"
 					class="<?php echo esc_attr( $default_name_class . ( ! empty( $name_field_attrs['class'] ) ? ' ' . $name_field_attrs['class'] : '' ) ); ?>"
-					<?php echo $name_required ? 'required' : ''; ?>
+					<?php echo $name_required ? 'required="required"' : ''; ?>
 					placeholder="<?php esc_attr_e( 'Your Name', 'acf-blocks' ); ?>"
 					<?php echo ! empty( $name_field_attrs['inline_css'] ) ? 'style="' . esc_attr( $name_field_attrs['inline_css'] ) . '"' : ''; ?>
 				/>
@@ -94,9 +94,9 @@ if ( 'webhook' === $form_type && $webhook_url && ! $is_preview ) :
 			<input
 				type="email"
 				name="email_form_email"
-				id="<?php echo esc_attr( ! empty( $email_field_attrs['id'] ) ? $email_field_attrs['id'] : $email_id ); ?>"
+				id="<?php echo esc_attr( $email_id ); ?>"
 				class="<?php echo esc_attr( $default_email_class . ( ! empty( $email_field_attrs['class'] ) ? ' ' . $email_field_attrs['class'] : '' ) ); ?>"
-				required
+				required="required"
 				placeholder="<?php esc_attr_e( 'Your Email', 'acf-blocks' ); ?>"
 				<?php echo ! empty( $email_field_attrs['inline_css'] ) ? 'style="' . esc_attr( $email_field_attrs['inline_css'] ) . '"' : ''; ?>
 			/>
@@ -130,9 +130,9 @@ if ( 'webhook' === $form_type && $webhook_url && ! $is_preview ) :
 			</button>
 		</div>
 
-		<div class="acf-email-form-success" hidden role="status">
+		<div class="acf-email-form-success" hidden="hidden" role="status">
 			<?php echo wp_kses_post( $success_message ); ?>
 		</div>
-		<div class="acf-email-form-error" hidden role="alert"></div>
+		<div class="acf-email-form-error" hidden="hidden" role="alert"></div>
 	</form>
 </div>

@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0  # Full history for changelog generation
 
@@ -22,19 +22,43 @@ jobs:
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer:v2
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+
+      - uses: ramsey/composer-install@a8d0d959dab41457692a5e2041bd9b757a119e3f # v3
+
+      - name: Validate release candidate
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          php tools/check-release.php "$RELEASE_TAG"
+          composer check
+          node --test tests/video-runtime.test.js
+          find blocks assets -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+          find blocks -type f -name '*.json' -print0 | xargs -0 -n1 jq empty
+
       - name: Get previous tag
         id: prev_tag
+        env:
+          VERSION: ${{ steps.get_version.outputs.VERSION }}
         run: |
-          PREV_TAG=$(git tag --sort=-creatordate | sed -n '2p')
-          echo "PREV_TAG=${PREV_TAG}" >> $GITHUB_OUTPUT
+          PREV_TAG=$(git tag --merged HEAD --sort=-version:refname | awk -v current="v$VERSION" '$0 ~ /^v[0-9]+\.[0-9]+\.[0-9]+$/ && $0 != current { print; exit }')
+          echo "PREV_TAG=${PREV_TAG}" >> "$GITHUB_OUTPUT"
           echo "Previous tag: ${PREV_TAG}"
 
       - name: Generate release notes
         id: release_notes
+        env:
+          VERSION: ${{ steps.get_version.outputs.VERSION }}
+          PREV_TAG: ${{ steps.prev_tag.outputs.PREV_TAG }}
         run: |
-          VERSION="${{ steps.get_version.outputs.VERSION }}"
-          PREV_TAG="${{ steps.prev_tag.outputs.PREV_TAG }}"
-
           # Start building release notes
           cat > release_notes.md << 'HEADER'
           ## What's Changed
@@ -54,13 +78,13 @@ jobs:
           if [ -n "$PREV_TAG" ]; then
             echo "### Commits" >> release_notes.md
             echo "" >> release_notes.md
-            git log ${PREV_TAG}..HEAD --pretty=format:"- %s (\`%h\`)" --no-merges >> release_notes.md
+            git log "${PREV_TAG}..HEAD" --pretty=format:"- %s (\`%h\`)" --no-merges >> release_notes.md
             echo "" >> release_notes.md
             echo "" >> release_notes.md
 
             # Stats
-            COMMIT_COUNT=$(git rev-list ${PREV_TAG}..HEAD --count --no-merges)
-            FILES_CHANGED=$(git diff ${PREV_TAG}..HEAD --stat | tail -1)
+            COMMIT_COUNT=$(git rev-list "${PREV_TAG}..HEAD" --count --no-merges)
+            FILES_CHANGED=$(git diff "${PREV_TAG}..HEAD" --stat | tail -1)
             echo "### Stats" >> release_notes.md
             echo "" >> release_notes.md
             echo "- **Commits:** ${COMMIT_COUNT}" >> release_notes.md
@@ -94,6 +118,8 @@ jobs:
           cat release_notes.md
 
       - name: Create plugin zip
+        env:
+          VERSION: ${{ steps.get_version.outputs.VERSION }}
         run: |
           mkdir -p build/acf-blocks-plugin
 
@@ -101,6 +127,7 @@ jobs:
             --exclude='.*' \
             --exclude='build' \
             --exclude='node_modules' \
+            --exclude='vendor' \
             --exclude='tests' \
             --exclude='tools' \
             --exclude='composer.json' \
@@ -114,11 +141,11 @@ jobs:
             ./ build/acf-blocks-plugin/
 
           cd build
-          zip -r acf-blocks-plugin-${{ steps.get_version.outputs.VERSION }}.zip acf-blocks-plugin
-          mv acf-blocks-plugin-${{ steps.get_version.outputs.VERSION }}.zip ../
+          zip -r "acf-blocks-plugin-${VERSION}.zip" acf-blocks-plugin
+          mv "acf-blocks-plugin-${VERSION}.zip" ../
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
           name: ACF Blocks v${{ steps.get_version.outputs.VERSION }}
           body_path: release_notes.md

@@ -45,14 +45,13 @@ $autoplay        = acf_blocks_get_field( 'acf_video_autoplay', $block );
 $loop            = acf_blocks_get_field( 'acf_video_loop', $block );
 $muted           = acf_blocks_get_field( 'acf_video_muted', $block );
 $controls        = acf_blocks_get_field( 'acf_video_controls', $block );
+$controls        = null === $controls ? true : $controls;
 
 $custom_class = acf_blocks_get_field( 'acf_video_class', $block );
 $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
 
 $inline_style = acf_blocks_get_field( 'acf_video_inline', $block );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
-
-$aspect_ratio_class = $aspect_ratio ? ' acf-aspect-' . esc_attr( $aspect_ratio ) : ' acf-aspect-16-9';
 
 /*
  * The player is absolutely positioned, so the wrapper is the only thing giving
@@ -70,24 +69,12 @@ $aspect_ratios = array(
     '21-9' => '21 / 9',
     '1-1'  => '1 / 1',
 );
-$ratio_value      = isset( $aspect_ratios[ $aspect_ratio ] ) ? $aspect_ratios[ $aspect_ratio ] : '16 / 9';
+$aspect_ratio     = is_string( $aspect_ratio ) && isset( $aspect_ratios[ $aspect_ratio ] ) ? $aspect_ratio : '16-9';
+$aspect_ratio_class = ' acf-aspect-' . $aspect_ratio;
+$ratio_value      = $aspect_ratios[ $aspect_ratio ];
 $wrapper_style_at = ' style="aspect-ratio: ' . esc_attr( $ratio_value ) . ';"';
 
-// Function to extract video ID from YouTube URL
-if ( ! function_exists( 'acf_get_youtube_id' ) ) {
-    function acf_get_youtube_id( $url ) {
-        preg_match( '/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i', $url, $matches );
-        return isset( $matches[1] ) ? $matches[1] : false;
-    }
-}
-
-// Function to extract video ID from Vimeo URL
-if ( ! function_exists( 'acf_get_vimeo_id' ) ) {
-    function acf_get_vimeo_id( $url ) {
-        preg_match( '/(?:vimeo\.com\/)(\d+)/i', $url, $matches );
-        return isset( $matches[1] ) ? $matches[1] : false;
-    }
-}
+require_once __DIR__ . '/extra.php';
 
 // Generate unique ID for this block
 $block_id = isset( $block['id'] ) ? $block['id'] : wp_unique_id( 'video-' );
@@ -106,6 +93,8 @@ $block_id = isset( $block['id'] ) ? $block['id'] : wp_unique_id( 'video-' );
             $youtube_id = acf_get_youtube_id( $video_url );
             if ( $youtube_id ) :
                 $embed_params = array();
+                $start_time = acf_video_get_start_time( $video_url );
+                if ( $start_time ) $embed_params[] = 'start=' . $start_time;
                 if ( $autoplay ) $embed_params[] = 'autoplay=1';
                 if ( $loop ) $embed_params[] = 'loop=1&playlist=' . $youtube_id;
                 if ( $muted ) $embed_params[] = 'mute=1';
@@ -113,15 +102,26 @@ $block_id = isset( $block['id'] ) ? $block['id'] : wp_unique_id( 'video-' );
                 $params_string = ! empty( $embed_params ) ? '&' . implode( '&', $embed_params ) : '';
 
                 // Use facade pattern for performance - show thumbnail, load iframe on click
-                $thumbnail_url = 'https://i.ytimg.com/vi/' . esc_attr( $youtube_id ) . '/hqdefault.jpg';
+                $thumbnail_url = 'https://i.ytimg.com/vi/' . $youtube_id . '/maxresdefault.jpg';
+                $thumbnail_fallback = 'https://i.ytimg.com/vi/' . $youtube_id . '/hqdefault.jpg';
+                $embed_url = 'https://www.youtube.com/embed/' . $youtube_id . '?' . ltrim( $params_string, '&' );
+                // The editor canvas uses a blob URL, which cannot send an HTTP
+                // Referer even with an explicit policy. A real URL on this site
+                // gives the nested YouTube player the required client identity.
+                $player_url = $is_preview
+                    ? ACF_BLOCKS_PLUGIN_URL . 'blocks/video-block/youtube-preview.html?ver=' . rawurlencode( ACF_BLOCKS_VERSION ) . '&video=' . rawurlencode( $embed_url ) . '&title=' . rawurlencode( $video_title ?: __( 'YouTube video player', 'acf-blocks' ) )
+                    : $embed_url;
                 ?>
                 <?php if ( $is_preview || $autoplay ) : ?>
                     <iframe
-                        src="https://www.youtube.com/embed/<?php echo esc_attr( $youtube_id ); ?>?<?php echo esc_attr( ltrim( $params_string, '&' ) ); ?>"
+                        src="<?php echo esc_url( $player_url ); ?>"
+                        title="<?php echo esc_attr( $video_title ?: __( 'YouTube video player', 'acf-blocks' ) ); ?>"
+                        width="1280" height="720"
                         frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen
-                        loading="lazy">
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowfullscreen="allowfullscreen"
+                        loading="<?php echo $is_preview ? 'eager' : 'lazy'; ?>">
                     </iframe>
                 <?php else : ?>
                     <div class="acf-video-facade"
@@ -132,6 +132,8 @@ $block_id = isset( $block['id'] ) ? $block['id'] : wp_unique_id( 'video-' );
                          tabindex="0"
                          aria-label="<?php echo esc_attr( $video_title ?: __( 'Play video', 'acf-blocks' ) ); ?>">
                         <img src="<?php echo esc_url( $thumbnail_url ); ?>"
+                             data-thumbnail-fallback="<?php echo esc_url( $thumbnail_fallback ); ?>"
+                             width="1280" height="720"
                              alt="<?php echo esc_attr( $video_title ?: __( 'Video thumbnail', 'acf-blocks' ) ); ?>"
                              loading="lazy"
                              decoding="async" />
@@ -143,25 +145,32 @@ $block_id = isset( $block['id'] ) ? $block['id'] : wp_unique_id( 'video-' );
                         </div>
                     </div>
                 <?php endif; ?>
+            <?php elseif ( $is_preview ) : ?>
+                <p><?php esc_html_e( 'Enter a valid YouTube video URL.', 'acf-blocks' ); ?></p>
             <?php endif; ?>
 
         <?php elseif ( $video_type === 'vimeo' && $video_url ) : ?>
             <?php
-            $vimeo_id = acf_get_vimeo_id( $video_url );
+            $vimeo_data = acf_video_get_vimeo_data( $video_url );
+            $vimeo_id = $vimeo_data ? $vimeo_data['id'] : false;
             if ( $vimeo_id ) :
                 $embed_params = array();
+                if ( $vimeo_data['hash'] ) $embed_params[] = 'h=' . rawurlencode( $vimeo_data['hash'] );
                 if ( $autoplay ) $embed_params[] = 'autoplay=1';
                 if ( $loop ) $embed_params[] = 'loop=1';
                 if ( $muted ) $embed_params[] = 'muted=1';
+                if ( ! $controls ) $embed_params[] = 'controls=0';
                 $params_string = ! empty( $embed_params ) ? '&' . implode( '&', $embed_params ) : '';
                 ?>
                 <?php if ( $is_preview || $autoplay ) : ?>
                     <iframe
                         src="https://player.vimeo.com/video/<?php echo esc_attr( $vimeo_id ); ?>?<?php echo esc_attr( ltrim( $params_string, '&' ) ); ?>"
+                        title="<?php echo esc_attr( $video_title ?: __( 'Vimeo video player', 'acf-blocks' ) ); ?>"
+                        width="1280" height="720"
                         frameborder="0"
                         allow="autoplay; fullscreen; picture-in-picture"
-                        allowfullscreen
-                        loading="lazy">
+                        allowfullscreen="allowfullscreen"
+                        loading="<?php echo $is_preview ? 'eager' : 'lazy'; ?>">
                     </iframe>
                 <?php else : ?>
                     <div class="acf-video-facade"
@@ -180,6 +189,8 @@ $block_id = isset( $block['id'] ) ? $block['id'] : wp_unique_id( 'video-' );
                         </div>
                     </div>
                 <?php endif; ?>
+            <?php elseif ( $is_preview ) : ?>
+                <p><?php esc_html_e( 'Enter a valid Vimeo video URL.', 'acf-blocks' ); ?></p>
             <?php endif; ?>
 
         <?php
@@ -201,13 +212,13 @@ $block_id = isset( $block['id'] ) ? $block['id'] : wp_unique_id( 'video-' );
                 $preload = ( $video_poster && ! $autoplay ) ? 'none' : 'metadata';
         ?>
             <video
-                <?php echo $controls ? 'controls' : ''; ?>
-                <?php echo $autoplay ? 'autoplay' : ''; ?>
-                <?php echo $loop ? 'loop' : ''; ?>
-                <?php echo $muted ? 'muted' : ''; ?>
+                <?php echo $controls ? 'controls="controls"' : ''; ?>
+                <?php echo $autoplay ? 'autoplay="autoplay"' : ''; ?>
+                <?php echo $loop ? 'loop="loop"' : ''; ?>
+                <?php echo $muted ? 'muted="muted"' : ''; ?>
                 <?php echo $video_poster ? 'poster="' . esc_url( $video_poster['url'] ) . '"' : ''; ?>
                 preload="<?php echo esc_attr( $preload ); ?>"
-                playsinline
+                playsinline="playsinline"
                 <?php if ( ! $autoplay && ! $is_preview ) : ?>data-lazy-src="<?php echo esc_url( $self_src ); ?>" data-lazy-type="<?php echo esc_attr( $self_type ); ?>"<?php else : ?>src="<?php echo esc_url( $self_src ); ?>"<?php endif; ?>>
                 <?php if ( $autoplay || $is_preview ) : ?>
                 <source src="<?php echo esc_url( $self_src ); ?>" type="<?php echo esc_attr( $self_type ); ?>">
@@ -229,91 +240,3 @@ $block_id = isset( $block['id'] ) ? $block['id'] : wp_unique_id( 'video-' );
         </div>
     <?php endif; ?>
 </div>
-
-<?php
-// Add facade + lazy-load script once per page.
-static $acf_video_script_added = false;
-if ( ! $acf_video_script_added && ! $is_preview ) :
-    $acf_video_script_added = true;
-?>
-<script>
-(function() {
-    function initVideoFacades() {
-        document.querySelectorAll('.acf-video-facade').forEach(function(facade) {
-            if (facade.dataset.initialized) return;
-            facade.dataset.initialized = 'true';
-
-            function loadVideo() {
-                var videoId = facade.dataset.videoId;
-                var videoType = facade.dataset.videoType;
-                var params = facade.dataset.params || '';
-                var iframe = document.createElement('iframe');
-
-                if (videoType === 'youtube') {
-                    iframe.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1' + params;
-                    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-                } else if (videoType === 'vimeo') {
-                    iframe.src = 'https://player.vimeo.com/video/' + videoId + '?autoplay=1' + params;
-                    iframe.allow = 'autoplay; fullscreen; picture-in-picture';
-                }
-
-                iframe.frameBorder = '0';
-                iframe.allowFullscreen = true;
-                facade.parentNode.replaceChild(iframe, facade);
-            }
-
-            facade.addEventListener('click', loadVideo);
-            facade.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    loadVideo();
-                }
-            });
-        });
-    }
-
-    /* Lazy-load self-hosted <video> elements: defer network request until near viewport. */
-    function initLazyVideos() {
-        var videos = document.querySelectorAll('video[data-lazy-src]');
-        if (!videos.length) return;
-
-        if ('IntersectionObserver' in window) {
-            var observer = new IntersectionObserver(function(entries) {
-                entries.forEach(function(entry) {
-                    if (!entry.isIntersecting) return;
-                    var v = entry.target;
-                    var src = v.dataset.lazySrc;
-                    var type = v.dataset.lazyType || 'video/mp4';
-                    var source = document.createElement('source');
-                    source.src = src;
-                    source.type = type;
-                    v.appendChild(source);
-                    v.removeAttribute('data-lazy-src');
-                    v.removeAttribute('data-lazy-type');
-                    observer.unobserve(v);
-                });
-            }, { rootMargin: '200px' });
-
-            videos.forEach(function(v) { observer.observe(v); });
-        } else {
-            /* Fallback for browsers without IntersectionObserver. */
-            videos.forEach(function(v) {
-                var source = document.createElement('source');
-                source.src = v.dataset.lazySrc;
-                source.type = v.dataset.lazyType || 'video/mp4';
-                v.appendChild(source);
-                v.removeAttribute('data-lazy-src');
-                v.removeAttribute('data-lazy-type');
-            });
-        }
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() { initVideoFacades(); initLazyVideos(); });
-    } else {
-        initVideoFacades();
-        initLazyVideos();
-    }
-})();
-</script>
-<?php endif; ?>

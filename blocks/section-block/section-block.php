@@ -103,7 +103,7 @@ $needs_wrapper = $has_overlay || $has_video;
 <<?php echo esc_attr($tag); ?><?php echo $id_attr . $class_attr . $style_attr; ?>>
     <?php if ($has_video): ?>
     <div class="acf-section-bg-video">
-        <video autoplay muted loop playsinline>
+        <video autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline">
             <source src="<?php echo esc_url($bg_video); ?>" type="video/mp4">
         </video>
     </div>

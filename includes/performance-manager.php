@@ -88,20 +88,39 @@ function acf_blocks_build_site_editor_bundle( $disabled ) {
 
     $filename = 'editor-blocks-' . $hash . '.css';
     $path     = $dir . $filename;
-    if ( false === file_put_contents( $path, $css, LOCK_EX ) ) {
-        return false;
+    if ( ! is_readable( $path ) || (string) file_get_contents( $path ) !== $css ) {
+        // Serve complete immutable files, including when two editors rebuild
+        // simultaneously. LOCK_EX alone cannot protect an HTTP reader.
+        $temporary = tempnam( $dir, 'editor-blocks-' );
+        if ( false === $temporary ) {
+            return false;
+        }
+        if ( realpath( dirname( $temporary ) ) !== realpath( $dir )
+            || strlen( $css ) !== file_put_contents( $temporary, $css, LOCK_EX )
+            || ! chmod( $temporary, defined( 'FS_CHMOD_FILE' ) ? FS_CHMOD_FILE : 0644 )
+            || ! rename( $temporary, $path ) ) {
+            wp_delete_file( $temporary );
+            return false;
+        }
     }
 
+    $previous = get_option( 'acf_blocks_editor_bundle', array() );
     foreach ( (array) glob( $dir . 'editor-blocks-*.css' ) as $old_bundle ) {
-        if ( $old_bundle !== $path && is_file( $old_bundle ) ) {
+        // Keep recently served/concurrently built files. Only prune exact owned
+        // names after a day, preserving the currently published option as well.
+        if ( $old_bundle !== $path && $old_bundle !== ( $previous['path'] ?? '' )
+            && preg_match( '/^editor-blocks-[a-f0-9]{16}\.css$/', basename( $old_bundle ) )
+            && is_file( $old_bundle ) && filemtime( $old_bundle ) < time() - 86400 ) {
             wp_delete_file( $old_bundle );
         }
     }
 
     update_option( 'acf_blocks_editor_bundle', array(
-        'path'    => $path,
-        'url'     => trailingslashit( $uploads['baseurl'] ) . 'acf-blocks-plugin/' . $filename,
-        'version' => $hash,
+        'path'           => $path,
+        'url'            => trailingslashit( $uploads['baseurl'] ) . 'acf-blocks-plugin/' . $filename,
+        'version'        => $hash,
+        'plugin_version' => ACF_BLOCKS_VERSION,
+        'settings_hash'  => acf_blocks_editor_settings_hash( $disabled ),
     ), false );
     return true;
 }

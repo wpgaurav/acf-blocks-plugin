@@ -1,0 +1,18 @@
+(function () {
+    'use strict';
+
+    var params = new URLSearchParams(window.location.search);
+    var video;
+    try {
+        video = new URL(params.get('video'));
+    } catch (error) {
+        return;
+    }
+
+    // This public HTML file is only a YouTube preview, never a general proxy.
+    if (video.origin !== 'https://www.youtube.com' || !/^\/embed\/[A-Za-z0-9_-]{11}$/.test(video.pathname)) return;
+
+    var player = document.querySelector('iframe');
+    player.title = params.get('title') || 'YouTube video player';
+    player.src = video.href;
+})();

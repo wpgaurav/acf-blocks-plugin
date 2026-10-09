@@ -66,7 +66,7 @@ $unique_id   = 'acf-tabs-' . ( $block['id'] ?? wp_unique_id() );
                      id="<?php echo $panel_id; ?>"
                      role="tabpanel"
                      aria-labelledby="<?php echo $tab_id; ?>"
-                     <?php echo $is_active ? '' : 'hidden'; ?>>
+                     <?php echo $is_active ? '' : 'hidden="hidden"'; ?>>
                     <?php echo wp_kses_post( wpautop( do_shortcode( $tab['acf_tab_content'] ) ) ); ?>
                 </div>
             <?php endforeach; ?>

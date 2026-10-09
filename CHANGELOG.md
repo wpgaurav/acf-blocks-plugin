@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.12.2] - 2026-10-09
+
+### Fixed
+- Video facades request YouTube's 1280 × 720 thumbnail instead of the 480 × 360 image. The image fills the default 16:9 frame without theme image rules changing its height. Videos without an HD thumbnail fall back to the available image.
+- YouTube players send the embedding site's origin using an explicit referrer policy. Editor previews use a normal document on the site because the editor's blob canvas cannot send an HTTP referrer, which causes Error 153. Previews load eagerly; autoplay and click-to-play embeds also carry the policy.
+- Email Form control styles are scoped to the form, so the shared `.acf-input` class no longer adds padding, borders or backgrounds to ACF inspector fields.
+- Site-specific editor stylesheets saved by Block Manager regenerate after a plugin update so stale inspector styles do not survive in the uploads directory.
+- Shorts, live, privacy-enhanced YouTube URLs, and Vimeo player/channel/group URLs render correctly. Vimeo unlisted privacy hashes and YouTube share timestamps are preserved; missing controls settings keep controls enabled, and Vimeo honors the controls switch.
+- Videos inserted by AJAX initialize correctly, and lazy loading leaves other plugins' videos alone. Invalid provider URLs show an explanatory editor placeholder.
+- Email Form labels follow custom input IDs. Boolean attributes retain their state in ACF's editor preview, including hidden form and star-rating messages, inactive tab panels, required inputs, and video playback settings.
+- Editor stylesheets are written atomically, recently generated bundles are retained during overlapping requests, and missing or stale settings bundles are rebuilt.
+
+### Changed
+- Video facade and lazy-load behavior is loaded through the block's conditional `viewScript` asset instead of an inline script. Players have accessible titles and intrinsic widescreen dimensions.
+- Release tags are checked against version metadata, generated assets and tests before packaging. Development dependencies are excluded from the upload ZIP.
+
 All notable changes to the ACF Blocks plugin are documented here.
 
 ## [2.12.1] - 2026-10-03

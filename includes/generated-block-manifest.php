@@ -8191,6 +8191,7 @@ return array (
       ),
       'style' => 'file:./video.css',
       'editorStyle' => 'file:./video.css',
+      'viewScript' => 'file:./video.js',
     ),
     'field_groups' => 
     array (
