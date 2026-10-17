@@ -1,0 +1,33 @@
+{
+  "apiVersion": 3,
+  "name": "acf/trust-bar",
+  "title": "Trust Bar",
+  "description": "A short row of guarantees, shipping promises, or other reasons to trust the offer.",
+  "category": "acf-marketing",
+  "icon": "shield",
+  "keywords": ["trust", "guarantee", "badge", "shipping", "secure", "marketing"],
+  "acf": {
+    "renderTemplate": "trust-bar.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "mode": true,
+    "anchor": true,
+    "jsx": false
+  },
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "acf_trust_items": {
+          "row-0": { "trust_icon": "↩", "trust_title": "30-day returns", "trust_text": "No questions asked." },
+          "row-1": { "trust_icon": "🔒", "trust_title": "Secure checkout", "trust_text": "Encrypted payment." },
+          "row-2": { "trust_icon": "🚚", "trust_title": "Free shipping", "trust_text": "On orders over $50." }
+        }
+      }
+    }
+  },
+  "style": "file:./trust-bar.css",
+  "editorStyle": "file:./trust-bar.css"
+}

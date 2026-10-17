@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.13.0] - 2026-10-17
+
+### Added
+- **Pricing, Logo Cloud, Steps, and Trust Bar.** Four marketing blocks for landing pages: plan cards with one highlighted tier, a logo row (with an optional grayscale style), a numbered “how it works” sequence, and a strip of guarantees. Every field is optional. They register in a new **ACF Marketing** inserter category and do not change how existing blocks are stored or rendered.
+- **Hero image position.** Background (the original cover image), left, right, or stacked. An empty or Background value keeps the previous markup, with no extra class. An optional overlay color is printed only on the background layout, and only when a color is set.
+- **CTA alignment and a second button.** Centered text is unchanged. Left or right adds a modifier class. A second classic button renders only when it has both a label and a URL. “Open in a new tab” adds `target` and `rel` only when it is switched on, for both the hero and CTA classic buttons.
+
+### Fixed
+- **Colors in style attributes are limited to real color values.** Section, callout, CTA, product cards, compare, product box badges, and the thread connector previously printed the picker value after HTML escaping, which still allowed a second CSS declaration. Hex (including 4- and 8-digit), `rgb()`/`hsl()`, `transparent`, and `currentColor` pass through. The product box badge, product card header, and thread connector keep their previous fallback colors when the field is empty.
+- **Section custom tags can no longer open another element.** A custom tag is accepted only as a single tag name. `script`, `svg`, and values such as `img src=x` fall back to `section`. Ordinary tags such as `article` and `blockquote` still work.
+- **Checklist cards no longer pin a light panel in dark mode.** The old `#f9fafb` background was written inline, so it beat the theme token. That legacy value is now omitted. A color an editor actually chose is still written. The green accent default (`#16a34a`) is unchanged, including when the field is empty.
+- **ACF true/false values of `"0"` are off.** A plain boolean cast treats the string `"0"` as true, so an unchecked checklist item, an unchecked “verified” mark, and the checklist toggles could render as on. `"1"`, `1`, and `true` still mean on.
+- **Stats stay at their real number until the count-up starts.** The script used to set every value to 0 before the block scrolled into view, so a stat that never intersected (a closed disclosure, print, or a missed observer) stayed at 0. Numbers with thousands separators also count the full value. Blocks added after the first paint, including infinite scroll, start the same way.
+- **Coupon copy no longer depends on an inline handler.** The button stores the code in `data-code`, and a conditional view script copies it. If the async clipboard is denied, it falls back to a textarea selection instead of failing silently.
+
+### Compatibility
+Blocks saved by 2.12.x render with the same classes and the same visible colors, with three intentional exceptions: a checklist whose background is still the old `#f9fafb` default follows the theme surface; a true/false stored as `"0"` is treated as off; and an unsafe color or custom HTML tag is dropped rather than printed. New hero, CTA, and marketing fields do nothing when they are empty.
+
 ## [2.12.2] - 2026-10-09
 
 ### Fixed

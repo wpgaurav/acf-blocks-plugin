@@ -16,5 +16,6 @@
     "anchor": true
   },
   "style": "file:./coupon-code.css",
-  "editorStyle": "file:./coupon-code.css"
+  "editorStyle": "file:./coupon-code.css",
+  "viewScript": "file:./coupon-code.js"
 }

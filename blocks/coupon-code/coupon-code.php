@@ -28,7 +28,7 @@ $block_id = 'coupon-' . ( $block['id'] ?? wp_unique_id() );
         <?php if ( $coupon_code ) : ?>
             <div class="acf-coupon-code-container">
                 <span class="acf-coupon-code-text"><?php echo esc_html( $coupon_code ); ?></span>
-                <button type="button" class="acf-coupon-copy-btn" onclick="acfBlocksCopyCoupon(this, '<?php echo esc_js( $coupon_code ); ?>')">
+                <button type="button" class="acf-coupon-copy-btn" data-code="<?php echo esc_attr( $coupon_code ); ?>" data-copied-label="<?php echo esc_attr( __( 'Copied!', 'acf-blocks' ) ); ?>">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                         <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
                     </svg>
@@ -49,37 +49,3 @@ $block_id = 'coupon-' . ( $block['id'] ?? wp_unique_id() );
     </div>
 </div>
 
-<?php
-// Output the copy script once per page
-if ( ! defined( 'ACF_BLOCKS_COUPON_SCRIPT_LOADED' ) ) :
-    define( 'ACF_BLOCKS_COUPON_SCRIPT_LOADED', true );
-    ?>
-    <script>
-    function acfBlocksCopyCoupon(btn, code) {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(code).then(function() {
-                var textSpan = btn.querySelector('.btn-text');
-                var originalText = textSpan.textContent;
-                textSpan.textContent = '<?php echo esc_js( __( 'Copied!', 'acf-blocks' ) ); ?>';
-                setTimeout(function() {
-                    textSpan.textContent = originalText;
-                }, 2000);
-            });
-        } else {
-            // Fallback for older browsers
-            var tempInput = document.createElement('input');
-            tempInput.value = code;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
-            var textSpan = btn.querySelector('.btn-text');
-            var originalText = textSpan.textContent;
-            textSpan.textContent = '<?php echo esc_js( __( 'Copied!', 'acf-blocks' ) ); ?>';
-            setTimeout(function() {
-                textSpan.textContent = originalText;
-            }, 2000);
-        }
-    }
-    </script>
-<?php endif; ?>

@@ -1,0 +1,84 @@
+{
+  "key": "group_acf_steps_block",
+  "title": "Steps Block",
+  "fields": [
+    {
+      "key": "field_acf_steps_heading",
+      "label": "Heading",
+      "name": "acf_steps_heading",
+      "type": "text",
+      "required": 0
+    },
+    {
+      "key": "field_acf_steps_heading_tag",
+      "label": "Heading Tag",
+      "name": "acf_steps_heading_tag",
+      "type": "select",
+      "required": 0,
+      "choices": {
+        "h2": "H2",
+        "h3": "H3",
+        "h1": "H1",
+        "p": "Paragraph"
+      },
+      "default_value": "h2"
+    },
+    {
+      "key": "field_acf_steps_intro",
+      "label": "Introduction",
+      "name": "acf_steps_intro",
+      "type": "textarea",
+      "rows": 2,
+      "required": 0,
+      "new_lines": ""
+    },
+    {
+      "key": "field_acf_steps_items",
+      "label": "Steps",
+      "name": "acf_steps_items",
+      "type": "repeater",
+      "required": 0,
+      "layout": "block",
+      "button_label": "Add Step",
+      "sub_fields": [
+        {
+          "key": "field_acf_step_icon",
+          "label": "Icon",
+          "name": "step_icon",
+          "type": "text",
+          "instructions": "Optional emoji or icon class. The step number is always shown.",
+          "required": 0
+        },
+        {
+          "key": "field_acf_step_title",
+          "label": "Title",
+          "name": "step_title",
+          "type": "text",
+          "required": 0
+        },
+        {
+          "key": "field_acf_step_text",
+          "label": "Text",
+          "name": "step_text",
+          "type": "textarea",
+          "rows": 3,
+          "required": 0,
+          "new_lines": "br"
+        }
+      ]
+    }
+  ],
+  "location": [
+    [
+      {
+        "param": "block",
+        "operator": "==",
+        "value": "acf/steps"
+      }
+    ]
+  ],
+  "active": true,
+  "acf": {
+    "blockVersion": 3
+  }
+}

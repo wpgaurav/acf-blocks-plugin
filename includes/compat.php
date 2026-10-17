@@ -188,7 +188,9 @@ function acf_blocks_cast_field_value( $value, $type ) {
             break;
 
         case 'bool':
-            $value = (bool) $value;
+            // ACF stores true/false as the strings "1" and "0". A plain
+            // (bool) cast treats "0" as true.
+            $value = acf_blocks_is_on( $value );
             break;
 
         case 'int':
@@ -730,4 +732,180 @@ function acf_blocks_resolve_nested_parts( $parts, $start, $data ) {
     }
 
     return null;
+}
+
+/**
+ * Accept a CSS color that is safe to place inside a style attribute.
+ *
+ * Color pickers store hex, including 4- and 8-digit forms when opacity is on,
+ * or rgb()/hsl() functions. Anything else — a named color, a variable, or a
+ * value that could add another declaration — is dropped.
+ *
+ * @param mixed $color Raw color.
+ * @return string Sanitized color, or ''.
+ */
+function acf_blocks_sanitize_css_color( $color ) {
+    $color = trim( (string) $color );
+    if ( '' === $color || strlen( $color ) > 80 ) {
+        return '';
+    }
+    if ( preg_match( '/[;{}\\\\<>"\']|url\s*\(|expression\s*\(/i', $color ) ) {
+        return '';
+    }
+    if ( preg_match( '/^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i', $color ) ) {
+        return strtolower( $color );
+    }
+
+    $lower = strtolower( $color );
+    if ( 'transparent' === $lower || 'currentcolor' === $lower ) {
+        return $lower;
+    }
+
+    $num   = '(?:0|[1-9]\d{0,2})(?:\.\d+)?%?';
+    $alpha = '(?:0|1|0?\.\d+|\d{1,3}%)';
+    $hue   = '(?:0|[1-9]\d{0,2})(?:\.\d+)?(?:deg|rad|turn|grad)?';
+    $pct   = '(?:0|[1-9]\d{0,2})(?:\.\d+)?%';
+    $forms = array(
+        '/^rgba?\(\s*' . $num . '(?:\s*,\s*' . $num . '){2}(?:\s*,\s*' . $alpha . ')?\s*\)$/',
+        '/^rgba?\(\s*' . $num . '(?:\s+' . $num . '){2}(?:\s*\/\s*' . $alpha . ')?\s*\)$/',
+        '/^hsla?\(\s*' . $hue . '\s*,\s*' . $pct . '\s*,\s*' . $pct . '(?:\s*,\s*' . $alpha . ')?\s*\)$/',
+        '/^hsla?\(\s*' . $hue . '\s+' . $pct . '\s+' . $pct . '(?:\s*\/\s*' . $alpha . ')?\s*\)$/',
+    );
+    foreach ( $forms as $form ) {
+        if ( preg_match( $form, $lower ) ) {
+            return preg_replace( '/\s+/', ' ', $lower );
+        }
+    }
+
+    return '';
+}
+
+/**
+ * Keep a single HTML tag name and refuse raw-text or script-bearing tags.
+ *
+ * @param mixed  $tag      Requested tag.
+ * @param string $fallback Tag used when the request is not a safe name.
+ * @return string Safe tag name.
+ */
+function acf_blocks_sanitize_html_tag( $tag, $fallback = 'div' ) {
+    $denied = array(
+        'script', 'style', 'iframe', 'object', 'embed', 'link', 'meta', 'base',
+        'form', 'svg', 'math', 'textarea', 'title', 'noscript', 'template',
+    );
+    $clean = acf_blocks_match_html_tag( $tag, $denied );
+    if ( '' !== $clean ) {
+        return $clean;
+    }
+    $clean = acf_blocks_match_html_tag( $fallback, $denied );
+    return '' !== $clean ? $clean : 'div';
+}
+
+/**
+ * @param mixed $tag    Candidate tag.
+ * @param array $denied Tag names that must never be emitted.
+ * @return string
+ */
+function acf_blocks_match_html_tag( $tag, $denied ) {
+    $tag = strtolower( trim( (string) $tag ) );
+    if ( ! preg_match( '/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/', $tag ) ) {
+        return '';
+    }
+    if ( in_array( $tag, $denied, true ) ) {
+        return '';
+    }
+    return $tag;
+}
+
+/**
+ * Read an ACF true/false value. The string "0" is off.
+ *
+ * @param mixed $value Raw value.
+ * @return bool
+ */
+function acf_blocks_is_on( $value ) {
+    return true === $value || 1 === $value || '1' === $value;
+}
+
+/**
+ * Limit a button style to the variants the stylesheets define.
+ *
+ * @param mixed $style Raw style value.
+ * @return string primary, secondary, outline, or ''.
+ */
+function acf_blocks_button_variant( $style ) {
+    $style = strtolower( trim( (string) $style ) );
+    return in_array( $style, array( 'primary', 'secondary', 'outline' ), true ) ? $style : '';
+}
+
+/**
+ * target and rel for an optional new-tab link. Empty when the switch is off,
+ * so older blocks keep the attributes they already had (none).
+ *
+ * @param mixed $new_tab True when the link should open in a new tab.
+ * @return string Leading space plus attributes, or ''.
+ */
+function acf_blocks_link_target_attrs( $new_tab ) {
+    if ( ! (bool) (int) $new_tab ) {
+        return '';
+    }
+    return ' target="_blank" rel="noopener noreferrer"';
+}
+
+/**
+ * Checklist colors. The accent default stays so existing lists keep their
+ * green checks. The light panel that older versions wrote inline (#f9fafb)
+ * is omitted: an inline custom property beats the stylesheet, and that
+ * near-white surface stayed light in dark mode.
+ *
+ * @param mixed $accent     Accent color.
+ * @param mixed $background Background color.
+ * @return string Custom properties, always ending with ';'.
+ */
+function acf_blocks_checklist_style( $accent, $background ) {
+    $accent = acf_blocks_sanitize_css_color( $accent );
+    if ( '' === $accent ) {
+        $accent = '#16a34a';
+    }
+    $parts = array( '--checklist-accent:' . $accent );
+
+    $background = acf_blocks_sanitize_css_color( $background );
+    if ( '' !== $background && '#f9fafb' !== $background ) {
+        $parts[] = '--checklist-bg:' . $background;
+    }
+
+    return implode( ';', $parts ) . ';';
+}
+
+/**
+ * Non-empty lines from a textarea, in order.
+ *
+ * @param mixed $value Raw text.
+ * @return array
+ */
+function acf_blocks_lines( $value ) {
+    $lines = preg_split( '/\r\n|\r|\n/', (string) $value );
+    if ( ! is_array( $lines ) ) {
+        return array();
+    }
+    $out = array();
+    foreach ( $lines as $line ) {
+        $line = trim( $line );
+        if ( '' !== $line ) {
+            $out[] = $line;
+        }
+    }
+    return $out;
+}
+
+/**
+ * Return $value when it is one of $allowed, otherwise $default.
+ *
+ * @param mixed  $value   Raw value.
+ * @param array  $allowed Allowed values.
+ * @param string $default Fallback.
+ * @return string
+ */
+function acf_blocks_choice( $value, $allowed, $default ) {
+    $value = (string) $value;
+    return in_array( $value, $allowed, true ) ? $value : $default;
 }

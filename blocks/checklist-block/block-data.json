@@ -97,8 +97,8 @@
                 "label": "Background Color",
                 "name": "checklist_bg_color",
                 "type": "color_picker",
-                "instructions": "Background color (for Card style)",
-                "default_value": "#f9fafb"
+                "instructions": "Background color for the Card style. Leave empty to follow the theme, including dark mode.",
+                "default_value": ""
             }
         ],
         "location": [

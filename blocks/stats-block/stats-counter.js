@@ -60,15 +60,25 @@
       return; // Keep the static numbers as-is
     }
 
-    // Store targets and reset to 0
+    // Keep the printed number until the count-up actually starts. Zeroing
+    // first left the stat at 0 when the block never intersected (closed
+    // disclosures, print, or a failed observer).
     var targets = [];
     values.forEach(function (el) {
       var parent = el.closest('.acf-stat-number');
       var raw = parent ? parent.getAttribute('data-target') : el.textContent;
-      var num = parseFloat(raw) || 0;
+      var num = parseFloat(String(raw).replace(/,/g, '')) || 0;
       targets.push({ el: el, target: num });
-      el.textContent = '0';
     });
+
+    function play() {
+      targets.forEach(function (t, i) {
+        setTimeout(function () {
+          t.el.textContent = '0';
+          animateValue(t.el, t.target, baseDuration);
+        }, i * 80);
+      });
+    }
 
     // Observe with IntersectionObserver
     if ('IntersectionObserver' in window) {
@@ -76,12 +86,7 @@
         function (entries) {
           entries.forEach(function (entry) {
             if (entry.isIntersecting) {
-              targets.forEach(function (t, i) {
-                // Stagger start by 80ms per item
-                setTimeout(function () {
-                  animateValue(t.el, t.target, baseDuration);
-                }, i * 80);
-              });
+              play();
               observer.unobserve(entry.target);
             }
           });
@@ -90,10 +95,7 @@
       );
       observer.observe(block);
     } else {
-      // Fallback: animate immediately
-      targets.forEach(function (t) {
-        animateValue(t.el, t.target, baseDuration);
-      });
+      play();
     }
   }
 
@@ -110,6 +112,20 @@
     document.addEventListener('DOMContentLoaded', initAll);
   } else {
     initAll();
+  }
+
+  // Infinite scroll and editor previews can insert a stats block after load.
+  if (typeof MutationObserver !== 'undefined') {
+    new MutationObserver(function (records) {
+      var added = records.some(function (record) {
+        return Array.prototype.some.call(record.addedNodes, function (node) {
+          return node.nodeType === 1 && (node.matches('.acf-stats-block') || node.querySelector('.acf-stats-block'));
+        });
+      });
+      if (added) {
+        initAll();
+      }
+    }).observe(document.documentElement, { childList: true, subtree: true });
   }
 
   // Also re-init on block editor preview changes (for ACF block previews)

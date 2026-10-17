@@ -90,6 +90,60 @@
             "required": 0
         },
         {
+            "key": "acf_cta_align",
+            "label": "Alignment",
+            "name": "acf_cta_align",
+            "type": "select",
+            "instructions": "Center matches the original layout.",
+            "required": 0,
+            "choices": {
+                "center": "Center",
+                "start": "Left",
+                "end": "Right"
+            },
+            "default_value": "center"
+        },
+        {
+            "key": "acf_cta_button_2_text",
+            "label": "Second Button Text",
+            "name": "acf_cta_button_2_text",
+            "type": "text",
+            "instructions": "Optional second button for the classic fields. Leave empty to keep a single button.",
+            "required": 0
+        },
+        {
+            "key": "acf_cta_button_2_url",
+            "label": "Second Button URL",
+            "name": "acf_cta_button_2_url",
+            "type": "url",
+            "instructions": "Where the second button links.",
+            "required": 0
+        },
+        {
+            "key": "acf_cta_button_2_style",
+            "label": "Second Button Style",
+            "name": "acf_cta_button_2_style",
+            "type": "select",
+            "instructions": "Select the second button style.",
+            "required": 0,
+            "choices": {
+                "outline": "Outline",
+                "primary": "Primary",
+                "secondary": "Secondary"
+            },
+            "default_value": "outline"
+        },
+        {
+            "key": "acf_cta_button_new_tab",
+            "label": "Open Buttons in a New Tab",
+            "name": "acf_cta_button_new_tab",
+            "type": "true_false",
+            "instructions": "Applies to the classic buttons. Inner button blocks use their own link settings.",
+            "required": 0,
+            "default_value": 0,
+            "ui": 1
+        },
+        {
             "key": "acf_cta_class",
             "label": "Custom CSS Class",
             "name": "acf_cta_class",

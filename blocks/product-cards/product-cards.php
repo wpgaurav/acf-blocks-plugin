@@ -11,8 +11,14 @@
  */
 
 $title = acf_blocks_get_field('pc_block_title', $block);
-$title_color = acf_blocks_get_field('pc_block_title_color', $block) ?: '#FFFFFF';
-$title_bg_color = acf_blocks_get_field('pc_block_title_bg_color', $block) ?: '#007bff';
+$title_color = acf_blocks_sanitize_css_color( acf_blocks_get_field('pc_block_title_color', $block) );
+$title_bg_color = acf_blocks_sanitize_css_color( acf_blocks_get_field('pc_block_title_bg_color', $block) );
+if ( '' === $title_color ) {
+    $title_color = '#ffffff';
+}
+if ( '' === $title_bg_color ) {
+    $title_bg_color = '#007bff';
+}
 $title_tag_raw = acf_blocks_get_field('pc_block_title_tag', $block);
 $title_tag = acf_blocks_validate_heading_tag( $title_tag_raw, 'p' );
 $image_raw = acf_blocks_get_field('pc_block_product_image', $block);

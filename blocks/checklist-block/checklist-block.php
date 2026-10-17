@@ -22,8 +22,10 @@ $items         = acf_blocks_get_repeater( 'checklist_items', [ 'checklist_item_t
 $interactive   = acf_blocks_get_field( 'checklist_interactive', $block );
 $show_progress = acf_blocks_get_field( 'checklist_show_progress', $block );
 $strikethrough = acf_blocks_get_field( 'checklist_strikethrough', $block );
-$accent_color  = acf_blocks_get_field( 'checklist_accent_color', $block ) ?: '#16a34a';
-$bg_color      = acf_blocks_get_field( 'checklist_bg_color', $block ) ?: '#f9fafb';
+$checklist_style = acf_blocks_checklist_style(
+    acf_blocks_get_field( 'checklist_accent_color', $block ),
+    acf_blocks_get_field( 'checklist_bg_color', $block )
+);
 
 // Build wrapper classes
 $wrapper_classes = array( 'acf-checklist' );
@@ -36,11 +38,11 @@ if ( $className ) {
     $wrapper_classes[] = $className;
 }
 
-if ( $interactive ) {
+if ( acf_blocks_is_on( $interactive ) ) {
     $wrapper_classes[] = 'acf-checklist--interactive';
 }
 
-if ( $strikethrough ) {
+if ( acf_blocks_is_on( $strikethrough ) ) {
     $wrapper_classes[] = 'acf-checklist--strikethrough';
 }
 
@@ -62,13 +64,13 @@ $block_id = 'checklist-' . wp_unique_id();
 $anchor_attr = $anchor ? ' id="' . esc_attr( $anchor ) . '"' : '';
 ?>
 
-<div <?php echo $anchor_attr; ?> class="<?php echo esc_attr( implode( ' ', $wrapper_classes ) ); ?>" data-checklist-id="<?php echo esc_attr( $block_id ); ?>" style="--checklist-accent:<?php echo esc_attr( $accent_color ); ?>;--checklist-bg:<?php echo esc_attr( $bg_color ); ?>;">
+<div <?php echo $anchor_attr; ?> class="<?php echo esc_attr( implode( ' ', $wrapper_classes ) ); ?>" data-checklist-id="<?php echo esc_attr( $block_id ); ?>" style="<?php echo esc_attr( $checklist_style ); ?>">
 
     <?php if ( ! empty( $title ) ) : ?>
         <h3 class="acf-checklist__title"><?php echo esc_html( $title ); ?></h3>
     <?php endif; ?>
 
-    <?php if ( $show_progress && $total_items > 0 ) : ?>
+    <?php if ( acf_blocks_is_on( $show_progress ) && $total_items > 0 ) : ?>
         <div class="acf-checklist__progress">
             <div class="acf-checklist__progress-bar">
                 <div class="acf-checklist__progress-fill" style="width: <?php echo esc_attr( $progress_percent ); ?>%;"></div>
@@ -115,7 +117,7 @@ $anchor_attr = $anchor ? ' id="' . esc_attr( $anchor ) . '"' : '';
     <?php endif; ?>
 </div>
 
-<?php if ( $interactive && ! $is_preview ) : ?>
+<?php if ( acf_blocks_is_on( $interactive ) && ! $is_preview ) : ?>
 <script>
 (function() {
     var block = document.querySelector('[data-checklist-id="<?php echo esc_js( $block_id ); ?>"]');

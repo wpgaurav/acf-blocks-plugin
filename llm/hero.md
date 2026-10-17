@@ -20,6 +20,9 @@ Create a hero section block with headline, subheadline, image, and call-to-actio
 | `acf_hero_cta_text` | CTA Button Text | text | Call-to-action button label |
 | `acf_hero_cta_url` | CTA Button URL | url | Button link |
 | `acf_hero_cta_style` | CTA Style | select | primary, secondary, outline |
+| `acf_hero_media` | Image Position | select | `background` (default, original cover), `left`, `right`, `stacked`. Empty or `background` keeps the original markup |
+| `acf_hero_overlay` | Background Overlay | color_picker | Optional. Printed only on the background layout |
+| `acf_hero_cta_new_tab` | New tab | true/false | `0` or `1`. Classic CTA only |
 | `acf_hero_class` | Custom Class | text | Optional CSS class |
 | `acf_hero_inline` | Inline Styles | text | Optional inline CSS |
 

@@ -30,6 +30,15 @@ if ( $image_url ) {
 $custom_class = acf_blocks_get_field( 'acf_hero_class', $block );
 $custom_class = $custom_class ? ' ' . esc_attr( $custom_class ) : '';
 
+// background keeps the original cover treatment. Other positions add a modifier.
+$media_position = acf_blocks_choice(
+    acf_blocks_get_field( 'acf_hero_media', $block ),
+    array( 'background', 'left', 'right', 'stacked' ),
+    'background'
+);
+$overlay_color = acf_blocks_sanitize_css_color( acf_blocks_get_field( 'acf_hero_overlay', $block ) );
+$cta_new_tab   = acf_blocks_get_field( 'acf_hero_cta_new_tab', $block );
+
 $inline_style = acf_blocks_get_field( 'acf_hero_inline', $block );
 $inline_style_attr = $inline_style ? ' style="' . esc_attr( $inline_style ) . '"' : '';
 
@@ -38,7 +47,7 @@ $legacy_headline    = acf_blocks_get_field( 'acf_hero_headline', $block );
 $legacy_subheadline = acf_blocks_get_field( 'acf_hero_subheadline', $block );
 $legacy_cta_text    = acf_blocks_get_field( 'acf_hero_cta_text', $block );
 $legacy_cta_url     = acf_blocks_get_field( 'acf_hero_cta_url', $block );
-$legacy_cta_style   = acf_blocks_get_field( 'acf_hero_cta_style', $block );
+$legacy_cta_style   = acf_blocks_button_variant( acf_blocks_get_field( 'acf_hero_cta_style', $block ) );
 $has_legacy_content = $legacy_headline || $legacy_subheadline || $legacy_cta_text;
 
 // Headline tag selection (h1-h6, p, span) - defaults to h1
@@ -63,11 +72,24 @@ $inner_blocks_template = [
 ];
 ?>
 
-<div class="acf-hero-block<?php echo $custom_class; ?>"<?php echo $inline_style_attr; ?>>
+<?php
+$hero_classes = 'acf-hero-block';
+if ( $img_src && 'left' === $media_position ) {
+    $hero_classes .= ' acf-hero-block--split';
+} elseif ( $img_src && 'right' === $media_position ) {
+    $hero_classes .= ' acf-hero-block--split acf-hero-block--end';
+} elseif ( $img_src && 'stacked' === $media_position ) {
+    $hero_classes .= ' acf-hero-block--stacked';
+}
+?>
+<div class="<?php echo esc_attr( $hero_classes ); ?><?php echo $custom_class; ?>"<?php echo $inline_style_attr; ?>>
     <?php if ( $img_src ) : ?>
         <div class="acf-hero-image">
             <img src="<?php echo esc_url( $img_src ); ?>" alt="<?php echo esc_attr( $img_alt ); ?>"<?php if ( ! empty( $resolved['srcset'] ) ) : ?> srcset="<?php echo esc_attr( $resolved['srcset'] ); ?>" sizes="<?php echo esc_attr( $resolved['sizes'] ); ?>"<?php endif; ?> fetchpriority="high" decoding="async" />
         </div>
+        <?php if ( $overlay_color && 'background' === $media_position ) : ?>
+            <div class="acf-hero-overlay" style="background-color: <?php echo esc_attr( $overlay_color ); ?>"></div>
+        <?php endif; ?>
     <?php endif; ?>
 
     <div class="acf-hero-content">
@@ -82,7 +104,7 @@ $inner_blocks_template = [
             <?php endif; ?>
 
             <?php if ( $legacy_cta_text && $legacy_cta_url ) : ?>
-                <a href="<?php echo esc_url( $legacy_cta_url ); ?>" class="acf-hero-cta <?php echo esc_attr( $legacy_cta_style ); ?>">
+                <a href="<?php echo esc_url( $legacy_cta_url ); ?>" class="acf-hero-cta<?php echo $legacy_cta_style ? ' ' . esc_attr( $legacy_cta_style ) : ''; ?>"<?php echo acf_blocks_link_target_attrs( $cta_new_tab ); ?>>
                     <?php echo esc_html( $legacy_cta_text ); ?>
                 </a>
             <?php endif; ?>
