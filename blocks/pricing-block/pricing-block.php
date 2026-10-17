@@ -37,14 +37,40 @@ $plans   = acf_blocks_get_repeater(
     $block
 );
 
-$classes = array( 'acf-pricing', 'acf-pricing--cols-' . $columns );
-if ( ! empty( $block['align'] ) ) {
-    $classes[] = 'align' . $block['align'];
+$plans = array_values( array_filter( $plans, static function ( $plan ) {
+    foreach ( array( 'plan_name', 'plan_badge', 'plan_price', 'plan_text', 'plan_features', 'plan_button_text', 'plan_button_url' ) as $key ) {
+        if ( '' !== trim( (string) ( $plan[ $key ] ?? '' ) ) ) {
+            return true;
+        }
+    }
+    return false;
+} ) );
+
+$column_count = (int) $columns;
+if ( $plans && count( $plans ) < $column_count ) {
+    $column_count = count( $plans );
+}
+
+$classes = array( 'acf-pricing', 'acf-pricing--cols-' . $column_count );
+$align   = acf_blocks_choice( $block['align'] ?? '', array( 'left', 'center', 'right', 'wide', 'full' ), '' );
+if ( $align ) {
+    $classes[] = 'align' . $align;
 }
 if ( ! empty( $block['className'] ) ) {
     $classes[] = $block['className'];
 }
 $anchor = ! empty( $block['anchor'] ) ? ' id="' . esc_attr( $block['anchor'] ) . '"' : '';
+
+if ( ! $heading && ! $intro && ! $plans && empty( $is_preview ) ) {
+    return;
+}
+
+$plan_tag = 'h3';
+if ( ! $heading || 'h1' === $tag || 'p' === $tag ) {
+    $plan_tag = 'h2';
+} elseif ( 'h3' === $tag ) {
+    $plan_tag = 'h4';
+}
 ?>
 
 <section<?php echo $anchor; ?> class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>">
@@ -66,14 +92,14 @@ $anchor = ! empty( $block['anchor'] ) ? ' id="' . esc_attr( $block['anchor'] ) .
                 $featured = ! empty( $plan['plan_highlight'] );
                 $name     = $plan['plan_name'] ?? '';
                 $button   = $plan['plan_button_text'] ?? '';
-                $url      = $plan['plan_button_url'] ?? '';
+                $url      = esc_url( $plan['plan_button_url'] ?? '' );
                 ?>
                 <article class="acf-pricing__plan<?php echo $featured ? ' is-featured' : ''; ?>">
                     <?php if ( ! empty( $plan['plan_badge'] ) ) : ?>
                         <p class="acf-pricing__badge"><?php echo esc_html( $plan['plan_badge'] ); ?></p>
                     <?php endif; ?>
                     <?php if ( $name ) : ?>
-                        <h3 class="acf-pricing__name"><?php echo esc_html( $name ); ?></h3>
+                        <<?php echo $plan_tag; ?> class="acf-pricing__name"><?php echo esc_html( $name ); ?></<?php echo $plan_tag; ?>>
                     <?php endif; ?>
                     <?php if ( ! empty( $plan['plan_price'] ) ) : ?>
                         <p class="acf-pricing__price">

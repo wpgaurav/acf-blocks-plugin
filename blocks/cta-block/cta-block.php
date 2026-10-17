@@ -82,16 +82,26 @@ $inner_blocks_template = [
                 </div>
             <?php endif; ?>
 
-            <?php if ( $legacy_button_text && $legacy_button_url ) : ?>
+            <?php
+            $has_first_button  = $legacy_button_text && $legacy_button_url;
+            $has_second_button = $legacy_button_2_text && $legacy_button_2_url;
+            ?>
+            <?php if ( $has_first_button && $has_second_button ) : ?>
+                <div class="acf-cta-actions">
+            <?php endif; ?>
+            <?php if ( $has_first_button ) : ?>
                 <a href="<?php echo esc_url( $legacy_button_url ); ?>" class="acf-cta-button<?php echo $legacy_button_style ? ' ' . esc_attr( $legacy_button_style ) : ''; ?>"<?php echo acf_blocks_link_target_attrs( $button_new_tab ); ?>>
                     <?php echo esc_html( $legacy_button_text ); ?>
                 </a>
             <?php endif; ?>
 
-            <?php if ( $legacy_button_2_text && $legacy_button_2_url ) : ?>
+            <?php if ( $has_second_button ) : ?>
                 <a href="<?php echo esc_url( $legacy_button_2_url ); ?>" class="acf-cta-button<?php echo $legacy_button_2_style ? ' ' . esc_attr( $legacy_button_2_style ) : ''; ?>"<?php echo acf_blocks_link_target_attrs( $button_new_tab ); ?>>
                     <?php echo esc_html( $legacy_button_2_text ); ?>
                 </a>
+            <?php endif; ?>
+            <?php if ( $has_first_button && $has_second_button ) : ?>
+                </div>
             <?php endif; ?>
         <?php else : ?>
             <InnerBlocks template="<?php echo esc_attr( wp_json_encode( $inner_blocks_template ) ); ?>" templateLock="false" />

@@ -18,9 +18,20 @@ $items = acf_blocks_get_repeater(
     $block
 );
 
+$items = array_values( array_filter( $items, static function ( $item ) {
+    return '' !== trim( (string) ( $item['trust_title'] ?? '' ) )
+        || '' !== trim( (string) ( $item['trust_text'] ?? '' ) )
+        || '' !== trim( (string) ( $item['trust_icon'] ?? '' ) );
+} ) );
+
+if ( ! $items && empty( $is_preview ) ) {
+    return;
+}
+
 $classes = array( 'acf-trust-bar' );
-if ( ! empty( $block['align'] ) ) {
-    $classes[] = 'align' . $block['align'];
+$align   = acf_blocks_choice( $block['align'] ?? '', array( 'left', 'center', 'right', 'wide', 'full' ), '' );
+if ( $align ) {
+    $classes[] = 'align' . $align;
 }
 if ( ! empty( $block['className'] ) ) {
     $classes[] = $block['className'];
@@ -35,9 +46,6 @@ $anchor = ! empty( $block['anchor'] ) ? ' id="' . esc_attr( $block['anchor'] ) .
                 $title = $item['trust_title'] ?? '';
                 $text  = $item['trust_text'] ?? '';
                 $icon  = acf_blocks_get_icon_markup( $item['trust_icon'] ?? '' );
-                if ( '' === trim( (string) $title ) && '' === trim( (string) $text ) && '' === $icon ) {
-                    continue;
-                }
                 ?>
                 <li class="acf-trust-bar__item">
                     <?php if ( $icon ) : ?>

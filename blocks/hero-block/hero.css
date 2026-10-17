@@ -25,6 +25,7 @@
 	width: auto;
 	height: auto;
 	flex: 1 1 46%;
+	min-width: 0;
 }
 
 .acf-hero-block--split .acf-hero-image img,

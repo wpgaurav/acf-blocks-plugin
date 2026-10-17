@@ -186,8 +186,20 @@
 	margin-inline-start: auto;
 }
 
-.acf-cta-button + .acf-cta-button {
-	margin-inline-start: max(0.75rem, 12px);
+.acf-cta-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: max(0.75rem, 12px);
+}
+
+.acf-cta-block--start .acf-cta-actions {
+	justify-content: flex-start;
+}
+
+.acf-cta-block--end .acf-cta-actions {
+	justify-content: flex-end;
 }
 
 /* blocks/email-form/email-form.css */
@@ -234,6 +246,7 @@
 	width: auto;
 	height: auto;
 	flex: 1 1 46%;
+	min-width: 0;
 }
 
 .acf-hero-block--split .acf-hero-image img,
@@ -399,6 +412,10 @@
 	align-items: stretch;
 }
 
+.acf-pricing--cols-1 .acf-pricing__grid {
+	grid-template-columns: minmax(0, 22rem);
+}
+
 .acf-pricing--cols-2 .acf-pricing__grid {
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -519,6 +536,7 @@
 
 @media (max-width: 640px) {
 	.acf-pricing__grid,
+	.acf-pricing--cols-1 .acf-pricing__grid,
 	.acf-pricing--cols-2 .acf-pricing__grid,
 	.acf-pricing--cols-3 .acf-pricing__grid,
 	.acf-pricing--cols-4 .acf-pricing__grid {
@@ -1047,7 +1065,7 @@
 
 .acf-steps__list {
 	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
 	gap: max(1rem, 16px);
 	margin: 0;
 	padding: 0;

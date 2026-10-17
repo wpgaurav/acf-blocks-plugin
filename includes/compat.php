@@ -762,7 +762,8 @@ function acf_blocks_sanitize_css_color( $color ) {
     }
 
     $num   = '(?:0|[1-9]\d{0,2})(?:\.\d+)?%?';
-    $alpha = '(?:0|1|0?\.\d+|\d{1,3}%)';
+    // 1 and 1.0 are both fully opaque. The second form is what opacity pickers emit.
+    $alpha = '(?:(?:0|1)(?:\.\d+)?|0?\.\d+|\d{1,3}%)';
     $hue   = '(?:0|[1-9]\d{0,2})(?:\.\d+)?(?:deg|rad|turn|grad)?';
     $pct   = '(?:0|[1-9]\d{0,2})(?:\.\d+)?%';
     $forms = array(

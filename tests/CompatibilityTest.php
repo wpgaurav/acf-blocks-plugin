@@ -900,6 +900,8 @@ final class CompatibilityTest extends TestCase {
         $this->assertSame( '#1da1f2', acf_blocks_sanitize_css_color( '#1DA1F2' ) );
         $this->assertSame( '#22c55e80', acf_blocks_sanitize_css_color( '#22C55E80' ) );
         $this->assertSame( 'rgba(10, 20, 30, 0.5)', acf_blocks_sanitize_css_color( 'rgba(10, 20, 30, 0.5)' ) );
+        $this->assertSame( 'rgba(255, 255, 255, 1.0)', acf_blocks_sanitize_css_color( 'rgba(255, 255, 255, 1.0)' ) );
+        $this->assertSame( 'rgb(0 0 0 / 1.0)', acf_blocks_sanitize_css_color( 'rgb(0 0 0 / 1.0)' ) );
         $this->assertSame( 'rgb(255 0 0 / 40%)', acf_blocks_sanitize_css_color( 'RGB(255 0 0 / 40%)' ) );
         $this->assertSame( 'hsla(210, 40%, 50%, 0.4)', acf_blocks_sanitize_css_color( 'hsla(210, 40%, 50%, 0.4)' ) );
         $this->assertSame( 'transparent', acf_blocks_sanitize_css_color( 'Transparent' ) );

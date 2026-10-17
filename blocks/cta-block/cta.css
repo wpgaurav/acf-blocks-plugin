@@ -18,6 +18,18 @@
 	margin-inline-start: auto;
 }
 
-.acf-cta-button + .acf-cta-button {
-	margin-inline-start: max(0.75rem, 12px);
+.acf-cta-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: max(0.75rem, 12px);
+}
+
+.acf-cta-block--start .acf-cta-actions {
+	justify-content: flex-start;
+}
+
+.acf-cta-block--end .acf-cta-actions {
+	justify-content: flex-end;
 }

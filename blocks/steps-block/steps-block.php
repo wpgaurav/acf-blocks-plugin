@@ -25,14 +25,32 @@ $steps = acf_blocks_get_repeater(
     $block
 );
 
+$steps = array_values( array_filter( $steps, static function ( $step ) {
+    return '' !== trim( (string) ( $step['step_title'] ?? '' ) )
+        || '' !== trim( (string) ( $step['step_text'] ?? '' ) )
+        || '' !== trim( (string) ( $step['step_icon'] ?? '' ) );
+} ) );
+
 $classes = array( 'acf-steps' );
-if ( ! empty( $block['align'] ) ) {
-    $classes[] = 'align' . $block['align'];
+$align   = acf_blocks_choice( $block['align'] ?? '', array( 'left', 'center', 'right', 'wide', 'full' ), '' );
+if ( $align ) {
+    $classes[] = 'align' . $align;
 }
 if ( ! empty( $block['className'] ) ) {
     $classes[] = $block['className'];
 }
 $anchor = ! empty( $block['anchor'] ) ? ' id="' . esc_attr( $block['anchor'] ) . '"' : '';
+
+if ( ! $heading && ! $intro && ! $steps && empty( $is_preview ) ) {
+    return;
+}
+
+$step_tag = 'h3';
+if ( ! $heading || 'h1' === $tag || 'p' === $tag ) {
+    $step_tag = 'h2';
+} elseif ( 'h3' === $tag ) {
+    $step_tag = 'h4';
+}
 ?>
 
 <section<?php echo $anchor; ?> class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>">
@@ -54,9 +72,6 @@ $anchor = ! empty( $block['anchor'] ) ? ' id="' . esc_attr( $block['anchor'] ) .
                 $title = $step['step_title'] ?? '';
                 $text  = $step['step_text'] ?? '';
                 $icon  = acf_blocks_get_icon_markup( $step['step_icon'] ?? '' );
-                if ( '' === trim( (string) $title ) && '' === trim( (string) $text ) && '' === $icon ) {
-                    continue;
-                }
                 $step_number++;
                 ?>
                 <li class="acf-steps__item">
@@ -66,7 +81,7 @@ $anchor = ! empty( $block['anchor'] ) ? ' id="' . esc_attr( $block['anchor'] ) .
                             <span class="acf-steps__icon"><?php echo wp_kses_post( $icon ); ?></span>
                         <?php endif; ?>
                         <?php if ( $title ) : ?>
-                            <h3 class="acf-steps__title"><?php echo esc_html( $title ); ?></h3>
+                            <<?php echo $step_tag; ?> class="acf-steps__title"><?php echo esc_html( $title ); ?></<?php echo $step_tag; ?>>
                         <?php endif; ?>
                         <?php if ( $text ) : ?>
                             <div class="acf-steps__text"><?php echo nl2br( wp_kses_post( $text ) ); ?></div>

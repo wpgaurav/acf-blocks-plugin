@@ -30,6 +30,10 @@
 	align-items: stretch;
 }
 
+.acf-pricing--cols-1 .acf-pricing__grid {
+	grid-template-columns: minmax(0, 22rem);
+}
+
 .acf-pricing--cols-2 .acf-pricing__grid {
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -150,6 +154,7 @@
 
 @media (max-width: 640px) {
 	.acf-pricing__grid,
+	.acf-pricing--cols-1 .acf-pricing__grid,
 	.acf-pricing--cols-2 .acf-pricing__grid,
 	.acf-pricing--cols-3 .acf-pricing__grid,
 	.acf-pricing--cols-4 .acf-pricing__grid {
