@@ -528,6 +528,11 @@ function acf_blocks_register_category( $categories ) {
                 'title' => __( 'ACF Blocks', 'acf-blocks' ),
                 'icon'  => 'layout',
             ),
+            array(
+                'slug'  => 'acf-marketing',
+                'title' => __( 'ACF Marketing', 'acf-blocks' ),
+                'icon'  => 'megaphone',
+            ),
         ),
         $categories
     );

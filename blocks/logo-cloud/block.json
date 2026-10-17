@@ -1,0 +1,45 @@
+{
+  "apiVersion": 3,
+  "name": "acf/logo-cloud",
+  "title": "Logo Cloud",
+  "description": "A row of customer or press logos for social proof.",
+  "category": "acf-marketing",
+  "icon": "images-alt2",
+  "keywords": ["logo", "logos", "clients", "trusted", "press", "marketing", "social proof"],
+  "acf": {
+    "renderTemplate": "logo-cloud.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "mode": true,
+    "anchor": true,
+    "jsx": false
+  },
+  "styles": [
+    {
+      "name": "default",
+      "label": "Default",
+      "isDefault": true
+    },
+    {
+      "name": "grayscale",
+      "label": "Grayscale"
+    }
+  ],
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "acf_logo_heading": "Trusted by teams at",
+        "acf_logo_items": {
+          "row-0": { "logo_name": "Northwind" },
+          "row-1": { "logo_name": "Contoso" },
+          "row-2": { "logo_name": "Fabrikam" }
+        }
+      }
+    }
+  },
+  "style": "file:./logo-cloud.css",
+  "editorStyle": "file:./logo-cloud.css"
+}

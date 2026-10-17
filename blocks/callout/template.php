@@ -25,18 +25,21 @@ $bgColor = acf_blocks_get_field('callout_bgColor', $block);
 $textColor = acf_blocks_get_field('callout_textColor', $block);
 $borderColor = acf_blocks_get_field('callout_borderColor', $block);
 
-// Build inline styles
+// Build inline styles from colors the picker actually stored.
 $styles = [];
-if (!empty($bgColor)) {
-    $styles[] = 'background-color: ' . esc_attr($bgColor);
+$bgColor = acf_blocks_sanitize_css_color( $bgColor );
+$textColor = acf_blocks_sanitize_css_color( $textColor );
+$borderColor = acf_blocks_sanitize_css_color( $borderColor );
+if ( '' !== $bgColor ) {
+    $styles[] = 'background-color: ' . $bgColor;
 }
-if (!empty($textColor)) {
-    $styles[] = 'color: ' . esc_attr($textColor);
+if ( '' !== $textColor ) {
+    $styles[] = 'color: ' . $textColor;
 }
-if (!empty($borderColor)) {
-    $styles[] = 'border-color: ' . esc_attr($borderColor);
+if ( '' !== $borderColor ) {
+    $styles[] = 'border-color: ' . $borderColor;
 }
-$style_attr = !empty($styles) ? ' style="' . implode('; ', $styles) . ';"' : '';
+$style_attr = !empty($styles) ? ' style="' . esc_attr( implode( '; ', $styles ) ) . ';"' : '';
 
 // Build classes
 $classes = ['acf-callout'];

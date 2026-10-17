@@ -1,0 +1,155 @@
+{
+  "key": "group_acf_pricing_block",
+  "title": "Pricing Block",
+  "fields": [
+    {
+      "key": "field_acf_pricing_heading",
+      "label": "Heading",
+      "name": "acf_pricing_heading",
+      "type": "text",
+      "required": 0
+    },
+    {
+      "key": "field_acf_pricing_heading_tag",
+      "label": "Heading Tag",
+      "name": "acf_pricing_heading_tag",
+      "type": "select",
+      "required": 0,
+      "choices": {
+        "h2": "H2",
+        "h3": "H3",
+        "h1": "H1",
+        "p": "Paragraph"
+      },
+      "default_value": "h2"
+    },
+    {
+      "key": "field_acf_pricing_intro",
+      "label": "Introduction",
+      "name": "acf_pricing_intro",
+      "type": "textarea",
+      "rows": 2,
+      "required": 0,
+      "new_lines": ""
+    },
+    {
+      "key": "field_acf_pricing_columns",
+      "label": "Columns",
+      "name": "acf_pricing_columns",
+      "type": "select",
+      "required": 0,
+      "choices": {
+        "2": "2",
+        "3": "3",
+        "4": "4"
+      },
+      "default_value": "3"
+    },
+    {
+      "key": "field_acf_pricing_plans",
+      "label": "Plans",
+      "name": "acf_pricing_plans",
+      "type": "repeater",
+      "required": 0,
+      "layout": "block",
+      "button_label": "Add Plan",
+      "sub_fields": [
+        {
+          "key": "field_acf_plan_name",
+          "label": "Plan Name",
+          "name": "plan_name",
+          "type": "text",
+          "required": 0
+        },
+        {
+          "key": "field_acf_plan_badge",
+          "label": "Badge",
+          "name": "plan_badge",
+          "type": "text",
+          "instructions": "Optional label such as Most popular.",
+          "required": 0
+        },
+        {
+          "key": "field_acf_plan_price",
+          "label": "Price",
+          "name": "plan_price",
+          "type": "text",
+          "instructions": "Shown as written, for example $29 or Free.",
+          "required": 0
+        },
+        {
+          "key": "field_acf_plan_period",
+          "label": "Period",
+          "name": "plan_period",
+          "type": "text",
+          "instructions": "For example /month.",
+          "required": 0
+        },
+        {
+          "key": "field_acf_plan_text",
+          "label": "Description",
+          "name": "plan_text",
+          "type": "textarea",
+          "rows": 2,
+          "required": 0,
+          "new_lines": ""
+        },
+        {
+          "key": "field_acf_plan_features",
+          "label": "Features",
+          "name": "plan_features",
+          "type": "textarea",
+          "instructions": "One feature per line.",
+          "rows": 5,
+          "required": 0,
+          "new_lines": ""
+        },
+        {
+          "key": "field_acf_plan_button_text",
+          "label": "Button Text",
+          "name": "plan_button_text",
+          "type": "text",
+          "required": 0
+        },
+        {
+          "key": "field_acf_plan_button_url",
+          "label": "Button URL",
+          "name": "plan_button_url",
+          "type": "url",
+          "required": 0
+        },
+        {
+          "key": "field_acf_plan_highlight",
+          "label": "Highlight this plan",
+          "name": "plan_highlight",
+          "type": "true_false",
+          "required": 0,
+          "default_value": 0,
+          "ui": 1
+        }
+      ]
+    },
+    {
+      "key": "field_acf_pricing_new_tab",
+      "label": "Open Buttons in a New Tab",
+      "name": "acf_pricing_new_tab",
+      "type": "true_false",
+      "required": 0,
+      "default_value": 0,
+      "ui": 1
+    }
+  ],
+  "location": [
+    [
+      {
+        "param": "block",
+        "operator": "==",
+        "value": "acf/pricing"
+      }
+    ]
+  ],
+  "active": true,
+  "acf": {
+    "blockVersion": 3
+  }
+}

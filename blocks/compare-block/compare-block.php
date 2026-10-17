@@ -19,7 +19,7 @@ $columns     = acf_blocks_get_field( 'comp_columns', $block ) ?: 3;
 $cta_text    = acf_blocks_get_field( 'comp_cta_text', $block );
 $cta_url     = acf_blocks_get_field( 'comp_cta_url', $block );
 $cta_rel     = acf_blocks_get_field( 'comp_cta_url_rel_tag', $block );
-$cta_bg      = acf_blocks_get_field( 'comp_cta_bg', $block );
+$cta_bg      = acf_blocks_sanitize_css_color( acf_blocks_get_field( 'comp_cta_bg', $block ) );
 
 $comp_data = acf_blocks_get_repeater('comp_columns_data', [
     'comp_title',
@@ -72,8 +72,8 @@ if ( ! empty( $className ) ) {
 
         <?php foreach ( $comp_data as $col_index => $col ) :
             $title        = $col['comp_title'] ?? '';
-            $title_bg     = $col['comp_title_bg'] ?? '';
-            $title_color  = $col['comp_title_color'] ?? '';
+            $title_bg     = acf_blocks_sanitize_css_color( $col['comp_title_bg'] ?? '' );
+            $title_color  = acf_blocks_sanitize_css_color( $col['comp_title_color'] ?? '' );
             $text         = $col['comp_text'] ?? '';
             $list_content = $col['comp_list_content'] ?? '';
             $col_style    = $col['comp_column_style'] ?? '';

@@ -20,6 +20,11 @@ Create a call-to-action (CTA) block with heading, description, and button. This 
 | `acf_cta_button_style` | Button Style | select | primary, secondary, outline |
 | `acf_cta_background_color` | Background Color | color_picker | Block background |
 | `acf_cta_text_color` | Text Color | color_picker | Block text color |
+| `acf_cta_align` | Alignment | select | `center` (default, original), `start`, `end` |
+| `acf_cta_button_2_text` | Second Button Text | text | Omitted unless the URL is set too |
+| `acf_cta_button_2_url` | Second Button URL | url | |
+| `acf_cta_button_2_style` | Second Button Style | select | `outline` (default), `primary`, `secondary` |
+| `acf_cta_button_new_tab` | New tab | true/false | `0` or `1`. Classic buttons only |
 | `acf_cta_class` | Custom Class | text | Optional CSS class |
 | `acf_cta_inline` | Inline Styles | text | Optional inline CSS |
 

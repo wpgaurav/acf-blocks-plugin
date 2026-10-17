@@ -92,6 +92,41 @@
             "default_value": "primary"
         },
         {
+            "key": "acf_hero_media",
+            "label": "Image Position",
+            "name": "acf_hero_media",
+            "type": "select",
+            "instructions": "Background keeps the image behind the text. Left, right, and stacked place it beside or above the text. Existing heroes stay on Background.",
+            "required": 0,
+            "choices": {
+                "background": "Background",
+                "left": "Left",
+                "right": "Right",
+                "stacked": "Stacked"
+            },
+            "default_value": "background"
+        },
+        {
+            "key": "acf_hero_overlay",
+            "label": "Background Overlay",
+            "name": "acf_hero_overlay",
+            "type": "color_picker",
+            "instructions": "Optional tint over a background image so the headline stays readable. Leave empty for no overlay.",
+            "required": 0,
+            "enable_opacity": 1,
+            "default_value": ""
+        },
+        {
+            "key": "acf_hero_cta_new_tab",
+            "label": "Open CTA in a New Tab",
+            "name": "acf_hero_cta_new_tab",
+            "type": "true_false",
+            "instructions": "Applies to the classic CTA button. Inner button blocks use their own link settings.",
+            "required": 0,
+            "default_value": 0,
+            "ui": 1
+        },
+        {
             "key": "acf_hero_class",
             "label": "Custom CSS Class",
             "name": "acf_hero_class",

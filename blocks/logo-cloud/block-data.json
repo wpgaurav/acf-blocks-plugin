@@ -1,0 +1,79 @@
+{
+  "key": "group_acf_logo_cloud",
+  "title": "Logo Cloud Block",
+  "fields": [
+    {
+      "key": "field_acf_logo_heading",
+      "label": "Heading",
+      "name": "acf_logo_heading",
+      "type": "text",
+      "instructions": "Optional line above the logos, such as Trusted by.",
+      "required": 0
+    },
+    {
+      "key": "field_acf_logo_items",
+      "label": "Logos",
+      "name": "acf_logo_items",
+      "type": "repeater",
+      "required": 0,
+      "layout": "block",
+      "button_label": "Add Logo",
+      "sub_fields": [
+        {
+          "key": "field_acf_logo_image",
+          "label": "Logo",
+          "name": "logo_image",
+          "type": "image",
+          "return_format": "array",
+          "preview_size": "thumbnail",
+          "required": 0
+        },
+        {
+          "key": "field_acf_logo_image_url",
+          "label": "Or Logo URL",
+          "name": "logo_image_url",
+          "type": "url",
+          "instructions": "Used when no media library image is set.",
+          "required": 0
+        },
+        {
+          "key": "field_acf_logo_name",
+          "label": "Name",
+          "name": "logo_name",
+          "type": "text",
+          "instructions": "Used as the alt text, and as a text fallback when there is no image.",
+          "required": 0
+        },
+        {
+          "key": "field_acf_logo_link",
+          "label": "Link",
+          "name": "logo_link",
+          "type": "url",
+          "required": 0
+        }
+      ]
+    },
+    {
+      "key": "field_acf_logo_new_tab",
+      "label": "Open Links in a New Tab",
+      "name": "acf_logo_new_tab",
+      "type": "true_false",
+      "required": 0,
+      "default_value": 0,
+      "ui": 1
+    }
+  ],
+  "location": [
+    [
+      {
+        "param": "block",
+        "operator": "==",
+        "value": "acf/logo-cloud"
+      }
+    ]
+  ],
+  "active": true,
+  "acf": {
+    "blockVersion": 3
+  }
+}

@@ -67,6 +67,12 @@ No additional configuration required - field groups are automatically registered
 - **Email Form** (`acf/email-form`) - Email capture forms
 - **Thread Builder** (`acf/thread-builder`) - Discussion thread layouts
 
+### Marketing
+- **Pricing** (`acf/pricing`) - Plan cards with a highlighted tier and feature lists
+- **Logo Cloud** (`acf/logo-cloud`) - Customer or press logos
+- **Steps** (`acf/steps`) - Numbered “how it works” sequence
+- **Trust Bar** (`acf/trust-bar`) - Short guarantees under an offer
+
 ## Block Structure
 
 Each block follows a consistent directory structure:
@@ -186,7 +192,7 @@ form.
 
 ## Support This Project
 
-This free and open source plugin adds 29 ACF Pro blocks to the WordPress block editor, from FAQ accordions and product boxes to tabs and coupon codes. It registers each block's field group for you and I keep it maintained, with CI checks on PHP 7.4, 8.1, 8.3 and 8.5.
+This free and open source plugin adds 33 ACF Pro blocks to the WordPress block editor, from FAQ accordions and product boxes to pricing tables, logo clouds, and coupon codes. It registers each block's field group for you and I keep it maintained, with CI checks on PHP 7.4, 8.1, 8.3 and 8.5.
 
 If the auto-registered field groups kept you out of the ACF admin's import and export tools, you can buy me a coffee.
 

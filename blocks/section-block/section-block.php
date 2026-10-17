@@ -30,8 +30,10 @@ $bg_image  = acf_blocks_get_field('acf_bg_image', $block);
 $bg_overlay = acf_blocks_get_field('acf_bg_overlay', $block);
 $bg_video  = acf_blocks_get_field('acf_bg_video', $block);
 
-// Determine the final HTML tag
-$tag = ($html_tag === 'custom' && !empty($custom_tag)) ? $custom_tag : $html_tag;
+// Determine the final HTML tag. Custom values are a single tag name; a value
+// that could open another element falls back to section.
+$tag = ( 'custom' === $html_tag && ! empty( $custom_tag ) ) ? $custom_tag : $html_tag;
+$tag = acf_blocks_sanitize_html_tag( $tag, 'section' );
 
 // Build classes array from block support and utility classes.
 $classes = array( 'acf-section-block' );
@@ -72,8 +74,9 @@ if ($custom_class) {
 // Build inline styles
 $styles = array();
 
-// Add background styles
-if ($bg_color) {
+// Add background styles. Only a real color reaches the attribute.
+$bg_color = acf_blocks_sanitize_css_color( $bg_color );
+if ( $bg_color ) {
     $styles[] = 'background-color:' . $bg_color;
 }
 
@@ -94,13 +97,14 @@ if (!empty($custom_css) && function_exists('md_store_block_css')) {
 }
 
 // Create a wrapper if we need background video or overlay
-$has_overlay = !empty($bg_overlay);
+$bg_overlay = acf_blocks_sanitize_css_color( $bg_overlay );
+$has_overlay = '' !== $bg_overlay;
 $has_video = !empty($bg_video);
 $needs_wrapper = $has_overlay || $has_video;
 ?>
 
 <?php if ($needs_wrapper): ?>
-<<?php echo esc_attr($tag); ?><?php echo $id_attr . $class_attr . $style_attr; ?>>
+<<?php echo $tag; ?><?php echo $id_attr . $class_attr . $style_attr; ?>>
     <?php if ($has_video): ?>
     <div class="acf-section-bg-video">
         <video autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline">
@@ -110,7 +114,7 @@ $needs_wrapper = $has_overlay || $has_video;
     <?php endif; ?>
 
     <?php if ($has_overlay): ?>
-    <div class="acf-section-bg-overlay" style="background-color: <?php echo esc_attr($bg_overlay); ?>"></div>
+    <div class="acf-section-bg-overlay" style="background-color: <?php echo esc_attr( $bg_overlay ); ?>"></div>
     <?php endif; ?>
 
     <div class="acf-section-content">
@@ -120,13 +124,13 @@ $needs_wrapper = $has_overlay || $has_video;
             <?php echo $content; ?>
         <?php endif; ?>
     </div>
-</<?php echo esc_attr($tag); ?>>
+</<?php echo $tag; ?>>
 <?php else: ?>
-<<?php echo esc_attr($tag); ?><?php echo $id_attr . $class_attr . $style_attr; ?>>
+<<?php echo $tag; ?><?php echo $id_attr . $class_attr . $style_attr; ?>>
     <?php if ( $is_preview ) : ?>
         <InnerBlocks templateLock="false" />
     <?php else : ?>
         <?php echo $content; ?>
     <?php endif; ?>
-</<?php echo esc_attr($tag); ?>>
+</<?php echo $tag; ?>>
 <?php endif; ?>

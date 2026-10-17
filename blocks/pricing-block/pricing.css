@@ -1,0 +1,183 @@
+.acf-pricing {
+	margin-block: max(0.5rem, 8px);
+	color: var(--acfb-text);
+}
+
+.acf-pricing__header {
+	max-width: 40rem;
+	margin-bottom: max(1.5rem, 24px);
+}
+
+.acf-pricing .acf-pricing__heading {
+	margin: 0 0 0.5rem;
+	color: var(--acfb-headline);
+	font-size: clamp(1.5rem, 2vw, 1.75rem);
+	font-weight: var(--acfb-fw-semibold);
+	line-height: 1.2;
+}
+
+.acf-pricing__intro,
+.acf-pricing__text,
+.acf-pricing__empty {
+	margin: 0;
+	color: var(--acfb-text-sec);
+	line-height: var(--acfb-lh);
+}
+
+.acf-pricing__grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: max(1rem, 16px);
+	align-items: stretch;
+}
+
+.acf-pricing--cols-1 .acf-pricing__grid {
+	grid-template-columns: minmax(0, 22rem);
+}
+
+.acf-pricing--cols-2 .acf-pricing__grid {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.acf-pricing--cols-4 .acf-pricing__grid {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.acf-pricing__plan {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	padding: 2rem 1.25rem;
+	text-align: center;
+	background: var(--acfb-bg);
+	color: var(--acfb-text);
+	border: 1px solid var(--acfb-border);
+	border-radius: var(--acfb-radius-lg);
+	box-shadow: var(--acfb-shadow-card);
+}
+
+.acf-pricing__plan.is-featured {
+	background: var(--acfb-bg);
+	border-color: var(--acfb-primary);
+	box-shadow: var(--acfb-shadow-md);
+}
+
+.acf-pricing__badge {
+	align-self: center;
+	margin: 0;
+	padding: 0.25em 0.5em;
+	border-radius: var(--acfb-radius-m);
+	background: var(--acfb-surface-2);
+	color: var(--acfb-text-sec);
+	font-size: 0.75rem;
+	font-weight: var(--acfb-fw-medium);
+	letter-spacing: 0.04em;
+	line-height: 1;
+}
+
+.acf-pricing__plan.is-featured .acf-pricing__badge {
+	background: var(--acfb-button);
+	color: var(--acfb-on-primary);
+}
+
+.acf-pricing__plan .acf-pricing__name {
+	margin: 0;
+	color: var(--acfb-headline);
+	font-size: 1.25rem;
+	font-weight: var(--acfb-fw-semibold);
+	line-height: 1.4;
+}
+
+.acf-pricing__price {
+	margin: 0;
+	color: var(--acfb-headline);
+	line-height: 1;
+}
+
+.acf-pricing__amount {
+	color: var(--acfb-headline);
+	font-size: 2.5rem;
+	font-weight: var(--acfb-fw-semibold);
+}
+
+.acf-pricing__period {
+	margin-left: 0.25rem;
+	color: var(--acfb-text-sec);
+	font-size: max(0.875rem, 14px);
+}
+
+.acf-pricing__features {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	flex: 1;
+}
+
+.acf-pricing__features li {
+	position: relative;
+	padding: 0.25rem 0 0.25rem 1.25rem;
+	color: var(--acfb-text);
+	text-align: start;
+}
+
+.acf-pricing__features li::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0.65rem;
+	width: 0.55rem;
+	height: 0.3rem;
+	border-bottom: 2px solid var(--acfb-success);
+	border-left: 2px solid var(--acfb-success);
+	transform: rotate(-45deg);
+}
+
+.acf-pricing__button {
+	display: inline-flex;
+	justify-content: center;
+	margin-top: auto;
+	padding: var(--acfb-btn-pad-y) var(--acfb-btn-pad-x);
+	border: 1px solid var(--acfb-border);
+	border-radius: var(--acfb-radius-m);
+	background: var(--acfb-bg);
+	color: var(--acfb-text);
+	font-size: var(--acfb-btn-fs);
+	font-weight: var(--acfb-fw-medium);
+	line-height: var(--acfb-btn-lh);
+	text-align: center;
+	text-decoration: none;
+	box-shadow: var(--acfb-shadow-input);
+}
+
+.acf-pricing__plan.is-featured .acf-pricing__button {
+	border-color: transparent;
+	background: var(--acfb-button);
+	color: var(--acfb-on-primary);
+}
+
+.acf-pricing__button:hover,
+.acf-pricing__button:focus-visible {
+	text-decoration: none;
+}
+
+.acf-pricing__button:focus-visible {
+	outline: 2px solid var(--acfb-primary);
+	outline-offset: 2px;
+}
+
+@media (max-width: 900px) {
+	.acf-pricing--cols-4 .acf-pricing__grid,
+	.acf-pricing--cols-3 .acf-pricing__grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 640px) {
+	.acf-pricing__grid,
+	.acf-pricing--cols-1 .acf-pricing__grid,
+	.acf-pricing--cols-2 .acf-pricing__grid,
+	.acf-pricing--cols-3 .acf-pricing__grid,
+	.acf-pricing--cols-4 .acf-pricing__grid {
+		grid-template-columns: 1fr;
+	}
+}

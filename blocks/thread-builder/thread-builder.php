@@ -11,7 +11,10 @@
 $theme = acf_blocks_get_field('thread_theme', $block) ?: 'light';
 $width = acf_blocks_get_field('thread_width', $block) ?: 'medium';
 $show_connector = acf_blocks_get_field('thread_show_connector', $block);
-$connector_color = acf_blocks_get_field('thread_connector_color', $block) ?: '#1DA1F2';
+$connector_color = acf_blocks_sanitize_css_color( acf_blocks_get_field('thread_connector_color', $block) );
+if ( '' === $connector_color ) {
+    $connector_color = '#1da1f2';
+}
 $show_engagement = acf_blocks_get_field('thread_show_engagement', $block);
 $thread_posts = acf_blocks_get_repeater('thread_posts', [
     'author_name',

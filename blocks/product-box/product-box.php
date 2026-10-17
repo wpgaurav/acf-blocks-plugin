@@ -18,7 +18,10 @@
 $image            = acf_blocks_get_field('pb_image', $block);
 $image_url        = acf_blocks_get_field('pb_image_url', $block);
 $badge_text       = acf_blocks_get_field('pb_badge_text', $block);
-$badge_color      = acf_blocks_get_field('pb_badge_color', $block) ?: '#22c55e';
+$badge_color      = acf_blocks_sanitize_css_color( acf_blocks_get_field('pb_badge_color', $block) );
+if ( '' === $badge_color ) {
+    $badge_color = '#22c55e';
+}
 $title            = acf_blocks_get_field('pb_title', $block);
 $title_url        = acf_blocks_get_field('pb_title_url', $block);
 $title_tag_raw    = acf_blocks_get_field('pb_title_tag', $block);
@@ -150,7 +153,7 @@ $has_price  = $original_price || $current_price;
 
 <div <?php echo $wrapper_attributes; ?> data-acf-block="product-box">
     <?php if ($badge_text) : ?>
-        <div class="acf-product-box__badge" style="background-color: <?php echo esc_attr($badge_color); ?>;">
+        <div class="acf-product-box__badge" style="background-color: <?php echo esc_attr( $badge_color ); ?>;<?php echo preg_match( '/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i', $badge_color ) ? ' color: ' . esc_attr( acf_product_box_contrast_text( $badge_color ) ) . ';' : ''; ?>">
             <?php echo esc_html($badge_text); ?>
         </div>
     <?php endif; ?>

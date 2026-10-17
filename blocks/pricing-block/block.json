@@ -1,0 +1,53 @@
+{
+  "apiVersion": 3,
+  "name": "acf/pricing",
+  "title": "Pricing",
+  "description": "Pricing plans with a highlighted tier, feature lists, and signup buttons.",
+  "category": "acf-marketing",
+  "icon": "money-alt",
+  "keywords": ["pricing", "plans", "price", "subscription", "marketing", "table"],
+  "acf": {
+    "renderTemplate": "pricing-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "mode": true,
+    "anchor": true,
+    "jsx": false
+  },
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "acf_pricing_heading": "Simple pricing",
+        "acf_pricing_intro": "Start free. Upgrade when the extra room is worth it.",
+        "acf_pricing_columns": "3",
+        "acf_pricing_plans": {
+          "row-0": {
+            "plan_name": "Starter",
+            "plan_price": "$0",
+            "plan_period": "/month",
+            "plan_text": "For trying the product.",
+            "plan_features": "1 project\nCommunity support",
+            "plan_button_text": "Create account",
+            "plan_button_url": "#"
+          },
+          "row-1": {
+            "plan_name": "Pro",
+            "plan_badge": "Most popular",
+            "plan_price": "$29",
+            "plan_period": "/month",
+            "plan_text": "For a growing team.",
+            "plan_features": "Unlimited projects\nPriority support\nShared workspace",
+            "plan_button_text": "Start Pro",
+            "plan_button_url": "#",
+            "plan_highlight": "1"
+          }
+        }
+      }
+    }
+  },
+  "style": "file:./pricing.css",
+  "editorStyle": "file:./pricing.css"
+}

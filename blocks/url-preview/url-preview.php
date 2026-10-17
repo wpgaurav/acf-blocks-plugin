@@ -71,10 +71,10 @@ $class_string = implode( ' ', $classes );
 
 // Build inline styles for card style variations
 $style_variations = array(
-    'compact' => '--acf-url-preview-radius: 4px; --acf-url-preview-shadow: none; --acf-url-preview-border: #e0e0e0;',
+    'compact' => '--acf-url-preview-radius: 4px; --acf-url-preview-shadow: none; --acf-url-preview-border: var(--acfb-border);',
     'minimal' => '--acf-url-preview-border: transparent; --acf-url-preview-shadow: none; --acf-url-preview-bg: transparent; --acf-url-preview-radius: 0;',
-    'featured' => '--acf-url-preview-radius: 16px; --acf-url-preview-shadow: 0 10px 40px rgba(0,0,0,0.12); --acf-url-preview-border: transparent;',
-    'dark' => '--acf-url-preview-bg: #1a1a2e; --acf-url-preview-text: #eaeaea; --acf-url-preview-text-secondary: #a0a0b8; --acf-url-preview-border: #2a2a4a; --acf-url-preview-radius: 12px;',
+    'featured' => '--acf-url-preview-radius: 8px; --acf-url-preview-shadow: var(--acfb-shadow-md); --acf-url-preview-border: transparent;',
+    'dark' => '--acf-url-preview-bg: #1a1a2e; --acf-url-preview-text: #eaeaea; --acf-url-preview-text-secondary: #a0a0b8; --acf-url-preview-border: #2a2a4a; --acf-url-preview-radius: 8px;',
 );
 
 $inline_styles = '';

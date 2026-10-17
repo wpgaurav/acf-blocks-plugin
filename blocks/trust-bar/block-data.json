@@ -1,0 +1,52 @@
+{
+  "key": "group_acf_trust_bar",
+  "title": "Trust Bar Block",
+  "fields": [
+    {
+      "key": "field_acf_trust_items",
+      "label": "Promises",
+      "name": "acf_trust_items",
+      "type": "repeater",
+      "required": 0,
+      "layout": "block",
+      "button_label": "Add Promise",
+      "sub_fields": [
+        {
+          "key": "field_acf_trust_icon",
+          "label": "Icon",
+          "name": "trust_icon",
+          "type": "text",
+          "instructions": "Emoji or an icon class such as dashicons-shield.",
+          "required": 0
+        },
+        {
+          "key": "field_acf_trust_title",
+          "label": "Title",
+          "name": "trust_title",
+          "type": "text",
+          "required": 0
+        },
+        {
+          "key": "field_acf_trust_text",
+          "label": "Detail",
+          "name": "trust_text",
+          "type": "text",
+          "required": 0
+        }
+      ]
+    }
+  ],
+  "location": [
+    [
+      {
+        "param": "block",
+        "operator": "==",
+        "value": "acf/trust-bar"
+      }
+    ]
+  ],
+  "active": true,
+  "acf": {
+    "blockVersion": 3
+  }
+}

@@ -81,6 +81,15 @@ These apply to **every** block in this library:
 |---|---|---|
 | `acf/email-form` | [email-form.md](email-form.md) | Email capture form with webhook support |
 
+### Marketing
+
+| Block | Doc | Description |
+|---|---|---|
+| `acf/pricing` | [pricing.md](pricing.md) | Pricing plans with a highlighted tier |
+| `acf/logo-cloud` | [logo-cloud.md](logo-cloud.md) | Customer or press logo row |
+| `acf/steps` | [steps.md](steps.md) | Numbered process / how-it-works sequence |
+| `acf/trust-bar` | [trust-bar.md](trust-bar.md) | Short row of guarantees |
+
 ## Block comment anatomy
 
 The general shape of an ACF block comment:

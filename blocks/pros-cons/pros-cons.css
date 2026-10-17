@@ -13,7 +13,7 @@
 	grid-template-columns: 1fr 1fr;
 	gap: 0;
 	margin-block: max(0.25rem, 4px);
-	border-radius: var(--acfb-radius-m);
+	border-radius: var(--acfb-radius-lg);
 	overflow: hidden;
 	font-size: max(0.875rem, 14px);
 	line-height: var(--acfb-lh);

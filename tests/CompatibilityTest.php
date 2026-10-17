@@ -12,7 +12,9 @@ final class CompatibilityTest extends TestCase {
 
     public function test_generated_manifest_contains_all_blocks(): void {
         $manifest = require dirname( __DIR__ ) . '/includes/generated-block-manifest.php';
-        $this->assertCount( 29, $manifest );
+        $block_files = glob( dirname( __DIR__ ) . '/blocks/*/block.json' );
+        $this->assertNotEmpty( $block_files );
+        $this->assertCount( count( $block_files ), $manifest );
         foreach ( $manifest as $definition ) {
             $this->assertArrayHasKey( 'metadata', $definition );
             $this->assertArrayHasKey( 'field_groups', $definition );
@@ -180,7 +182,8 @@ final class CompatibilityTest extends TestCase {
         $GLOBALS['acf_blocks_test_block_styles'] = array();
         acf_blocks_register_layout_styles();
 
-        $this->assertCount( 29, $GLOBALS['acf_blocks_test_block_styles'] );
+        $manifest = require dirname( __DIR__ ) . '/includes/generated-block-manifest.php';
+        $this->assertCount( count( $manifest ), $GLOBALS['acf_blocks_test_block_styles'] );
         foreach ( $GLOBALS['acf_blocks_test_block_styles'] as $block_name => $args ) {
             $this->assertStringStartsWith( 'acf/', $block_name );
             $this->assertSame( 'acf-blocks-layout', $args['handle'] );
@@ -889,5 +892,108 @@ final class CompatibilityTest extends TestCase {
             $this->assertStringContainsString( $fallback, str_replace( ' ', '', $css ) );
         }
         $this->assertStringContainsString( 'var(--acfb-bg)', str_replace( ' ', '', $css ) );
+    }
+
+    public function test_css_colors_reject_declarations_and_keep_picker_values(): void {
+        $this->assertSame( '#abc', acf_blocks_sanitize_css_color( ' #ABC ' ) );
+        $this->assertSame( '#abcd', acf_blocks_sanitize_css_color( '#ABCD' ) );
+        $this->assertSame( '#1da1f2', acf_blocks_sanitize_css_color( '#1DA1F2' ) );
+        $this->assertSame( '#22c55e80', acf_blocks_sanitize_css_color( '#22C55E80' ) );
+        $this->assertSame( 'rgba(10, 20, 30, 0.5)', acf_blocks_sanitize_css_color( 'rgba(10, 20, 30, 0.5)' ) );
+        $this->assertSame( 'rgba(255, 255, 255, 1.0)', acf_blocks_sanitize_css_color( 'rgba(255, 255, 255, 1.0)' ) );
+        $this->assertSame( 'rgb(0 0 0 / 1.0)', acf_blocks_sanitize_css_color( 'rgb(0 0 0 / 1.0)' ) );
+        $this->assertSame( 'rgb(255 0 0 / 40%)', acf_blocks_sanitize_css_color( 'RGB(255 0 0 / 40%)' ) );
+        $this->assertSame( 'hsla(210, 40%, 50%, 0.4)', acf_blocks_sanitize_css_color( 'hsla(210, 40%, 50%, 0.4)' ) );
+        $this->assertSame( 'transparent', acf_blocks_sanitize_css_color( 'Transparent' ) );
+        $this->assertSame( '', acf_blocks_sanitize_css_color( 'red' ) );
+        $this->assertSame( '', acf_blocks_sanitize_css_color( '#fff;background:url(x)' ) );
+        $this->assertSame( '', acf_blocks_sanitize_css_color( 'expression(alert(1))' ) );
+        $this->assertSame( '', acf_blocks_sanitize_css_color( '' ) );
+    }
+
+    public function test_html_tags_cannot_open_another_element(): void {
+        $this->assertSame( 'section', acf_blocks_sanitize_html_tag( 'section', 'div' ) );
+        $this->assertSame( 'blockquote', acf_blocks_sanitize_html_tag( 'blockquote', 'section' ) );
+        $this->assertSame( 'my-widget', acf_blocks_sanitize_html_tag( 'My-Widget', 'section' ) );
+        $this->assertSame( 'section', acf_blocks_sanitize_html_tag( 'script', 'section' ) );
+        $this->assertSame( 'section', acf_blocks_sanitize_html_tag( 'img src=x onerror=alert(1)', 'section' ) );
+        $this->assertSame( 'div', acf_blocks_sanitize_html_tag( 'svg', 'svg' ) );
+    }
+
+    public function test_true_false_zero_string_is_off(): void {
+        $this->assertFalse( acf_blocks_is_on( '0' ) );
+        $this->assertFalse( acf_blocks_is_on( 0 ) );
+        $this->assertFalse( acf_blocks_is_on( '' ) );
+        $this->assertFalse( acf_blocks_is_on( null ) );
+        $this->assertTrue( acf_blocks_is_on( '1' ) );
+        $this->assertTrue( acf_blocks_is_on( 1 ) );
+        $this->assertTrue( acf_blocks_is_on( true ) );
+        $this->assertFalse( acf_blocks_cast_field_value( '0', 'bool' ) );
+        $this->assertTrue( acf_blocks_cast_field_value( '1', 'bool' ) );
+    }
+
+    public function test_checklist_legacy_panel_does_not_override_the_theme(): void {
+        $this->assertSame( '--checklist-accent:#16a34a;', acf_blocks_checklist_style( '', '' ) );
+        $this->assertSame( '--checklist-accent:#16a34a;', acf_blocks_checklist_style( '#16a34a', '#f9fafb' ) );
+        $this->assertSame( '--checklist-accent:#2563eb;', acf_blocks_checklist_style( '#2563EB', '#F9FAFB' ) );
+        $this->assertSame(
+            '--checklist-accent:#16a34a;--checklist-bg:#111827;',
+            acf_blocks_checklist_style( '', '#111827' )
+        );
+        $this->assertSame( '--checklist-accent:#16a34a;', acf_blocks_checklist_style( '#fff;color:red', '#f9fafb' ) );
+    }
+
+    public function test_new_marketing_blocks_are_optional_and_registered(): void {
+        $root     = dirname( __DIR__ );
+        $manifest = require $root . '/includes/generated-block-manifest.php';
+
+        foreach ( array( 'pricing-block' => 'acf/pricing', 'logo-cloud' => 'acf/logo-cloud', 'steps-block' => 'acf/steps', 'trust-bar' => 'acf/trust-bar' ) as $folder => $name ) {
+            $this->assertSame( $name, $manifest[ $folder ]['metadata']['name'] );
+            $this->assertSame( 'acf-marketing', $manifest[ $folder ]['metadata']['category'] );
+            $group = $manifest[ $folder ]['field_groups'][0];
+            $this->assertNotEmpty( $group['fields'] );
+            foreach ( $group['fields'] as $field ) {
+                if ( isset( $field['required'] ) ) {
+                    $this->assertSame( 0, $field['required'], $field['name'] );
+                }
+            }
+        }
+    }
+
+    public function test_coupon_copy_is_external_and_stats_keep_their_number(): void {
+        $root   = dirname( __DIR__ );
+        $coupon = file_get_contents( $root . '/blocks/coupon-code/coupon-code.php' );
+        $meta   = json_decode( file_get_contents( $root . '/blocks/coupon-code/block.json' ), true );
+        $script = file_get_contents( $root . '/blocks/coupon-code/coupon-code.js' );
+        $stats  = file_get_contents( $root . '/blocks/stats-block/stats-counter.js' );
+
+        $this->assertStringNotContainsString( 'onclick', $coupon );
+        $this->assertStringNotContainsString( '<script', $coupon );
+        $this->assertStringContainsString( 'data-code=', $coupon );
+        $this->assertSame( 'file:./coupon-code.js', $meta['viewScript'] );
+        $this->assertStringContainsString( 'catch', $script );
+        $this->assertStringContainsString( 'MutationObserver', $stats );
+        $this->assertLessThan(
+            strpos( $stats, "t.el.textContent = '0'" ),
+            strpos( $stats, 'function play()' )
+        );
+    }
+
+    public function test_hero_and_cta_additions_leave_the_original_layout_unmarked(): void {
+        $root = dirname( __DIR__ );
+        $hero = file_get_contents( $root . '/blocks/hero-block/hero-block.php' );
+        $cta  = file_get_contents( $root . '/blocks/cta-block/cta-block.php' );
+
+        $this->assertStringContainsString( "'background'", $hero );
+        $this->assertStringContainsString( 'acf-hero-block--split', $hero );
+        $this->assertStringContainsString( "'background' === \$media_position", $hero );
+        $this->assertStringContainsString( 'acf_cta_button_2_text', $cta );
+        $this->assertStringContainsString( "'center' !== \$align", $cta );
+        $this->assertSame( '', acf_blocks_link_target_attrs( '0' ) );
+        $this->assertSame( '', acf_blocks_link_target_attrs( 0 ) );
+        $this->assertSame( '', acf_blocks_link_target_attrs( null ) );
+        $this->assertStringContainsString( 'target="_blank"', acf_blocks_link_target_attrs( '1' ) );
+        $this->assertSame( 'primary', acf_blocks_button_variant( 'Primary' ) );
+        $this->assertSame( '', acf_blocks_button_variant( 'primary onclick' ) );
     }
 }

@@ -1,0 +1,54 @@
+{
+  "apiVersion": 3,
+  "name": "acf/steps",
+  "title": "Steps",
+  "description": "A numbered sequence for how a product works or what happens next.",
+  "category": "acf-marketing",
+  "icon": "editor-ol",
+  "keywords": ["steps", "process", "how it works", "timeline", "marketing"],
+  "acf": {
+    "renderTemplate": "steps-block.php",
+    "blockVersion": 3
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "mode": true,
+    "anchor": true,
+    "jsx": false
+  },
+  "styles": [
+    {
+      "name": "horizontal",
+      "label": "Horizontal",
+      "isDefault": true
+    },
+    {
+      "name": "vertical",
+      "label": "Vertical"
+    }
+  ],
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "acf_steps_heading": "How it works",
+        "acf_steps_items": {
+          "row-0": {
+            "step_title": "Connect",
+            "step_text": "Add the block and point it at your offer."
+          },
+          "row-1": {
+            "step_title": "Publish",
+            "step_text": "Drop it into a landing page or a post."
+          },
+          "row-2": {
+            "step_title": "Measure",
+            "step_text": "Send the button to the page you already track."
+          }
+        }
+      }
+    }
+  },
+  "style": "file:./steps.css",
+  "editorStyle": "file:./steps.css"
+}
