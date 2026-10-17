@@ -8,11 +8,12 @@
 	margin-bottom: max(1.5rem, 24px);
 }
 
-.acf-pricing__heading {
-	margin: 0 0 max(0.5rem, 8px);
+.acf-pricing .acf-pricing__heading {
+	margin: 0 0 0.5rem;
 	color: var(--acfb-headline);
-	font-size: max(1.75rem, 28px);
-	line-height: var(--acfb-lh-tight);
+	font-size: clamp(1.5rem, 2vw, 1.75rem);
+	font-weight: var(--acfb-fw-semibold);
+	line-height: 1.2;
 }
 
 .acf-pricing__intro,
@@ -45,33 +46,46 @@
 .acf-pricing__plan {
 	display: flex;
 	flex-direction: column;
-	gap: max(0.75rem, 12px);
-	padding: max(1.25rem, 20px);
-	background: var(--acfb-surface);
+	gap: 0.75rem;
+	padding: 2rem 1.25rem;
+	text-align: center;
+	background: var(--acfb-bg);
+	color: var(--acfb-text);
 	border: 1px solid var(--acfb-border);
-	border-radius: var(--acfb-radius-m);
+	border-radius: var(--acfb-radius-lg);
+	box-shadow: var(--acfb-shadow-card);
 }
 
 .acf-pricing__plan.is-featured {
-	background: var(--acfb-primary-tint);
-	border-color: var(--acfb-primary-border);
+	background: var(--acfb-bg);
+	border-color: var(--acfb-primary);
+	box-shadow: var(--acfb-shadow-md);
 }
 
 .acf-pricing__badge {
-	align-self: flex-start;
+	align-self: center;
 	margin: 0;
-	padding: 0.15rem 0.55rem;
-	border-radius: var(--acfb-radius-full);
-	background: var(--acfb-button);
-	color: var(--acfb-on-primary);
-	font-size: max(0.75rem, 12px);
-	line-height: 1.4;
+	padding: 0.25em 0.5em;
+	border-radius: var(--acfb-radius-m);
+	background: var(--acfb-surface-2);
+	color: var(--acfb-text-sec);
+	font-size: 0.75rem;
+	font-weight: var(--acfb-fw-medium);
+	letter-spacing: 0.04em;
+	line-height: 1;
 }
 
-.acf-pricing__name {
+.acf-pricing__plan.is-featured .acf-pricing__badge {
+	background: var(--acfb-button);
+	color: var(--acfb-on-primary);
+}
+
+.acf-pricing__plan .acf-pricing__name {
 	margin: 0;
-	font-size: max(1.125rem, 18px);
-	line-height: var(--acfb-lh-tight);
+	color: var(--acfb-headline);
+	font-size: 1.25rem;
+	font-weight: var(--acfb-fw-semibold);
+	line-height: 1.4;
 }
 
 .acf-pricing__price {
@@ -81,8 +95,9 @@
 }
 
 .acf-pricing__amount {
-	font-size: max(2rem, 32px);
-	font-weight: 700;
+	color: var(--acfb-headline);
+	font-size: 2.5rem;
+	font-weight: var(--acfb-fw-semibold);
 }
 
 .acf-pricing__period {
@@ -100,7 +115,9 @@
 
 .acf-pricing__features li {
 	position: relative;
-	padding: 0.4rem 0 0.4rem 1.25rem;
+	padding: 0.25rem 0 0.25rem 1.25rem;
+	color: var(--acfb-text);
+	text-align: start;
 }
 
 .acf-pricing__features li::before {
@@ -119,14 +136,17 @@
 	display: inline-flex;
 	justify-content: center;
 	margin-top: auto;
-	padding: 0.7rem 1rem;
-	border: 1px solid var(--acfb-border-strong);
+	padding: var(--acfb-btn-pad-y) var(--acfb-btn-pad-x);
+	border: 1px solid var(--acfb-border);
 	border-radius: var(--acfb-radius-m);
-	background: transparent;
+	background: var(--acfb-bg);
 	color: var(--acfb-text);
-	font-weight: 600;
+	font-size: var(--acfb-btn-fs);
+	font-weight: var(--acfb-fw-medium);
+	line-height: var(--acfb-btn-lh);
 	text-align: center;
 	text-decoration: none;
+	box-shadow: var(--acfb-shadow-input);
 }
 
 .acf-pricing__plan.is-featured .acf-pricing__button {

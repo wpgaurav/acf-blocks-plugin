@@ -5,9 +5,13 @@
 
 .acf-logo-cloud__heading,
 .acf-logo-cloud__empty {
-	margin: 0 0 max(1rem, 16px);
-	color: var(--acfb-text-muted);
-	font-size: max(0.875rem, 14px);
+	margin: 0 0 1rem;
+	color: var(--acfb-text-sec);
+	font-size: 0.75rem;
+	font-weight: var(--acfb-fw-medium);
+	letter-spacing: 0.04em;
+	line-height: 1rem;
+	text-transform: uppercase;
 }
 
 .acf-logo-cloud__list {

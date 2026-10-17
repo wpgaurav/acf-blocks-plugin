@@ -8,11 +8,12 @@
 	margin-bottom: max(1.25rem, 20px);
 }
 
-.acf-steps__heading {
-	margin: 0 0 max(0.5rem, 8px);
+.acf-steps .acf-steps__heading {
+	margin: 0 0 0.5rem;
 	color: var(--acfb-headline);
-	font-size: max(1.75rem, 28px);
-	line-height: var(--acfb-lh-tight);
+	font-size: clamp(1.5rem, 2vw, 1.75rem);
+	font-weight: var(--acfb-fw-semibold);
+	line-height: 1.2;
 }
 
 .acf-steps__intro,
@@ -49,8 +50,8 @@
 .acf-steps.is-style-vertical .acf-steps__item:not(:last-child)::before {
 	content: "";
 	position: absolute;
-	left: 0.95rem;
-	top: 2.2rem;
+	left: 1.2rem;
+	top: 2.75rem;
 	bottom: 0;
 	border-left: 1px solid var(--acfb-border);
 }
@@ -60,12 +61,12 @@
 	flex: 0 0 auto;
 	align-items: center;
 	justify-content: center;
-	width: 2rem;
-	height: 2rem;
-	border-radius: var(--acfb-radius-full);
+	width: 2.5rem;
+	height: 2.5rem;
+	border-radius: 35%;
 	background: var(--acfb-primary-tint);
-	color: var(--acfb-headline);
-	font-weight: 700;
+	color: var(--acfb-primary);
+	font-weight: var(--acfb-fw-semibold);
 	line-height: 1;
 }
 
@@ -78,10 +79,12 @@
 	margin-bottom: 0.25rem;
 }
 
-.acf-steps__title {
+.acf-steps__item .acf-steps__title {
 	margin: 0.15rem 0 0.35rem;
-	font-size: max(1.05rem, 17px);
-	line-height: var(--acfb-lh-tight);
+	color: var(--acfb-headline);
+	font-size: 1rem;
+	font-weight: var(--acfb-fw-semibold);
+	line-height: 1.5;
 }
 
 .acf-steps__text {

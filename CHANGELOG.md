@@ -2,6 +2,12 @@
 
 ## [2.13.0] - 2026-10-17
 
+### Changed
+- **Blocks use the Tabler visual language.** Cards, buttons, badges, type, radius, and shadows follow Tabler 1.4 (`~/tabler`, `tabler.css` and `tabler-marketing.css`): system sans, 14px controls, 6px buttons, 8px cards, a 1px border, and a soft card shadow. Colors still come from the theme, so Marketers Delight’s `[data-theme]` toggle and a dark operating system keep driving light and dark. Tabler’s own palette is only the fallback when a theme variable is missing.
+
+### Fixed
+- **Dark text on dark surfaces.** Hero and CTA text was inherited, so a dark heading color could sit on a dark card or photo. Thread’s light style pinned `#0f1419` while its background followed the theme. URL preview’s featured gradient ended on a light blue, and its dark style painted field values with the border color. Post display and feature grid dark styles used muted and border tokens that stay dark on a fixed dark panel. Filled buttons that used the theme primary, or white text on a text-colored fill, now use the button fill with the text color that belongs on it. A product box badge picks dark or light text from its background.
+
 ### Added
 - **Pricing, Logo Cloud, Steps, and Trust Bar.** Four marketing blocks for landing pages: plan cards with one highlighted tier, a logo row (with an optional grayscale style), a numbered “how it works” sequence, and a strip of guarantees. Every field is optional. They register in a new **ACF Marketing** inserter category and do not change how existing blocks are stored or rendered.
 - **Hero image position.** Background (the original cover image), left, right, or stacked. An empty or Background value keeps the previous markup, with no extra class. An optional overlay color is printed only on the background layout, and only when a color is set.

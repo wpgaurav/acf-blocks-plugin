@@ -1,78 +1,70 @@
 /**
  * ACF Blocks — design token bridge.
  *
- * Every block stylesheet styles through the --acfb-* tokens below. Each one
- * resolves to a Marketers Delight theme token when MD is active, and to a
- * neutral literal otherwise, so the blocks stay presentable on any theme.
+ * Measured from Tabler 1.4 (dashboard/dist/css/tabler.css and
+ * tabler-marketing.css in ~/tabler): system sans, 14px UI type, 6px controls,
+ * 8px cards, 1px borders, and a 1px card shadow. Colors still follow the
+ * active theme. Marketers Delight remaps --color-* under [data-theme="dark"],
+ * and these tokens only reference those variables, so block CSS does not need
+ * its own [data-theme] rules.
  *
- * Dark mode:
- *   MD toggles [data-theme="dark"] on <html> and re-maps its own --color-*
- *   tokens there. Because these tokens are declared on :root (the same
- *   element) and only *reference* MD tokens, they re-resolve automatically —
- *   no [data-theme] rules are needed in block CSS.
- *
- *   Two MD scales deliberately are NOT used here:
- *     --neutral-*      light-only, never re-mapped for dark
- *     --primary-tint-* light-only, never re-mapped for dark
- *     --color-surface-* dark-only, absent in light
- *   Surfaces and tints are derived with color-mix() against --color-content-bg
- *   and --color-text instead, both of which exist and flip in both modes.
- *
- *   The prefers-color-scheme block at the end only swaps the *fallback*
- *   literals. MD's values still win wherever MD is active, so a reader using
- *   MD's light toggle on a dark OS is unaffected.
+ * The prefers-color-scheme block swaps the fallback literals for sites that
+ * do not define the theme variables. Where a theme variable exists, it wins,
+ * including a light theme on a dark operating system.
  */
 
 :root {
+	/* --- Type ---------------------------------------------------------- */
+	--acfb-font: var(--font-body, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif);
+	--acfb-font-mono: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
+	--acfb-fw-medium: 500;
+	--acfb-fw-semibold: 600;
+	--acfb-fs-xs: 0.75rem;
+	--acfb-fs-s: 0.875rem;
+	--acfb-fs-body: 0.875rem;
+	--acfb-lh: var(--lh-base, 1.4285714286);
+	--acfb-lh-tight: 1.2;
+
 	/* --- Surfaces ------------------------------------------------------ */
 	--acfb-bg: var(--color-content-bg, #ffffff);
-	--acfb-surface: color-mix(in srgb, var(--color-text, #1f2328) 3%, var(--color-content-bg, #ffffff));
-	--acfb-surface-2: color-mix(in srgb, var(--color-text, #1f2328) 6%, var(--color-content-bg, #ffffff));
-	--acfb-surface-3: color-mix(in srgb, var(--color-text, #1f2328) 10%, var(--color-content-bg, #ffffff));
+	--acfb-surface: var(--color-content-bg, #ffffff);
+	--acfb-surface-2: color-mix(in srgb, var(--color-text, #4e4e4e) 4%, var(--color-content-bg, #f6f8fb));
+	--acfb-surface-3: color-mix(in srgb, var(--color-text, #4e4e4e) 8%, var(--color-content-bg, #f6f8fb));
 
 	/* --- Text ---------------------------------------------------------- */
-	--acfb-text: var(--color-text, #1f2328);
-	--acfb-text-sec: var(--color-text-sec, #5b6470);
-	/* 72%, not 62%: at 62% this lands near 3.9:1 on a tinted well, under the
-	   4.5:1 AA floor for the muted UI text it backs (inactive tabs, meta). */
-	--acfb-text-muted: color-mix(in srgb, var(--color-text, #1f2328) 72%, var(--color-content-bg, #ffffff));
-	--acfb-headline: var(--color-headline, var(--color-text, #16191d));
+	--acfb-text: var(--color-text, #4e4e4e);
+	--acfb-text-sec: var(--color-text-sec, #7a7a7a);
+	/* 72% keeps muted UI text above the 4.5:1 floor on a tinted well. */
+	--acfb-text-muted: color-mix(in srgb, var(--color-text, #4e4e4e) 72%, var(--color-content-bg, #ffffff));
+	--acfb-headline: var(--color-headline, var(--color-text, #1c1c1c));
 	--acfb-text-invert: var(--color-button-text, #ffffff);
-	/* Pairs with --acfb-text used AS A BACKGROUND, the way --acfb-on-primary
-	   pairs with --acfb-button. Do not reach for --acfb-text-invert there:
-	   that one aliases --color-button-text, which MD keeps white in both
-	   schemes so it stays legible on the saturated --color-button fill. When
-	   --acfb-text flips to a light value in dark mode, white-on-white lands at
-	   1.27:1. --color-content-bg is the true inverse and flips in both the
-	   [data-theme] and prefers-color-scheme paths, so one declaration covers
-	   both and no dark override is needed below. */
+	/* Inverse of --acfb-text used as a fill. --color-content-bg flips with
+	   the theme; --color-button-text stays white and would disappear on a
+	   light --acfb-text fill in dark mode. */
 	--acfb-on-text: var(--color-content-bg, #ffffff);
 
 	/* --- Lines --------------------------------------------------------- */
-	--acfb-border: var(--color-border, color-mix(in srgb, var(--color-text, #1f2328) 14%, transparent));
+	--acfb-border: var(--color-border, #ebebeb);
 	--acfb-border-soft: color-mix(in srgb, var(--acfb-border) 55%, transparent);
-	--acfb-border-strong: color-mix(in srgb, var(--color-text, #1f2328) 28%, transparent);
+	--acfb-border-strong: color-mix(in srgb, var(--color-text, #4e4e4e) 28%, transparent);
 
 	/* --- Brand --------------------------------------------------------- */
-	--acfb-primary: var(--color-primary, #2563eb);
-	--acfb-link: var(--color-links, var(--color-primary, #2563eb));
-	/* Button fill is deliberately NOT --color-primary. MD keeps --color-button
-	   stable across light and dark and guarantees it pairs with
-	   --color-button-text; --color-primary lightens in dark mode, which drops
-	   white button text to ~3.3:1. Always use these two together. */
-	--acfb-button: var(--color-button, var(--color-primary, #2563eb));
+	/* Tabler primary is oklch(54.6% 0.1724 254.2), #206bc4. Button fill is
+	   NOT --color-primary: that token lightens in dark mode and drops white
+	   label text under 4.5:1. --color-button stays paired with its text. */
+	--acfb-primary: var(--color-primary, #206bc4);
+	--acfb-link: var(--color-links, var(--color-primary, #206bc4));
+	--acfb-button: var(--color-button, #206bc4);
 	--acfb-on-primary: var(--color-button-text, #ffffff);
-	--acfb-primary-tint: color-mix(in srgb, var(--acfb-primary) 10%, var(--acfb-bg));
+	--acfb-primary-tint: color-mix(in srgb, var(--acfb-primary) 12%, var(--acfb-bg));
 	--acfb-primary-border: color-mix(in srgb, var(--acfb-primary) 32%, var(--acfb-border));
 
-	/* --- Semantic ------------------------------------------------------
-	   Routed through MD's preset palette, which MD lightens for dark mode,
-	   so these track the active scheme without extra rules. */
-	--acfb-success: var(--button-success, var(--wp--preset--color--teal, #0f766e));
-	--acfb-warning: var(--wp--preset--color--amber, #b45309);
-	--acfb-danger: var(--button-danger, var(--wp--preset--color--rose, #dc2626));
-	--acfb-info: var(--wp--preset--color--sky, #0369a1);
-	--acfb-star: var(--wp--preset--color--amber, #f59e0b);
+	/* --- Semantic ------------------------------------------------------ */
+	--acfb-success: var(--button-success, var(--color-success, #2fb344));
+	--acfb-warning: var(--color-warning, #f59f00);
+	--acfb-danger: var(--button-danger, var(--color-error, #d63939));
+	--acfb-info: var(--color-info, #4299e1);
+	--acfb-star: var(--color-warning, #f59f00);
 
 	--acfb-success-tint: color-mix(in srgb, var(--acfb-success) 12%, var(--acfb-bg));
 	--acfb-warning-tint: color-mix(in srgb, var(--acfb-warning) 14%, var(--acfb-bg));
@@ -82,57 +74,80 @@
 	--acfb-success-border: color-mix(in srgb, var(--acfb-success) 35%, var(--acfb-border));
 	--acfb-info-border: color-mix(in srgb, var(--acfb-info) 35%, var(--acfb-border));
 
-	/* --- Geometry ------------------------------------------------------ */
-	--acfb-radius-m: var(--radius-m, 0.5rem);
-	--acfb-radius-full: var(--radius-full, 999rem);
+	/* --- Geometry (Tabler) --------------------------------------------- */
+	--acfb-radius-sm: 4px;
+	--acfb-radius-m: 6px;
+	--acfb-radius-lg: 8px;
+	--acfb-radius-full: 100rem;
 
 	/* --- Spacing ------------------------------------------------------- */
-	--acfb-space-s: var(--space-half, 0.9375rem);
+	--acfb-space-s: 0.5rem;
+	--acfb-card-pad: 1.25rem;
 
-	/* --- Type ---------------------------------------------------------- */
-	--acfb-fs-s: var(--fs-s, 0.9375rem);
-	--acfb-lh: var(--lh-base, 1.6);
-	--acfb-lh-tight: var(--lh-tight, 1.25);
+	/* --- Controls ------------------------------------------------------ */
+	--acfb-btn-pad-y: 0.5625rem;
+	--acfb-btn-pad-x: 1rem;
+	--acfb-btn-fs: 0.875rem;
+	--acfb-btn-lh: 1.25rem;
 
 	/* --- Depth --------------------------------------------------------- */
-	--acfb-shadow-sm: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.06));
-	--acfb-shadow-md: var(--shadow-md, 0 4px 16px rgba(0, 0, 0, 0.1));
+	--acfb-shadow-color: #121217;
+	--acfb-shadow-sm: 0 1px 2px 0 color-mix(in srgb, var(--acfb-shadow-color) 12.5%, transparent);
+	--acfb-shadow-card: var(--acfb-shadow-sm);
+	--acfb-shadow-md: 0 4px 6px -2px color-mix(in srgb, var(--acfb-shadow-color) 12.5%, transparent), 0 10px 15px -3px color-mix(in srgb, var(--acfb-shadow-color) 20%, transparent);
+	--acfb-shadow-input: var(--acfb-shadow-sm);
 
 	/* --- Motion & focus ------------------------------------------------ */
-	--acfb-motion-fast: var(--motion-fast, 0.18s cubic-bezier(0.25, 1, 0.5, 1));
+	--acfb-motion-fast: 0.15s ease-in-out;
 }
 
 /**
- * Standalone dark fallbacks.
- *
- * Only the literal after the comma changes. When MD is active its --color-*
- * values still resolve first, so MD's own light/dark toggle stays in control.
+ * Standalone dark fallbacks. Only the literal after the comma changes.
+ * Theme variables still resolve first.
  */
 @media (prefers-color-scheme: dark) {
 	:root {
-		--acfb-bg: var(--color-content-bg, #16191d);
-		--acfb-surface: color-mix(in srgb, var(--color-text, #e6edf3) 4%, var(--color-content-bg, #16191d));
-		--acfb-surface-2: color-mix(in srgb, var(--color-text, #e6edf3) 8%, var(--color-content-bg, #16191d));
-		--acfb-surface-3: color-mix(in srgb, var(--color-text, #e6edf3) 13%, var(--color-content-bg, #16191d));
+		--acfb-bg: var(--color-content-bg, #1c1c1c);
+		--acfb-surface: var(--color-content-bg, #2e2e2e);
+		--acfb-surface-2: color-mix(in srgb, var(--color-text, #ebebeb) 6%, var(--color-content-bg, #1c1c1c));
+		--acfb-surface-3: color-mix(in srgb, var(--color-text, #ebebeb) 10%, var(--color-content-bg, #1c1c1c));
 
-		--acfb-text: var(--color-text, #e6edf3);
-		--acfb-text-sec: var(--color-text-sec, #9aa4b2);
-		--acfb-text-muted: color-mix(in srgb, var(--color-text, #e6edf3) 72%, var(--color-content-bg, #16191d));
-		--acfb-headline: var(--color-headline, var(--color-text, #f3f6f9));
+		--acfb-text: var(--color-text, #ebebeb);
+		--acfb-text-sec: var(--color-text-sec, #a8a8a8);
+		--acfb-text-muted: color-mix(in srgb, var(--color-text, #ebebeb) 72%, var(--color-content-bg, #1c1c1c));
+		--acfb-headline: var(--color-headline, var(--color-text, #ffffff));
 
-		--acfb-border: var(--color-border, color-mix(in srgb, var(--color-text, #e6edf3) 16%, transparent));
-		--acfb-border-strong: color-mix(in srgb, var(--color-text, #e6edf3) 30%, transparent);
+		--acfb-border: var(--color-border, #4e4e4e);
+		--acfb-border-strong: color-mix(in srgb, var(--color-text, #ebebeb) 30%, transparent);
 
-		--acfb-primary: var(--color-primary, #60a5fa);
-		--acfb-link: var(--color-links, var(--color-primary, #60a5fa));
+		--acfb-primary: var(--color-primary, #79aae7);
+		--acfb-link: var(--color-links, var(--color-primary, #79aae7));
+		--acfb-button: var(--color-button, #206bc4);
 
-		--acfb-success: var(--button-success, var(--wp--preset--color--teal, #5eead4));
-		--acfb-warning: var(--wp--preset--color--amber, #fbbf24);
-		--acfb-danger: var(--button-danger, var(--wp--preset--color--rose, #fb7185));
-		--acfb-info: var(--wp--preset--color--sky, #38bdf8);
-		--acfb-star: var(--wp--preset--color--amber, #fbbf24);
+		--acfb-success: var(--button-success, var(--color-success, #4ade80));
+		--acfb-warning: var(--color-warning, #fbbf24);
+		--acfb-danger: var(--button-danger, var(--color-error, #f87171));
+		--acfb-info: var(--color-info, #7dd3fc);
+		--acfb-star: var(--color-warning, #fbbf24);
 
-		--acfb-shadow-sm: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.35));
-		--acfb-shadow-md: var(--shadow-md, 0 4px 16px rgba(0, 0, 0, 0.55));
+		--acfb-shadow-color: #000000;
 	}
+}
+
+/**
+ * Block roots carry the flipping text color so unlabeled spans and divs stay
+ * readable. Heading color is set again here for blocks that never painted one.
+ * A theme rule such as `.content-text h2` has the same specificity; block
+ * stylesheets that need to win use a second class (`.acf-hero-block .acf-hero-headline`).
+ */
+.acf-block {
+	color: var(--acfb-text);
+	font-family: var(--acfb-font);
+	line-height: var(--acfb-lh);
+}
+
+.acf-block :is(h1, h2, h3, h4, h5, h6) {
+	color: var(--acfb-headline);
+	font-weight: var(--acfb-fw-semibold);
+	line-height: var(--acfb-lh-tight);
 }

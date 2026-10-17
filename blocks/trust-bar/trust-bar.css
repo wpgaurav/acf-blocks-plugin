@@ -16,18 +16,27 @@
 	display: flex;
 	flex: 1 1 12rem;
 	align-items: flex-start;
-	gap: max(0.65rem, 10px);
+	gap: 0.75rem;
 	margin: 0;
-	padding: max(0.85rem, 14px);
-	background: var(--acfb-surface);
+	padding: var(--acfb-card-pad);
+	background: var(--acfb-bg);
+	color: var(--acfb-text);
 	border: 1px solid var(--acfb-border);
-	border-radius: var(--acfb-radius-m);
+	border-radius: var(--acfb-radius-lg);
+	box-shadow: var(--acfb-shadow-card);
 }
 
 .acf-trust-bar__icon {
+	display: inline-flex;
 	flex: 0 0 auto;
-	color: var(--acfb-headline);
-	font-size: max(1.25rem, 20px);
+	align-items: center;
+	justify-content: center;
+	width: 2.5rem;
+	height: 2.5rem;
+	border-radius: 35%;
+	background: var(--acfb-primary-tint);
+	color: var(--acfb-primary);
+	font-size: 1.25rem;
 	line-height: 1;
 }
 
@@ -39,7 +48,8 @@
 }
 
 .acf-trust-bar__title {
-	font-weight: 700;
+	color: var(--acfb-headline);
+	font-weight: var(--acfb-fw-semibold);
 	line-height: var(--acfb-lh-tight);
 }
 

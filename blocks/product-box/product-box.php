@@ -153,7 +153,7 @@ $has_price  = $original_price || $current_price;
 
 <div <?php echo $wrapper_attributes; ?> data-acf-block="product-box">
     <?php if ($badge_text) : ?>
-        <div class="acf-product-box__badge" style="background-color: <?php echo esc_attr($badge_color); ?>;">
+        <div class="acf-product-box__badge" style="background-color: <?php echo esc_attr( $badge_color ); ?>;<?php echo preg_match( '/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i', $badge_color ) ? ' color: ' . esc_attr( acf_product_box_contrast_text( $badge_color ) ) . ';' : ''; ?>">
             <?php echo esc_html($badge_text); ?>
         </div>
     <?php endif; ?>
