@@ -330,31 +330,22 @@ function acf_url_preview_resolve_url( $relative_url, $base_url ) {
  */
 if ( ! function_exists( 'acf_url_preview_get_image_dimensions' ) ) {
 function acf_url_preview_get_image_dimensions( $url ) {
-    // Quick check using getimagesize with stream context
-    $context = stream_context_create( array(
-        'http' => array(
-            'timeout' => 5,
-            'user_agent' => 'Mozilla/5.0 (compatible; WordPress)',
-        ),
-    ) );
-
-    // Only fetch first 32KB to get dimensions
-    $handle = @fopen( $url, 'rb', false, $context );
-    if ( ! $handle ) {
+    if ( ! in_array( strtolower( (string) wp_parse_url( $url, PHP_URL_SCHEME ) ), array( 'http', 'https' ), true ) ) {
         return false;
     }
 
-    $data = fread( $handle, 32768 );
-    fclose( $handle );
-
-    // Create temp file
-    $temp = wp_tempnam( 'img' );
-    file_put_contents( $temp, $data );
-
-    $size = @getimagesize( $temp );
-    if ( file_exists( $temp ) ) {
-        unlink( $temp );
+    // Safe HTTP validates both the initial URL and redirect destinations. Keep
+    // downloads bounded: image headers are usually within the first 32 KB.
+    $response = wp_safe_remote_get( $url, array(
+        'timeout'             => 5,
+        'redirection'         => 3,
+        'limit_response_size' => 32768,
+    ) );
+    if ( is_wp_error( $response ) || wp_remote_retrieve_response_code( $response ) < 200 || wp_remote_retrieve_response_code( $response ) >= 300 ) {
+        return false;
     }
+    $data = wp_remote_retrieve_body( $response );
+    $size = $data ? @getimagesizefromstring( $data ) : false;
 
     if ( $size && isset( $size[0] ) && isset( $size[1] ) ) {
         return array(
@@ -440,6 +431,10 @@ function acf_url_preview_import_image_handler() {
     $image_url = isset( $_POST['image_url'] ) ? esc_url_raw( $_POST['image_url'] ) : '';
     $post_id = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
 
+    if ( $post_id && ! current_user_can( 'edit_post', $post_id ) ) {
+        wp_send_json_error( __( 'Permission denied', 'acf-blocks' ) );
+    }
+
     if ( empty( $image_url ) ) {
         wp_send_json_error( __( 'Invalid image URL', 'acf-blocks' ) );
     }
@@ -456,6 +451,8 @@ function acf_url_preview_import_image_handler() {
     if ( ! empty( $existing ) ) {
         wp_send_json_success( array(
             'attachment_id' => $existing[0],
+            'url' => wp_get_attachment_url( $existing[0] ),
+            'preview_url' => wp_get_attachment_image_url( $existing[0], 'medium' ) ?: wp_get_attachment_url( $existing[0] ),
             'message' => __( 'Image already imported', 'acf-blocks' ),
         ) );
     }
@@ -521,6 +518,7 @@ function acf_url_preview_import_image_handler() {
     wp_send_json_success( array(
         'attachment_id' => $attachment_id,
         'url' => wp_get_attachment_url( $attachment_id ),
+        'preview_url' => wp_get_attachment_image_url( $attachment_id, 'medium' ) ?: wp_get_attachment_url( $attachment_id ),
         'message' => __( 'Image imported successfully', 'acf-blocks' ),
     ) );
 }

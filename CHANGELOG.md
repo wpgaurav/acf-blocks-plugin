@@ -1,5 +1,32 @@
 # Changelog
 
+## [2.13.1] - 2026-10-18
+
+### Security
+- Webhook credentials stay on the server. Public forms submit a signed reference to current saved settings; private, removed, and changed configurations are rejected. Webhook requests require HTTPS and never follow redirects.
+- URL Preview checks image dimensions through bounded safe HTTP requests. Image localization rejects SVGs and invalid cached images and removes failed new imports.
+- Star Rating ignores untrusted proxy headers by default. PHP_CodeSniffer is updated to 3.13.6, fixing the development dependency advisory.
+- Structured data safely encodes script examples in TOC, Product Review, and Star Rating fields. URL Preview imports require permission to edit their parent post.
+
+### Fixed
+- WordPress base/contrast palette colors take precedence over operating-system fallbacks, keeping light themes readable on a dark OS and dark theme palettes readable on a light OS. Explicit theme color variables retain priority.
+- Featured URL Preview secondary actions keep their outline background and readable hover state, and card borders stay inside their declared width.
+- Changelog date-picker values use their registered display format instead of showing raw eight-digit storage values.
+- Background image updates preserve concurrent editor saves and queue additions. Migration mutations coordinate their workers, preserve exact verified restore points, retain failed restores for retry, and honor cancellation.
+- Migration parsing preserves comment examples inside JSON; recovery preserves escaped text, and Settings/cron load the same recovery helpers as WP-CLI.
+- Field compatibility resolves registered keys and recursively normalizes nested and flattened groups/repeaters. Changelog descriptions/types and marketing rows survive; half-star feature ratings keep their decimals.
+- Compare preserves legacy feature lists per row. A secondary-only CTA and a zero pricing amount render correctly. Missing-manifest discovery registers field groups.
+- Checklist state is scoped to its page and block, and interaction/progress work when browser storage is unavailable.
+- Email forms retain hidden fields and custom field attributes. Multiple webhook authentication headers remain separate.
+- TOC links, heading anchors, active-state tracking, and schema use the same rendered heading inventory, including HTML and reusable content, without overwriting custom anchors.
+- Gallery's lightbox setting opens an accessible dialog with keyboard support and focus restoration. URL Preview imports select the imported image in the originating field.
+- Failed remote license deactivation preserves local credentials and reports the error.
+- Changed block scripts receive the plugin's cache version even when block metadata carries an older version. Malformed numeric ratings cannot allocate unbounded star markup, and editor repeater reconstruction follows actual stored rows.
+
+### Upgrade notes
+- Purge cached webhook form pages and rotate authentication credentials used with earlier versions, which included those values in public HTML. New signed form references do not expire with a page cache.
+- Existing localized SVG files are not deleted automatically; review previously imported SVGs before continuing to serve them. Safe background content updates require an InnoDB posts table and defer when another integration owns a database transaction.
+
 ## [2.13.0] - 2026-10-17
 
 ### Changed

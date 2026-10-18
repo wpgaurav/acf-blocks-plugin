@@ -4,7 +4,8 @@
  * Measured from Tabler 1.4 (dashboard/dist/css/tabler.css and
  * tabler-marketing.css in ~/tabler): system sans, 14px UI type, 6px controls,
  * 8px cards, 1px borders, and a 1px card shadow. Colors still follow the
- * active theme. Marketers Delight remaps --color-* under [data-theme="dark"],
+ * active theme. WordPress base/contrast palette tokens are used when the
+ * theme does not expose the Marketers Delight aliases. Marketers Delight remaps --color-* under [data-theme="dark"],
  * and these tokens only reference those variables, so block CSS does not need
  * its own [data-theme] rules.
  *
@@ -26,34 +27,34 @@
 	--acfb-lh-tight: 1.2;
 
 	/* --- Surfaces ------------------------------------------------------ */
-	--acfb-bg: var(--color-content-bg, #ffffff);
-	--acfb-surface: var(--color-content-bg, #ffffff);
-	--acfb-surface-2: color-mix(in srgb, var(--color-text, #4e4e4e) 4%, var(--color-content-bg, #f6f8fb));
-	--acfb-surface-3: color-mix(in srgb, var(--color-text, #4e4e4e) 8%, var(--color-content-bg, #f6f8fb));
+	--acfb-bg: var(--color-content-bg, var(--wp--preset--color--base, #ffffff));
+	--acfb-surface: var(--color-content-bg, var(--wp--preset--color--base, #ffffff));
+	--acfb-surface-2: color-mix(in srgb, var(--color-text, var(--wp--preset--color--contrast, #4e4e4e)) 4%, var(--color-content-bg, var(--wp--preset--color--base, #f6f8fb)));
+	--acfb-surface-3: color-mix(in srgb, var(--color-text, var(--wp--preset--color--contrast, #4e4e4e)) 8%, var(--color-content-bg, var(--wp--preset--color--base, #f6f8fb)));
 
 	/* --- Text ---------------------------------------------------------- */
-	--acfb-text: var(--color-text, #4e4e4e);
-	--acfb-text-sec: var(--color-text-sec, #7a7a7a);
-	/* 72% keeps muted UI text above the 4.5:1 floor on a tinted well. */
-	--acfb-text-muted: color-mix(in srgb, var(--color-text, #4e4e4e) 72%, var(--color-content-bg, #ffffff));
-	--acfb-headline: var(--color-headline, var(--color-text, #1c1c1c));
+	--acfb-text: var(--color-text, var(--wp--preset--color--contrast, #4e4e4e));
+	--acfb-text-sec: var(--color-text-sec, color-mix(in srgb, var(--acfb-text) 78%, var(--acfb-bg)));
+	/* 78% keeps muted UI text above the 4.5:1 floor on a tinted well. */
+	--acfb-text-muted: color-mix(in srgb, var(--color-text, var(--wp--preset--color--contrast, #4e4e4e)) 78%, var(--color-content-bg, var(--wp--preset--color--base, #ffffff)));
+	--acfb-headline: var(--color-headline, var(--color-text, var(--wp--preset--color--contrast, #1c1c1c)));
 	--acfb-text-invert: var(--color-button-text, #ffffff);
 	/* Inverse of --acfb-text used as a fill. --color-content-bg flips with
 	   the theme; --color-button-text stays white and would disappear on a
 	   light --acfb-text fill in dark mode. */
-	--acfb-on-text: var(--color-content-bg, #ffffff);
+	--acfb-on-text: var(--color-content-bg, var(--wp--preset--color--base, #ffffff));
 
 	/* --- Lines --------------------------------------------------------- */
-	--acfb-border: var(--color-border, #ebebeb);
+	--acfb-border: var(--color-border, color-mix(in srgb, var(--acfb-text) 12%, var(--acfb-bg)));
 	--acfb-border-soft: color-mix(in srgb, var(--acfb-border) 55%, transparent);
-	--acfb-border-strong: color-mix(in srgb, var(--color-text, #4e4e4e) 28%, transparent);
+	--acfb-border-strong: color-mix(in srgb, var(--color-text, var(--wp--preset--color--contrast, #4e4e4e)) 28%, transparent);
 
 	/* --- Brand --------------------------------------------------------- */
 	/* Tabler primary is oklch(54.6% 0.1724 254.2), #206bc4. Button fill is
 	   NOT --color-primary: that token lightens in dark mode and drops white
 	   label text under 4.5:1. --color-button stays paired with its text. */
-	--acfb-primary: var(--color-primary, #206bc4);
-	--acfb-link: var(--color-links, var(--color-primary, #206bc4));
+	--acfb-primary: var(--color-primary, var(--wp--preset--color--contrast, #206bc4));
+	--acfb-link: var(--color-links, var(--color-primary, var(--wp--preset--color--contrast, #206bc4)));
 	--acfb-button: var(--color-button, #206bc4);
 	--acfb-on-primary: var(--color-button-text, #ffffff);
 	--acfb-primary-tint: color-mix(in srgb, var(--acfb-primary) 12%, var(--acfb-bg));
@@ -107,21 +108,21 @@
  */
 @media (prefers-color-scheme: dark) {
 	:root {
-		--acfb-bg: var(--color-content-bg, #1c1c1c);
-		--acfb-surface: var(--color-content-bg, #2e2e2e);
-		--acfb-surface-2: color-mix(in srgb, var(--color-text, #ebebeb) 6%, var(--color-content-bg, #1c1c1c));
-		--acfb-surface-3: color-mix(in srgb, var(--color-text, #ebebeb) 10%, var(--color-content-bg, #1c1c1c));
+		--acfb-bg: var(--color-content-bg, var(--wp--preset--color--base, #1c1c1c));
+		--acfb-surface: var(--color-content-bg, var(--wp--preset--color--base, #2e2e2e));
+		--acfb-surface-2: color-mix(in srgb, var(--color-text, var(--wp--preset--color--contrast, #ebebeb)) 6%, var(--color-content-bg, var(--wp--preset--color--base, #1c1c1c)));
+		--acfb-surface-3: color-mix(in srgb, var(--color-text, var(--wp--preset--color--contrast, #ebebeb)) 10%, var(--color-content-bg, var(--wp--preset--color--base, #1c1c1c)));
 
-		--acfb-text: var(--color-text, #ebebeb);
-		--acfb-text-sec: var(--color-text-sec, #a8a8a8);
-		--acfb-text-muted: color-mix(in srgb, var(--color-text, #ebebeb) 72%, var(--color-content-bg, #1c1c1c));
-		--acfb-headline: var(--color-headline, var(--color-text, #ffffff));
+		--acfb-text: var(--color-text, var(--wp--preset--color--contrast, #ebebeb));
+		--acfb-text-sec: var(--color-text-sec, color-mix(in srgb, var(--acfb-text) 78%, var(--acfb-bg)));
+		--acfb-text-muted: color-mix(in srgb, var(--color-text, var(--wp--preset--color--contrast, #ebebeb)) 78%, var(--color-content-bg, var(--wp--preset--color--base, #1c1c1c)));
+		--acfb-headline: var(--color-headline, var(--color-text, var(--wp--preset--color--contrast, #ffffff)));
 
-		--acfb-border: var(--color-border, #4e4e4e);
-		--acfb-border-strong: color-mix(in srgb, var(--color-text, #ebebeb) 30%, transparent);
+		--acfb-border: var(--color-border, color-mix(in srgb, var(--acfb-text) 12%, var(--acfb-bg)));
+		--acfb-border-strong: color-mix(in srgb, var(--color-text, var(--wp--preset--color--contrast, #ebebeb)) 30%, transparent);
 
-		--acfb-primary: var(--color-primary, #79aae7);
-		--acfb-link: var(--color-links, var(--color-primary, #79aae7));
+		--acfb-primary: var(--color-primary, var(--wp--preset--color--contrast, #79aae7));
+		--acfb-link: var(--color-links, var(--color-primary, var(--wp--preset--color--contrast, #79aae7)));
 		--acfb-button: var(--color-button, #206bc4);
 
 		--acfb-success: var(--button-success, var(--color-success, #4ade80));

@@ -21,13 +21,32 @@ if ($className) {
 }
 
 $anchor_attr = $anchor ? ' id="' . esc_attr($anchor) . '"' : '';
+$date_format = 'F j, Y';
+$entries_schema = acf_blocks_get_field_schema( 'changelog_entries', $block );
+foreach ( $entries_schema['sub_fields'] ?? array() as $field_schema ) {
+    if ( 'changelog_date' === ( $field_schema['name'] ?? '' ) && ! empty( $field_schema['return_format'] ) ) {
+        $date_format = $field_schema['return_format'];
+        break;
+    }
+}
 ?>
 <div<?php echo $anchor_attr; ?> class="<?php echo esc_attr(implode(' ', $wrapper_classes)); ?>">
     <?php
     $data = $block['data'] ?? [];
     foreach ($entries as $entry_index => $entry) :
         $version = esc_html($entry['changelog_version'] ?? '');
-        $date = esc_html($entry['changelog_date'] ?? '');
+        $date_value = (string) ( $entry['changelog_date'] ?? '' );
+        if ( preg_match( '/^[0-9]{8}$/D', $date_value ) ) {
+            // ACF stores date pickers as Ymd. Preserve date-only values without
+            // shifting them across calendar days through the site's timezone.
+            $date_only = DateTimeImmutable::createFromFormat( '!Ymd', $date_value, new DateTimeZone( 'UTC' ) );
+            if ( $date_only && $date_only->format( 'Ymd' ) === $date_value ) {
+                $date_value = function_exists( 'wp_date' )
+                    ? wp_date( $date_format, $date_only->getTimestamp(), new DateTimeZone( 'UTC' ) )
+                    : $date_only->format( $date_format );
+            }
+        }
+        $date = esc_html( $date_value );
         $items = $entry['changelog_items'] ?? [];
 
         // Nested repeater may be a count (flat format) — parse sub-items from block data.

@@ -3,7 +3,7 @@
  * Plugin Name: ACF Blocks
  * Plugin URI: https://github.com/wpgaurav/acf-blocks-plugin
  * Description: A collection of ACF Pro blocks for the WordPress block editor with automatic field group registration.
- * Version: 2.13.0
+ * Version: 2.13.1
  * Requires at least: 6.0
  * Tested up to: 7.0
  * Requires PHP: 7.4
@@ -24,7 +24,7 @@ if ( ! defined( 'ACF_BLOCKS_REQUEST_START' ) ) {
 }
 
 // Plugin constants
-define( 'ACF_BLOCKS_VERSION', '2.13.0' );
+define( 'ACF_BLOCKS_VERSION', '2.13.1' );
 define( 'ACF_BLOCKS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ACF_BLOCKS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ACF_BLOCKS_PLUGIN_FILE', __FILE__ );
@@ -71,6 +71,7 @@ function acf_blocks_init() {
     }
 
     if ( is_admin() || ( defined( 'DOING_CRON' ) && DOING_CRON ) || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
+        require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/block-recovery.php';
         require_once ACF_BLOCKS_PLUGIN_DIR . 'includes/block-migrator.php';
     }
 
@@ -184,6 +185,7 @@ register_activation_hook( __FILE__, 'acf_blocks_activate' );
 function acf_blocks_deactivate() {
     wp_clear_scheduled_hook( 'acf_blocks_verify_license' );
     wp_clear_scheduled_hook( 'acf_blocks_process_image_queue' );
+    wp_clear_scheduled_hook( 'acf_blocks_retry_image_enqueue' );
     wp_clear_scheduled_hook( 'acf_blocks_usage_scan_batch' );
     wp_clear_scheduled_hook( 'acf_blocks_migrator_background_batch' );
     flush_rewrite_rules();

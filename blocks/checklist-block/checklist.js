@@ -1,0 +1,76 @@
+(function () {
+    'use strict';
+
+    function initialize() {
+        var occurrences = Object.create(null);
+        document.querySelectorAll('.acf-checklist--interactive[data-checklist-key]').forEach(function (block) {
+            var identity = block.dataset.checklistKey;
+            var occurrence = occurrences[identity] || 0;
+            occurrences[identity] = occurrence + 1;
+            // Same persisted block on another page must never inherit its state.
+            // The occurrence separates identical legacy blocks on the same page.
+            var storageKey = 'acf-checklist:v2:' + window.location.origin + window.location.pathname + ':' + identity + ':' + occurrence;
+            var checkboxes = block.querySelectorAll('.acf-checklist__checkbox');
+            var progressFill = block.querySelector('.acf-checklist__progress-fill');
+            var progressText = block.querySelector('.acf-checklist__progress-text');
+
+            try {
+                var state = JSON.parse(window.localStorage.getItem(storageKey));
+                if (Array.isArray(state)) {
+                    checkboxes.forEach(function (checkbox, index) {
+                        if (typeof state[index] === 'boolean') {
+                            checkbox.checked = state[index];
+                        }
+                    });
+                }
+            } catch (error) {
+                // Browsers can deny the storage getter/read or reject saved JSON.
+            }
+
+            checkboxes.forEach(function (checkbox) {
+                updateItem(checkbox);
+                checkbox.addEventListener('change', function () {
+                    updateItem(checkbox);
+                    updateProgress();
+                    var state = [];
+                    checkboxes.forEach(function (item) {
+                        state.push(item.checked);
+                    });
+                    try {
+                        window.localStorage.setItem(storageKey, JSON.stringify(state));
+                    } catch (error) {
+                        // Interaction and progress work with storage denied/full.
+                    }
+                });
+            });
+            updateProgress();
+
+            function updateItem(checkbox) {
+                var item = checkbox.closest('.acf-checklist__item');
+                if (item) {
+                    item.classList.toggle('acf-checklist__item--checked', checkbox.checked);
+                }
+            }
+
+            function updateProgress() {
+                var checked = 0;
+                checkboxes.forEach(function (checkbox) {
+                    if (checkbox.checked) checked++;
+                });
+                var total = checkboxes.length;
+                if (progressFill) {
+                    progressFill.style.width = (total ? Math.round(checked / total * 100) : 0) + '%';
+                }
+                if (progressText) {
+                    progressText.textContent = checked + '/' + total + ' completed';
+                }
+            }
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initialize);
+    } else {
+        initialize();
+    }
+})();

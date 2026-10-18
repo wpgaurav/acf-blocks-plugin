@@ -40,7 +40,8 @@ jobs:
         run: |
           php tools/check-release.php "$RELEASE_TAG"
           composer check
-          node --test tests/video-runtime.test.js
+          composer audit --locked
+          node --test tests/*.test.js
           find blocks assets -type f -name '*.js' -print0 | xargs -0 -n1 node --check
           find blocks -type f -name '*.json' -print0 | xargs -0 -n1 jq empty
 

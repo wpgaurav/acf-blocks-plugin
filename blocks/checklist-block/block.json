@@ -45,5 +45,6 @@
     }
   },
   "style": "file:./checklist.css",
-  "editorStyle": "file:./checklist.css"
+  "editorStyle": "file:./checklist.css",
+  "viewScript": "file:./checklist.js"
 }

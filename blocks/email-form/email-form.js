@@ -59,8 +59,7 @@
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
-				webhookUrl: config.webhookUrl,
-				webhookAuthHeaders: config.authHeaders,
+				formRef: config.formRef,
 				data: data,
 			}),
 		})

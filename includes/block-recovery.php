@@ -169,7 +169,7 @@ function acf_blocks_recovery_html_to_blocks( $html ) {
 
     foreach ( iterator_to_array( $root->childNodes ) as $node ) {
         if ( XML_TEXT_NODE === $node->nodeType ) {
-            $pending .= $node->textContent;
+            $pending .= $dom->saveHTML( $node );
             continue;
         }
 

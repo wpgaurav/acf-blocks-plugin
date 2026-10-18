@@ -28,6 +28,8 @@ $anchor_attr = !empty($anchor) ? ' id="' . esc_attr($anchor) . '"' : '';
  */
 if (!function_exists('acf_render_star_svg')) {
     function acf_render_star_svg($rating, $size = 20) {
+        $rating = is_numeric( $rating ) ? (float) $rating : 0.0;
+        $rating = is_finite( $rating ) ? max( 0, min( 5, $rating ) ) : 0.0;
         $fullStars = floor($rating);
         $hasHalf = ($rating - $fullStars) >= 0.5;
         $emptyStars = 5 - $fullStars - ($hasHalf ? 1 : 0);
@@ -359,7 +361,7 @@ if ( $image_direct_url ) {
     }
     ?>
     <script type="application/ld+json">
-    <?php echo wp_json_encode($json_data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
+    <?php echo wp_json_encode($json_data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
     </script>
     <?php endif; ?>
 </div>

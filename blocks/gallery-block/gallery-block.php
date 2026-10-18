@@ -26,7 +26,7 @@ $gap_class = $gap ? ' acf-gallery-gap-' . esc_attr( $gap ) : ' acf-gallery-gap-m
 $lightbox_class = $lightbox ? ' acf-gallery-has-lightbox' : '';
 ?>
 
-<div class="acf-gallery-block<?php echo $layout_class . $columns_class . $gap_class . $lightbox_class . $custom_class; ?>"<?php echo $inline_style_attr; ?>>
+<div class="acf-gallery-block<?php echo $layout_class . $columns_class . $gap_class . $lightbox_class . $custom_class; ?>"<?php echo $inline_style_attr; ?><?php if ( $lightbox ) : ?> data-lightbox-label="<?php esc_attr_e( 'Image preview', 'acf-blocks' ); ?>" data-lightbox-close="<?php esc_attr_e( 'Close image preview', 'acf-blocks' ); ?>"<?php endif; ?>>
     <?php
     if ( $images && is_array( $images ) && count( $images ) > 0 ) :
         foreach ( $images as $index => $image ) :
@@ -55,7 +55,7 @@ $lightbox_class = $lightbox ? ' acf-gallery-has-lightbox' : '';
                        data-lightbox="gallery"
                        data-title="<?php echo esc_attr( $image_alt ); ?>">
                         <img src="<?php echo esc_url( $display_url ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>"<?php if ( ! empty( $resolved['srcset'] ) ) : ?> srcset="<?php echo esc_attr( $resolved['srcset'] ); ?>" sizes="<?php echo esc_attr( $resolved['sizes'] ); ?>"<?php endif; ?> loading="<?php echo esc_attr( $loading_attr ); ?>" decoding="async" />
-                        <div class="acf-gallery-overlay">
+                        <div class="acf-gallery-overlay" aria-hidden="true">
                             <span class="acf-gallery-icon">🔍</span>
                         </div>
                     </a>

@@ -16,5 +16,6 @@
     "jsx": true
   },
   "style": "file:./gallery.css",
-  "editorStyle": "file:./gallery.css"
+  "editorStyle": "file:./gallery.css",
+  "viewScript": "file:./gallery.js"
 }

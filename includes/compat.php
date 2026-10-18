@@ -16,130 +16,261 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Get a field value from an ACF block, with $block['data'] fallback.
+ * Find a field's exact registered schema, including its real ACF key.
  *
- * @param string $name  The field name.
- * @param array  $block The block array passed to render templates.
- * @return mixed The field value or null.
+ * Sub-field keys do not always equal "field_" plus their name. Read the same
+ * metadata used for registration instead of guessing additional prefixes.
+ *
+ * @param string $name Field name.
+ * @param array  $block Render block attributes.
+ * @return array
  */
-function acf_blocks_get_field( $name, $block = array() ) {
-    // Check block data first — more reliable than get_field() with ACF 6.7+.
-    // Review CPTs store data with field_ prefix (e.g. field_pc_pros_list)
-    // while post CPTs use bare names (e.g. pc_pros_list).
-    $data = $block['data'] ?? array();
-    $value = null;
-
-    if ( isset( $data[ $name ] ) && $data[ $name ] !== '' && $data[ $name ] !== null ) {
-        $value = $data[ $name ];
-    } elseif ( isset( $data[ 'field_' . $name ] ) && $data[ 'field_' . $name ] !== '' && $data[ 'field_' . $name ] !== null ) {
-        $value = $data[ 'field_' . $name ];
-    } else {
-        // Fallback: try native get_field (works in older ACF versions).
-        $native = get_field( $name );
-        if ( $native !== false && $native !== null && $native !== '' ) {
-            $value = $native;
+function acf_blocks_get_field_schema( $name, $block = array() ) {
+    static $schemas = null;
+    if ( null === $schemas ) {
+        $schemas = array();
+        if ( function_exists( 'acf_blocks_get_block_metadata_cache' ) ) {
+            $definitions = acf_blocks_get_block_metadata_cache( true );
+        } else {
+            // Keep the compatibility helpers usable independently of the loader.
+            $manifest_file = __DIR__ . '/generated-block-manifest.php';
+            $definitions = is_readable( $manifest_file ) ? require $manifest_file : array();
+        }
+        foreach ( $definitions as $definition ) {
+            $fields = array();
+            $field_groups = $definition['field_groups'] ?? null;
+            if ( ! is_array( $field_groups ) && ! empty( $definition['folder'] ) ) {
+                // The loader marks unavailable manifest data with null. Decode
+                // source schemas once, including multiple groups in one file.
+                $field_groups = array();
+                foreach ( (array) glob( rtrim( $definition['folder'], '/\\' ) . '/*.json' ) as $json_file ) {
+                    if ( 'block.json' === basename( $json_file ) ) {
+                        continue;
+                    }
+                    $groups = json_decode( (string) file_get_contents( $json_file ), true );
+                    if ( isset( $groups['key'], $groups['fields'] ) ) {
+                        $groups = array( $groups );
+                    }
+                    foreach ( (array) $groups as $group ) {
+                        if ( is_array( $group ) && isset( $group['key'], $group['fields'] ) ) {
+                            $field_groups[] = $group;
+                        }
+                    }
+                }
+            }
+            foreach ( (array) $field_groups as $group ) {
+                foreach ( $group['fields'] ?? array() as $field ) {
+                    if ( ! empty( $field['name'] ) ) {
+                        $fields[ $field['name'] ] = $field;
+                    }
+                }
+            }
+            $schemas[ $definition['metadata']['name'] ] = $fields;
         }
     }
-
-    /**
-     * Filter the value returned by acf_blocks_get_field().
-     *
-     * Allows themes and plugins to modify ACF block field values at runtime.
-     *
-     * @param mixed  $value The resolved field value (null when not found).
-     * @param string $name  The field name.
-     * @param array  $block The block array passed to render templates.
-     */
-    $value = apply_filters( 'acf_blocks_field_value', $value, $name, $block );
-
-    return $value;
+    $block_name = $block['name'] ?? $block['blockName'] ?? '';
+    if ( isset( $schemas[ $block_name ][ $name ] ) ) {
+        return $schemas[ $block_name ][ $name ];
+    }
+    // Older callers do not pass the block name. Top-level field names are a
+    // reliable fallback; child schemas are always resolved within the parent.
+    foreach ( $schemas as $fields ) {
+        if ( isset( $fields[ $name ] ) ) {
+            return $fields[ $name ];
+        }
+    }
+    return array( 'name' => $name, 'type' => 'text' );
 }
 
 /**
- * Get a repeater field as a structured array from an ACF block.
+ * Read structured or flattened ACF data recursively using a field schema.
  *
- * @param string $name       The repeater field name.
- * @param array  $sub_names  Array of sub-field names (strings) or associative
- *                           array of name => type for special handling.
- *                           Supported types: 'text' (default), 'image', 'link',
- *                           'bool', 'repeater' (with nested sub-field names).
- * @param array  $block      The block array passed to render templates.
- * @return array Array of rows, each row is an associative array.
+ * @param array $schema Field definition.
+ * @param array $data Raw data at this level, or the full flat data array.
+ * @param bool  $found Whether this field (including flat children) exists.
+ * @param array $prefixes Flat parent prefixes; empty for nested row data.
+ * @return mixed
+ */
+function acf_blocks_read_field_data( $schema, $data, &$found, $prefixes = array( '' ) ) {
+    $found = false;
+    $name = $schema['name'];
+    $aliases = array_unique( array_filter( array( $name, $schema['key'] ?? '', 'field_' . $name ) ) );
+    $keys = array();
+    foreach ( $prefixes as $prefix ) {
+        foreach ( $aliases as $alias ) {
+            $keys[] = '' === $prefix ? $alias : $prefix . '_' . $alias;
+        }
+    }
+    $value = null;
+    foreach ( $keys as $key ) {
+        if ( array_key_exists( $key, $data ) ) {
+            $found = true;
+            $value = $data[ $key ];
+            break;
+        }
+    }
+    $type = $schema['type'] ?? 'text';
+    if ( 'group' !== $type && 'repeater' !== $type ) {
+        return acf_blocks_cast_field_value( $value, $type );
+    }
+    $children = $schema['sub_fields'] ?? array();
+    if ( 'group' === $type ) {
+        $group = array();
+        foreach ( $children as $child ) {
+            $child_found = false;
+            $group[ $child['name'] ] = is_array( $value )
+                ? acf_blocks_read_field_data( $child, $value, $child_found )
+                : acf_blocks_read_field_data( $child, $data, $child_found, $keys );
+            $found = $found || $child_found;
+        }
+        return $group;
+    }
+    $rows = array();
+    if ( is_array( $value ) ) {
+        foreach ( $value as $row_data ) {
+            if ( ! is_array( $row_data ) ) {
+                continue;
+            }
+            $row = array();
+            foreach ( $children as $child ) {
+                $child_found = false;
+                $row[ $child['name'] ] = acf_blocks_read_field_data( $child, $row_data, $child_found );
+            }
+            $rows[] = $row;
+        }
+        return $rows;
+    }
+    $indexes = array();
+    if ( $found ) {
+        // An explicit zero is authoritative even when stale indexed keys remain.
+        // A valid flat row needs stored data. Bound corrupt counts by the
+        // actual payload size before allocating indexes, without a site limit.
+        $count = min( count( $data ), max( 0, (int) $value ) );
+        $indexes = $count > 0 ? range( 0, $count - 1 ) : array();
+    } else {
+        foreach ( array_keys( $data ) as $data_key ) {
+            foreach ( $keys as $key ) {
+                if ( preg_match( '/^' . preg_quote( $key, '/' ) . '_([0-9]+)_/', (string) $data_key, $match ) ) {
+                    $indexes[ (int) $match[1] ] = (int) $match[1];
+                    $found = true;
+                }
+            }
+        }
+        sort( $indexes, SORT_NUMERIC );
+    }
+    foreach ( $indexes as $index ) {
+        $row = array();
+        $row_prefixes = array();
+        foreach ( $keys as $key ) {
+            $row_prefixes[] = $key . '_' . $index;
+        }
+        foreach ( $children as $child ) {
+            $child_found = false;
+            $row[ $child['name'] ] = acf_blocks_read_field_data( $child, $data, $child_found, $row_prefixes );
+        }
+        $rows[] = $row;
+    }
+    return $rows;
+}
+
+/**
+ * Combine requested field types with exact registered child keys and schemas.
+ *
+ * Nested overrides use array( 'type' => 'group'|'repeater', 'sub_fields' => ... ).
+ *
+ * @param array $schema Parent schema.
+ * @param array $sub_names Requested field names/types.
+ * @return array
+ */
+function acf_blocks_requested_field_schema( $schema, $sub_names ) {
+    $registered = array();
+    foreach ( $schema['sub_fields'] ?? array() as $field ) {
+        $registered[ $field['name'] ] = $field;
+    }
+    $children = array();
+    foreach ( $sub_names as $key => $type ) {
+        $name = is_int( $key ) ? $type : $key;
+        $type = is_int( $key ) ? 'text' : $type;
+        $child = $registered[ $name ] ?? array( 'name' => $name, 'type' => 'text' );
+        if ( is_array( $type ) ) {
+            $child['type'] = $type['type'] ?? 'group';
+            $child = acf_blocks_requested_field_schema( $child, $type['sub_fields'] ?? array() );
+        } elseif ( 'text' !== $type || ! in_array( $child['type'], array( 'group', 'repeater' ), true ) ) {
+            $child['type'] = $type;
+        }
+        $children[] = $child;
+    }
+    $schema['sub_fields'] = $children;
+    return $schema;
+}
+
+/**
+ * Get a field value from an ACF block, with schema-aware block data fallback.
+ *
+ * @param string $name Field name.
+ * @param array  $block Render block attributes.
+ * @return mixed
+ */
+function acf_blocks_get_field( $name, $block = array() ) {
+    $schema = acf_blocks_get_field_schema( $name, $block );
+    if ( ! in_array( $schema['type'], array( 'group', 'repeater' ), true ) ) {
+        // Scalar get_field callers historically receive the raw stored value.
+        $schema['type'] = 'text';
+    }
+    $found = false;
+    $value = acf_blocks_read_field_data( $schema, (array) ( $block['data'] ?? array() ), $found );
+    if ( ! $found ) {
+        $native = get_field( $name );
+        $value = false !== $native && null !== $native && '' !== $native ? $native : null;
+        if ( null !== $value && in_array( $schema['type'], array( 'group', 'repeater' ), true ) ) {
+            $value = acf_blocks_read_field_data( $schema, array( $name => $value ), $found );
+        }
+    }
+    return apply_filters( 'acf_blocks_field_value', $value, $name, $block );
+}
+
+/**
+ * Get repeater rows with normalized field names at every nested level.
+ *
+ * @param string $name Repeater name.
+ * @param array  $sub_names Child names or name => type overrides.
+ * @param array  $block Render block attributes.
+ * @return array
  */
 function acf_blocks_get_repeater( $name, $sub_names, $block = array() ) {
-    // Parse from block data first — more reliable than get_field() with ACF 6.7+.
-    $data = $block['data'] ?? array();
-
-    // Normalize sub_names to associative array with types.
-    $fields = array();
-    foreach ( $sub_names as $key => $val ) {
-        if ( is_int( $key ) ) {
-            $fields[ $val ] = 'text';
-        } else {
-            $fields[ $key ] = $val;
+    $schema = acf_blocks_requested_field_schema( acf_blocks_get_field_schema( $name, $block ), $sub_names );
+    $schema['type'] = 'repeater';
+    $found = false;
+    $rows = acf_blocks_read_field_data( $schema, (array) ( $block['data'] ?? array() ), $found );
+    if ( ! $found ) {
+        $native = get_field( $name );
+        if ( is_array( $native ) ) {
+            $rows = acf_blocks_read_field_data( $schema, array( $name => $native ), $found );
         }
     }
+    return $rows;
+}
 
-    if ( ! empty( $data ) ) {
-        // First try nested row format (row-0, row-1, etc.) — bare name or field_ prefix.
-        $repeater_data = null;
-        if ( isset( $data[ $name ] ) && is_array( $data[ $name ] ) ) {
-            $repeater_data = $data[ $name ];
-        } elseif ( isset( $data[ 'field_' . $name ] ) && is_array( $data[ 'field_' . $name ] ) ) {
-            $repeater_data = $data[ 'field_' . $name ];
-        }
-
-        if ( is_array( $repeater_data ) ) {
-            $rows = array();
-            foreach ( $repeater_data as $row_key => $row_data ) {
-                if ( ! is_array( $row_data ) ) {
-                    continue;
-                }
-                $row = array();
-                foreach ( $fields as $sub_name => $type ) {
-                    // Try bare sub-field name, then field_ prefixed.
-                    $value = $row_data[ $sub_name ] ?? $row_data[ 'field_' . $sub_name ] ?? null;
-                    $row[ $sub_name ] = acf_blocks_cast_field_value( $value, $type );
-                }
-                $rows[] = $row;
-            }
-            if ( ! empty( $rows ) ) {
-                return $rows;
-            }
-        }
-
-        // Then try flat indexed format (repeater_0_field, repeater_1_field).
-        $count = isset( $data[ $name ] ) && ! is_array( $data[ $name ] ) ? intval( $data[ $name ] ) : 0;
-        if ( $count < 1 ) {
-            $field_names_list = array_keys( $fields );
-            if ( ! empty( $field_names_list ) ) {
-                while ( isset( $data[ $name . '_' . $count . '_' . $field_names_list[0] ] ) ) {
-                    $count++;
-                }
-            }
-        }
-        if ( $count > 0 ) {
-            $rows = array();
-            for ( $i = 0; $i < $count; $i++ ) {
-                $row = array();
-                foreach ( $fields as $sub_name => $type ) {
-                    $key   = $name . '_' . $i . '_' . $sub_name;
-                    $value = $data[ $key ] ?? null;
-                    $row[ $sub_name ] = acf_blocks_cast_field_value( $value, $type );
-                }
-                $rows[] = $row;
-            }
-            return $rows;
+/**
+ * Get a group from nested or flat data, using registered sub-field keys.
+ *
+ * @param string $name Group name.
+ * @param array  $sub_names Child names or name => type overrides.
+ * @param array  $block Render block attributes.
+ * @return array
+ */
+function acf_blocks_get_group( $name, $sub_names, $block = array() ) {
+    $schema = acf_blocks_requested_field_schema( acf_blocks_get_field_schema( $name, $block ), $sub_names );
+    $schema['type'] = 'group';
+    $found = false;
+    $group = acf_blocks_read_field_data( $schema, (array) ( $block['data'] ?? array() ), $found );
+    if ( ! $found ) {
+        $native = get_field( $name );
+        if ( is_array( $native ) ) {
+            $group = acf_blocks_read_field_data( $schema, array( $name => $native ), $found );
         }
     }
-
-    // Last resort: try native get_field.
-    $value = get_field( $name );
-    if ( ! empty( $value ) && is_array( $value ) ) {
-        return $value;
-    }
-
-    return array();
+    return $group;
 }
 
 /**
@@ -194,8 +325,12 @@ function acf_blocks_cast_field_value( $value, $type ) {
             break;
 
         case 'int':
-        case 'number':
             $value = $value !== null ? intval( $value ) : 0;
+            break;
+
+        case 'number':
+            $value = is_numeric( $value ) ? (float) $value : 0.0;
+            $value = is_finite( $value ) ? $value : 0.0;
             break;
     }
 
@@ -364,66 +499,11 @@ function acf_blocks_url_to_attachment_id( $url ) {
  * @return array Array of nested rows.
  */
 function acf_blocks_get_nested_repeater( $parent_key, $sub_names, $data ) {
-    // Normalize sub_names.
-    $fields = array();
-    foreach ( $sub_names as $key => $val ) {
-        if ( is_int( $key ) ) {
-            $fields[ $val ] = 'text';
-        } else {
-            $fields[ $key ] = $val;
-        }
+    $nested = acf_blocks_resolve_nested_key( $parent_key, $data );
+    if ( is_array( $nested ) ) {
+        $data = array( $parent_key => $nested );
     }
-
-    $field_names_list = array_keys( $fields );
-    $count = isset( $data[ $parent_key ] ) && ! is_array( $data[ $parent_key ] ) ? intval( $data[ $parent_key ] ) : 0;
-    if ( $count < 1 && ! empty( $field_names_list ) ) {
-        $count = 0;
-        while ( isset( $data[ $parent_key . '_' . $count . '_' . $field_names_list[0] ] ) ) {
-            $count++;
-        }
-    }
-
-    if ( $count < 1 ) {
-        // Fallback: parse nested row format.
-        $nested = isset( $data[ $parent_key ] ) && is_array( $data[ $parent_key ] )
-            ? $data[ $parent_key ]
-            : null;
-
-        // If flat key doesn't exist, resolve through nested data structure.
-        // E.g. "repeater_0_sub_repeater" navigates to
-        // $data['repeater']['row-0']['sub_repeater'].
-        if ( null === $nested ) {
-            $nested = acf_blocks_resolve_nested_key( $parent_key, $data );
-        }
-
-        if ( is_array( $nested ) ) {
-            $rows = array();
-            foreach ( $nested as $row_key => $row_data ) {
-                if ( ! is_array( $row_data ) ) {
-                    continue;
-                }
-                $row = array();
-                foreach ( $fields as $sub_name => $type ) {
-                    $row[ $sub_name ] = $row_data[ $sub_name ] ?? null;
-                }
-                $rows[] = $row;
-            }
-            return $rows;
-        }
-
-        return array();
-    }
-
-    $rows = array();
-    for ( $i = 0; $i < $count; $i++ ) {
-        $row = array();
-        foreach ( $fields as $sub_name => $type ) {
-            $row[ $sub_name ] = $data[ $parent_key . '_' . $i . '_' . $sub_name ] ?? null;
-        }
-        $rows[] = $row;
-    }
-
-    return $rows;
+    return acf_blocks_get_repeater( $parent_key, $sub_names, array( 'data' => $data ) );
 }
 
 /**
@@ -502,58 +582,92 @@ function acf_blocks_reconstruct_nested_repeaters( $parsed_block ) {
 }
 
 /**
- * Rebuild flat repeater rows into nested row-N format.
+ * Match a flat field suffix against declared fields, including nested rows.
  *
- * @param string $prefix     The repeater field name prefix.
- * @param int    $count      Number of rows.
- * @param array  $sub_fields Sub-field definitions from the field group.
- * @param array  $data       The flat block data.
- * @return array Nested row-N structure.
+ * @param string $suffix Candidate suffix after a row index.
+ * @param array  $fields Registered child field schemas.
+ * @return bool
+ */
+function acf_blocks_flat_suffix_matches_fields( $suffix, $fields ) {
+    foreach ( $fields as $field ) {
+        $aliases = array_unique( array_filter( array( $field['name'] ?? '', $field['key'] ?? '' ) ) );
+        foreach ( $aliases as $alias ) {
+            if ( $suffix === $alias ) {
+                return true;
+            }
+            if ( 'repeater' === ( $field['type'] ?? '' ) && preg_match( '/^' . preg_quote( $alias, '/' ) . '_(0|[1-9][0-9]*)_(.+)$/D', $suffix, $match ) ) {
+                if ( (string) (int) $match[1] === $match[1] && acf_blocks_flat_suffix_matches_fields( $match[2], $field['sub_fields'] ?? array() ) ) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+/**
+ * Rebuild flat repeater rows into nested row-N format for the editor.
+ *
+ * Only materialized rows with declared field keys are reconstructed. Stored
+ * counts constrain those rows and never drive allocations or loop bounds.
+ *
+ * @param string   $prefix Full repeater prefix.
+ * @param int|null $count Row count, or null to infer only an absent count.
+ * @param array    $sub_fields Registered child field schemas.
+ * @param array    $data Flat block data.
+ * @return array
  */
 function acf_blocks_rebuild_repeater_rows( $prefix, $count, $sub_fields, $data ) {
+    if ( array_key_exists( $prefix, $data ) ) {
+        $count = $data[ $prefix ];
+    }
+    if ( null !== $count ) {
+        if ( ! is_int( $count ) && ( ! is_string( $count ) || ! preg_match( '/^(?:0|[1-9][0-9]*)$/D', $count ) ) ) {
+            return array();
+        }
+        $count = max( 0, (int) $count );
+        if ( 0 === $count ) {
+            return array();
+        }
+    }
+
+    $indexes = array();
+    foreach ( array_keys( $data ) as $key ) {
+        if ( ! preg_match( '/^' . preg_quote( $prefix, '/' ) . '_(0|[1-9][0-9]*)_(.+)$/D', (string) $key, $match ) ) {
+            continue;
+        }
+        $index = (int) $match[1];
+        if ( (string) $index !== $match[1] || ( null !== $count && $index >= $count ) ) {
+            continue;
+        }
+        if ( acf_blocks_flat_suffix_matches_fields( $match[2], $sub_fields ) ) {
+            $indexes[ $index ] = $index;
+        }
+    }
+    sort( $indexes, SORT_NUMERIC );
+
     $nested = array();
-
-    for ( $i = 0; $i < $count; $i++ ) {
+    foreach ( $indexes as $index ) {
         $row = array();
-
         foreach ( $sub_fields as $sub_field ) {
             $sub_name = $sub_field['name'];
-            $flat_key = $prefix . '_' . $i . '_' . $sub_name;
-
-            if ( $sub_field['type'] === 'repeater' && isset( $sub_field['sub_fields'] ) ) {
-                $sub_count_key = $flat_key;
-                $sub_count = isset( $data[ $sub_count_key ] ) && ! is_array( $data[ $sub_count_key ] )
-                    ? intval( $data[ $sub_count_key ] )
-                    : 0;
-
-                if ( $sub_count < 1 ) {
-                    $sub_count = 0;
-                    $first_sub = $sub_field['sub_fields'][0]['name'] ?? '';
-                    if ( $first_sub ) {
-                        while ( isset( $data[ $flat_key . '_' . $sub_count . '_' . $first_sub ] ) ) {
-                            $sub_count++;
-                        }
-                    }
+            $flat_key = $prefix . '_' . $index . '_' . $sub_name;
+            // The schema key can differ from the name, also in imported data.
+            if ( ! array_key_exists( $flat_key, $data ) && ! empty( $sub_field['key'] ) ) {
+                $schema_key = $prefix . '_' . $index . '_' . $sub_field['key'];
+                if ( array_key_exists( $schema_key, $data ) ) {
+                    $flat_key = $schema_key;
                 }
-
-                if ( $sub_count > 0 ) {
-                    $row[ $sub_name ] = acf_blocks_rebuild_repeater_rows(
-                        $flat_key,
-                        $sub_count,
-                        $sub_field['sub_fields'],
-                        $data
-                    );
-                } else {
-                    $row[ $sub_name ] = array();
-                }
+            }
+            if ( 'repeater' === ( $sub_field['type'] ?? '' ) && isset( $sub_field['sub_fields'] ) ) {
+                $sub_count = array_key_exists( $flat_key, $data ) ? $data[ $flat_key ] : null;
+                $row[ $sub_name ] = acf_blocks_rebuild_repeater_rows( $flat_key, $sub_count, $sub_field['sub_fields'], $data );
             } else {
                 $row[ $sub_name ] = $data[ $flat_key ] ?? '';
             }
         }
-
-        $nested[ 'row-' . $i ] = $row;
+        $nested[ 'row-' . $index ] = $row;
     }
-
     return $nested;
 }
 

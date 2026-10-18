@@ -27,30 +27,18 @@ $comp_data = acf_blocks_get_repeater('comp_columns_data', [
     'comp_title_color',
     'comp_text',
     'comp_list_content',
+    'comp_list_class',
+    'comp_repeater_list' => array( 'type' => 'repeater', 'sub_fields' => array( 'comp_list_item' ) ),
     'comp_column_style',
 ], $block);
 
-// Also try old field name for backward compat
-if ( empty( $comp_data ) ) {
-    $old_data = acf_blocks_get_repeater('comp_columns_data', [
-        'comp_title',
-        'comp_title_bg',
-        'comp_title_color',
-        'comp_text',
-        'comp_list_class',
-        'comp_column_style',
-    ], $block);
-    // Map old comp_list_class field to comp_list_content
-    if ( ! empty( $old_data ) ) {
-        foreach ( $old_data as &$row ) {
-            if ( ! empty( $row['comp_list_class'] ) && empty( $row['comp_list_content'] ) ) {
-                $row['comp_list_content'] = $row['comp_list_class'];
-            }
-        }
-        unset( $row );
-        $comp_data = $old_data;
+// Older rows store feature HTML under comp_list_class, including mixed lists.
+foreach ( $comp_data as &$row ) {
+    if ( empty( $row['comp_list_content'] ) && ! empty( $row['comp_list_class'] ) ) {
+        $row['comp_list_content'] = $row['comp_list_class'];
     }
 }
+unset( $row );
 
 $block_id    = 'cmp-' . ( $block['id'] ?? wp_unique_id() );
 $className   = $block['className'] ?? '';
@@ -80,11 +68,7 @@ if ( ! empty( $className ) ) {
 
             // Backward compat: if list_content is empty, try nested repeater
             if ( empty( $list_content ) ) {
-                $list_items = acf_blocks_get_nested_repeater(
-                    'comp_columns_data_' . $col_index . '_comp_repeater_list',
-                    [ 'comp_list_item' ],
-                    $block['data'] ?? array()
-                );
+                $list_items = $col['comp_repeater_list'] ?? array();
                 if ( ! empty( $list_items ) ) {
                     $list_content = '<ul>';
                     foreach ( $list_items as $item ) {

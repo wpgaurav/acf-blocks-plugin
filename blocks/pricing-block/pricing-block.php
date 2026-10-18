@@ -101,7 +101,7 @@ if ( ! $heading || 'h1' === $tag || 'p' === $tag ) {
                     <?php if ( $name ) : ?>
                         <<?php echo $plan_tag; ?> class="acf-pricing__name"><?php echo esc_html( $name ); ?></<?php echo $plan_tag; ?>>
                     <?php endif; ?>
-                    <?php if ( ! empty( $plan['plan_price'] ) ) : ?>
+                    <?php if ( isset( $plan['plan_price'] ) && '' !== trim( (string) $plan['plan_price'] ) ) : ?>
                         <p class="acf-pricing__price">
                             <span class="acf-pricing__amount"><?php echo esc_html( $plan['plan_price'] ); ?></span>
                             <?php if ( ! empty( $plan['plan_period'] ) ) : ?>

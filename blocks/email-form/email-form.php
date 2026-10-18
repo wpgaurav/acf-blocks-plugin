@@ -20,16 +20,16 @@ $webhook_auth_headers = acf_blocks_get_field( 'webhook_auth_headers', $block );
 
 $display_name         = acf_blocks_get_field( 'display_name_field', $block );
 $name_required        = acf_blocks_get_field( 'name_field_required', $block );
-$name_field_attrs     = acf_blocks_get_field( 'name_field_attributes', $block );
-$email_field_attrs    = acf_blocks_get_field( 'email_field_attributes', $block );
+$name_field_attrs     = acf_blocks_get_group( 'name_field_attributes', array( 'id', 'class', 'inline_css' ), $block );
+$email_field_attrs    = acf_blocks_get_group( 'email_field_attributes', array( 'id', 'class', 'inline_css' ), $block );
 
-$hidden_fields        = acf_blocks_get_field( 'hidden_fields', $block );
+$hidden_fields        = acf_blocks_get_repeater( 'hidden_fields', array( 'field_name', 'field_value', 'attributes' => array( 'type' => 'group', 'sub_fields' => array( 'id', 'class', 'inline_css' ) ) ), $block );
 
 $button_text          = acf_blocks_get_field( 'button_text', $block ) ?: __( 'Subscribe', 'acf-blocks' );
-$button_attrs         = acf_blocks_get_field( 'button_attributes', $block );
+$button_attrs         = acf_blocks_get_group( 'button_attributes', array( 'id', 'class', 'inline_css' ), $block );
 
 $success_message      = acf_blocks_get_field( 'success_message', $block ) ?: __( 'Thanks for subscribing!', 'acf-blocks' );
-$form_attrs           = acf_blocks_get_field( 'form_attributes', $block );
+$form_attrs           = acf_blocks_get_group( 'form_attributes', array( 'id', 'class', 'inline_css' ), $block );
 
 // Generate unique ID for this block instance.
 $block_uid   = 'ef-' . substr( md5( $block['id'] ?? wp_unique_id() ), 0, 8 );
@@ -47,17 +47,20 @@ $form_id    = ! empty( $form_attrs['id'] ) ? $form_attrs['id'] : $block_uid;
 $form_class = ! empty( $form_attrs['class'] ) ? $default_form_class . ' ' . $form_attrs['class'] : $default_form_class;
 $form_css   = ! empty( $form_attrs['inline_css'] ) ? $form_attrs['inline_css'] : '';
 
-// Output webhook config via a safe inline script (not in HTML attributes).
+// Only a signed reference is public; webhook credentials stay in saved content.
 if ( 'webhook' === $form_type && $webhook_url && ! $is_preview ) :
 	$config_data = array(
-		'webhookUrl'  => $webhook_url,
-		'authHeaders' => $webhook_auth_headers ?: '',
+		'formRef' => acf_email_form_reference( array(
+			'form_type' => 'webhook',
+			'webhook_url' => $webhook_url,
+			'webhook_auth_headers' => $webhook_auth_headers ?: '',
+		), $post_id ?? 0 ),
 		'proxyUrl'    => rest_url( 'email-form-proxy/v1/submit' ),
 	);
 	?>
 	<script>
 	window.acfEmailFormConfigs = window.acfEmailFormConfigs || {};
-	window.acfEmailFormConfigs[<?php echo wp_json_encode( $form_id ); ?>] = <?php echo wp_json_encode( $config_data ); ?>;
+	window.acfEmailFormConfigs[<?php echo wp_json_encode( $form_id, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ); ?>] = <?php echo wp_json_encode( $config_data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ); ?>;
 	</script>
 <?php endif; ?>
 

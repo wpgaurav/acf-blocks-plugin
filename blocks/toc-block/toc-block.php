@@ -10,125 +10,6 @@
  */
 
 /**
- * Extract headings from post content
- */
-if ( ! function_exists( 'acf_toc_extract_headings' ) ) {
-    function acf_toc_extract_headings( $content, $levels ) {
-        if ( empty( $content ) ) {
-            return array();
-        }
-
-        // Match every heading so duplicate IDs remain deterministic even when
-        // an intermediate heading level is excluded from the TOC.
-        $pattern = '/<(h[1-6])([^>]*)>(.*?)<\/\1>/is';
-
-        preg_match_all( $pattern, $content, $matches, PREG_SET_ORDER );
-
-        $headings = array();
-        $used_ids = array();
-        $heading_index = 0;
-
-        foreach ( $matches as $match ) {
-            $heading_index++;
-            $tag        = strtolower( $match[1] );
-            $attributes = $match[2];
-            $text       = wp_strip_all_tags( $match[3] );
-            $level      = (int) substr( $tag, 1 );
-
-            // Try to extract existing ID from attributes
-            $id = '';
-            if ( preg_match( '/id=["\']([^"\']+)["\']/', $attributes, $id_match ) ) {
-                $id = $id_match[1];
-            }
-
-            // Generate ID from text if no ID exists
-            if ( empty( $id ) ) {
-                $id = sanitize_title( $text );
-                if ( empty( $id ) ) {
-                    $id = 'heading-' . $heading_index;
-                }
-            }
-
-            // Handle duplicate IDs using the same algorithm as the final
-            // content filter in extra.php.
-            $original_id = $id;
-            $counter     = 2;
-            while ( isset( $used_ids[ $id ] ) ) {
-                $id = $original_id . '-' . $counter;
-                $counter++;
-            }
-            $used_ids[ $id ] = true;
-
-            if ( in_array( $tag, $levels, true ) ) {
-                $headings[] = array(
-                    'id'    => $id,
-                    'text'  => $text,
-                    'level' => $level,
-                    'tag'   => $tag,
-                );
-            }
-        }
-
-        return $headings;
-    }
-}
-
-/**
- * Collect heading-bearing HTML from parsed blocks without rendering the post.
- *
- * The previous implementation called do_blocks() from inside the TOC render
- * callback, causing every dynamic block and query in the post to execute a
- * second time. This walker reads core heading markup directly and recurses into
- * normal InnerBlocks. ACF blocks are included only when requested; data-only
- * ACF blocks may be rendered individually as an opt-in compatibility fallback.
- *
- * @param array $blocks               Parsed blocks.
- * @param bool  $include_acf_headings Include headings nested inside ACF blocks.
- * @return string
- */
-if ( ! function_exists( 'acf_toc_collect_heading_html' ) ) {
-    function acf_toc_collect_heading_html( $blocks, $include_acf_headings ) {
-        $html = '';
-
-        foreach ( $blocks as $parsed_block ) {
-            $name   = array_key_exists( 'blockName', $parsed_block ) ? $parsed_block['blockName'] : '';
-            $is_acf = 0 === strpos( $name, 'acf/' );
-
-            if ( 'core/heading' === $name || null === $name ) {
-                $html .= (string) ( $parsed_block['innerHTML'] ?? '' );
-            }
-
-            if ( $is_acf && $include_acf_headings ) {
-                /**
-                 * Supply heading HTML generated from ACF data-only blocks.
-                 *
-                 * InnerBlocks headings are handled by recursion. Integrations
-                 * can expose template-generated headings without rendering the
-                 * full post by returning a small heading-only HTML fragment.
-                 *
-                 * @param string $html_fragment Heading-only HTML.
-                 * @param array  $parsed_block  Parsed ACF block.
-                 */
-                $acf_heading_html = (string) apply_filters( 'acf_toc_acf_block_heading_html', '', $parsed_block );
-                $may_render_fallback = 'acf/toc' !== $name
-                    && empty( $parsed_block['innerBlocks'] )
-                    && apply_filters( 'acf_toc_render_acf_block_for_headings', true, $parsed_block );
-                if ( '' === $acf_heading_html && $may_render_fallback && function_exists( 'render_block' ) ) {
-                    $acf_heading_html = render_block( $parsed_block );
-                }
-                $html .= $acf_heading_html;
-            }
-
-            if ( ! empty( $parsed_block['innerBlocks'] ) && ( ! $is_acf || $include_acf_headings ) ) {
-                $html .= acf_toc_collect_heading_html( $parsed_block['innerBlocks'], $include_acf_headings );
-            }
-        }
-
-        return $html;
-    }
-}
-
-/**
  * Build hierarchical TOC list
  */
 if ( ! function_exists( 'acf_toc_build_list' ) ) {
@@ -143,7 +24,7 @@ if ( ! function_exists( 'acf_toc_build_list' ) ) {
             $list_classes[] = $list_class;
         }
         $list_class_attr = ' class="' . esc_attr( implode( ' ', $list_classes ) ) . '"';
-        $link_class_str  = ! empty( $link_class ) ? esc_attr( $link_class ) : '';
+        $link_class_str  = ! empty( $link_class ) ? $link_class : '';
 
         // Find minimum level to use as base for depth calculation
         $min_level = min( array_column( $headings, 'level' ) );
@@ -167,57 +48,35 @@ if ( ! function_exists( 'acf_toc_build_list' ) ) {
             return $output;
         }
 
-        // For hierarchical list, build nested structure
+        // Keep only observed levels on the stack. Missing levels need no empty
+        // lists, and a later shallower heading must never close the root early.
         $tag = ( $list_type === 'ol' ) ? 'ol' : 'ul';
-
-        $output = '';
-        $current_level = $min_level;
-        $current_depth = 0;
+        $output = '<' . $tag . $list_class_attr . '>';
         $stack = array();
-
         foreach ( $headings as $index => $heading ) {
             $level = $heading['level'];
             $depth = $level - $min_level;
-            $link_classes = 'acf-toc__link';
-            if ( $link_class_str ) {
-                $link_classes .= ' ' . $link_class_str;
-            }
-
-            // Opening list item and nested lists
-            if ( $index === 0 ) {
-                $output .= '<' . $tag . $list_class_attr . '>';
-                $stack[] = $min_level;
-                $current_depth = 0;
-            } elseif ( $level > $current_level ) {
-                // Go deeper - open new nested list(s)
-                for ( $i = $current_level; $i < $level; $i++ ) {
-                    $sub_depth = ( $i + 1 ) - $min_level;
-                    $output .= '<' . $tag . ' class="acf-toc__sublist acf-toc__sublist--depth-' . esc_attr( $sub_depth ) . '">';
-                    $stack[] = $i + 1;
-                }
-                $current_depth = $depth;
-            } elseif ( $level < $current_level ) {
-                // Go up - close nested lists
-                for ( $i = $current_level; $i > $level; $i-- ) {
+            if ( 0 === $index ) {
+                $stack[] = $level;
+            } else {
+                while ( count( $stack ) > 1 && $level < end( $stack ) ) {
                     $output .= '</li></' . $tag . '>';
                     array_pop( $stack );
                 }
-                $output .= '</li>';
-                $current_depth = $depth;
-            } else {
-                // Same level - close previous item
-                $output .= '</li>';
+                if ( $level > end( $stack ) ) {
+                    $output .= '<' . $tag . ' class="acf-toc__sublist acf-toc__sublist--depth-' . esc_attr( $depth ) . '">';
+                    $stack[] = $level;
+                } else {
+                    $output .= '</li>';
+                    if ( 1 === count( $stack ) ) {
+                        $stack[0] = $level;
+                    }
+                }
             }
-
+            $link_classes = 'acf-toc__link' . ( $link_class ? ' ' . $link_class : '' );
             $output .= '<li class="acf-toc__item acf-toc__item--depth-' . esc_attr( $depth ) . '" data-level="' . esc_attr( $level ) . '">';
-            $output .= '<a href="#' . esc_attr( $heading['id'] ) . '" class="' . esc_attr( $link_classes ) . '">';
-            $output .= esc_html( $heading['text'] );
-            $output .= '</a>';
-
-            $current_level = $level;
+            $output .= '<a href="#' . esc_attr( $heading['id'] ) . '" class="' . esc_attr( $link_classes ) . '">' . esc_html( $heading['text'] ) . '</a>';
         }
-
-        // Close remaining open elements
         while ( ! empty( $stack ) ) {
             $output .= '</li></' . $tag . '>';
             array_pop( $stack );
@@ -254,7 +113,7 @@ if ( ! function_exists( 'acf_toc_generate_schema' ) ) {
             'itemListElement' => $items,
         );
 
-        return '<script type="application/ld+json">' . wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>';
+        return '<script type="application/ld+json">' . wp_json_encode( $schema, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>';
     }
 }
 
@@ -316,45 +175,18 @@ if ( $collapsible ) {
 // Generate unique ID for this block instance
 $block_id = ! empty( $block['id'] ) ? $block['id'] : 'acf-toc-' . wp_unique_id();
 
-// Get heading markup without re-rendering the post or its dynamic blocks.
-$post_content = '';
-if ( $post_id ) {
-    $post_obj = get_post( $post_id );
-    if ( $post_obj ) {
-        $post_content = acf_toc_collect_heading_html(
-            parse_blocks( $post_obj->post_content ),
-            (bool) $include_acf_headings
-        );
-    }
-}
-
-// Extract headings from the rendered content
-$headings = acf_toc_extract_headings( $post_content, $heading_levels );
-
-// Preview mode - show message if no headings
-if ( $is_preview && empty( $headings ) ) {
+// The final the_content filter builds the list from the HTML WordPress actually
+// rendered, including synced patterns, HTML blocks and dynamic block headings.
+// Reading or rendering post_content here creates a different heading inventory.
+if ( $is_preview ) {
     ?>
     <div class="acf-toc acf-toc--preview <?php echo esc_attr( implode( ' ', array_slice( $block_classes, 1 ) ) ); ?>">
         <p class="acf-toc__title"><?php echo esc_html( $title ); ?></p>
-        <p class="acf-toc__preview-notice">
-            <?php esc_html_e( 'Table of contents will be generated from headings in your content.', 'acf-blocks' ); ?>
-            <br>
-            <small><?php printf( esc_html__( 'Included levels: %s', 'acf-blocks' ), esc_html( implode( ', ', array_map( 'strtoupper', $heading_levels ) ) ) ); ?></small>
-        </p>
+        <p class="acf-toc__preview-notice"><?php esc_html_e( 'Table of contents will be generated from headings in your content.', 'acf-blocks' ); ?></p>
     </div>
     <?php
     return;
 }
-
-// Don't render if no headings found (frontend)
-if ( empty( $headings ) ) {
-    return;
-}
-
-// Build the TOC list
-$is_plain   = ( $list_type === 'plain' );
-$toc_list   = acf_toc_build_list( $headings, $list_type, $list_class, $link_class, $is_plain );
-
 // Title classes
 $title_classes = 'acf-toc__title';
 if ( ! empty( $title_class ) ) {
@@ -372,8 +204,14 @@ if ( ! in_array( $title_tag, $allowed_title_tags ) ) {
     id="<?php echo esc_attr( $block_id ); ?>"
     class="<?php echo esc_attr( implode( ' ', $block_classes ) ); ?>"
     aria-label="<?php echo esc_attr( $aria_label ); ?>"
+    data-toc-finalized="0"
     data-heading-levels="<?php echo esc_attr( implode( ',', array_map( 'strtolower', $heading_levels ) ) ); ?>"
     data-include-acf-headings="<?php echo $include_acf_headings ? '1' : '0'; ?>"
+    data-list-type="<?php echo esc_attr( $list_type ); ?>"
+    data-list-class="<?php echo esc_attr( $list_class ); ?>"
+    data-link-class="<?php echo esc_attr( $link_class ); ?>"
+    data-toc-schema="<?php echo $include_schema ? '1' : '0'; ?>"
+    data-toc-post-id="<?php echo absint( $post_id ); ?>"
     <?php if ( $sticky ) : ?>data-sticky="true" data-sticky-offset="<?php echo esc_attr( $sticky_offset ); ?>"<?php endif; ?>
     <?php if ( $highlight_active ) : ?>data-highlight-active="true"<?php endif; ?>
     <?php if ( $sticky ) : ?>style="--acf-toc-sticky-offset:calc(var(--header-height,0px) + var(--wp-admin--admin-bar--height,0px) + <?php echo absint( $sticky_offset ); ?>px);"<?php endif; ?>
@@ -386,7 +224,7 @@ if ( ! in_array( $title_tag, $allowed_title_tags ) ) {
                 </<?php echo esc_attr( $title_tag ); ?>>
             </summary>
             <div class="acf-toc__content">
-                <?php echo $toc_list; ?>
+                <!--acf-toc-list:start--><!--acf-toc-list:end-->
             </div>
         </details>
     <?php else : ?>
@@ -396,13 +234,8 @@ if ( ! in_array( $title_tag, $allowed_title_tags ) ) {
             </<?php echo esc_attr( $title_tag ); ?>>
         <?php endif; ?>
         <div class="acf-toc__content">
-            <?php echo $toc_list; ?>
+            <!--acf-toc-list:start--><!--acf-toc-list:end-->
         </div>
     <?php endif; ?>
+    <!--acf-toc-schema:start--><!--acf-toc-schema:end-->
 </nav>
-
-<?php
-// Schema markup (frontend only)
-if ( $include_schema && ! $is_preview && ! empty( $headings ) ) {
-    echo acf_toc_generate_schema( $headings, $post_id );
-}

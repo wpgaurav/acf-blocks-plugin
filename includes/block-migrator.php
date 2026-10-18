@@ -37,6 +37,9 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+require_once __DIR__ . '/storage-safety.php';
+require_once __DIR__ . '/block-recovery.php';
+
 /**
  * Map of legacy block names to a migration handler key.
  *
@@ -561,6 +564,19 @@ function acf_blocks_migrator_strip_dangling_openers( $content, &$count ) {
         $close = strpos( $content, '-->', $pos );
         $next  = strpos( $content, '<!--', $pos + 8 );
 
+        // A comment opener inside a valid attribute string is data, not the
+        // start of another block. Scan the complete JSON object before deciding.
+        if ( preg_match( '/\G<!-- wp:[a-z][a-z0-9_-]*(?:\/[a-z0-9_-]+)?\s*(\{)/', $content, $match, PREG_OFFSET_CAPTURE, $pos ) ) {
+            $brace = $match[1][1];
+            $end   = acf_blocks_migrator_match_brace( $content, $brace );
+            if ( $end >= 0 && is_array( json_decode( substr( $content, $brace, $end - $brace + 1 ), true ) ) ) {
+                if ( preg_match( '/\G\s*\/?-->/', $content, $ending, 0, $end + 1 ) ) {
+                    $close = $end + 1 + strlen( $ending[0] ) - 3;
+                    $next  = strpos( $content, '<!--', $close + 3 );
+                }
+            }
+        }
+
         $dangling = ( false === $close ) || ( false !== $next && $next < $close );
 
         if ( $dangling ) {
@@ -944,6 +960,31 @@ const ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT  = 'acf_blocks_migrator_background_ba
 const ACF_BLOCKS_MIGRATOR_BATCH_SIZE = 30;
 
 /**
+ * Serialize every migration mutation, including manual requests and restores.
+ * Reject reentrant save hooks rather than recursively releasing our own lock.
+ * Cancellation deliberately uses only its short state lock.
+ *
+ * @return mixed|WP_Error
+ */
+function acf_blocks_migrator_with_worker_lock( $callback, $wait = 2 ) {
+    static $active = false;
+    $lock = $active ? false : acf_blocks_storage_lock( 'migrator-worker', $wait );
+    if ( ! $lock ) {
+        return new WP_Error( 'acf_blocks_migrator_busy', __( 'Another migration operation is running. Please retry.', 'acf-blocks' ) );
+    }
+    $active = true;
+    try {
+        foreach ( array( ACF_BLOCKS_MIGRATOR_CURSOR_OPTION, ACF_BLOCKS_MIGRATOR_BATCH_OPTION, ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION, 'alloptions', 'notoptions' ) as $name ) {
+            wp_cache_delete( $name, 'options' );
+        }
+        return call_user_func( $callback );
+    } finally {
+        $active = false;
+        acf_blocks_storage_unlock( $lock );
+    }
+}
+
+/**
  * Migrate up to $limit affected posts, then report what is left.
  *
  * Processes posts in order, writing at most $limit of them. For each post
@@ -961,7 +1002,18 @@ const ACF_BLOCKS_MIGRATOR_BATCH_SIZE = 30;
  *     @type array $errors    Per-post error strings.
  * }
  */
-function acf_blocks_migrator_run_batch( $limit = ACF_BLOCKS_MIGRATOR_BATCH_SIZE ) {
+function acf_blocks_migrator_run_batch( $limit = ACF_BLOCKS_MIGRATOR_BATCH_SIZE, $run_id = null, $background = false ) {
+    $result = acf_blocks_migrator_with_worker_lock( function () use ( $limit, $run_id, $background ) {
+        return acf_blocks_migrator_run_batch_locked( $limit, $run_id, $background );
+    } );
+    return is_wp_error( $result ) ? array(
+        'migrated' => array(), 'count' => 0, 'remaining' => max( 1, acf_blocks_migrator_candidate_count() ),
+        'scanned' => 0, 'errors' => array( $result->get_error_message() ),
+    ) : $result;
+}
+
+/** Internal batch implementation; the caller must hold the migration lock. */
+function acf_blocks_migrator_run_batch_locked( $limit, $run_id = null, $background = false ) {
     $migrated     = array();
     $migrated_ids = array();
     $errors       = array();
@@ -980,9 +1032,17 @@ function acf_blocks_migrator_run_batch( $limit = ACF_BLOCKS_MIGRATOR_BATCH_SIZE 
         }
 
         foreach ( $ids as $id ) {
+            if ( $background ) {
+                $state = acf_blocks_storage_read_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION, array() );
+                if ( empty( $state['running'] ) || ( $state['run_id'] ?? null ) !== $run_id ) {
+                    break 2;
+                }
+            }
             $cursor  = $id;
             $examined++;
-            $content = get_post_field( 'post_content', $id );
+            clean_post_cache( $id );
+            $snapshot = get_post( $id );
+            $content  = $snapshot ? $snapshot->post_content : '';
             if ( '' === $content ) {
                 continue;
             }
@@ -995,19 +1055,29 @@ function acf_blocks_migrator_run_batch( $limit = ACF_BLOCKS_MIGRATOR_BATCH_SIZE 
 
             $detail = acf_blocks_migrator_post_detail( $id, $report );
             wp_save_post_revision( $id );
-            $had_backup = '' !== get_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META, true );
+            $had_backup = metadata_exists( 'post', $id, ACF_BLOCKS_MIGRATOR_BACKUP_META );
+            $backup_id  = 0;
             if ( ! $had_backup ) {
-                update_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META, $content );
+                // Metadata removes one layer of slashes. Verify the restore
+                // point before making any destructive content transformation.
+                $backup_id = add_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META, wp_slash( $content ), true );
+                if ( ! $backup_id || get_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META, true ) !== $content ) {
+                    if ( $backup_id ) {
+                        // Never let a later retry trust this unverified row.
+                        delete_metadata_by_mid( 'post', $backup_id );
+                    }
+                    $errors[] = sprintf( '#%d: %s', $id, __( 'Could not verify the migration restore point; post skipped.', 'acf-blocks' ) );
+                    continue;
+                }
             }
 
-            $result = wp_update_post( array(
-                'ID'           => $id,
-                'post_content' => wp_slash( $new ),
-            ), true );
+            $result = acf_blocks_storage_update_post( $snapshot, $new );
 
             if ( is_wp_error( $result ) ) {
-                if ( ! $had_backup ) {
-                    delete_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META );
+                if ( $backup_id ) {
+                    // A failed attempt owns only this row, never another
+                    // worker's previously established restore point.
+                    delete_metadata_by_mid( 'post', $backup_id );
                 }
                 $errors[] = sprintf( '#%d: %s', $id, $result->get_error_message() );
             } else {
@@ -1059,61 +1129,69 @@ function acf_blocks_migrator_run_batch( $limit = ACF_BLOCKS_MIGRATOR_BATCH_SIZE 
  * Start the resumable background migration worker.
  */
 function acf_blocks_migrator_start_background() {
-    delete_option( ACF_BLOCKS_MIGRATOR_CURSOR_OPTION );
-    update_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION, array(
-        'running'     => true,
-        'migrated'    => 0,
-        'scanned'     => 0,
-        'errors'      => array(),
-        'started_at'  => time(),
-        'completed_at'=> 0,
-    ), false );
-    if ( ! wp_next_scheduled( ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT ) ) {
-        wp_schedule_single_event( time() + 1, ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT );
-    }
+    return acf_blocks_migrator_with_worker_lock( function () {
+        delete_option( ACF_BLOCKS_MIGRATOR_CURSOR_OPTION );
+        return acf_blocks_storage_mutate_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION, function () {
+            $state = array(
+                'running'      => true,
+                'run_id'       => wp_generate_uuid4(),
+                'migrated'     => 0,
+                'scanned'      => 0,
+                'errors'       => array(),
+                'started_at'   => time(),
+                'completed_at' => 0,
+            );
+            if ( ! wp_next_scheduled( ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT ) ) {
+                wp_schedule_single_event( time() + 1, ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT );
+            }
+            return $state;
+        } );
+    } );
 }
 
-/**
- * Process one background migration batch.
- */
+/** Process one migration batch, without reviving a cancelled run. */
 function acf_blocks_migrator_process_background() {
-    $state = get_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION, array() );
-    if ( empty( $state['running'] ) ) {
-        return;
-    }
-
-    if ( get_transient( 'acf_blocks_migrator_lock' ) ) {
-        if ( ! wp_next_scheduled( ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT ) ) {
-            wp_schedule_single_event( time() + 60, ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT );
+    $outcome = acf_blocks_migrator_with_worker_lock( function () {
+        $state = acf_blocks_storage_read_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION, array() );
+        if ( empty( $state['running'] ) ) {
+            return;
         }
-        return;
+        // Old saved jobs have no run identifier; null remains a valid identity
+        // until start_background() replaces it with a fresh generation.
+        $run_id = $state['run_id'] ?? null;
+        $result = acf_blocks_migrator_run_batch_locked( ACF_BLOCKS_MIGRATOR_BATCH_SIZE, $run_id, true );
+        acf_blocks_storage_mutate_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION, function ( $latest ) use ( $run_id, $result ) {
+            if ( ! is_array( $latest ) || ! array_key_exists( 'running', $latest ) || ( $latest['run_id'] ?? null ) !== $run_id ) {
+                return $latest;
+            }
+            $latest['migrated'] = (int) ( $latest['migrated'] ?? 0 ) + (int) $result['count'];
+            $latest['scanned']  = (int) ( $latest['scanned'] ?? 0 ) + (int) $result['scanned'];
+            $latest['errors']   = array_slice( array_merge( (array) ( $latest['errors'] ?? array() ), (array) $result['errors'] ), -50 );
+            if ( empty( $latest['running'] ) ) {
+                return $latest; // Preserve cancellation while counting completed work.
+            }
+            if ( empty( $result['remaining'] ) ) {
+                $latest['running']      = false;
+                $latest['completed_at'] = time();
+            } elseif ( ! wp_next_scheduled( ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT ) ) {
+                wp_schedule_single_event( time() + 20, ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT );
+            }
+            return $latest;
+        } );
+    }, 0 );
+    if ( is_wp_error( $outcome ) && ! wp_next_scheduled( ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT ) ) {
+        wp_schedule_single_event( time() + 60, ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT );
     }
-    set_transient( 'acf_blocks_migrator_lock', 1, 5 * MINUTE_IN_SECONDS );
-
-    $result = acf_blocks_migrator_run_batch( ACF_BLOCKS_MIGRATOR_BATCH_SIZE );
-    $state['migrated'] = (int) ( $state['migrated'] ?? 0 ) + (int) $result['count'];
-    $state['scanned']  = (int) ( $state['scanned'] ?? 0 ) + (int) $result['scanned'];
-    $state['errors']   = array_slice( array_merge( (array) ( $state['errors'] ?? array() ), (array) $result['errors'] ), -50 );
-
-    if ( empty( $result['remaining'] ) ) {
-        $state['running']      = false;
-        $state['completed_at'] = time();
-    } else {
-        wp_schedule_single_event( time() + 20, ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT );
-    }
-    update_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION, $state, false );
-    delete_transient( 'acf_blocks_migrator_lock' );
 }
 add_action( ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT, 'acf_blocks_migrator_process_background' );
 
-/**
- * Stop the background worker without reverting completed changes.
- */
+/** Stop future batches and let an in-flight post finish safely. */
 function acf_blocks_migrator_cancel_background() {
-    $state = get_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION, array() );
-    $state['running'] = false;
-    update_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION, $state, false );
-    wp_clear_scheduled_hook( ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT );
+    return acf_blocks_storage_mutate_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION, function ( $state ) {
+        $state['running'] = false;
+        wp_clear_scheduled_hook( ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT );
+        return $state;
+    } );
 }
 
 /**
@@ -1122,7 +1200,7 @@ function acf_blocks_migrator_cancel_background() {
  * @return array|null array( 'ids' => int[], 'time' => int ) or null.
  */
 function acf_blocks_migrator_get_last_batch() {
-    $batch = get_option( ACF_BLOCKS_MIGRATOR_BATCH_OPTION );
+    $batch = acf_blocks_storage_read_option( ACF_BLOCKS_MIGRATOR_BATCH_OPTION );
     if ( ! is_array( $batch ) || empty( $batch['ids'] ) ) {
         return null;
     }
@@ -1132,9 +1210,15 @@ function acf_blocks_migrator_get_last_batch() {
 /**
  * Delete stored backups for the recorded batch and clear the batch record.
  *
- * @return int Number of restore points discarded.
+ * @return int|WP_Error Number of restore points discarded, or a busy error.
  */
 function acf_blocks_migrator_clear_backups() {
+    acf_blocks_migrator_cancel_background();
+    return acf_blocks_migrator_with_worker_lock( 'acf_blocks_migrator_clear_backups_locked' );
+}
+
+/** Internal discard; the caller must hold the migration lock. */
+function acf_blocks_migrator_clear_backups_locked() {
     $batch   = acf_blocks_migrator_get_last_batch();
     $count   = 0;
     if ( $batch ) {
@@ -1157,6 +1241,15 @@ function acf_blocks_migrator_clear_backups() {
  * @return array { @type int $reverted, @type int $total, @type array $errors }
  */
 function acf_blocks_migrator_revert() {
+    acf_blocks_migrator_cancel_background();
+    $result = acf_blocks_migrator_with_worker_lock( 'acf_blocks_migrator_revert_locked' );
+    return is_wp_error( $result ) ? array(
+        'reverted' => 0, 'total' => 0, 'errors' => array( $result->get_error_message() ),
+    ) : $result;
+}
+
+/** Internal restore; the caller must hold the migration lock. */
+function acf_blocks_migrator_revert_locked() {
     $batch = acf_blocks_migrator_get_last_batch();
     if ( ! $batch ) {
         return array( 'reverted' => 0, 'total' => 0, 'errors' => array() );
@@ -1164,12 +1257,15 @@ function acf_blocks_migrator_revert() {
 
     $reverted = 0;
     $errors   = array();
+    $pending  = array();
 
     foreach ( $batch['ids'] as $id ) {
+        clean_post_cache( $id );
         $backup = get_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META, true );
 
         if ( '' === $backup || null === $backup ) {
             $errors[] = sprintf( '#%d: %s', $id, __( 'no backup found', 'acf-blocks' ) );
+            $pending[] = $id;
             continue;
         }
 
@@ -1180,6 +1276,7 @@ function acf_blocks_migrator_revert() {
 
         if ( is_wp_error( $result ) ) {
             $errors[] = sprintf( '#%d: %s', $id, $result->get_error_message() );
+            $pending[] = $id;
         } else {
             delete_post_meta( $id, ACF_BLOCKS_MIGRATOR_BACKUP_META );
             $reverted++;
@@ -1187,7 +1284,12 @@ function acf_blocks_migrator_revert() {
     }
 
     $total = count( $batch['ids'] );
-    delete_option( ACF_BLOCKS_MIGRATOR_BATCH_OPTION );
+    if ( $pending ) {
+        $batch['ids'] = $pending;
+        update_option( ACF_BLOCKS_MIGRATOR_BATCH_OPTION, $batch, false );
+    } else {
+        delete_option( ACF_BLOCKS_MIGRATOR_BATCH_OPTION );
+    }
     delete_option( ACF_BLOCKS_MIGRATOR_CURSOR_OPTION );
     delete_option( ACF_BLOCKS_MIGRATOR_BACKGROUND_OPTION );
     wp_clear_scheduled_hook( ACF_BLOCKS_MIGRATOR_BACKGROUND_EVENT );
@@ -1219,7 +1321,6 @@ function acf_blocks_migrator_handle_actions() {
     $action = sanitize_text_field( wp_unslash( $_POST['acf_blocks_migrator_action'] ) );
 
     if ( 'scan' === $action ) {
-        delete_option( ACF_BLOCKS_MIGRATOR_CURSOR_OPTION );
         $data = acf_blocks_migrator_scan();
         set_transient( 'acf_blocks_migrator_report', array( 'type' => 'scan', 'data' => $data ), 5 * MINUTE_IN_SECONDS );
     } elseif ( 'migrate' === $action ) {
@@ -1234,7 +1335,8 @@ function acf_blocks_migrator_handle_actions() {
         set_transient( 'acf_blocks_migrator_report', array( 'type' => 'revert', 'data' => $data ), 5 * MINUTE_IN_SECONDS );
     } elseif ( 'discard' === $action ) {
         $count = acf_blocks_migrator_clear_backups();
-        set_transient( 'acf_blocks_migrator_report', array( 'type' => 'discard', 'data' => array( 'count' => $count ) ), 5 * MINUTE_IN_SECONDS );
+        $data = is_wp_error( $count ) ? array( 'count' => 0, 'errors' => array( $count->get_error_message() ) ) : array( 'count' => $count );
+        set_transient( 'acf_blocks_migrator_report', array( 'type' => 'discard', 'data' => $data ), 5 * MINUTE_IN_SECONDS );
     }
 
     wp_safe_redirect( admin_url( 'options-general.php?page=acf-blocks-license&acf_blocks_migrated=1#acf-blocks-migrator' ) );
@@ -1438,6 +1540,9 @@ function acf_blocks_migrator_render_card() {
         <?php elseif ( 'discard' === $type ) : ?>
             <div class="acfbm-note" style="background:#f6f7f7;border:1px solid #dcdcde;">
                 <strong><?php printf( esc_html__( 'Discarded %d restore point(s). Migrated content is unchanged.', 'acf-blocks' ), (int) $data['count'] ); ?></strong>
+                <?php foreach ( (array) ( $data['errors'] ?? array() ) as $error ) : ?>
+                    <p><?php echo esc_html( $error ); ?></p>
+                <?php endforeach; ?>
             </div>
         <?php endif; ?>
 
@@ -1571,6 +1676,10 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 
         if ( isset( $assoc_args['discard'] ) ) {
             $n = acf_blocks_migrator_clear_backups();
+            if ( is_wp_error( $n ) ) {
+                WP_CLI::error( $n->get_error_message() );
+                return;
+            }
             WP_CLI::success( sprintf( '%d restore point(s) discarded.', $n ) );
             return;
         }

@@ -46,7 +46,7 @@ $legacy_button_style = acf_blocks_button_variant( acf_blocks_get_field( 'acf_cta
 $legacy_button_2_text  = acf_blocks_get_field( 'acf_cta_button_2_text', $block );
 $legacy_button_2_url   = acf_blocks_get_field( 'acf_cta_button_2_url', $block );
 $legacy_button_2_style = acf_blocks_button_variant( acf_blocks_get_field( 'acf_cta_button_2_style', $block ) );
-$has_legacy_content = $legacy_heading || $legacy_description || $legacy_button_text;
+$has_legacy_content = $legacy_heading || $legacy_description || $legacy_button_text || $legacy_button_2_text;
 
 // Heading tag selection (h1-h6, p, span) - defaults to h2
 $heading_tag = acf_blocks_get_field( 'acf_cta_heading_tag', $block ) ?: 'h2';

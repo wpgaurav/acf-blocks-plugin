@@ -64,7 +64,7 @@ function acf_blocks_get_block_metadata_cache( $include_disabled = false ) {
                     'folder'       => trailingslashit( ACF_BLOCKS_PLUGIN_DIR . 'blocks/' . $folder_name ),
                     'folder_name'  => $folder_name,
                     'metadata'     => $definition['metadata'],
-                    'field_groups' => $definition['field_groups'] ?? array(),
+                    'field_groups' => $definition['field_groups'] ?? null,
                 );
             }
         } else {
@@ -109,7 +109,7 @@ function acf_blocks_discover_block_metadata() {
             'folder'       => $folder,
             'folder_name'  => basename( untrailingslashit( $folder ) ),
             'metadata'     => $metadata,
-            'field_groups' => array(),
+            'field_groups' => null,
         );
     }
 
@@ -226,7 +226,7 @@ add_filter( 'render_block', 'acf_blocks_add_common_wrapper_class', 10, 2 );
  * @return array Metadata carrying an explicit version.
  */
 function acf_blocks_version_block_assets( $metadata ) {
-    if ( isset( $metadata['version'] ) || empty( $metadata['file'] ) ) {
+    if ( empty( $metadata['file'] ) ) {
         return $metadata;
     }
 

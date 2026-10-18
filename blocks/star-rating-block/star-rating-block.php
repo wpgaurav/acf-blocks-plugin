@@ -115,6 +115,6 @@ wp_enqueue_script( 'acf-star-rating-block' );
             $json_data['dateModified'] = get_the_modified_date( 'c' );
         }
     ?>
-    <script type="application/ld+json"><?php echo wp_json_encode( $json_data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ); ?></script>
+    <script type="application/ld+json"><?php echo wp_json_encode( $json_data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ); ?></script>
     <?php endif; ?>
 </div>

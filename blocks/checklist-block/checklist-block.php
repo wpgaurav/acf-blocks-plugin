@@ -58,13 +58,20 @@ if ( ! empty( $items ) ) {
 }
 $progress_percent = $total_items > 0 ? round( ( $checked_items / $total_items ) * 100 ) : 0;
 
-// Generate unique ID
+// DOM IDs stay unique per render; persistence uses stored block identity, with
+// a content fingerprint for legacy blocks that have no persisted ID.
 $block_id = 'checklist-' . wp_unique_id();
+$persistence_identity = $block['id'] ?? $anchor;
+if ( ! $persistence_identity ) {
+    $persistence_identity = wp_json_encode( array( $title, $items ) );
+}
+// Post context also separates plain-permalink pages that share the same path.
+$persistence_key = hash( 'sha256', wp_json_encode( array( $post_id ?? 0, $persistence_identity ) ) );
 
 $anchor_attr = $anchor ? ' id="' . esc_attr( $anchor ) . '"' : '';
 ?>
 
-<div <?php echo $anchor_attr; ?> class="<?php echo esc_attr( implode( ' ', $wrapper_classes ) ); ?>" data-checklist-id="<?php echo esc_attr( $block_id ); ?>" style="<?php echo esc_attr( $checklist_style ); ?>">
+<div <?php echo $anchor_attr; ?> class="<?php echo esc_attr( implode( ' ', $wrapper_classes ) ); ?>" data-checklist-id="<?php echo esc_attr( $block_id ); ?>" data-checklist-key="<?php echo esc_attr( $persistence_key ); ?>" style="<?php echo esc_attr( $checklist_style ); ?>">
 
     <?php if ( ! empty( $title ) ) : ?>
         <h3 class="acf-checklist__title"><?php echo esc_html( $title ); ?></h3>
@@ -87,7 +94,7 @@ $anchor_attr = $anchor ? ' id="' . esc_attr( $anchor ) . '"' : '';
                 $item_id    = $block_id . '-item-' . $index;
                 ?>
                 <li class="acf-checklist__item<?php echo $is_checked ? ' acf-checklist__item--checked' : ''; ?>">
-                    <?php if ( $interactive ) : ?>
+                    <?php if ( acf_blocks_is_on( $interactive ) ) : ?>
                         <input type="checkbox" id="<?php echo esc_attr( $item_id ); ?>" class="acf-checklist__checkbox" <?php checked( $is_checked ); ?>>
                         <label for="<?php echo esc_attr( $item_id ); ?>" class="acf-checklist__label">
                             <span class="acf-checklist__checkmark">
@@ -116,72 +123,3 @@ $anchor_attr = $anchor ? ' id="' . esc_attr( $anchor ) . '"' : '';
         <p class="acf-checklist__empty"><?php esc_html_e( 'No checklist items added.', 'acf-blocks' ); ?></p>
     <?php endif; ?>
 </div>
-
-<?php if ( acf_blocks_is_on( $interactive ) && ! $is_preview ) : ?>
-<script>
-(function() {
-    var block = document.querySelector('[data-checklist-id="<?php echo esc_js( $block_id ); ?>"]');
-    if (!block) return;
-
-    var storageKey = 'acf-checklist-<?php echo esc_js( $block_id ); ?>';
-    var checkboxes = block.querySelectorAll('.acf-checklist__checkbox');
-    var progressFill = block.querySelector('.acf-checklist__progress-fill');
-    var progressText = block.querySelector('.acf-checklist__progress-text');
-
-    // Load saved state
-    var saved = localStorage.getItem(storageKey);
-    if (saved) {
-        try {
-            var state = JSON.parse(saved);
-            checkboxes.forEach(function(cb, i) {
-                if (typeof state[i] !== 'undefined') {
-                    cb.checked = state[i];
-                    updateItemState(cb);
-                }
-            });
-            updateProgress();
-        } catch(e) {}
-    }
-
-    // Add change listeners
-    checkboxes.forEach(function(cb) {
-        cb.addEventListener('change', function() {
-            updateItemState(cb);
-            saveState();
-            updateProgress();
-        });
-    });
-
-    function updateItemState(checkbox) {
-        var item = checkbox.closest('.acf-checklist__item');
-        if (checkbox.checked) {
-            item.classList.add('acf-checklist__item--checked');
-        } else {
-            item.classList.remove('acf-checklist__item--checked');
-        }
-    }
-
-    function saveState() {
-        var state = [];
-        checkboxes.forEach(function(cb) {
-            state.push(cb.checked);
-        });
-        localStorage.setItem(storageKey, JSON.stringify(state));
-    }
-
-    function updateProgress() {
-        if (!progressFill) return;
-        var total = checkboxes.length;
-        var checked = 0;
-        checkboxes.forEach(function(cb) {
-            if (cb.checked) checked++;
-        });
-        var percent = total > 0 ? Math.round((checked / total) * 100) : 0;
-        progressFill.style.width = percent + '%';
-        if (progressText) {
-            progressText.textContent = checked + '/' + total + ' completed';
-        }
-    }
-})();
-</script>
-<?php endif; ?>

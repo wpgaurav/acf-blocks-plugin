@@ -15,6 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+require_once __DIR__ . '/storage-safety.php';
+
 const ACF_BLOCKS_IMAGE_QUEUE_OPTION = 'acf_blocks_image_localization_queue';
 const ACF_BLOCKS_IMAGE_QUEUE_EVENT  = 'acf_blocks_process_image_queue';
 
@@ -57,56 +59,92 @@ function acf_blocks_queue_external_images( $post_id, $post ) {
         return;
     }
 
+    if ( acf_blocks_storage_content_transaction( 'defer', function () use ( $post_id ) {
+        acf_blocks_queue_external_images( $post_id, get_post( $post_id ) );
+    } ) ) {
+        return;
+    }
+
     if ( ! preg_match( '#https?://[^\s"\'<>]+\.(?:jpe?g|png|gif|webp|avif|bmp|svg)(?:\?[^\s"\'<>]*)?#i', $post->post_content ) ) {
         return;
     }
 
-    $queue = acf_blocks_get_image_queue();
-    $queue[ (string) $post_id ] = array(
-        'post_id'   => (int) $post_id,
-        'queued_at' => time(),
-        'attempts'  => isset( $queue[ (string) $post_id ]['attempts'] ) ? (int) $queue[ (string) $post_id ]['attempts'] : 0,
-    );
-    update_option( ACF_BLOCKS_IMAGE_QUEUE_OPTION, $queue, false );
+    $queued = acf_blocks_storage_mutate_option( ACF_BLOCKS_IMAGE_QUEUE_OPTION, function ( $queue ) use ( $post_id ) {
+        $queue = is_array( $queue ) ? $queue : array();
+        $queue[ (string) $post_id ] = array(
+            'post_id'    => (int) $post_id,
+            'queued_at'  => time(),
+            'attempts'   => 0,
+            'generation' => wp_generate_uuid4(),
+        );
+        return $queue;
+    } );
 
+    if ( is_wp_error( $queued ) ) {
+        wp_schedule_single_event( time() + 15, 'acf_blocks_retry_image_enqueue', array( (int) $post_id ) );
+    }
     if ( ! wp_next_scheduled( ACF_BLOCKS_IMAGE_QUEUE_EVENT ) ) {
         wp_schedule_single_event( time() + 10, ACF_BLOCKS_IMAGE_QUEUE_EVENT );
     }
 }
 add_action( 'save_post', 'acf_blocks_queue_external_images', 20, 2 );
 
+/** Retry a contended enqueue from the latest saved content. */
+function acf_blocks_retry_image_enqueue( $post_id ) {
+    acf_blocks_queue_external_images( $post_id, get_post( $post_id ) );
+}
+add_action( 'acf_blocks_retry_image_enqueue', 'acf_blocks_retry_image_enqueue' );
+
 /**
  * Process a small image localization batch outside the save request.
  */
 function acf_blocks_process_image_queue() {
-    $queue = acf_blocks_get_image_queue();
-    if ( empty( $queue ) ) {
-        return;
+    $batch = array();
+    $claimed = acf_blocks_storage_mutate_option( ACF_BLOCKS_IMAGE_QUEUE_OPTION, function ( $queue ) use ( &$batch ) {
+        $queue = is_array( $queue ) ? $queue : array();
+        foreach ( $queue as $key => &$job ) {
+            if ( count( $batch ) >= 2 ) {
+                break;
+            }
+            if ( ! empty( $job['claim'] ) && (int) ( $job['claimed_at'] ?? 0 ) > time() - 10 * MINUTE_IN_SECONDS ) {
+                continue;
+            }
+            // Upgrade old queue records in place; a crash leaves a retryable job.
+            $job['generation'] = $job['generation'] ?? wp_generate_uuid4();
+            $job['claim']      = wp_generate_uuid4();
+            $job['claimed_at'] = time();
+            $batch[ $key ]     = $job;
+        }
+        unset( $job );
+        return $queue;
+    } );
+
+    if ( ! is_wp_error( $claimed ) ) {
+        foreach ( $batch as $key => $job ) {
+            $result = acf_blocks_localize_post_images( absint( $job['post_id'] ?? 0 ) );
+            acf_blocks_storage_mutate_option( ACF_BLOCKS_IMAGE_QUEUE_OPTION, function ( $queue ) use ( $key, $job, $result ) {
+                if ( ! isset( $queue[ $key ] ) || ( $queue[ $key ]['generation'] ?? '' ) !== $job['generation']
+                    || ( $queue[ $key ]['claim'] ?? '' ) !== $job['claim'] ) {
+                    return $queue; // A newer editor save owns this job now.
+                }
+                $conflict = is_wp_error( $result ) && 'acf_blocks_content_changed' === $result->get_error_code();
+                if ( is_wp_error( $result ) && ( $conflict || (int) ( $job['attempts'] ?? 0 ) < 2 ) ) {
+                    $job['attempts'] = $conflict ? 0 : (int) ( $job['attempts'] ?? 0 ) + 1;
+                    unset( $job['claim'], $job['claimed_at'] );
+                    $queue[ $key ] = $job;
+                } else {
+                    unset( $queue[ $key ] );
+                }
+                return $queue;
+            } );
+        }
     }
 
-    if ( get_transient( 'acf_blocks_image_queue_lock' ) ) {
+    if ( is_wp_error( $claimed ) || acf_blocks_storage_read_option( ACF_BLOCKS_IMAGE_QUEUE_OPTION, array() ) ) {
         if ( ! wp_next_scheduled( ACF_BLOCKS_IMAGE_QUEUE_EVENT ) ) {
-            wp_schedule_single_event( time() + 60, ACF_BLOCKS_IMAGE_QUEUE_EVENT );
-        }
-        return;
-    }
-    set_transient( 'acf_blocks_image_queue_lock', 1, 10 * MINUTE_IN_SECONDS );
-
-    $batch = array_slice( $queue, 0, 2, true );
-    foreach ( $batch as $key => $job ) {
-        unset( $queue[ $key ] );
-        $result = acf_blocks_localize_post_images( absint( $job['post_id'] ?? 0 ) );
-        if ( is_wp_error( $result ) && (int) ( $job['attempts'] ?? 0 ) < 2 ) {
-            $job['attempts'] = (int) ( $job['attempts'] ?? 0 ) + 1;
-            $queue[ $key ]   = $job;
+            wp_schedule_single_event( time() + 30, ACF_BLOCKS_IMAGE_QUEUE_EVENT );
         }
     }
-
-    update_option( ACF_BLOCKS_IMAGE_QUEUE_OPTION, $queue, false );
-    if ( ! empty( $queue ) ) {
-        wp_schedule_single_event( time() + 30, ACF_BLOCKS_IMAGE_QUEUE_EVENT );
-    }
-    delete_transient( 'acf_blocks_image_queue_lock' );
 }
 add_action( ACF_BLOCKS_IMAGE_QUEUE_EVENT, 'acf_blocks_process_image_queue' );
 
@@ -134,11 +172,11 @@ function acf_blocks_localize_post_images( $post_id ) {
     }
 
     acf_blocks_image_queue_processing( true );
-    $result = wp_update_post( array(
-        'ID'           => $post_id,
-        'post_content' => wp_slash( serialize_blocks( $blocks ) ),
-    ), true );
-    acf_blocks_image_queue_processing( false );
+    try {
+        $result = acf_blocks_storage_update_post( $post, serialize_blocks( $blocks ) );
+    } finally {
+        acf_blocks_image_queue_processing( false );
+    }
 
     if ( is_wp_error( $result ) ) {
         return $result;
@@ -343,7 +381,11 @@ function acf_blocks_download_external_image( $url ) {
     $path_info = pathinfo( wp_parse_url( $url, PHP_URL_PATH ) );
     $extension = strtolower( $path_info['extension'] ?? 'jpg' );
 
-    $allowed = array( 'jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'svg', 'bmp' );
+    if ( 'svg' === $extension ) {
+        return false; // SVG is active content; MIME detection is not sanitization.
+    }
+
+    $allowed = array( 'jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'bmp' );
 
     if ( ! in_array( $extension, $allowed, true ) ) {
         $extension = 'jpg';
@@ -360,8 +402,10 @@ function acf_blocks_download_external_image( $url ) {
         $candidate_url  = $dir_info['url'] . $candidate;
 
         if ( file_exists( $candidate_path ) ) {
-            acf_blocks_ensure_localised_attachment( $candidate_path, $candidate_url, $candidate );
-            return $candidate_url;
+            if ( ! acf_blocks_local_image_is_safe( $candidate_path ) ) {
+                return false;
+            }
+            return acf_blocks_ensure_localised_attachment( $candidate_path, $candidate_url, $candidate ) ? $candidate_url : false;
         }
     }
 
@@ -385,19 +429,10 @@ function acf_blocks_download_external_image( $url ) {
         return false;
     }
 
-    // Verify the downloaded file is a valid image.
-    $image_type = wp_get_image_mime( $tmp_file );
-
-    if ( ! $image_type ) {
-        // Allow SVGs only when the MIME type also confirms SVG content.
-        $finfo = function_exists( 'mime_content_type' ) ? mime_content_type( $tmp_file ) : '';
-
-        if ( $extension !== 'svg' || false === strpos( $finfo, 'svg' ) ) {
-            if ( file_exists( $tmp_file ) ) {
-                unlink( $tmp_file );
-            }
-            return false;
-        }
+    // Only raster images are accepted, even when a misleading .jpg URL serves SVG.
+    if ( ! acf_blocks_local_image_is_safe( $tmp_file ) ) {
+        wp_delete_file( $tmp_file );
+        return false;
     }
 
     // Move temp file to target directory.
@@ -415,9 +450,17 @@ function acf_blocks_download_external_image( $url ) {
     }
 
     // Register as a WP attachment so WordPress generates image sizes for srcset.
-    acf_blocks_ensure_localised_attachment( $target_path, $target_url, $filename );
+    if ( ! acf_blocks_ensure_localised_attachment( $target_path, $target_url, $filename ) ) {
+        wp_delete_file( $target_path );
+        return false;
+    }
 
     return $target_url;
+}
+
+/** Only decoded raster formats are safe to expose from the uploads origin. */
+function acf_blocks_local_image_is_safe( $file_path ) {
+    return in_array( wp_get_image_mime( $file_path ), array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif', 'image/bmp', 'image/x-ms-bmp' ), true );
 }
 
 /**
@@ -433,6 +476,9 @@ function acf_blocks_download_external_image( $url ) {
  * @return int Attachment ID, or 0 on failure.
  */
 function acf_blocks_ensure_localised_attachment( $file_path, $file_url, $filename ) {
+    if ( 'svg' === strtolower( pathinfo( $filename, PATHINFO_EXTENSION ) ) || ! acf_blocks_local_image_is_safe( $file_path ) ) {
+        return 0;
+    }
     // Check if an attachment already exists for this file.
     $existing_id = acf_blocks_get_attachment_id_by_file( $file_path );
     if ( $existing_id ) {

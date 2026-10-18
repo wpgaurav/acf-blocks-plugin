@@ -24,6 +24,9 @@ jobs:
 
       - uses: ramsey/composer-install@v3
 
+      - name: Dependency security audit
+        run: composer audit --locked
+
       - name: Validate generated artifacts
         run: composer generated
 
@@ -42,5 +45,5 @@ jobs:
       - name: Unit tests
         run: composer test
 
-      - name: Video player behavior
-        run: node --test tests/video-runtime.test.js
+      - name: Block runtime behavior
+        run: node --test tests/*.test.js

@@ -127,11 +127,18 @@ class ACF_Blocks_License_Manager {
 			return new WP_Error( 'no_license', __( 'No license key found.', 'acf-blocks' ) );
 		}
 
-		$this->api_request( 'deactivate_license', array(
+		$response = $this->api_request( 'deactivate_license', array(
 			'license_key' => $license['license_key'],
 			'item_id'     => self::ITEM_ID,
 			'site_url'    => home_url(),
 		) );
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+		if ( empty( $response['success'] ) ) {
+			return new WP_Error( 'deactivation_failed', $response['message'] ?? __( 'License deactivation failed. Your local license has been preserved.', 'acf-blocks' ) );
+		}
 
 		$default = array(
 			'license_key' => '', 'status' => 'inactive', 'activation_hash' => '',

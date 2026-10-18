@@ -192,11 +192,11 @@ function acf_star_rating_has_block_id( $blocks, $block_id ) {
 function acf_star_rating_voter_hash() {
     $ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 
-    // Cloudflare overwrites this header at the trusted edge. Other proxy
-    // headers are intentionally ignored unless a site opts in via the filter.
+    // Client-supplied headers are not proof of a trusted proxy. Sites whose
+    // origin accepts traffic only from Cloudflare can explicitly opt in.
     $trust_cloudflare = (bool) apply_filters(
         'acf_star_rating_trust_cloudflare_header',
-        ! empty( $_SERVER['HTTP_CF_RAY'] )
+        false
     );
     if ( $trust_cloudflare && ! empty( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) {
         $candidate = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) );

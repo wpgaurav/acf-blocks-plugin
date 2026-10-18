@@ -170,8 +170,9 @@ After changing block metadata, field JSON, or block CSS, regenerate the cached a
 php tools/generate-manifest.php
 php tools/build-editor-css.php
 composer check
-node --test tests/video-runtime.test.js
+node --test tests/*.test.js
 php tools/check-release.php
+composer audit --locked
 ```
 
 CI validates PHP 7.4, 8.1, 8.3, and 8.5, plus PHP/JSON/JavaScript syntax, generated artifacts, compatibility rules, and unit tests.
@@ -189,6 +190,33 @@ Use explicit keyword values for boolean HTML attributes in ACF previews, such as
 `hidden="hidden"` and `controls="controls"`. ACF's React preview can drop empty
 attribute values; WordPress helpers such as `checked()` already emit the explicit
 form.
+
+Webhook forms send an opaque signed reference to the site. The server resolves
+the current saved form settings and sends its credentials directly to the
+configured HTTPS service, without following redirects. Forms in published
+posts, reusable blocks, active templates/template parts, and active block
+widgets are supported. Unsaved previews cannot submit webhooks. After updating
+from a version that exposed webhook authentication headers, purge cached form
+pages and rotate those credentials with the webhook provider.
+
+Star Rating uses the connecting IP by default. Only enable the existing
+`acf_star_rating_trust_cloudflare_header` filter when the origin is restricted
+to trusted Cloudflare traffic; a request header alone cannot establish trust.
+
+The optional `tests/storage-wordpress-integration.php`,
+`tests/migration-concurrency-integration.php`, and
+`tests/render-wordpress-integration.php` runners exercise a disposable
+WordPress/MariaDB database, including separate concurrent PHP processes. Set
+`ACFB_TEST_WP_ROOT` to readable WordPress core, `ACFB_TEST_SANDBOX` to a temporary
+directory, and `ACFB_TEST_MYSQL_SOCKET` to an isolated MariaDB socket. Rendering
+checks also need `ACFB_TEST_ACF_PLUGIN`, pointing to an ACF Pro or SCF `acf.php`.
+These runners must use a dedicated test database, never an existing site's
+database. `tests/toc-gallery-browser.js` optionally runs the real-template
+browser checks when Playwright and Chrome are available.
+`tests/theme-visual-browser.js` checks theme palette precedence, operating-system
+fallbacks, and URL Preview button contrast and sizing in an offline browser.
+`tests/queue-transaction-integration.php` covers queue visibility across commit
+and rollback using the same isolated database settings.
 
 ## Support This Project
 

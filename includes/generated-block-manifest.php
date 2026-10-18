@@ -669,6 +669,7 @@ return array (
       ),
       'style' => 'file:./checklist.css',
       'editorStyle' => 'file:./checklist.css',
+      'viewScript' => 'file:./checklist.js',
     ),
     'field_groups' => 
     array (
@@ -2387,6 +2388,7 @@ return array (
       ),
       'style' => 'file:./gallery.css',
       'editorStyle' => 'file:./gallery.css',
+      'viewScript' => 'file:./gallery.js',
     ),
     'field_groups' => 
     array (
